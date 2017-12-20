@@ -28,7 +28,7 @@ func _ready():
 	pass
 	
 func _on_NEW_GAME_pressed():
-	get_tree().change_scene(\"res://Scenes/BASIC_FUNCTIONS.tscn\")
+	get_tree().change_scene(\"res://Scenes/GAME.tscn\")
 
 func _on_QUIT_pressed():
 	get_tree().quit()
