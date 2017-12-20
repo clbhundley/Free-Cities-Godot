@@ -24,17 +24,27 @@ onready var tabright = get_node("/root/Game/Control/UI/uidisplay/TabsContainer/t
 onready var tableft = get_node("/root/Game/Control/UI/uidisplay/TabsContainer/tableft")
 onready var slavesdisplay = get_node("/root/Game/Control/UI/SlavesDisplay")
 onready var arcdisplay = get_node("/root/Game/Control/UI/ArcDisplay")
+onready var next_week = get_node("/root/Game/Control/UI/uidisplay/Next Week")
+onready var current_week_value = get_node("/root/Game/Control/UI/uidisplay/Current Week value")
 onready var player = get_node("/root/Game/Control/Player") # This identifies the Player node as variable: "player"
 # These connect the variables in the Player node's script to this script.
 onready var money = player.money
 onready var slaves = player.slaves
 onready var slavelist = player.slavelist
+onready var week = player.week
 
 
 func _ready():
-	# Called every time the node is added to the scene.
-	# Initialization here
-	pass
+	update_Display()
+
+func update_Display():
+	current_week_value.set_text(str(week+1))
+
+
+ # NEXT WEEK BUTTON
+func _on_Next_Week_pressed():
+	week += 1
+	update_Display()
 
 
  # BACK BUTTON

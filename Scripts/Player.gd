@@ -5,6 +5,7 @@ extends Control
 var money = 0
 var slaves = {}
 var slavelist = []
+var week = 0
 
 # class member variables go here, for example:
 # var a = 2
