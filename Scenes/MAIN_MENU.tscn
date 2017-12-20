@@ -1,38 +1,19 @@
 [gd_scene load_steps=15 format=1]
 
-[ext_resource path="res://Textures/Main_Menu/Buttons/NEW_GAME.png" type="Texture" id=1]
-[ext_resource path="res://Textures/Main_Menu/Buttons/NEW_GAME_C.png" type="Texture" id=2]
-[ext_resource path="res://Textures/Main_Menu/Buttons/NEW_GAME_H.png" type="Texture" id=3]
-[ext_resource path="res://Textures/Main_Menu/Buttons/LOAD_GAME.png" type="Texture" id=4]
-[ext_resource path="res://Textures/Main_Menu/Buttons/LOAD_GAME_C.png" type="Texture" id=5]
-[ext_resource path="res://Textures/Main_Menu/Buttons/LOAD_GAME_H.png" type="Texture" id=6]
-[ext_resource path="res://Textures/Main_Menu/Buttons/OPTIONS.png" type="Texture" id=7]
-[ext_resource path="res://Textures/Main_Menu/Buttons/OPTIONS_C.png" type="Texture" id=8]
-[ext_resource path="res://Textures/Main_Menu/Buttons/OPTIONS_H.png" type="Texture" id=9]
-[ext_resource path="res://Textures/Main_Menu/Buttons/QUIT.png" type="Texture" id=10]
-[ext_resource path="res://Textures/Main_Menu/Buttons/QUIT_C.png" type="Texture" id=11]
-[ext_resource path="res://Textures/Main_Menu/Buttons/QUIT_H.png" type="Texture" id=12]
-[ext_resource path="res://Textures/Main_Menu/MAIN_MENU_BG.jpg" type="Texture" id=13]
-
-[sub_resource type="GDScript" id=1]
-
-script/source = "extends Control
-
-# class member variables go here, for example:
-# var a = 2
-# var b = \"textvar\"
-
-func _ready():
-	# Called every time the node is added to the scene.
-	# Initialization here
-	pass
-	
-func _on_NEW_GAME_pressed():
-	get_tree().change_scene(\"res://Scenes/GAME.tscn\")
-
-func _on_QUIT_pressed():
-	get_tree().quit()
-"
+[ext_resource path="res://Scripts/Main Menu.gd" type="Script" id=1]
+[ext_resource path="res://Textures/Main_Menu/Buttons/NEW_GAME.png" type="Texture" id=2]
+[ext_resource path="res://Textures/Main_Menu/Buttons/NEW_GAME_C.png" type="Texture" id=3]
+[ext_resource path="res://Textures/Main_Menu/Buttons/NEW_GAME_H.png" type="Texture" id=4]
+[ext_resource path="res://Textures/Main_Menu/Buttons/LOAD_GAME.png" type="Texture" id=5]
+[ext_resource path="res://Textures/Main_Menu/Buttons/LOAD_GAME_C.png" type="Texture" id=6]
+[ext_resource path="res://Textures/Main_Menu/Buttons/LOAD_GAME_H.png" type="Texture" id=7]
+[ext_resource path="res://Textures/Main_Menu/Buttons/OPTIONS.png" type="Texture" id=8]
+[ext_resource path="res://Textures/Main_Menu/Buttons/OPTIONS_C.png" type="Texture" id=9]
+[ext_resource path="res://Textures/Main_Menu/Buttons/OPTIONS_H.png" type="Texture" id=10]
+[ext_resource path="res://Textures/Main_Menu/Buttons/QUIT.png" type="Texture" id=11]
+[ext_resource path="res://Textures/Main_Menu/Buttons/QUIT_C.png" type="Texture" id=12]
+[ext_resource path="res://Textures/Main_Menu/Buttons/QUIT_H.png" type="Texture" id=13]
+[ext_resource path="res://Textures/Main_Menu/MAIN_MENU_BG.jpg" type="Texture" id=14]
 
 [node name="Node" type="Node"]
 
@@ -46,7 +27,7 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 1044.0
 margin/bottom = 615.0
-script/script = SubResource( 1 )
+script/script = ExtResource( 1 )
 
 [node name="UI" type="HBoxContainer" parent="Control"]
 
@@ -134,9 +115,9 @@ margin/bottom = 98.0
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
-textures/normal = ExtResource( 1 )
-textures/pressed = ExtResource( 2 )
-textures/hover = ExtResource( 3 )
+textures/normal = ExtResource( 2 )
+textures/pressed = ExtResource( 3 )
+textures/hover = ExtResource( 4 )
 params/resize_mode = 0
 params/stretch_mode = 0
 
@@ -153,9 +134,9 @@ margin/bottom = 206.0
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
-textures/normal = ExtResource( 4 )
-textures/pressed = ExtResource( 5 )
-textures/hover = ExtResource( 6 )
+textures/normal = ExtResource( 5 )
+textures/pressed = ExtResource( 6 )
+textures/hover = ExtResource( 7 )
 params/resize_mode = 0
 params/stretch_mode = 0
 
@@ -172,9 +153,9 @@ margin/bottom = 314.0
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
-textures/normal = ExtResource( 7 )
-textures/pressed = ExtResource( 8 )
-textures/hover = ExtResource( 9 )
+textures/normal = ExtResource( 8 )
+textures/pressed = ExtResource( 9 )
+textures/hover = ExtResource( 10 )
 params/resize_mode = 0
 params/stretch_mode = 0
 
@@ -191,9 +172,9 @@ margin/bottom = 422.0
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
-textures/normal = ExtResource( 10 )
-textures/pressed = ExtResource( 11 )
-textures/hover = ExtResource( 12 )
+textures/normal = ExtResource( 11 )
+textures/pressed = ExtResource( 12 )
+textures/hover = ExtResource( 13 )
 params/resize_mode = 0
 params/stretch_mode = 0
 
@@ -214,7 +195,7 @@ use_top_left = false
 transform/pos = Vector2( 126.508, 541.484 )
 transform/scale = Vector2( 0.841818, 0.812216 )
 z/z = -1
-texture = ExtResource( 13 )
+texture = ExtResource( 14 )
 
 [connection signal="pressed" from="Control/UI/elements/title_screen/buttons/NEW_GAME" to="Control" method="_on_NEW_GAME_pressed"]
 
