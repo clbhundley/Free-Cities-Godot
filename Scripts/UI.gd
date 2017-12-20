@@ -42,7 +42,7 @@ func update_Display():
 
  # NEXT WEEK BUTTON
 func _on_Next_Week_pressed():
-	player.week += 1
+	player.next_week()
 	update_Display()
 
 
@@ -60,10 +60,10 @@ func _on_Generate_Slave_pressed():
  # ADD SLAVE BUTTON
 func _on_Add_Slave_pressed():
 	slaves[generate_slave.rand_name] = {
-	name = generate_slave.rand_name, # In this new {dictionary}, add [key] "name", with the [value] "rand_name"
-	nickname = null, # If present, the nickname will be shown instead of the first and last name in the UI (Not yet implemented.)
-	age = generate_slave.age_gen,
-	haircolor = generate_slave.rand_haircolor
+		name = generate_slave.rand_name, # In this new {dictionary}, add [key] "name", with the [value] "rand_name"
+		nickname = null, # If present, the nickname will be shown instead of the first and last name in the UI (Not yet implemented.)
+		age = generate_slave.age_gen,
+		haircolor = generate_slave.rand_haircolor
 	}
 	slavelist.append(generate_slave.rand_name)
 	newslavecontainer.hide()
