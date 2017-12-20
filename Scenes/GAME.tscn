@@ -1,0 +1,613 @@
+[gd_scene load_steps=16 format=1]
+
+[ext_resource path="res://Scripts/Player.gd" type="Script" id=1]
+[ext_resource path="res://Scripts/UI.gd" type="Script" id=2]
+[ext_resource path="res://Textures/Game/BG2.jpg" type="Texture" id=3]
+[ext_resource path="res://Scripts/Generate Slave.gd" type="Script" id=4]
+[ext_resource path="res://Textures/Game/linetrue2.png" type="Texture" id=5]
+[ext_resource path="res://Textures/Game/orangeblast.png" type="Texture" id=6]
+[ext_resource path="res://Textures/Game/ARC_BG.png" type="Texture" id=7]
+[ext_resource path="res://Textures/Game/buttonfill.png" type="Texture" id=8]
+[ext_resource path="res://Textures/Game/buttonoutline.png" type="Texture" id=9]
+[ext_resource path="res://Scripts/Finished.gd" type="Script" id=10]
+[ext_resource path="res://Textures/Game/arcology.png" type="Texture" id=11]
+[ext_resource path="res://Textures/Slaves/button1.png" type="Texture" id=12]
+[ext_resource path="res://Textures/Slaves/button2.png" type="Texture" id=13]
+[ext_resource path="res://Textures/Slaves/empty.png" type="Texture" id=14]
+[ext_resource path="res://Textures/Slaves/black.png" type="Texture" id=15]
+
+[node name="Game" type="Node"]
+
+[node name="Control" type="Control" parent="."]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 40.0
+margin/bottom = 40.0
+
+[node name="Player" type="Control" parent="Control"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 40.0
+margin/bottom = 40.0
+script/script = ExtResource( 1 )
+
+[node name="UI" type="Control" parent="Control"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 40.0
+margin/bottom = 40.0
+script/script = ExtResource( 2 )
+
+[node name="UI Background" type="TextureFrame" parent="Control/UI"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = -107.0
+margin/right = 1936.0
+margin/bottom = 1103.0
+texture = ExtResource( 3 )
+expand = true
+stretch_mode = 0
+
+[node name="uidisplay" type="Control" parent="Control/UI"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = -14.0
+margin/top = -109.0
+margin/right = 26.0
+margin/bottom = -69.0
+
+[node name="Button Back" type="Button" parent="Control/UI/uidisplay"]
+
+rect/scale = Vector2( 2, 2 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 121.0
+margin/top = 141.0
+margin/right = 182.0
+margin/bottom = 170.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "BACK"
+flat = false
+
+[node name="Slave Info" type="RichTextLabel" parent="Control/UI/uidisplay"]
+
+rect/scale = Vector2( 3, 3 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 126.0
+margin/top = 290.0
+margin/right = 246.0
+margin/bottom = 397.0
+bbcode/enabled = false
+bbcode/bbcode = ""
+visible_characters = -1
+percent_visible = 1.0
+
+[node name="BuySlavePanel" type="Panel" parent="Control/UI/uidisplay"]
+
+visibility/visible = false
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 346.0
+margin/top = 254.0
+margin/right = 1724.0
+margin/bottom = 1133.0
+
+[node name="Generate Slave" type="Button" parent="Control/UI/uidisplay/BuySlavePanel"]
+
+rect/scale = Vector2( 2, 2 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 37.0
+margin/top = 31.0
+margin/right = 146.0
+margin/bottom = 63.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Generate Slave"
+flat = false
+script/script = ExtResource( 4 )
+
+[node name="Add Slave" type="Button" parent="Control/UI/uidisplay/BuySlavePanel"]
+
+visibility/visible = false
+rect/scale = Vector2( 2, 2 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 307.0
+margin/top = 42.0
+margin/right = 381.0
+margin/bottom = 62.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Add Slave"
+flat = false
+
+[node name="NewSlaveContainer" type="Container" parent="Control/UI/uidisplay/BuySlavePanel"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 331.0
+margin/top = 96.0
+margin/right = 979.0
+margin/bottom = 775.0
+
+[node name="newslaveinfo" type="RichTextLabel" parent="Control/UI/uidisplay/BuySlavePanel"]
+
+rect/scale = Vector2( 2, 2 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 744.0
+margin/top = 233.0
+margin/right = 993.0
+margin/bottom = 481.0
+bbcode/enabled = false
+bbcode/bbcode = ""
+visible_characters = -1
+percent_visible = 1.0
+
+[node name="TabsContainer" type="Container" parent="Control/UI/uidisplay"]
+
+rect/scale = Vector2( 0.75, 0.75 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 465.0
+margin/top = 68.0
+margin/right = 2107.0
+margin/bottom = 352.0
+
+[node name="tabbase" type="TextureFrame" parent="Control/UI/uidisplay/TabsContainer"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 401.0
+margin/top = 188.0
+margin/right = 1196.0
+margin/bottom = 191.0
+texture = ExtResource( 5 )
+stretch_mode = 0
+
+[node name="tableft" type="TextureFrame" parent="Control/UI/uidisplay/TabsContainer"]
+
+rect/scale = Vector2( 0.2, 0.35 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 401.0
+margin/top = 187.0
+margin/right = 2951.0
+margin/bottom = 201.0
+texture = ExtResource( 6 )
+stretch_mode = 0
+
+[node name="tabright" type="TextureFrame" parent="Control/UI/uidisplay/TabsContainer"]
+
+visibility/visible = false
+rect/scale = Vector2( 0.2, 0.35 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 686.0
+margin/top = 187.0
+margin/right = 3236.0
+margin/bottom = 201.0
+texture = ExtResource( 6 )
+stretch_mode = 0
+
+[node name="SlavesFrame" type="TextureFrame" parent="Control/UI/uidisplay/TabsContainer"]
+
+visibility/opacity = 0.75
+rect/scale = Vector2( 0.15, 0.13 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 856.0
+margin/top = 121.0
+margin/right = 1982.0
+margin/bottom = 554.0
+texture = ExtResource( 7 )
+stretch_mode = 0
+
+[node name="ArcologyFrame" type="TextureFrame" parent="Control/UI/uidisplay/TabsContainer"]
+
+visibility/opacity = 0.75
+rect/scale = Vector2( 0.15, 0.13 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 570.0
+margin/top = 121.0
+margin/right = 1696.0
+margin/bottom = 554.0
+texture = ExtResource( 7 )
+stretch_mode = 0
+
+[node name="Arcology" type="Label" parent="Control/UI/uidisplay/TabsContainer"]
+
+rect/scale = Vector2( 2, 2 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 602.0
+margin/top = 137.0
+margin/right = 657.0
+margin/bottom = 151.0
+text = "Arcology"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="Slaves" type="Label" parent="Control/UI/uidisplay/TabsContainer"]
+
+rect/scale = Vector2( 2, 2 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 902.0
+margin/top = 138.0
+margin/right = 942.0
+margin/bottom = 152.0
+text = "Slaves"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="ArcologyTab" type="TextureButton" parent="Control/UI/uidisplay/TabsContainer"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 557.0
+margin/top = 114.0
+margin/right = 749.0
+margin/bottom = 185.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+textures/pressed = ExtResource( 8 )
+textures/hover = ExtResource( 9 )
+params/resize_mode = 0
+params/scale = Vector2( 0.17, 0.17 )
+params/stretch_mode = 0
+
+[node name="SlavesTab" type="TextureButton" parent="Control/UI/uidisplay/TabsContainer"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 844.0
+margin/top = 114.0
+margin/right = 1036.0
+margin/bottom = 185.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+textures/pressed = ExtResource( 8 )
+textures/hover = ExtResource( 9 )
+params/resize_mode = 0
+params/scale = Vector2( 0.17, 0.17 )
+params/stretch_mode = 0
+
+[node name="Buy Slaves" type="Button" parent="Control/UI/uidisplay"]
+
+visibility/visible = false
+rect/scale = Vector2( 2, 2 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 1498.0
+margin/top = 144.0
+margin/right = 1593.0
+margin/bottom = 182.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Buy Slaves"
+flat = false
+
+[node name="Finished" type="Button" parent="Control/UI/uidisplay"]
+
+visibility/visible = false
+rect/scale = Vector2( 2, 2 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 1498.0
+margin/top = 144.0
+margin/right = 1593.0
+margin/bottom = 182.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Finished"
+flat = false
+script/script = ExtResource( 10 )
+
+[node name="ArcDisplay" type="CenterContainer" parent="Control/UI"]
+
+editor/display_folded = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 386.0
+margin/top = 225.0
+margin/right = 1512.0
+margin/bottom = 658.0
+use_top_left = false
+
+[node name="ARCPANNEL" type="TextureFrame" parent="Control/UI/ArcDisplay"]
+
+editor/display_folded = true
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 1126.0
+margin/bottom = 433.0
+texture = ExtResource( 7 )
+stretch_mode = 0
+
+[node name="ARC" type="TextureFrame" parent="Control/UI/ArcDisplay/ARCPANNEL"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 25.0
+margin/top = 9.0
+margin/right = 1101.0
+margin/bottom = 423.0
+texture = ExtResource( 11 )
+stretch_mode = 0
+
+[node name="SlavesDisplay" type="ScrollContainer" parent="Control/UI"]
+
+editor/display_folded = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 386.0
+margin/top = 225.0
+margin/right = 1962.0
+margin/bottom = 1057.0
+scroll/horizontal = true
+scroll/vertical = false
+
+[node name="ButtonIndex" type="ButtonGroup" parent="Control/UI/SlavesDisplay"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+alignment = 0
+
+[node name="SlaveHBox" type="HBoxContainer" parent="Control/UI/SlavesDisplay/ButtonIndex"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+custom_constants/separation = 10
+alignment = 0
+
+[node name="TestButton" type="TextureButton" parent="Control/UI/SlavesDisplay/ButtonIndex/SlaveHBox"]
+
+visibility/visible = false
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 422.4
+margin/bottom = 820.8
+toggle_mode = true
+click_on_press = true
+enabled_focus_mode = 2
+shortcut = null
+textures/normal = ExtResource( 12 )
+textures/hover = ExtResource( 13 )
+params/resize_mode = 0
+params/scale = Vector2( 0.8, 0.8 )
+params/stretch_mode = 0
+
+[node name="TestVBox" type="VBoxContainer" parent="Control/UI/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton"]
+
+editor/display_folded = true
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 3
+size_flags/vertical = 3
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 411.0
+margin/bottom = 74.0
+custom_constants/separation = 1
+alignment = 0
+
+[node name="spacer" type="Control" parent="Control/UI/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton/TestVBox"]
+
+rect/min_size = Vector2( 0, 40 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 411.0
+margin/bottom = 40.0
+
+[node name="TestHBox" type="HBoxContainer" parent="Control/UI/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton/TestVBox"]
+
+editor/display_folded = true
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 41.0
+margin/right = 411.0
+margin/bottom = 55.0
+alignment = 0
+
+[node name="spacerz" type="Control" parent="Control/UI/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton/TestVBox/TestHBox"]
+
+rect/min_size = Vector2( 150, 0 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 150.0
+margin/bottom = 14.0
+
+[node name="TestVBox2" type="VBoxContainer" parent="Control/UI/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton/TestVBox/TestHBox"]
+
+editor/display_folded = true
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 154.0
+margin/top = 0.0
+margin/right = 213.0
+margin/bottom = 14.0
+alignment = 0
+
+[node name="TestTitle" type="Label" parent="Control/UI/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton/TestVBox/TestHBox/TestVBox2"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 3
+size_flags/vertical = 0
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 59.0
+margin/bottom = 14.0
+text = "Test Title"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="Slaveimg" type="Container" parent="Control/UI/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton/TestVBox"]
+
+editor/display_folded = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 56.0
+margin/right = 411.0
+margin/bottom = 56.0
+
+[node name="Body" type="TextureFrame" parent="Control/UI/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton/TestVBox/Slaveimg"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 422.0
+margin/bottom = 675.0
+texture = ExtResource( 14 )
+stretch_mode = 0
+
+[node name="Hair" type="TextureFrame" parent="Control/UI/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton/TestVBox/Slaveimg"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 422.0
+margin/bottom = 675.0
+texture = ExtResource( 15 )
+stretch_mode = 0
+
+[connection signal="pressed" from="Control/UI/uidisplay/Button Back" to="Control/UI" method="_on_Button_Back_pressed"]
+
+[connection signal="pressed" from="Control/UI/uidisplay/BuySlavePanel/Generate Slave" to="Control/UI" method="_on_Generate_Slave_pressed"]
+
+[connection signal="pressed" from="Control/UI/uidisplay/BuySlavePanel/Add Slave" to="Control/UI" method="_on_Add_Slave_pressed"]
+
+[connection signal="pressed" from="Control/UI/uidisplay/TabsContainer/ArcologyTab" to="Control/UI" method="_on_ArcologyTab_pressed"]
+
+[connection signal="pressed" from="Control/UI/uidisplay/TabsContainer/SlavesTab" to="Control/UI" method="_on_SlavesTab_pressed"]
+
+[connection signal="pressed" from="Control/UI/uidisplay/Buy Slaves" to="Control/UI" method="_on_Buy_Slaves_pressed"]
+
+[connection signal="pressed" from="Control/UI/uidisplay/Finished" to="Control/UI" method="_on_Finished_pressed"]
+
+[connection signal="button_selected" from="Control/UI/SlavesDisplay/ButtonIndex" to="Control/UI" method="_on_ButtonIndex_button_selected"]
+
+
