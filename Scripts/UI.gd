@@ -31,19 +31,18 @@ onready var player = get_node("/root/Game/Control/Player") # This identifies the
 onready var money = player.money
 onready var slaves = player.slaves
 onready var slavelist = player.slavelist
-onready var week = player.week
 
 
 func _ready():
 	update_Display()
 
 func update_Display():
-	current_week_value.set_text(str(week+1))
+	current_week_value.set_text(str(player.week + 1))
 
 
  # NEXT WEEK BUTTON
 func _on_Next_Week_pressed():
-	week += 1
+	player.week += 1
 	update_Display()
 
 
