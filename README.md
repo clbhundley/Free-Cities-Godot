@@ -7,5 +7,6 @@ Using Godot will completely eliminate performance issues and provide a much more
 
 ## Getting Started
 ### <a href="https://godotengine.org/download">Download Godot</a>
-### <a href="https://github.com/clbhundley/Free-Cities-Godot/wiki">Setup Instructions</a>
+### <a href="https://github.com/clbhundley/Free-Cities-Godot/wiki/Setup-Instructions">Setup Instructions</a>
+### <a href="https://github.com/clbhundley/Free-Cities-Godot/wiki/Godot:-Crash-Course">Godot: Crash Course</a>
 ### <a href="https://discord.gg/4U27QpY">Discord Server</a>
