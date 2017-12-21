@@ -24,6 +24,8 @@ onready var tabright = get_node("/root/Game/Control/UI/uidisplay/TabsContainer/t
 onready var tableft = get_node("/root/Game/Control/UI/uidisplay/TabsContainer/tableft")
 onready var slavesdisplay = get_node("/root/Game/Control/UI/SlavesDisplay")
 onready var arcdisplay = get_node("/root/Game/Control/UI/ArcDisplay")
+onready var next_week = get_node("/root/Game/Control/UI/uidisplay/Next Week")
+onready var current_week_value = get_node("/root/Game/Control/UI/uidisplay/Current Week value")
 onready var player = get_node("/root/Game/Control/Player") # This identifies the Player node as variable: "player"
 # These connect the variables in the Player node's script to this script.
 onready var money = player.money
@@ -32,9 +34,16 @@ onready var slavelist = player.slavelist
 
 
 func _ready():
-	# Called every time the node is added to the scene.
-	# Initialization here
-	pass
+	update_Display()
+
+func update_Display():
+	current_week_value.set_text(str(player.week + 1))
+
+
+ # NEXT WEEK BUTTON
+func _on_Next_Week_pressed():
+	player.next_week()
+	update_Display()
 
 
  # BACK BUTTON
@@ -51,10 +60,10 @@ func _on_Generate_Slave_pressed():
  # ADD SLAVE BUTTON
 func _on_Add_Slave_pressed():
 	slaves[generate_slave.rand_name] = {
-	name = generate_slave.rand_name, # In this new {dictionary}, add [key] "name", with the [value] "rand_name"
-	nickname = null, # If present, the nickname will be shown instead of the first and last name in the UI (Not yet implemented.)
-	age = generate_slave.age_gen,
-	haircolor = generate_slave.rand_haircolor
+		name = generate_slave.rand_name, # In this new {dictionary}, add [key] "name", with the [value] "rand_name"
+		nickname = null, # If present, the nickname will be shown instead of the first and last name in the UI (Not yet implemented.)
+		age = generate_slave.age_gen,
+		haircolor = generate_slave.rand_haircolor
 	}
 	slavelist.append(generate_slave.rand_name)
 	newslavecontainer.hide()

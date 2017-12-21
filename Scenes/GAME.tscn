@@ -377,6 +377,54 @@ text = "Finished"
 flat = false
 script/script = ExtResource( 10 )
 
+[node name="Next Week" type="Button" parent="Control/UI/uidisplay"]
+
+rect/scale = Vector2( 2, 2 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 273.0
+margin/top = 141.0
+margin/right = 355.0
+margin/bottom = 170.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Next Week"
+flat = false
+
+[node name="Current Week Label" type="Label" parent="Control/UI/uidisplay"]
+
+rect/scale = Vector2( 2, 2 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 125.0
+margin/top = 227.0
+margin/right = 223.0
+margin/bottom = 241.0
+text = "Current Week: "
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="Current Week value" type="Label" parent="Control/UI/uidisplay"]
+
+rect/scale = Vector2( 2, 2 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 328.0
+margin/top = 227.0
+margin/right = 368.0
+margin/bottom = 241.0
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
 [node name="ArcDisplay" type="CenterContainer" parent="Control/UI"]
 
 editor/display_folded = true
@@ -607,6 +655,8 @@ stretch_mode = 0
 [connection signal="pressed" from="Control/UI/uidisplay/Buy Slaves" to="Control/UI" method="_on_Buy_Slaves_pressed"]
 
 [connection signal="pressed" from="Control/UI/uidisplay/Finished" to="Control/UI" method="_on_Finished_pressed"]
+
+[connection signal="pressed" from="Control/UI/uidisplay/Next Week" to="Control/UI" method="_on_Next_Week_pressed"]
 
 [connection signal="button_selected" from="Control/UI/SlavesDisplay/ButtonIndex" to="Control/UI" method="_on_ButtonIndex_button_selected"]
 
