@@ -5,18 +5,16 @@ extends Control
 # var b = "textvar"
 
 # onready var creates the variable when "func _ready()" is executed.
-onready var slavesnew = {}
-onready var slavelistnew = []
 onready var newslavecontainer = get_node("/root/Game/Control/UI/uidisplay/BuySlavePanel/NewSlaveContainer")
-onready var rand_name = null
-onready var age_gen = null
-onready var rand_haircolor = null
 onready var slave_info = get_node("/root/Game/Control/UI/uidisplay/Slave Info")
 onready var buyslavepanel = get_node("/root/Game/Control/UI/uidisplay/BuySlavePanel")
 onready var buy_slaves = get_node("/root/Game/Control/UI/uidisplay/Buy Slaves")
 onready var newslaveinfo = get_node("/root/Game/Control/UI/uidisplay/BuySlavePanel/newslaveinfo")
-onready var generate_slave = get_node("/root/Game/Control/UI/uidisplay/BuySlavePanel/Generate Slave")
-onready var add_slave = get_node("/root/Game/Control/UI/uidisplay/BuySlavePanel/Add Slave")
+onready var newslaveprice = get_node("/root/Game/Control/UI/uidisplay/BuySlavePanel/newslaveprice")
+onready var new_slave = get_node("/root/Game/Control/Slave Functions/New Slave")
+onready var kidnappers_market = get_node("/root/Game/Control/UI/uidisplay/BuySlavePanel/Kidnappers Market")
+onready var display_slaves = get_node("/root/Game/Control/Slave Functions/Display Slaves")
+onready var buy_slave = get_node("/root/Game/Control/UI/uidisplay/BuySlavePanel/Buy Slave")
 onready var finished = get_node("/root/Game/Control/UI/uidisplay/Finished")
 onready var slavehbox = get_node("/root/Game/Control/UI/SlavesDisplay/ButtonIndex/SlaveHBox")
 onready var buttonindex = get_node("/root/Game/Control/UI/SlavesDisplay/ButtonIndex")
@@ -29,8 +27,8 @@ onready var current_week_value = get_node("/root/Game/Control/UI/uidisplay/Curre
 onready var player = get_node("/root/Game/Control/Player") # This identifies the Player node as variable: "player"
 # These connect the variables in the Player node's script to this script.
 onready var money = player.money
-onready var slaves = player.slaves
-onready var slavelist = player.slavelist
+onready var slave_dict = player.slave_dict
+onready var slave_list = player.slave_list
 
 
 func _ready():
@@ -46,44 +44,49 @@ func _on_Next_Week_pressed():
 	update_Display()
 
 
- # BACK BUTTON
-func _on_Button_Back_pressed():
+ # QUIT BUTTON
+func _on_QUIT_pressed():
 	get_tree().change_scene("res://Scenes/MAIN_MENU.tscn")
 
 
- # GENERATE SLAVE BUTTON
-func _on_Generate_Slave_pressed():
-	# generate_slave was defined as a node on line 14
-	generate_slave.Generate_Slave() # Run the Generate_Slave() function in the Generate Slave node's script
+ # NEW SLAVE BUTTON
+func _on_Kidnappers_Market_pressed():
+	new_slave.default_new_slave() # Get a new slave from the kidnappers' market.
+	kidnappers_market.set_text("Next slave")
+	newslavecontainer.show()
+	newslaveinfo.show()
+	newslaveprice.show()
+	buy_slave.show()
 
 
- # ADD SLAVE BUTTON
-func _on_Add_Slave_pressed():
-	slaves[generate_slave.rand_name] = {
-		name = generate_slave.rand_name, # In this new {dictionary}, add [key] "name", with the [value] "rand_name"
-		nickname = null, # If present, the nickname will be shown instead of the first and last name in the UI (Not yet implemented.)
-		age = generate_slave.age_gen,
-		haircolor = generate_slave.rand_haircolor
-	}
-	slavelist.append(generate_slave.rand_name)
+ # BUY SLAVE BUTTON
+func _on_Buy_Slave_pressed():
+	new_slave.buy_slave()
 	newslavecontainer.hide()
 	newslaveinfo.hide()
-	add_slave.hide()
+	newslaveprice.hide()
+	buy_slave.hide()
 
 
 # FINISHED BUTTON
 func _on_Finished_pressed():
-	finished.Finished()
+	display_slaves.player_slaves()
+	kidnappers_market.set_text("Kidnappers' Market")
+	buyslavepanel.hide()
+	finished.hide()
+	buy_slaves.show()
+	slave_info.show()
+	slavesdisplay.show()
 
 
 # INDEX OF DISPLAYED SLAVES
 func _on_ButtonIndex_button_selected(i): # For the (i)ndex number of the pressed button,
 	# Get the (i)ndex number of the selected slave button in the ButtonIndex node.
-	# From that index number, get the corresponding index in the slavelist [array].
-	# From that entry in the slavelist [array], get the corresponding key in the slaves {dictionary}.
+	# From that index number, get the corresponding index in the slave_list [array].
+	# From that entry in the slave_list [array], get the corresponding key in the slaves {dictionary}.
 	# Turn the value of that key into a (str)ing.
 	# Display that string as text in the Slave Info node.
-	slave_info.set_text(str(slaves[slavelist[buttonindex.get_pressed_button_index()]]))
+	slave_info.set_text(str(slave_dict[slave_list[buttonindex.get_pressed_button_index()]]))
 
 
 # UI VISIBILITY CONTROLS
@@ -98,7 +101,9 @@ func _on_ArcologyTab_pressed():
 	slave_info.hide()
 
 func _on_SlavesTab_pressed():
-	finished.Finished()
+	display_slaves.player_slaves()
+	buyslavepanel.hide()
+	finished.hide()
 	tabright.show()
 	tableft.hide()
 	slavesdisplay.show()
@@ -107,6 +112,11 @@ func _on_SlavesTab_pressed():
 	slave_info.show()
 
 func _on_Buy_Slaves_pressed():
+	newslavecontainer.hide()
+	newslaveinfo.hide()
+	newslaveprice.hide()
+	buy_slave.hide()
+	kidnappers_market.set_text("Kidnappers' Market")
 	buyslavepanel.show()
 	finished.show()
 	slave_info.hide()

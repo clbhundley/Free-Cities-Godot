@@ -2,22 +2,15 @@ extends "res://Scripts/UI.gd" # Connects to the UI script. Now we can call varia
 
 
 # DISPLAY YOUR SLAVES
-func Finished():
-	
-	# UI VISIBILITY CONTROLS
-	buyslavepanel.hide()
-	finished.hide()
-	buy_slaves.show()
-	slave_info.show()
-	slavesdisplay.show()
-	
-	
+func player_slaves():
+
+
 	# REFRESH DISPLAY
 	for N in slavehbox.get_children(): # For all child (N)odes of node SlaveHBox:
 		slavehbox.remove_child(N) # Remove all (N)odes. (Refreshes display.)
 
 
-	for i in slavelist:# Iterate through all (i)tems in the slavelist [array],
+	for i in slave_list:# Iterate through all (i)tems in the slave_list [array],
 		# Create buttons with dynamic internal elements for each (i)tem.
 		
 		var node_button = TextureButton.new() # New TextureButton node
@@ -62,7 +55,7 @@ func Finished():
 		node_vbox2.add_child(node_title)
 		node_title.set_name(str(i) + "_title")
 		var node_title = get_node("/root/Game/Control/UI/SlavesDisplay/ButtonIndex/SlaveHBox/" + str(i) + "_button/" + str(i) + "_vbox/" + str(i) + "_centercontainer/" + str(i) + "_vbox2/" + str(i) + "_title")
-		node_title.set_text(str(slaves[i]["name"])) # in the {dictionary} "slaves", get the [item] we are displaying, get the [key] "name" for that item, turn its value into a string, and display that string.
+		node_title.set_text(str(slave_dict[i]["name"])) # in the {dictionary} "slaves", get the [item] we are displaying, get the [key] "name" for that item, turn its value into a string, and display that string.
 		
 		var node_container = Container.new() # This is an empty container for the images in the slave model.
 		node_vbox.add_child(node_container)
@@ -73,7 +66,7 @@ func Finished():
 		node_container.add_child(node_body)
 		node_body.set_name(str(i) + "_body")
 		var node_body = get_node("/root/Game/Control/UI/SlavesDisplay/ButtonIndex/SlaveHBox/" + str(i) + "_button/" + str(i) + "_vbox/" + str(i) + "_container/" + str(i) + "_body")
-		node_body.set_texture(load('res://Textures/Slaves/empty.png')) # Universal body texture
+		node_body.set_texture(load('res://Textures/Slaves/body.png')) # Universal body texture
 		node_body.set_pos(Vector2(0,0)) # Sets position to X:0 Y:0 (For future positioning.)
 		node_body.set_margin(0,0) # (For future positioning.)
 		
@@ -81,6 +74,6 @@ func Finished():
 		node_container.add_child(node_hair)
 		node_hair.set_name(str(i) + "_hair")
 		var node_hair = get_node("/root/Game/Control/UI/SlavesDisplay/ButtonIndex/SlaveHBox/" + str(i) + "_button/" + str(i) + "_vbox/" + str(i) + "_container/" + str(i) + "_hair")
-		node_hair.set_texture(load('res://Textures/Slaves/' + str(slaves[i]["haircolor"]) + '.png')) # Makes a string out of the value of the ["haircolor"] key to select the name of the appropriate .png file
+		node_hair.set_texture(load('res://Textures/Slaves/' + str(slave_dict[i]["hair_color"]) + '.png')) # Makes a string out of the value of the ["haircolor"] key to select the name of the appropriate .png file
 		node_hair.set_pos(Vector2(0,0))
 		node_hair.set_margin(0,0)
