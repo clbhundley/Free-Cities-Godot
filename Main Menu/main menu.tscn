@@ -1,19 +1,19 @@
 [gd_scene load_steps=15 format=1]
 
-[ext_resource path="res://Scripts/Main Menu.gd" type="Script" id=1]
-[ext_resource path="res://Textures/Main_Menu/Buttons/NEW_GAME.png" type="Texture" id=2]
-[ext_resource path="res://Textures/Main_Menu/Buttons/NEW_GAME_C.png" type="Texture" id=3]
-[ext_resource path="res://Textures/Main_Menu/Buttons/NEW_GAME_H.png" type="Texture" id=4]
-[ext_resource path="res://Textures/Main_Menu/Buttons/LOAD_GAME.png" type="Texture" id=5]
-[ext_resource path="res://Textures/Main_Menu/Buttons/LOAD_GAME_C.png" type="Texture" id=6]
-[ext_resource path="res://Textures/Main_Menu/Buttons/LOAD_GAME_H.png" type="Texture" id=7]
-[ext_resource path="res://Textures/Main_Menu/Buttons/OPTIONS.png" type="Texture" id=8]
-[ext_resource path="res://Textures/Main_Menu/Buttons/OPTIONS_C.png" type="Texture" id=9]
-[ext_resource path="res://Textures/Main_Menu/Buttons/OPTIONS_H.png" type="Texture" id=10]
-[ext_resource path="res://Textures/Main_Menu/Buttons/QUIT.png" type="Texture" id=11]
-[ext_resource path="res://Textures/Main_Menu/Buttons/QUIT_C.png" type="Texture" id=12]
-[ext_resource path="res://Textures/Main_Menu/Buttons/QUIT_H.png" type="Texture" id=13]
-[ext_resource path="res://Textures/Main_Menu/MAIN_MENU_BG.jpg" type="Texture" id=14]
+[ext_resource path="res://Main Menu/main menu.gd" type="Script" id=1]
+[ext_resource path="res://Main Menu/Buttons/new_game.png" type="Texture" id=2]
+[ext_resource path="res://Main Menu/Buttons/new_game_p.png" type="Texture" id=3]
+[ext_resource path="res://Main Menu/Buttons/new_game_h.png" type="Texture" id=4]
+[ext_resource path="res://Main Menu/Buttons/load_game.png" type="Texture" id=5]
+[ext_resource path="res://Main Menu/Buttons/load_game_p.png" type="Texture" id=6]
+[ext_resource path="res://Main Menu/Buttons/load_game_h.png" type="Texture" id=7]
+[ext_resource path="res://Main Menu/Buttons/options.png" type="Texture" id=8]
+[ext_resource path="res://Main Menu/Buttons/options_p.png" type="Texture" id=9]
+[ext_resource path="res://Main Menu/Buttons/options_h.png" type="Texture" id=10]
+[ext_resource path="res://Main Menu/Buttons/quit.png" type="Texture" id=11]
+[ext_resource path="res://Main Menu/Buttons/quit_p.png" type="Texture" id=12]
+[ext_resource path="res://Main Menu/Buttons/quit_h.png" type="Texture" id=13]
+[ext_resource path="res://Main Menu/bg.jpg" type="Texture" id=14]
 
 [node name="Node" type="Node"]
 
@@ -119,7 +119,7 @@ margin/bottom = 546.0
 custom_constants/separation = 10
 alignment = 0
 
-[node name="NEW_GAME" type="TextureButton" parent="Control/UI/elements/title_screen/buttons"]
+[node name="new_game" type="TextureButton" parent="Control/UI/elements/title_screen/buttons"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -138,7 +138,7 @@ textures/hover = ExtResource( 4 )
 params/resize_mode = 0
 params/stretch_mode = 0
 
-[node name="LOAD_GAME" type="TextureButton" parent="Control/UI/elements/title_screen/buttons"]
+[node name="load_game" type="TextureButton" parent="Control/UI/elements/title_screen/buttons"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -157,7 +157,7 @@ textures/hover = ExtResource( 7 )
 params/resize_mode = 0
 params/stretch_mode = 0
 
-[node name="OPTIONS" type="TextureButton" parent="Control/UI/elements/title_screen/buttons"]
+[node name="options" type="TextureButton" parent="Control/UI/elements/title_screen/buttons"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -176,7 +176,7 @@ textures/hover = ExtResource( 10 )
 params/resize_mode = 0
 params/stretch_mode = 0
 
-[node name="QUIT" type="TextureButton" parent="Control/UI/elements/title_screen/buttons"]
+[node name="quit" type="TextureButton" parent="Control/UI/elements/title_screen/buttons"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -195,27 +195,15 @@ textures/hover = ExtResource( 13 )
 params/resize_mode = 0
 params/stretch_mode = 0
 
-[node name="CenterContainer" type="CenterContainer" parent="Control/UI"]
+[node name="Sprite" type="Sprite" parent="Control/UI"]
 
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 3
-size_flags/vertical = 3
-margin/left = 828.0
-margin/top = 0.0
-margin/right = 1044.0
-margin/bottom = 613.0
-use_top_left = false
-
-[node name="Sprite" type="Sprite" parent="Control/UI/CenterContainer"]
-
-transform/pos = Vector2( 126.508, 541.484 )
 transform/scale = Vector2( 0.841818, 0.812216 )
 z/z = -1
 texture = ExtResource( 14 )
+centered = false
 
-[connection signal="pressed" from="Control/UI/elements/title_screen/buttons/NEW_GAME" to="Control" method="_on_NEW_GAME_pressed"]
+[connection signal="pressed" from="Control/UI/elements/title_screen/buttons/new_game" to="Control" method="_on_new_game_pressed"]
 
-[connection signal="pressed" from="Control/UI/elements/title_screen/buttons/QUIT" to="Control" method="_on_QUIT_pressed"]
+[connection signal="pressed" from="Control/UI/elements/title_screen/buttons/quit" to="Control" method="_on_quit_pressed"]
 
 

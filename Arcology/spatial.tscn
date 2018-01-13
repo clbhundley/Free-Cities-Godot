@@ -1,21 +1,6 @@
-[gd_scene load_steps=69 format=1]
+[gd_scene load_steps=54 format=1]
 
-[ext_resource path="res://Scripts/Player.gd" type="Script" id=1]
-[ext_resource path="res://Scripts/UI.gd" type="Script" id=2]
-[ext_resource path="res://Scripts/Penthouse.gd" type="Script" id=3]
-[ext_resource path="res://Scripts/mousepick.gd" type="Script" id=4]
-[ext_resource path="res://Scripts/New Slave.gd" type="Script" id=5]
-[ext_resource path="res://Scripts/Display Slaves.gd" type="Script" id=6]
-[ext_resource path="res://Textures/Game/BG.jpg" type="Texture" id=7]
-[ext_resource path="res://Textures/Slaves/button1.png" type="Texture" id=8]
-[ext_resource path="res://Textures/Slaves/button2.png" type="Texture" id=9]
-[ext_resource path="res://Textures/Slaves/body.png" type="Texture" id=10]
-[ext_resource path="res://Textures/Slaves/black.png" type="Texture" id=11]
-[ext_resource path="res://Textures/Game/linetrue2.png" type="Texture" id=12]
-[ext_resource path="res://Textures/Game/orangeblast.png" type="Texture" id=13]
-[ext_resource path="res://Textures/Game/ARC_BG.png" type="Texture" id=14]
-[ext_resource path="res://Textures/Game/buttonfill.png" type="Texture" id=15]
-[ext_resource path="res://Textures/Game/buttonoutline.png" type="Texture" id=16]
+[ext_resource path="res://Arcology/penthouse.gd" type="Script" id=1]
 
 [sub_resource type="ConcavePolygonShape" id=1]
 
@@ -1107,52 +1092,37 @@ surfaces/0 = {
 }
 custom_aabb/custom_aabb = AABB( 0, 0, 0, 0, 0, 0 )
 
-[node name="Game" type="Node"]
+[node name="Spatial" type="Spatial"]
 
-[node name="Player" type="Node" parent="."]
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
+[node name="Arcology" type="Control" parent="."]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 40.0
+margin/bottom = 40.0
+
+[node name="Penthouse" type="Spatial" parent="Arcology"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+transform/local = Transform( 0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 7.42479, 0 )
 script/script = ExtResource( 1 )
 
-[node name="Control" type="Control" parent="."]
+[node name="cambase" type="Spatial" parent="Arcology/Penthouse"]
 
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 40.0
-margin/bottom = 40.0
-script/script = ExtResource( 2 )
-
-[node name="Arcology" type="Control" parent="Control"]
-
-editor/display_folded = true
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 40.0
-margin/bottom = 40.0
-
-[node name="Penthouse" type="Spatial" parent="Control/Arcology"]
-
-editor/display_folded = true
-_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
-script/script = ExtResource( 3 )
-
-[node name="cambase" type="Spatial" parent="Control/Arcology/Penthouse"]
-
-editor/display_folded = true
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
-[node name="Camera" type="Camera" parent="Control/Arcology/Penthouse/cambase"]
+[node name="Camera" type="Camera" parent="Arcology/Penthouse/cambase"]
 
 _import_path = NodePath("Camera")
 _import_transform = Transform( 0.685881, -0.31737, 0.654862, -0.0108168, 0.895343, 0.445245, -0.727634, -0.312469, 0.610666, 7.48113, 5.34367, 6.50764 )
-transform/local = Transform( 1, 0, 0, 0, 0.750045, 0.661388, 0, -0.661388, 0.750045, 0, 4.00074, 5.14434 )
+transform/local = Transform( 1, 0, 0, 0, 0.996369, -0.0851499, 0, 0.0851499, 0.996369, 0, -9.10311, 26.7696 )
 projection = 0
 fov = 49.1343
 near = 0.1
@@ -1164,7 +1134,7 @@ environment = null
 h_offset = 0.0
 v_offset = 0.0
 
-[node name="DirectionalLight" type="DirectionalLight" parent="Control/Arcology/Penthouse"]
+[node name="DirectionalLight" type="DirectionalLight" parent="Arcology/Penthouse"]
 
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 transform/local = Transform( 1, 0, 0, 0, 0.847982, 0.530025, 0, -0.530025, 0.847982, 0, 9.10641, 8.08996 )
@@ -1188,7 +1158,7 @@ shadow/max_distance = 0.0
 shadow/split_weight = 0.5
 shadow/zoffset_scale = 2.0
 
-[node name="OmniLight" type="OmniLight" parent="Control/Arcology/Penthouse"]
+[node name="OmniLight" type="OmniLight" parent="Arcology/Penthouse"]
 
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.53003, 3.84833, 1.31173 )
@@ -1210,7 +1180,7 @@ operator = 0
 params/radius = 2.0
 params/attenuation = 1.0
 
-[node name="Dormitory" type="RigidBody" parent="Control/Arcology/Penthouse"]
+[node name="Dormitory" type="RigidBody" parent="Arcology/Penthouse"]
 
 editor/display_folded = true
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1238,9 +1208,8 @@ velocity/linear = Vector3( 0, 0, 0 )
 velocity/angular = Vector3( 0, 0, 0 )
 damp_override/linear = -1.0
 damp_override/angular = -1.0
-script/script = ExtResource( 4 )
 
-[node name="mesh" type="MeshInstance" parent="Control/Arcology/Penthouse/Dormitory"]
+[node name="mesh" type="MeshInstance" parent="Arcology/Penthouse/Dormitory"]
 
 _import_path = NodePath("Cylinder_024")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1262,7 +1231,7 @@ mesh/mesh = SubResource( 3 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Apartments" type="RigidBody" parent="Control/Arcology/Penthouse"]
+[node name="Apartments" type="RigidBody" parent="Arcology/Penthouse"]
 
 editor/display_folded = true
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1290,9 +1259,8 @@ velocity/linear = Vector3( 0, 0, 0 )
 velocity/angular = Vector3( 0, 0, 0 )
 damp_override/linear = -1.0
 damp_override/angular = -1.0
-script/script = ExtResource( 4 )
 
-[node name="mesh" type="MeshInstance" parent="Control/Arcology/Penthouse/Apartments"]
+[node name="mesh" type="MeshInstance" parent="Arcology/Penthouse/Apartments"]
 
 _import_path = NodePath("Cylinder_015")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1314,7 +1282,7 @@ mesh/mesh = SubResource( 6 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Luxury Apartments" type="RigidBody" parent="Control/Arcology/Penthouse"]
+[node name="Luxury Apartments" type="RigidBody" parent="Arcology/Penthouse"]
 
 editor/display_folded = true
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1342,9 +1310,8 @@ velocity/linear = Vector3( 0, 0, 0 )
 velocity/angular = Vector3( 0, 0, 0 )
 damp_override/linear = -1.0
 damp_override/angular = -1.0
-script/script = ExtResource( 4 )
 
-[node name="mesh" type="MeshInstance" parent="Control/Arcology/Penthouse/Luxury Apartments"]
+[node name="mesh" type="MeshInstance" parent="Arcology/Penthouse/Luxury Apartments"]
 
 _import_path = NodePath("Cylinder_016")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1366,14 +1333,14 @@ mesh/mesh = SubResource( 9 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="CollisionShape" type="CollisionShape" parent="Control/Arcology/Penthouse/Luxury Apartments"]
+[node name="CollisionShape" type="CollisionShape" parent="Arcology/Penthouse/Luxury Apartments"]
 
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 shape = SubResource( 7 )
 trigger = false
 _update_shape_index = 0
 
-[node name="Kitchen" type="RigidBody" parent="Control/Arcology/Penthouse"]
+[node name="Kitchen" type="RigidBody" parent="Arcology/Penthouse"]
 
 editor/display_folded = true
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1401,9 +1368,8 @@ velocity/linear = Vector3( 0, 0, 0 )
 velocity/angular = Vector3( 0, 0, 0 )
 damp_override/linear = -1.0
 damp_override/angular = -1.0
-script/script = ExtResource( 4 )
 
-[node name="mesh" type="MeshInstance" parent="Control/Arcology/Penthouse/Kitchen"]
+[node name="mesh" type="MeshInstance" parent="Arcology/Penthouse/Kitchen"]
 
 _import_path = NodePath("Cylinder_018")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1425,7 +1391,7 @@ mesh/mesh = SubResource( 12 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Medical" type="RigidBody" parent="Control/Arcology/Penthouse"]
+[node name="Medical" type="RigidBody" parent="Arcology/Penthouse"]
 
 editor/display_folded = true
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1453,9 +1419,8 @@ velocity/linear = Vector3( 0, 0, 0 )
 velocity/angular = Vector3( 0, 0, 0 )
 damp_override/linear = -1.0
 damp_override/angular = -1.0
-script/script = ExtResource( 4 )
 
-[node name="mesh" type="MeshInstance" parent="Control/Arcology/Penthouse/Medical"]
+[node name="mesh" type="MeshInstance" parent="Arcology/Penthouse/Medical"]
 
 _import_path = NodePath("Cylinder_019")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1477,7 +1442,7 @@ mesh/mesh = SubResource( 15 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Lab" type="RigidBody" parent="Control/Arcology/Penthouse"]
+[node name="Lab" type="RigidBody" parent="Arcology/Penthouse"]
 
 editor/display_folded = true
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1505,9 +1470,8 @@ velocity/linear = Vector3( 0, 0, 0 )
 velocity/angular = Vector3( 0, 0, 0 )
 damp_override/linear = -1.0
 damp_override/angular = -1.0
-script/script = ExtResource( 4 )
 
-[node name="mesh" type="MeshInstance" parent="Control/Arcology/Penthouse/Lab"]
+[node name="mesh" type="MeshInstance" parent="Arcology/Penthouse/Lab"]
 
 _import_path = NodePath("Cylinder_020")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1529,7 +1493,7 @@ mesh/mesh = SubResource( 18 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Spa" type="RigidBody" parent="Control/Arcology/Penthouse"]
+[node name="Spa" type="RigidBody" parent="Arcology/Penthouse"]
 
 editor/display_folded = true
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1557,9 +1521,8 @@ velocity/linear = Vector3( 0, 0, 0 )
 velocity/angular = Vector3( 0, 0, 0 )
 damp_override/linear = -1.0
 damp_override/angular = -1.0
-script/script = ExtResource( 4 )
 
-[node name="mesh" type="MeshInstance" parent="Control/Arcology/Penthouse/Spa"]
+[node name="mesh" type="MeshInstance" parent="Arcology/Penthouse/Spa"]
 
 _import_path = NodePath("Cylinder_021")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1581,7 +1544,7 @@ mesh/mesh = SubResource( 21 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Empty" type="RigidBody" parent="Control/Arcology/Penthouse"]
+[node name="Empty" type="RigidBody" parent="Arcology/Penthouse"]
 
 editor/display_folded = true
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1609,9 +1572,8 @@ velocity/linear = Vector3( 0, 0, 0 )
 velocity/angular = Vector3( 0, 0, 0 )
 damp_override/linear = -1.0
 damp_override/angular = -1.0
-script/script = ExtResource( 4 )
 
-[node name="mesh" type="MeshInstance" parent="Control/Arcology/Penthouse/Empty"]
+[node name="mesh" type="MeshInstance" parent="Arcology/Penthouse/Empty"]
 
 _import_path = NodePath("Cylinder_022")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1633,7 +1595,7 @@ mesh/mesh = SubResource( 24 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Elevators" type="RigidBody" parent="Control/Arcology/Penthouse"]
+[node name="Elevators" type="RigidBody" parent="Arcology/Penthouse"]
 
 editor/display_folded = true
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1661,9 +1623,8 @@ velocity/linear = Vector3( 0, 0, 0 )
 velocity/angular = Vector3( 0, 0, 0 )
 damp_override/linear = -1.0
 damp_override/angular = -1.0
-script/script = ExtResource( 4 )
 
-[node name="mesh" type="MeshInstance" parent="Control/Arcology/Penthouse/Elevators"]
+[node name="mesh" type="MeshInstance" parent="Arcology/Penthouse/Elevators"]
 
 _import_path = NodePath("Cylinder_023")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1685,14 +1646,14 @@ mesh/mesh = SubResource( 27 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Outer Ring" type="Spatial" parent="Control/Arcology/Penthouse"]
+[node name="Outer Ring" type="Spatial" parent="Arcology/Penthouse"]
 
 _import_path = NodePath(".")
 editor/display_folded = true
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 visibility/visible = false
 
-[node name="Cylinder" type="MeshInstance" parent="Control/Arcology/Penthouse/Outer Ring"]
+[node name="Cylinder" type="MeshInstance" parent="Arcology/Penthouse/Outer Ring"]
 
 _import_path = NodePath("Cylinder")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1713,7 +1674,7 @@ geometry/baked_light_tex_id = 0
 mesh/mesh = SubResource( 28 )
 mesh/skeleton = NodePath("..")
 
-[node name="Cylinder_001" type="MeshInstance" parent="Control/Arcology/Penthouse/Outer Ring"]
+[node name="Cylinder_001" type="MeshInstance" parent="Arcology/Penthouse/Outer Ring"]
 
 _import_path = NodePath("Cylinder_001")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1735,7 +1696,7 @@ mesh/mesh = SubResource( 30 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Cylinder_004" type="MeshInstance" parent="Control/Arcology/Penthouse/Outer Ring"]
+[node name="Cylinder_004" type="MeshInstance" parent="Arcology/Penthouse/Outer Ring"]
 
 _import_path = NodePath("Cylinder_004")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1757,7 +1718,7 @@ mesh/mesh = SubResource( 32 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Cylinder_005" type="MeshInstance" parent="Control/Arcology/Penthouse/Outer Ring"]
+[node name="Cylinder_005" type="MeshInstance" parent="Arcology/Penthouse/Outer Ring"]
 
 _import_path = NodePath("Cylinder_005")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1779,7 +1740,7 @@ mesh/mesh = SubResource( 34 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Cylinder_006" type="MeshInstance" parent="Control/Arcology/Penthouse/Outer Ring"]
+[node name="Cylinder_006" type="MeshInstance" parent="Arcology/Penthouse/Outer Ring"]
 
 _import_path = NodePath("Cylinder_006")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1801,7 +1762,7 @@ mesh/mesh = SubResource( 36 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Cylinder_007" type="MeshInstance" parent="Control/Arcology/Penthouse/Outer Ring"]
+[node name="Cylinder_007" type="MeshInstance" parent="Arcology/Penthouse/Outer Ring"]
 
 _import_path = NodePath("Cylinder_007")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1823,7 +1784,7 @@ mesh/mesh = SubResource( 38 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Cylinder_008" type="MeshInstance" parent="Control/Arcology/Penthouse/Outer Ring"]
+[node name="Cylinder_008" type="MeshInstance" parent="Arcology/Penthouse/Outer Ring"]
 
 _import_path = NodePath("Cylinder_008")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1845,7 +1806,7 @@ mesh/mesh = SubResource( 40 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Cylinder_009" type="MeshInstance" parent="Control/Arcology/Penthouse/Outer Ring"]
+[node name="Cylinder_009" type="MeshInstance" parent="Arcology/Penthouse/Outer Ring"]
 
 _import_path = NodePath("Cylinder_009")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1867,7 +1828,7 @@ mesh/mesh = SubResource( 42 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Cylinder_010" type="MeshInstance" parent="Control/Arcology/Penthouse/Outer Ring"]
+[node name="Cylinder_010" type="MeshInstance" parent="Arcology/Penthouse/Outer Ring"]
 
 _import_path = NodePath("Cylinder_010")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1889,7 +1850,7 @@ mesh/mesh = SubResource( 44 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Cylinder_011" type="MeshInstance" parent="Control/Arcology/Penthouse/Outer Ring"]
+[node name="Cylinder_011" type="MeshInstance" parent="Arcology/Penthouse/Outer Ring"]
 
 _import_path = NodePath("Cylinder_011")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1911,7 +1872,7 @@ mesh/mesh = SubResource( 46 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Cylinder_012" type="MeshInstance" parent="Control/Arcology/Penthouse/Outer Ring"]
+[node name="Cylinder_012" type="MeshInstance" parent="Arcology/Penthouse/Outer Ring"]
 
 _import_path = NodePath("Cylinder_012")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1933,7 +1894,7 @@ mesh/mesh = SubResource( 48 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Cylinder_013" type="MeshInstance" parent="Control/Arcology/Penthouse/Outer Ring"]
+[node name="Cylinder_013" type="MeshInstance" parent="Arcology/Penthouse/Outer Ring"]
 
 _import_path = NodePath("Cylinder_013")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1955,7 +1916,7 @@ mesh/mesh = SubResource( 50 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="Cylinder_014" type="MeshInstance" parent="Control/Arcology/Penthouse/Outer Ring"]
+[node name="Cylinder_014" type="MeshInstance" parent="Arcology/Penthouse/Outer Ring"]
 
 _import_path = NodePath("Cylinder_014")
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
@@ -1977,7 +1938,7 @@ mesh/mesh = SubResource( 52 )
 mesh/skeleton = NodePath("..")
 material/0 = null
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Control/Arcology/Penthouse/Outer Ring"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Arcology/Penthouse/Outer Ring"]
 
 _import_path = NodePath("AnimationPlayer")
 playback/process_mode = 1
@@ -1988,7 +1949,3884 @@ playback/speed = 1.0
 blend_times = [  ]
 autoplay = ""
 
-[node name="Label 2" type="Label" parent="Control/Arcology"]
+[node name="Terra 3" type="Spatial" parent="Arcology"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.71886, 0 )
+
+[node name="Dormitory1" type="RigidBody" parent="Arcology/Terra 3"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 1 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 3/Dormitory1"]
+
+_import_path = NodePath("Cylinder_024")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 3 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Apartments1" type="RigidBody" parent="Arcology/Terra 3"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 4 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 3/Apartments1"]
+
+_import_path = NodePath("Cylinder_015")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 6 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Luxury Apartments1" type="RigidBody" parent="Arcology/Terra 3"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 7 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 3/Luxury Apartments1"]
+
+_import_path = NodePath("Cylinder_016")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 9 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="Arcology/Terra 3/Luxury Apartments1"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 7 )
+trigger = false
+_update_shape_index = 0
+
+[node name="Kitchen1" type="RigidBody" parent="Arcology/Terra 3"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 10 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 3/Kitchen1"]
+
+_import_path = NodePath("Cylinder_018")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 12 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Medical1" type="RigidBody" parent="Arcology/Terra 3"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 13 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 3/Medical1"]
+
+_import_path = NodePath("Cylinder_019")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 15 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Lab1" type="RigidBody" parent="Arcology/Terra 3"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 16 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 3/Lab1"]
+
+_import_path = NodePath("Cylinder_020")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 18 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Spa1" type="RigidBody" parent="Arcology/Terra 3"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 19 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 3/Spa1"]
+
+_import_path = NodePath("Cylinder_021")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 21 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Empty1" type="RigidBody" parent="Arcology/Terra 3"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 22 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 3/Empty1"]
+
+_import_path = NodePath("Cylinder_022")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 24 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Elevators1" type="RigidBody" parent="Arcology/Terra 3"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 25 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 3/Elevators1"]
+
+_import_path = NodePath("Cylinder_023")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 27 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Outer Ring1" type="Spatial" parent="Arcology/Terra 3"]
+
+_import_path = NodePath(".")
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+visibility/visible = false
+
+[node name="Cylinder" type="MeshInstance" parent="Arcology/Terra 3/Outer Ring1"]
+
+_import_path = NodePath("Cylinder")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 28 )
+mesh/skeleton = NodePath("..")
+
+[node name="Cylinder_001" type="MeshInstance" parent="Arcology/Terra 3/Outer Ring1"]
+
+_import_path = NodePath("Cylinder_001")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 30 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_004" type="MeshInstance" parent="Arcology/Terra 3/Outer Ring1"]
+
+_import_path = NodePath("Cylinder_004")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 32 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_005" type="MeshInstance" parent="Arcology/Terra 3/Outer Ring1"]
+
+_import_path = NodePath("Cylinder_005")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 34 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_006" type="MeshInstance" parent="Arcology/Terra 3/Outer Ring1"]
+
+_import_path = NodePath("Cylinder_006")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 36 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_007" type="MeshInstance" parent="Arcology/Terra 3/Outer Ring1"]
+
+_import_path = NodePath("Cylinder_007")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 38 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_008" type="MeshInstance" parent="Arcology/Terra 3/Outer Ring1"]
+
+_import_path = NodePath("Cylinder_008")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 40 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_009" type="MeshInstance" parent="Arcology/Terra 3/Outer Ring1"]
+
+_import_path = NodePath("Cylinder_009")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 42 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_010" type="MeshInstance" parent="Arcology/Terra 3/Outer Ring1"]
+
+_import_path = NodePath("Cylinder_010")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 44 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_011" type="MeshInstance" parent="Arcology/Terra 3/Outer Ring1"]
+
+_import_path = NodePath("Cylinder_011")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 46 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_012" type="MeshInstance" parent="Arcology/Terra 3/Outer Ring1"]
+
+_import_path = NodePath("Cylinder_012")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 48 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_013" type="MeshInstance" parent="Arcology/Terra 3/Outer Ring1"]
+
+_import_path = NodePath("Cylinder_013")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 50 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_014" type="MeshInstance" parent="Arcology/Terra 3/Outer Ring1"]
+
+_import_path = NodePath("Cylinder_014")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 52 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Arcology/Terra 3/Outer Ring1"]
+
+_import_path = NodePath("AnimationPlayer")
+playback/process_mode = 1
+playback/default_blend_time = 0.0
+root/root = NodePath("..")
+playback/active = true
+playback/speed = 1.0
+blend_times = [  ]
+autoplay = ""
+
+[node name="Terra 2" type="Spatial" parent="Arcology"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.58517, 0 )
+
+[node name="Dormitory2" type="RigidBody" parent="Arcology/Terra 2"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 1 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 2/Dormitory2"]
+
+_import_path = NodePath("Cylinder_024")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 3 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Apartments2" type="RigidBody" parent="Arcology/Terra 2"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 4 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 2/Apartments2"]
+
+_import_path = NodePath("Cylinder_015")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 6 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Luxury Apartments2" type="RigidBody" parent="Arcology/Terra 2"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 7 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 2/Luxury Apartments2"]
+
+_import_path = NodePath("Cylinder_016")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 9 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="Arcology/Terra 2/Luxury Apartments2"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 7 )
+trigger = false
+_update_shape_index = 0
+
+[node name="Kitchen2" type="RigidBody" parent="Arcology/Terra 2"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 10 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 2/Kitchen2"]
+
+_import_path = NodePath("Cylinder_018")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 12 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Medical2" type="RigidBody" parent="Arcology/Terra 2"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 13 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 2/Medical2"]
+
+_import_path = NodePath("Cylinder_019")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 15 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Lab2" type="RigidBody" parent="Arcology/Terra 2"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 16 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 2/Lab2"]
+
+_import_path = NodePath("Cylinder_020")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 18 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Spa2" type="RigidBody" parent="Arcology/Terra 2"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 19 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 2/Spa2"]
+
+_import_path = NodePath("Cylinder_021")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 21 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Empty2" type="RigidBody" parent="Arcology/Terra 2"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 22 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 2/Empty2"]
+
+_import_path = NodePath("Cylinder_022")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 24 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Elevators2" type="RigidBody" parent="Arcology/Terra 2"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 25 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 2/Elevators2"]
+
+_import_path = NodePath("Cylinder_023")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 27 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Outer Ring2" type="Spatial" parent="Arcology/Terra 2"]
+
+_import_path = NodePath(".")
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+visibility/visible = false
+
+[node name="Cylinder" type="MeshInstance" parent="Arcology/Terra 2/Outer Ring2"]
+
+_import_path = NodePath("Cylinder")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 28 )
+mesh/skeleton = NodePath("..")
+
+[node name="Cylinder_001" type="MeshInstance" parent="Arcology/Terra 2/Outer Ring2"]
+
+_import_path = NodePath("Cylinder_001")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 30 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_004" type="MeshInstance" parent="Arcology/Terra 2/Outer Ring2"]
+
+_import_path = NodePath("Cylinder_004")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 32 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_005" type="MeshInstance" parent="Arcology/Terra 2/Outer Ring2"]
+
+_import_path = NodePath("Cylinder_005")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 34 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_006" type="MeshInstance" parent="Arcology/Terra 2/Outer Ring2"]
+
+_import_path = NodePath("Cylinder_006")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 36 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_007" type="MeshInstance" parent="Arcology/Terra 2/Outer Ring2"]
+
+_import_path = NodePath("Cylinder_007")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 38 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_008" type="MeshInstance" parent="Arcology/Terra 2/Outer Ring2"]
+
+_import_path = NodePath("Cylinder_008")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 40 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_009" type="MeshInstance" parent="Arcology/Terra 2/Outer Ring2"]
+
+_import_path = NodePath("Cylinder_009")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 42 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_010" type="MeshInstance" parent="Arcology/Terra 2/Outer Ring2"]
+
+_import_path = NodePath("Cylinder_010")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 44 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_011" type="MeshInstance" parent="Arcology/Terra 2/Outer Ring2"]
+
+_import_path = NodePath("Cylinder_011")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 46 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_012" type="MeshInstance" parent="Arcology/Terra 2/Outer Ring2"]
+
+_import_path = NodePath("Cylinder_012")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 48 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_013" type="MeshInstance" parent="Arcology/Terra 2/Outer Ring2"]
+
+_import_path = NodePath("Cylinder_013")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 50 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_014" type="MeshInstance" parent="Arcology/Terra 2/Outer Ring2"]
+
+_import_path = NodePath("Cylinder_014")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 52 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Arcology/Terra 2/Outer Ring2"]
+
+_import_path = NodePath("AnimationPlayer")
+playback/process_mode = 1
+playback/default_blend_time = 0.0
+root/root = NodePath("..")
+playback/active = true
+playback/speed = 1.0
+blend_times = [  ]
+autoplay = ""
+
+[node name="Terra 1" type="Spatial" parent="Arcology"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.56622, 0 )
+
+[node name="Dormitory3" type="RigidBody" parent="Arcology/Terra 1"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 1 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 1/Dormitory3"]
+
+_import_path = NodePath("Cylinder_024")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 3 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Apartments3" type="RigidBody" parent="Arcology/Terra 1"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 4 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 1/Apartments3"]
+
+_import_path = NodePath("Cylinder_015")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 6 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Luxury Apartments3" type="RigidBody" parent="Arcology/Terra 1"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 7 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 1/Luxury Apartments3"]
+
+_import_path = NodePath("Cylinder_016")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 9 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="Arcology/Terra 1/Luxury Apartments3"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 7 )
+trigger = false
+_update_shape_index = 0
+
+[node name="Kitchen3" type="RigidBody" parent="Arcology/Terra 1"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 10 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 1/Kitchen3"]
+
+_import_path = NodePath("Cylinder_018")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 12 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Medical3" type="RigidBody" parent="Arcology/Terra 1"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 13 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 1/Medical3"]
+
+_import_path = NodePath("Cylinder_019")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 15 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Lab3" type="RigidBody" parent="Arcology/Terra 1"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 16 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 1/Lab3"]
+
+_import_path = NodePath("Cylinder_020")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 18 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Spa3" type="RigidBody" parent="Arcology/Terra 1"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 19 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 1/Spa3"]
+
+_import_path = NodePath("Cylinder_021")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 21 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Empty3" type="RigidBody" parent="Arcology/Terra 1"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 22 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 1/Empty3"]
+
+_import_path = NodePath("Cylinder_022")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 24 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Elevators3" type="RigidBody" parent="Arcology/Terra 1"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 25 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 1/Elevators3"]
+
+_import_path = NodePath("Cylinder_023")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 27 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Outer Ring3" type="Spatial" parent="Arcology/Terra 1"]
+
+_import_path = NodePath(".")
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+visibility/visible = false
+
+[node name="Cylinder" type="MeshInstance" parent="Arcology/Terra 1/Outer Ring3"]
+
+_import_path = NodePath("Cylinder")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 28 )
+mesh/skeleton = NodePath("..")
+
+[node name="Cylinder_001" type="MeshInstance" parent="Arcology/Terra 1/Outer Ring3"]
+
+_import_path = NodePath("Cylinder_001")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 30 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_004" type="MeshInstance" parent="Arcology/Terra 1/Outer Ring3"]
+
+_import_path = NodePath("Cylinder_004")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 32 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_005" type="MeshInstance" parent="Arcology/Terra 1/Outer Ring3"]
+
+_import_path = NodePath("Cylinder_005")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 34 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_006" type="MeshInstance" parent="Arcology/Terra 1/Outer Ring3"]
+
+_import_path = NodePath("Cylinder_006")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 36 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_007" type="MeshInstance" parent="Arcology/Terra 1/Outer Ring3"]
+
+_import_path = NodePath("Cylinder_007")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 38 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_008" type="MeshInstance" parent="Arcology/Terra 1/Outer Ring3"]
+
+_import_path = NodePath("Cylinder_008")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 40 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_009" type="MeshInstance" parent="Arcology/Terra 1/Outer Ring3"]
+
+_import_path = NodePath("Cylinder_009")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 42 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_010" type="MeshInstance" parent="Arcology/Terra 1/Outer Ring3"]
+
+_import_path = NodePath("Cylinder_010")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 44 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_011" type="MeshInstance" parent="Arcology/Terra 1/Outer Ring3"]
+
+_import_path = NodePath("Cylinder_011")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 46 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_012" type="MeshInstance" parent="Arcology/Terra 1/Outer Ring3"]
+
+_import_path = NodePath("Cylinder_012")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 48 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_013" type="MeshInstance" parent="Arcology/Terra 1/Outer Ring3"]
+
+_import_path = NodePath("Cylinder_013")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 50 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_014" type="MeshInstance" parent="Arcology/Terra 1/Outer Ring3"]
+
+_import_path = NodePath("Cylinder_014")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 52 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Arcology/Terra 1/Outer Ring3"]
+
+_import_path = NodePath("AnimationPlayer")
+playback/process_mode = 1
+playback/default_blend_time = 0.0
+root/root = NodePath("..")
+playback/active = true
+playback/speed = 1.0
+blend_times = [  ]
+autoplay = ""
+
+[node name="Terra 0" type="Spatial" parent="Arcology"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="Dormitory4" type="RigidBody" parent="Arcology/Terra 0"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 1 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 0/Dormitory4"]
+
+_import_path = NodePath("Cylinder_024")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 3 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Apartments4" type="RigidBody" parent="Arcology/Terra 0"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 4 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 0/Apartments4"]
+
+_import_path = NodePath("Cylinder_015")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 6 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Luxury Apartments4" type="RigidBody" parent="Arcology/Terra 0"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 7 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 0/Luxury Apartments4"]
+
+_import_path = NodePath("Cylinder_016")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 9 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="Arcology/Terra 0/Luxury Apartments4"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 7 )
+trigger = false
+_update_shape_index = 0
+
+[node name="Kitchen4" type="RigidBody" parent="Arcology/Terra 0"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 10 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 0/Kitchen4"]
+
+_import_path = NodePath("Cylinder_018")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 12 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Medical4" type="RigidBody" parent="Arcology/Terra 0"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 13 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 0/Medical4"]
+
+_import_path = NodePath("Cylinder_019")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 15 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Lab4" type="RigidBody" parent="Arcology/Terra 0"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 16 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 0/Lab4"]
+
+_import_path = NodePath("Cylinder_020")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 18 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Spa4" type="RigidBody" parent="Arcology/Terra 0"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 19 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 0/Spa4"]
+
+_import_path = NodePath("Cylinder_021")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 21 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Empty4" type="RigidBody" parent="Arcology/Terra 0"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 22 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 0/Empty4"]
+
+_import_path = NodePath("Cylinder_022")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 24 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Elevators4" type="RigidBody" parent="Arcology/Terra 0"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 25 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Terra 0/Elevators4"]
+
+_import_path = NodePath("Cylinder_023")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 27 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Outer Ring4" type="Spatial" parent="Arcology/Terra 0"]
+
+_import_path = NodePath(".")
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="Cylinder" type="MeshInstance" parent="Arcology/Terra 0/Outer Ring4"]
+
+_import_path = NodePath("Cylinder")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 28 )
+mesh/skeleton = NodePath("..")
+
+[node name="Cylinder_001" type="MeshInstance" parent="Arcology/Terra 0/Outer Ring4"]
+
+_import_path = NodePath("Cylinder_001")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 30 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_004" type="MeshInstance" parent="Arcology/Terra 0/Outer Ring4"]
+
+_import_path = NodePath("Cylinder_004")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 32 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_005" type="MeshInstance" parent="Arcology/Terra 0/Outer Ring4"]
+
+_import_path = NodePath("Cylinder_005")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 34 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_006" type="MeshInstance" parent="Arcology/Terra 0/Outer Ring4"]
+
+_import_path = NodePath("Cylinder_006")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 36 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_007" type="MeshInstance" parent="Arcology/Terra 0/Outer Ring4"]
+
+_import_path = NodePath("Cylinder_007")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 38 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_008" type="MeshInstance" parent="Arcology/Terra 0/Outer Ring4"]
+
+_import_path = NodePath("Cylinder_008")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 40 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_009" type="MeshInstance" parent="Arcology/Terra 0/Outer Ring4"]
+
+_import_path = NodePath("Cylinder_009")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 42 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_010" type="MeshInstance" parent="Arcology/Terra 0/Outer Ring4"]
+
+_import_path = NodePath("Cylinder_010")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 44 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_011" type="MeshInstance" parent="Arcology/Terra 0/Outer Ring4"]
+
+_import_path = NodePath("Cylinder_011")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 46 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_012" type="MeshInstance" parent="Arcology/Terra 0/Outer Ring4"]
+
+_import_path = NodePath("Cylinder_012")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 48 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_013" type="MeshInstance" parent="Arcology/Terra 0/Outer Ring4"]
+
+_import_path = NodePath("Cylinder_013")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 50 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_014" type="MeshInstance" parent="Arcology/Terra 0/Outer Ring4"]
+
+_import_path = NodePath("Cylinder_014")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 52 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Arcology/Terra 0/Outer Ring4"]
+
+_import_path = NodePath("AnimationPlayer")
+playback/process_mode = 1
+playback/default_blend_time = 0.0
+root/root = NodePath("..")
+playback/active = true
+playback/speed = 1.0
+blend_times = [  ]
+autoplay = ""
+
+[node name="Sub Terra" type="Spatial" parent="Arcology"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+transform/local = Transform( 0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, -1.47874, 0 )
+
+[node name="Dormitory5" type="RigidBody" parent="Arcology/Sub Terra"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 1 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Sub Terra/Dormitory5"]
+
+_import_path = NodePath("Cylinder_024")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 3 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Apartments5" type="RigidBody" parent="Arcology/Sub Terra"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 4 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Sub Terra/Apartments5"]
+
+_import_path = NodePath("Cylinder_015")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 6 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Luxury Apartments5" type="RigidBody" parent="Arcology/Sub Terra"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 7 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Sub Terra/Luxury Apartments5"]
+
+_import_path = NodePath("Cylinder_016")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 9 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="Arcology/Sub Terra/Luxury Apartments5"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 7 )
+trigger = false
+_update_shape_index = 0
+
+[node name="Kitchen5" type="RigidBody" parent="Arcology/Sub Terra"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 10 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Sub Terra/Kitchen5"]
+
+_import_path = NodePath("Cylinder_018")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 12 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Medical5" type="RigidBody" parent="Arcology/Sub Terra"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 13 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Sub Terra/Medical5"]
+
+_import_path = NodePath("Cylinder_019")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 15 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Lab5" type="RigidBody" parent="Arcology/Sub Terra"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 16 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Sub Terra/Lab5"]
+
+_import_path = NodePath("Cylinder_020")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 18 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Spa5" type="RigidBody" parent="Arcology/Sub Terra"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 19 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Sub Terra/Spa5"]
+
+_import_path = NodePath("Cylinder_021")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 21 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Empty5" type="RigidBody" parent="Arcology/Sub Terra"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 22 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Sub Terra/Empty5"]
+
+_import_path = NodePath("Cylinder_022")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 24 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Elevators5" type="RigidBody" parent="Arcology/Sub Terra"]
+
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 25 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = false
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+axis_lock = 0
+velocity/linear = Vector3( 0, 0, 0 )
+velocity/angular = Vector3( 0, 0, 0 )
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="mesh" type="MeshInstance" parent="Arcology/Sub Terra/Elevators5"]
+
+_import_path = NodePath("Cylinder_023")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 27 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Outer Ring5" type="Spatial" parent="Arcology/Sub Terra"]
+
+_import_path = NodePath(".")
+editor/display_folded = true
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+visibility/visible = false
+
+[node name="Cylinder" type="MeshInstance" parent="Arcology/Sub Terra/Outer Ring5"]
+
+_import_path = NodePath("Cylinder")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 28 )
+mesh/skeleton = NodePath("..")
+
+[node name="Cylinder_001" type="MeshInstance" parent="Arcology/Sub Terra/Outer Ring5"]
+
+_import_path = NodePath("Cylinder_001")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 30 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_004" type="MeshInstance" parent="Arcology/Sub Terra/Outer Ring5"]
+
+_import_path = NodePath("Cylinder_004")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 32 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_005" type="MeshInstance" parent="Arcology/Sub Terra/Outer Ring5"]
+
+_import_path = NodePath("Cylinder_005")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 34 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_006" type="MeshInstance" parent="Arcology/Sub Terra/Outer Ring5"]
+
+_import_path = NodePath("Cylinder_006")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 36 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_007" type="MeshInstance" parent="Arcology/Sub Terra/Outer Ring5"]
+
+_import_path = NodePath("Cylinder_007")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 38 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_008" type="MeshInstance" parent="Arcology/Sub Terra/Outer Ring5"]
+
+_import_path = NodePath("Cylinder_008")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 40 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_009" type="MeshInstance" parent="Arcology/Sub Terra/Outer Ring5"]
+
+_import_path = NodePath("Cylinder_009")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 42 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_010" type="MeshInstance" parent="Arcology/Sub Terra/Outer Ring5"]
+
+_import_path = NodePath("Cylinder_010")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 44 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_011" type="MeshInstance" parent="Arcology/Sub Terra/Outer Ring5"]
+
+_import_path = NodePath("Cylinder_011")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 46 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_012" type="MeshInstance" parent="Arcology/Sub Terra/Outer Ring5"]
+
+_import_path = NodePath("Cylinder_012")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 48 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_013" type="MeshInstance" parent="Arcology/Sub Terra/Outer Ring5"]
+
+_import_path = NodePath("Cylinder_013")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 50 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="Cylinder_014" type="MeshInstance" parent="Arcology/Sub Terra/Outer Ring5"]
+
+_import_path = NodePath("Cylinder_014")
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = null
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = true
+geometry/baked_light_tex_id = 0
+mesh/mesh = SubResource( 52 )
+mesh/skeleton = NodePath("..")
+material/0 = null
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Arcology/Sub Terra/Outer Ring5"]
+
+_import_path = NodePath("AnimationPlayer")
+playback/process_mode = 1
+playback/default_blend_time = 0.0
+root/root = NodePath("..")
+playback/active = true
+playback/speed = 1.0
+blend_times = [  ]
+autoplay = ""
+
+[node name="Free City" type="Spatial" parent="Arcology"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="Label 2" type="Label" parent="Arcology"]
 
 rect/scale = Vector2( 2.5, 2.5 )
 focus/ignore_mouse = true
@@ -2003,651 +5841,39 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="Label" type="Label" parent="Control/Arcology"]
+[node name="Label" type="Label" parent="Arcology"]
 
 rect/scale = Vector2( 2, 2 )
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 823.0
-margin/top = 470.0
-margin/right = 1012.0
-margin/bottom = 518.0
+margin/left = 1516.0
+margin/top = 163.0
+margin/right = 1705.0
+margin/bottom = 211.0
 text = "Penthouse prototype:
 Right mouse to rotate"
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="Slaves" type="Control" parent="Control"]
+[node name="Back" type="Button" parent="Arcology"]
 
-editor/display_folded = true
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 40.0
-margin/bottom = 40.0
-
-[node name="New Slave" type="Control" parent="Control/Slaves"]
-
-visibility/visible = false
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 40.0
-margin/bottom = 40.0
-script/script = ExtResource( 5 )
-
-[node name="Display Slaves" type="Control" parent="Control/Slaves"]
-
-visibility/visible = false
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 40.0
-margin/bottom = 40.0
-script/script = ExtResource( 6 )
-
-[node name="Background" type="TextureFrame" parent="Control/Slaves"]
-
-visibility/visible = false
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = -107.0
-margin/right = 1936.0
-margin/bottom = 1103.0
-texture = ExtResource( 7 )
-expand = true
-stretch_mode = 0
-
-[node name="Label" type="Label" parent="Control/Slaves"]
-
-visibility/visible = false
-rect/scale = Vector2( 1.5, 1.5 )
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 0
-margin/left = 938.0
-margin/top = 121.0
-margin/right = 1089.0
-margin/bottom = 140.0
-text = "Mouse wheel to scroll"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-
-[node name="SlavesDisplay" type="ScrollContainer" parent="Control/Slaves"]
-
-editor/display_folded = true
-visibility/visible = false
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 386.0
-margin/top = 225.0
-margin/right = 1962.0
-margin/bottom = 1057.0
-scroll/horizontal = true
-scroll/vertical = false
-
-[node name="ButtonIndex" type="ButtonGroup" parent="Control/Slaves/SlavesDisplay"]
-
-focus/ignore_mouse = false
-focus/stop_mouse = false
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
-alignment = 0
-
-[node name="SlaveHBox" type="HBoxContainer" parent="Control/Slaves/SlavesDisplay/ButtonIndex"]
-
-focus/ignore_mouse = false
-focus/stop_mouse = false
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
-custom_constants/separation = 10
-alignment = 0
-
-[node name="TestButton" type="TextureButton" parent="Control/Slaves/SlavesDisplay/ButtonIndex/SlaveHBox"]
-
-editor/display_folded = true
-visibility/visible = false
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 422.4
-margin/bottom = 820.8
-toggle_mode = true
-click_on_press = true
-enabled_focus_mode = 2
-shortcut = null
-textures/normal = ExtResource( 8 )
-textures/hover = ExtResource( 9 )
-params/resize_mode = 0
-params/scale = Vector2( 0.8, 0.8 )
-params/stretch_mode = 0
-
-[node name="TestVBox" type="VBoxContainer" parent="Control/Slaves/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton"]
-
-editor/display_folded = true
-focus/ignore_mouse = false
-focus/stop_mouse = false
-size_flags/horizontal = 3
-size_flags/vertical = 3
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 411.0
-margin/bottom = 74.0
-custom_constants/separation = 1
-alignment = 0
-
-[node name="spacer" type="Control" parent="Control/Slaves/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton/TestVBox"]
-
-rect/min_size = Vector2( 0, 40 )
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 411.0
-margin/bottom = 40.0
-
-[node name="TestHBox" type="HBoxContainer" parent="Control/Slaves/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton/TestVBox"]
-
-editor/display_folded = true
-focus/ignore_mouse = false
-focus/stop_mouse = false
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 41.0
-margin/right = 411.0
-margin/bottom = 55.0
-alignment = 0
-
-[node name="spacerz" type="Control" parent="Control/Slaves/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton/TestVBox/TestHBox"]
-
-rect/min_size = Vector2( 150, 0 )
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 150.0
-margin/bottom = 14.0
-
-[node name="TestVBox2" type="VBoxContainer" parent="Control/Slaves/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton/TestVBox/TestHBox"]
-
-editor/display_folded = true
-focus/ignore_mouse = false
-focus/stop_mouse = false
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 154.0
-margin/top = 0.0
-margin/right = 213.0
-margin/bottom = 14.0
-alignment = 0
-
-[node name="TestTitle" type="Label" parent="Control/Slaves/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton/TestVBox/TestHBox/TestVBox2"]
-
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 3
-size_flags/vertical = 0
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 59.0
-margin/bottom = 14.0
-text = "Test Title"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-
-[node name="Slaveimg" type="Container" parent="Control/Slaves/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton/TestVBox"]
-
-editor/display_folded = true
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 56.0
-margin/right = 411.0
-margin/bottom = 56.0
-
-[node name="Body" type="TextureFrame" parent="Control/Slaves/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton/TestVBox/Slaveimg"]
-
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 422.0
-margin/bottom = 675.0
-texture = ExtResource( 10 )
-stretch_mode = 0
-
-[node name="Hair" type="TextureFrame" parent="Control/Slaves/SlavesDisplay/ButtonIndex/SlaveHBox/TestButton/TestVBox/Slaveimg"]
-
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 422.0
-margin/bottom = 675.0
-texture = ExtResource( 11 )
-stretch_mode = 0
-
-[node name="BuySlavePanel" type="Panel" parent="Control/Slaves"]
-
-editor/display_folded = true
-visibility/visible = false
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 332.0
-margin/top = 145.0
-margin/right = 1710.0
-margin/bottom = 1024.0
-
-[node name="Kidnappers Market" type="Button" parent="Control/Slaves/BuySlavePanel"]
-
-rect/scale = Vector2( 2, 2 )
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 37.0
-margin/top = 31.0
-margin/right = 146.0
-margin/bottom = 63.0
+margin/left = 1575.0
+margin/top = 61.0
+margin/right = 1727.0
+margin/bottom = 137.0
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
-text = "Kidnappers' Market"
+text = "Back"
 flat = false
 
-[node name="Buy Slave" type="Button" parent="Control/Slaves/BuySlavePanel"]
-
-visibility/visible = false
-rect/scale = Vector2( 2, 2 )
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 811.0
-margin/top = 44.0
-margin/right = 885.0
-margin/bottom = 64.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "Buy Slave"
-flat = false
-
-[node name="NewSlaveContainer" type="Container" parent="Control/Slaves/BuySlavePanel"]
-
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 331.0
-margin/top = 96.0
-margin/right = 979.0
-margin/bottom = 775.0
-
-[node name="newslaveinfo" type="RichTextLabel" parent="Control/Slaves/BuySlavePanel"]
-
-rect/scale = Vector2( 2, 2 )
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 744.0
-margin/top = 233.0
-margin/right = 993.0
-margin/bottom = 481.0
-bbcode/enabled = false
-bbcode/bbcode = ""
-visible_characters = -1
-percent_visible = 1.0
-
-[node name="newslaveprice" type="RichTextLabel" parent="Control/Slaves/BuySlavePanel"]
-
-rect/scale = Vector2( 2, 2 )
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 814.0
-margin/top = 145.0
-margin/right = 1046.0
-margin/bottom = 221.0
-bbcode/enabled = false
-bbcode/bbcode = ""
-visible_characters = -1
-percent_visible = 1.0
-
-[node name="Buy Slaves" type="Button" parent="Control/Slaves"]
-
-visibility/visible = false
-rect/scale = Vector2( 2, 2 )
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 1467.0
-margin/top = 57.0
-margin/right = 1562.0
-margin/bottom = 95.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "Buy Slaves"
-flat = false
-
-[node name="Finished" type="Button" parent="Control/Slaves"]
-
-visibility/visible = false
-rect/scale = Vector2( 2, 2 )
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 1467.0
-margin/top = 57.0
-margin/right = 1562.0
-margin/bottom = 95.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "Finished"
-flat = false
-
-[node name="Slave Info" type="RichTextLabel" parent="Control/Slaves"]
-
-rect/scale = Vector2( 3, 3 )
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 61.0
-margin/top = 185.0
-margin/right = 166.0
-margin/bottom = 372.0
-bbcode/enabled = false
-bbcode/bbcode = ""
-visible_characters = -1
-percent_visible = 1.0
-
-[node name="Top tabs" type="Container" parent="Control"]
-
-editor/display_folded = true
-rect/scale = Vector2( 0.75, 0.75 )
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 451.0
-margin/top = -41.0
-margin/right = 451.0
-margin/bottom = -41.0
-
-[node name="tabbase" type="TextureFrame" parent="Control/Top tabs"]
-
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 401.0
-margin/top = 188.0
-margin/right = 1196.0
-margin/bottom = 191.0
-texture = ExtResource( 12 )
-stretch_mode = 0
-
-[node name="tableft" type="TextureFrame" parent="Control/Top tabs"]
-
-rect/scale = Vector2( 0.2, 0.35 )
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 401.0
-margin/top = 187.0
-margin/right = 2951.0
-margin/bottom = 201.0
-texture = ExtResource( 13 )
-stretch_mode = 0
-
-[node name="tabright" type="TextureFrame" parent="Control/Top tabs"]
-
-visibility/visible = false
-rect/scale = Vector2( 0.2, 0.35 )
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 686.0
-margin/top = 187.0
-margin/right = 3236.0
-margin/bottom = 201.0
-texture = ExtResource( 13 )
-stretch_mode = 0
-
-[node name="SlavesFrame" type="TextureFrame" parent="Control/Top tabs"]
-
-visibility/opacity = 0.75
-rect/scale = Vector2( 0.15, 0.13 )
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 856.0
-margin/top = 121.0
-margin/right = 1982.0
-margin/bottom = 554.0
-texture = ExtResource( 14 )
-stretch_mode = 0
-
-[node name="ArcologyFrame" type="TextureFrame" parent="Control/Top tabs"]
-
-visibility/opacity = 0.75
-rect/scale = Vector2( 0.15, 0.13 )
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 570.0
-margin/top = 121.0
-margin/right = 1696.0
-margin/bottom = 554.0
-texture = ExtResource( 14 )
-stretch_mode = 0
-
-[node name="Arcology" type="Label" parent="Control/Top tabs"]
-
-rect/scale = Vector2( 2, 2 )
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 0
-margin/left = 602.0
-margin/top = 137.0
-margin/right = 657.0
-margin/bottom = 151.0
-text = "Arcology"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-
-[node name="Slaves" type="Label" parent="Control/Top tabs"]
-
-rect/scale = Vector2( 2, 2 )
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 0
-margin/left = 902.0
-margin/top = 138.0
-margin/right = 942.0
-margin/bottom = 152.0
-text = "Slaves"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-
-[node name="ArcologyTab" type="TextureButton" parent="Control/Top tabs"]
-
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 557.0
-margin/top = 114.0
-margin/right = 749.0
-margin/bottom = 185.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-textures/pressed = ExtResource( 15 )
-textures/hover = ExtResource( 16 )
-params/resize_mode = 0
-params/scale = Vector2( 0.17, 0.17 )
-params/stretch_mode = 0
-
-[node name="SlavesTab" type="TextureButton" parent="Control/Top tabs"]
-
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 844.0
-margin/top = 114.0
-margin/right = 1036.0
-margin/bottom = 185.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-textures/pressed = ExtResource( 15 )
-textures/hover = ExtResource( 16 )
-params/resize_mode = 0
-params/scale = Vector2( 0.17, 0.17 )
-params/stretch_mode = 0
-
-[node name="QUIT" type="Button" parent="Control"]
-
-rect/scale = Vector2( 2, 2 )
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 107.0
-margin/top = 32.0
-margin/right = 168.0
-margin/bottom = 61.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "QUIT"
-flat = false
-
-[node name="Next Week" type="Button" parent="Control"]
-
-rect/scale = Vector2( 2, 2 )
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 259.0
-margin/top = 32.0
-margin/right = 341.0
-margin/bottom = 61.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "Next Week"
-flat = false
-
-[node name="Current Week Label" type="Label" parent="Control"]
-
-rect/scale = Vector2( 2, 2 )
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 0
-margin/left = 111.0
-margin/top = 118.0
-margin/right = 209.0
-margin/bottom = 132.0
-text = "Current Week: "
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-
-[node name="Current Week value" type="Label" parent="Control"]
-
-rect/scale = Vector2( 2, 2 )
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 0
-margin/left = 314.0
-margin/top = 118.0
-margin/right = 354.0
-margin/bottom = 132.0
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-
-[connection signal="button_selected" from="Control/Slaves/SlavesDisplay/ButtonIndex" to="Control" method="_on_ButtonIndex_button_selected"]
-
-[connection signal="pressed" from="Control/Slaves/BuySlavePanel/Kidnappers Market" to="Control" method="_on_Kidnappers_Market_pressed"]
-
-[connection signal="pressed" from="Control/Slaves/BuySlavePanel/Buy Slave" to="Control" method="_on_Buy_Slave_pressed"]
-
-[connection signal="pressed" from="Control/Slaves/Buy Slaves" to="Control" method="_on_Buy_Slaves_pressed"]
-
-[connection signal="pressed" from="Control/Slaves/Finished" to="Control" method="_on_Finished_pressed"]
-
-[connection signal="pressed" from="Control/Top tabs/ArcologyTab" to="Control" method="_on_ArcologyTab_pressed"]
-
-[connection signal="pressed" from="Control/Top tabs/SlavesTab" to="Control" method="_on_SlavesTab_pressed"]
-
-[connection signal="pressed" from="Control/QUIT" to="Control" method="_on_QUIT_pressed"]
-
-[connection signal="pressed" from="Control/Next Week" to="Control" method="_on_Next_Week_pressed"]
+[connection signal="pressed" from="Arcology/Back" to="Arcology/Penthouse" method="_on_Back_pressed"]
 
 
