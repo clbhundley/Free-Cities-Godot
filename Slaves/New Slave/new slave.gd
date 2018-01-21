@@ -1,30 +1,34 @@
 extends Node
 
+var names = load("res://Slaves/New Slave/Names/names.tscn").instance()
+var ethnicity = null
+var name = null
+var skin_color = null
+var hair_color = null
+var eye_color = null
+var height = null
+var nq = null
+
 
 func default():
 	
-	randomize()
-	
 	# ETHNICITY
-	var ethnicity = load("res://Slaves/New Slave/Ethnicity/" + arcology.location + ".gd").new()
+	ethnicity = load("res://Slaves/New Slave/ethnicity.gd").new()
 	# Returns ethnicty
-	print("Ethnicity: " + ethnicity)
+	print(ethnicity)
 	
 	# NAME
-	var name = load("res://Slaves/New Slave/Names/name.gd").new(ethnicity) # Pass ethnicity into function
+	name = names.new(ethnicity)
 	# Returns name
-	print("Name: " + name)
 	
 	#ETHNIC TRAITS
-	var traits = load("res://Slaves/New Slave/Ethnicity/ethnic traits.gd").new(ethnicity)  # Pass ethnicity into function
+	var traits = load("res://Slaves/New Slave/ethnic traits.gd").new(ethnicity)  # Pass ethnicity into function
 	# Returns ethnic traits
-	print("Hair Color: " + traits[0])
-	print("Eye Color: " + traits[1])
-	print("Skin Color: " + traits[2])
-	print("Height: " + traits[3])
+	skin_color = traits["skin_color"]
+	hair_color = traits["hair_color"]
+	eye_color = traits["eye_color"]
+	height = traits["height"]
 	
 	# INTELLIGENCE:
-	var nq = load("res://Slaves/New Slave/neural quotient.gd").new(100,25) # Pass mean and deviation into function for Gaussian distribution
+	nq = load("res://Slaves/New Slave/neural quotient.gd").new(100,25) # Pass mean and deviation into function for Gaussian distribution
 	# Returns "neural quotient" (Raw brain efficiency)
-	print("Neural Quotient: " + nq)
-	print()

@@ -3,19 +3,21 @@ extends Node
 
 func gaussian(mean, deviation):
 
-    var x1 = null
-    var x2 = null
-    var w = null
+	randomize()
 
-    while true:
+	var x1 = null
+	var x2 = null
+	var w = null
 
-        x1 = rand_range(0, 2) - 1
-        x2 = rand_range(0, 2) - 1
-        w = x1*x1 + x2*x2
+	while true:
 
-        if 0 < w && w < 1:
-            break
+		x1 = rand_range(0, 2) - 1
+		x2 = rand_range(0, 2) - 1
+		w = x1*x1 + x2*x2
 
-    w = sqrt(-2 * log(w)/w)
+		if 0 < w && w < 1:
+			break
 
-    return floor(mean + deviation * x1 * w)
+	w = sqrt(-2 * log(w)/w)
+
+	return floor(mean + deviation * x1 * w)

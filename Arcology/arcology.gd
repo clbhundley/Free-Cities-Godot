@@ -1,3 +1,3 @@
 extends Node
 
-var location = "asia"
+var location = "Asia"
