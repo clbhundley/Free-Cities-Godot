@@ -15,25 +15,25 @@ static func new(ethnicity):
 		hair_color = "black"
 		eye_color = "brown"
 		skin_color = "yellow"
-		height = str(globals.gaussian(155,10)) + " cm"
+		height = str(game.gaussian(155,10)) + " cm"
 	
 	elif ethnicity.match("Japanese"):
 		hair_color = "black"
 		eye_color = "brown"
 		skin_color = "yellow"
-		height = str(globals.gaussian(158,10)) + " cm"
+		height = str(game.gaussian(158,10)) + " cm"
 	
 	elif ethnicity.match("Indian"):
 		hair_color = "black"
 		eye_color = "brown"
 		skin_color = "dark"
-		height = str(globals.gaussian(152,10)) + " cm"
+		height = str(game.gaussian(152,10)) + " cm"
 	
 	elif ethnicity.match("Korean"):
 		hair_color = "black"
 		eye_color = "brown"
 		skin_color = "white"
-		height = str(globals.gaussian(157,10)) + " cm"
+		height = str(game.gaussian(157,10)) + " cm"
 	
 	# A dictionary would probably make more sense here
 	return({

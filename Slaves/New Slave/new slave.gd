@@ -1,6 +1,5 @@
 extends Node
 
-var names = load("res://Slaves/New Slave/Names/names.tscn").instance()
 var ethnicity = null
 var name = null
 var skin_color = null
@@ -13,22 +12,30 @@ var nq = null
 func default():
 	
 	# ETHNICITY
-	ethnicity = load("res://Slaves/New Slave/ethnicity.gd").new()
-	# Returns ethnicty
-	print(ethnicity)
+	ethnicity = preload("ethnicity.gd").new()
 	
 	# NAME
-	name = names.new(ethnicity)
-	# Returns name
+	name = preload("Names/names.tscn").instance().new(ethnicity)
 	
 	#ETHNIC TRAITS
-	var traits = load("res://Slaves/New Slave/ethnic traits.gd").new(ethnicity)  # Pass ethnicity into function
-	# Returns ethnic traits
+	var traits = preload("ethnic traits.gd").new(ethnicity)
 	skin_color = traits["skin_color"]
 	hair_color = traits["hair_color"]
 	eye_color = traits["eye_color"]
 	height = traits["height"]
 	
 	# INTELLIGENCE:
-	nq = load("res://Slaves/New Slave/neural quotient.gd").new(100,25) # Pass mean and deviation into function for Gaussian distribution
-	# Returns "neural quotient" (Raw brain efficiency)
+	nq = preload("neural quotient.gd").new(100,25)
+
+
+
+
+func add_slave_to(list):
+	list[name] = {
+	"Ethnicity":ethnicity,
+	"Skin Color":skin_color,
+	"Hair Color":hair_color,
+	"Eye Color":eye_color,
+	"Height":height,
+	"Intelligence":nq
+	}

@@ -1,14 +1,11 @@
 extends Node
 
-
 static func new(X,Y):
-	
 	var nq = null
-	
-	var roll = (globals.gaussian(X,Y))
+	var roll = (game.gaussian(X,Y))
 	
 	if roll < 25:
-		nq = "Meatball (" + str(roll) + ")"
+		nq = "Vegetable (" + str(roll) + ")"
 		
 	elif roll >= 25 and roll < 50:
 		nq = "Handicapped (" + str(roll) + ")"

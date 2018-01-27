@@ -1,15 +1,12 @@
 extends Control
 
-# class member variables go here, for example:
-# var a = 2
-# var b = "textvar"
-
 func _ready():
-	# Called every time the node is added to the scene.
-	# Initialization here
-	pass
+	gui.hide()
 	
 func _on_new_game_pressed():
+	gui.show()
+	game.week = 0
+	game.end_week()
 	get_tree().change_scene("res://game.tscn")
 
 func _on_quit_pressed():
