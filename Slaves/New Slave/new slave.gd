@@ -20,7 +20,8 @@ func default():
 	#ETHNIC TRAITS
 	var traits = preload("ethnic traits.gd").new(ethnicity)
 	skin_color = traits["skin_color"]
-	hair_color = traits["hair_color"]
+#	hair_color = traits["hair_color"]
+	hair_color = preload("hair color.gd").new(ethnicity)
 	eye_color = traits["eye_color"]
 	height = traits["height"]
 	

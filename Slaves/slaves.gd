@@ -55,14 +55,24 @@ func display_slave_list(list,location):
 		"Height: " + game.km_list[i]["Height"] + "\n" +
 		"Intelligence: " + game.km_list[i]["Intelligence"]
 		)
+		
 		button.add_child(info)
 		info.set_pos(Vector2(0,50))
 		
-		var image = TextureFrame.new()
-		image.set_texture(load("res://Slaves/Textures/body.png"))
-		button.add_child(image)
-		image.set_scale(Vector2(0.4,0.4))
-		image.set_pos(Vector2(0,150))
+		var body = TextureFrame.new()
+		body.set_texture(load("res://Slaves/Textures/body.png"))
+		button.add_child(body)
+		body.set_scale(Vector2(0.4,0.4))
+		body.set_pos(Vector2(0,150))
+		
+		var hair = TextureFrame.new() # Texture frame for hair
+		button.add_child(hair)
+		hair.set_texture(load("res://Slaves/Textures/" + str(game.km_list[i]["Hair Color"]) + '.png')) # Makes a string out of the value of the ["haircolor"] key to select the name of the appropriate .png file
+		hair.set_scale(Vector2(0.4,0.4))
+		hair.set_pos(Vector2(0,150))
+	
+	
+	
 	
 	var spacer = Control.new()
 	spacer.set_custom_minimum_size(Vector2(20,20))
