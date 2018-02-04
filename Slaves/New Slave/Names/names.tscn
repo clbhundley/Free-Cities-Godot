@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=1]
 
 [ext_resource path="res://Slaves/New Slave/Names/names.gd" type="Script" id=1]
-[ext_resource path="res://Slaves/New Slave/Names/Japanese.gd" type="Script" id=2]
-[ext_resource path="res://Slaves/New Slave/Names/Chinese.gd" type="Script" id=3]
-[ext_resource path="res://Slaves/New Slave/Names/Indian.gd" type="Script" id=4]
-[ext_resource path="res://Slaves/New Slave/Names/Korean.gd" type="Script" id=5]
+[ext_resource path="res://Slaves/New Slave/Names/japanese.gd" type="Script" id=2]
+[ext_resource path="res://Slaves/New Slave/Names/chinese.gd" type="Script" id=3]
+[ext_resource path="res://Slaves/New Slave/Names/indian.gd" type="Script" id=4]
+[ext_resource path="res://Slaves/New Slave/Names/korean.gd" type="Script" id=5]
 
 [node name="Names" type="Node"]
 
