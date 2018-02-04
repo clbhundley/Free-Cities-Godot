@@ -5,25 +5,89 @@
 [ext_resource path="res://Slaves/New Slave/Names/chinese.gd" type="Script" id=3]
 [ext_resource path="res://Slaves/New Slave/Names/indian.gd" type="Script" id=4]
 [ext_resource path="res://Slaves/New Slave/Names/korean.gd" type="Script" id=5]
-
+[ext_resource path="res://Slaves/New Slave/Names/argentinian.gd" type="Script" id=6]
+[ext_resource path="res://Slaves/New Slave/Names/bangladeshi.gd" type="Script" id=7]
+[ext_resource path="res://Slaves/New Slave/Names/brazilian.gd" type="Script" id=8]
+[ext_resource path="res://Slaves/New Slave/Names/british.gd" type="Script" id=9]
+[ext_resource path="res://Slaves/New Slave/Names/colombian.gd" type="Script" id=10]
+[ext_resource path="res://Slaves/New Slave/Names/congolese.gd" type="Script" id=11]
+[ext_resource path="res://Slaves/New Slave/Names/egyptian.gd" type="Script" id=12]
+[ext_resource path="res://Slaves/New Slave/Names/ethiopian.gd" type="Script" id=13]
+[ext_resource path="res://Slaves/New Slave/Names/filipina.gd" type="Script" id=14]
+[ext_resource path="res://Slaves/New Slave/Names/french.gd" type="Script" id=15]
+[ext_resource path="res://Slaves/New Slave/Names/german.gd" type="Script" id=16]
+[ext_resource path="res://Slaves/New Slave/Names/indonesian.gd" type="Script" id=17]
+[ext_resource path="res://Slaves/New Slave/Names/iranian.gd" type="Script" id=18]
+[ext_resource path="res://Slaves/New Slave/Names/italian.gd" type="Script" id=19]
+[ext_resource path="res://Slaves/New Slave/Names/latina.gd" type="Script" id=20]
+[ext_resource path="res://Slaves/New Slave/Names/mexican.gd" type="Script" id=21]
+[ext_resource path="res://Slaves/New Slave/Names/nigerian.gd" type="Script" id=22]
+[ext_resource path="res://Slaves/New Slave/Names/pakistani.gd" type="Script" id=23]
+[ext_resource path="res://Slaves/New Slave/Names/russian.gd" type="Script" id=24]
+[ext_resource path="res://Slaves/New Slave/Names/saudi.gd" type="Script" id=25]
+[ext_resource path="res://Slaves/New Slave/Names/societies.gd" type="Script" id=26]
+[ext_resource path="res://Slaves/New Slave/Names/spanish.gd" type="Script" id=27]
+[ext_resource path="res://Slaves/New Slave/Names/thai.gd" type="Script" id=28]
+[ext_resource path="res://Slaves/New Slave/Names/turkish.gd" type="Script" id=29]
+[ext_resource path="res://Slaves/New Slave/Names/vietnamese.gd" type="Script" id=30]
 [node name="Names" type="Node"]
 
 script/script = ExtResource( 1 )
-
 [node name="Japanese" type="Node" parent="."]
-
 script/script = ExtResource( 2 )
-
 [node name="Chinese" type="Node" parent="."]
-
 script/script = ExtResource( 3 )
-
 [node name="Indian" type="Node" parent="."]
-
 script/script = ExtResource( 4 )
-
 [node name="Korean" type="Node" parent="."]
-
 script/script = ExtResource( 5 )
-
-
+[node name="Argentinian" type="Node" parent="."]
+script/script = ExtResource( 6 )
+[node name="Bangladeshi" type="Node" parent="."] 
+script/script = ExtResource( 7 )
+[node name="Brazilian" type="Node" parent="."] 
+script/script = ExtResource( 8 )
+[node name="British" type="Node" parent="."] 
+script/script = ExtResource( 9 )
+[node name="Colombian" type="Node" parent="."] 
+script/script = ExtResource( 10 )
+[node name="Congolese" type="Node" parent="."] 
+script/script = ExtResource( 11 )
+[node name="Egyptian" type="Node" parent="."] 
+script/script = ExtResource( 12 )
+[node name="Ethiopian" type="Node" parent="."] 
+script/script = ExtResource( 13 )
+[node name="Filipina" type="Node" parent="."] 
+script/script = ExtResource( 14 )
+[node name="French" type="Node" parent="."] 
+script/script = ExtResource( 15 )
+[node name="German" type="Node" parent="."] 
+script/script = ExtResource( 16 )
+[node name="Indonesian" type="Node" parent="."] 
+script/script = ExtResource( 17 )
+[node name="Iranian" type="Node" parent="."] 
+script/script = ExtResource( 18 )
+[node name="Italian" type="Node" parent="."] 
+script/script = ExtResource( 19 )
+[node name="Latina" type="Node" parent="."] 
+script/script = ExtResource( 20 )
+[node name="Mexican" type="Node" parent="."] 
+script/script = ExtResource( 21 )
+[node name="Nigerian" type="Node" parent="."] 
+script/script = ExtResource( 22 )
+[node name="Pakistani" type="Node" parent="."] 
+script/script = ExtResource( 23 )
+[node name="Russian" type="Node" parent="."] 
+script/script = ExtResource( 24 )
+[node name="Saudi" type="Node" parent="."] 
+script/script = ExtResource( 25 )
+[node name="Societies" type="Node" parent="."] 
+script/script = ExtResource( 26 )
+[node name="Spanish" type="Node" parent="."]
+script/script = ExtResource( 27 )
+[node name="Thai" type="Node" parent="."]
+script/script = ExtResource( 28 )
+[node name="Turkish" type="Node" parent="."]
+script/script = ExtResource( 29 )
+[node name="Vietnamese" type="Node" parent="."]
+script/script = ExtResource( 30 )
