@@ -1,0 +1,93 @@
+
+--- RESIDENTIAL SECTORS --------------------------------------------
+(if owned gives weekly? rent payouts)
+
+- residential_luxury    - houses xx? citizens, high rent payout
+
+- residential_standard  - houses xxx? citizens, moderate rent payout
+
+- residential_dense     - houses xxxx? citizens, low rent payout
+
+- park_a                - open area for citizens to gather. send slaves here to work?
+- park_b                - (medium building, takes up 2 sectors)
+
+
+
+--- COMMERCIAL SECTORS -------------------------------------------------------------------------------------------------------
+(if owned gives a constant but irregular stream of profits determined by number of nearby corresponding residential buildings)
+
+- commercial_luxury    - houses x? businesses, high profits, profits
+
+- commercial_standard  - houses xx? businesses, moderate profits
+
+- commercial_dense     - houses xxx? businesses, low profits
+
+- club                 - same as classic FC
+
+
+
+--- INDUSTRIAL SECTORS ----------------------------------------------------------------------------
+
+- hydroponics_a  - food production, must be upgraded / have enough built to support arcology growth
+- hydroponics_b  - (large building, takes up 3 sectors)
+- hydroponics_c  - (large building, takes up 3 sectors)
+
+- laboratory     - synthetic meat production or biological research
+
+- manufacturing  - needed for commercial buildings
+
+- warehouse      - gives production/profit boost to industrial and commercial buildings
+
+
+
+--- PENTHOUSE SECTORS -------------------------------------------------------------------------------------------
+
+- master_bedroom          - luxury living quarters for the player and up to 4 obedient slaves
+
+- slave_bedroom           - shared standard living quarters for up to 5 slaves
+
+- slave_dormitory_a       - basic living quarters for xx? slaves
+- slave_dormitory_b       - (medium building, takes up 2 sectors)
+
+- slave_luxury_bedroom_a  - shared luxury living quarters for up to 5 slaves
+- slave_luxury_bedroom_b  - (medium building, takes up 2 sectors)
+
+- head_girl_suite_a       - luxury living quarters for 1 slave
+- head_girl_suite_b       - (medium building, takes up 2 sectors)
+
+- slave_nutrition_system  - dining area for slaves
+
+- milking_system          - supports 10 slaves, milk output capped
+
+- industrial_milkers_a    - supports 50 slaves and unlimited milk output
+- industrial_milkers_b    - (medium building, takes up 2 sectors)
+
+- confinement_cells       - 10 secure solitary confinement cells
+
+- fighting_pit            - same as classic FC
+
+- remote_surgery          - supports one patient at a time for surgery/recovery
+
+- operation_suite_a       - supports up to 10 patients for surgery/recovery and additional surgical capabilities
+- operation_suite_b       - (medium building, takes up 2 sectors)
+
+- body_mod_studio         - same as classic FC
+
+- salon                   - same as classic FC
+
+- spa                     - same as classic FC
+
+
+
+--- UTILITY SECTORS ---------------------------------------------------------------------------
+
+- nuclear_reactor      - must be upgraded to support arcology growth
+
+- water_purification   - must be upgraded to support arcology growth
+
+- secure_storage       - arcology materials storage
+
+- drone_manufacturing  - produces and repairs the arcology's drones
+
+- thermal_exchange_a   -  arcology cooling system, must be upgraded to support arcology growth
+- thermal_exchange_b   - (medium building, takes up 2 sectors)

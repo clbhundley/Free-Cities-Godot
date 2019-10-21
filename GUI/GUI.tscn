@@ -1,0 +1,2847 @@
+[gd_scene load_steps=55 format=2]
+
+[ext_resource path="res://GUI/gui.gd" type="Script" id=1]
+[ext_resource path="res://Textures/oval_tab.png" type="Texture" id=2]
+[ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://GUI/Textures/AI/caliban large.png" type="Texture" id=4]
+[ext_resource path="res://Audio/deepblip.wav" type="AudioStream" id=5]
+[ext_resource path="res://GUI/Textures/circle_small.png" type="Texture" id=6]
+[ext_resource path="res://GUI/Textures/menu_small.png" type="Texture" id=7]
+[ext_resource path="res://GUI/Textures/Tabs/tab_left.png" type="Texture" id=8]
+[ext_resource path="res://GUI/Textures/Tabs/min_left.png" type="Texture" id=9]
+[ext_resource path="res://GUI/Textures/AI/caliban small.png" type="Texture" id=10]
+[ext_resource path="res://GUI/Textures/play.png" type="Texture" id=11]
+[ext_resource path="res://GUI/Textures/pause.png" type="Texture" id=12]
+[ext_resource path="res://GUI/Textures/turtle.png" type="Texture" id=13]
+[ext_resource path="res://GUI/Textures/rabbit.png" type="Texture" id=14]
+[ext_resource path="res://GUI/Textures/time_bg.png" type="Texture" id=15]
+[ext_resource path="res://GUI/Textures/Tabs/tab_right.png" type="Texture" id=16]
+[ext_resource path="res://GUI/Textures/brackets.png" type="Texture" id=17]
+[ext_resource path="res://GUI/Textures/calendar.png" type="Texture" id=18]
+[ext_resource path="res://GUI/Textures/Tabs/tab.png" type="Texture" id=19]
+[ext_resource path="res://GUI/Textures/Tabs/arcology.png" type="Texture" id=20]
+[ext_resource path="res://GUI/Textures/Tabs/finance.png" type="Texture" id=21]
+[ext_resource path="res://GUI/Textures/Tabs/slaves.png" type="Texture" id=22]
+[ext_resource path="res://GUI/Saves.tscn" type="PackedScene" id=23]
+[ext_resource path="res://GUI/Options.tscn" type="PackedScene" id=24]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Container
+
+func _on_button_pressed():
+	var g = get_tree().get_root().get_node('Game')
+	for node in g.get_children():
+		if node.get_class() != \"Node\" and node.get_class() != \"Timer\":
+			node.hide()
+	
+	get_node('../../../Arc Label').show()
+	
+	g.get_node('Arcology').show()
+	g.get_node('GUI').show()
+	get_node('../../..')._on_AI_pressed()
+	_on_mouse_exited()
+
+func _on_button_down():
+	get_node('oval_tab').set_self_modulate('4bff7200')
+
+func _on_button_up():
+	get_node('oval_tab').set_self_modulate('28ebf5ff')
+
+func _on_mouse_entered():
+	get_node('oval_tab').set_position(Vector2(90.32077,32.146347))
+
+func _on_mouse_exited():
+	get_node('oval_tab').set_position(Vector2(70.32077,32.146347))
+"
+
+[sub_resource type="DynamicFont" id=2]
+resource_name = "Rubik-Light"
+size = 30
+font_data = ExtResource( 3 )
+
+[sub_resource type="ButtonGroup" id=3]
+
+[sub_resource type="GDScript" id=4]
+script/source = "extends Container
+
+func _on_button_pressed():
+	var g = get_tree().get_root().get_node('Game')
+	for node in g.get_children():
+		if node.get_class() != \"Node\" and node.get_class() != \"Timer\":
+			node.hide()
+	
+	get_node('../../../Arc Label').hide()
+	
+	g.get_node('Background').show()
+	g.get_node('Slaves').show()
+	g.get_node('Slaves').reset_scene()
+	g.get_node('GUI').show()
+	get_node('../../..')._on_AI_pressed()
+	_on_mouse_exited()
+
+func _on_button_down():
+	get_node('oval_tab').set_self_modulate('4bff7200')
+
+func _on_button_up():
+	get_node('oval_tab').set_self_modulate('28ebf5ff')
+
+func _on_mouse_entered():
+	get_node('oval_tab').set_position(Vector2(90.32077,32.146347))
+
+func _on_mouse_exited():
+	get_node('oval_tab').set_position(Vector2(70.32077,32.146347))
+"
+
+[sub_resource type="GDScript" id=5]
+script/source = "extends Container
+
+func _on_button_pressed():
+	var g = get_tree().get_root().get_node('Game')
+	for node in g.get_children():
+		if node.get_class() != \"Node\" and node.get_class() != \"Timer\":
+			node.hide()
+	
+	get_node('../../../Arc Label').hide()
+	
+	g.get_node('Background').show()
+	g.get_node('Finance').show()
+	g.get_node('Finance').reset_scene()
+	g.get_node('GUI').show()
+	get_node('../../..')._on_AI_pressed()
+	_on_mouse_exited()
+
+func _on_button_down():
+	get_node('oval_tab').set_self_modulate('4bff7200')
+
+func _on_button_up():
+	get_node('oval_tab').set_self_modulate('28ebf5ff')
+
+func _on_mouse_entered():
+	get_node('oval_tab').set_position(Vector2(90.32077,32.146347))
+
+func _on_mouse_exited():
+	get_node('oval_tab').set_position(Vector2(70.32077,32.146347))
+"
+
+[sub_resource type="GDScript" id=6]
+script/source = "extends Container
+
+func _on_button_pressed():
+	_on_mouse_exited()
+
+func _on_button_down():
+	get_node('oval_tab').set_self_modulate('4bff7200')
+
+func _on_button_up():
+	get_node('oval_tab').set_self_modulate('28ebf5ff')
+
+func _on_mouse_entered():
+	get_node('oval_tab').set_position(Vector2(90.32077,32.146347))
+
+func _on_mouse_exited():
+	get_node('oval_tab').set_position(Vector2(70.32077,32.146347))
+"
+
+[sub_resource type="GDScript" id=7]
+script/source = "extends Container
+
+func _on_button_pressed():
+	_on_mouse_exited()
+
+func _on_button_down():
+	get_node('oval_tab').set_self_modulate('4bff7200')
+
+func _on_button_up():
+	get_node('oval_tab').set_self_modulate('28ebf5ff')
+
+func _on_mouse_entered():
+	get_node('oval_tab').set_position(Vector2(90.32077,32.146347))
+
+func _on_mouse_exited():
+	get_node('oval_tab').set_position(Vector2(70.32077,32.146347))
+"
+
+[sub_resource type="GDScript" id=8]
+script/source = "extends Container
+
+func _on_button_pressed():
+	_on_mouse_exited()
+
+func _on_button_down():
+	get_node('oval_tab').set_self_modulate('4bff7200')
+
+func _on_button_up():
+	get_node('oval_tab').set_self_modulate('28ebf5ff')
+
+func _on_mouse_entered():
+	get_node('oval_tab').set_position(Vector2(90.32077,32.146347))
+
+func _on_mouse_exited():
+	get_node('oval_tab').set_position(Vector2(70.32077,32.146347))
+"
+
+[sub_resource type="GDScript" id=9]
+script/source = "extends Container
+
+func _on_button_pressed():
+	_on_mouse_exited()
+
+func _on_button_down():
+	get_node('oval_tab').set_self_modulate('4bff7200')
+
+func _on_button_up():
+	get_node('oval_tab').set_self_modulate('28ebf5ff')
+
+func _on_mouse_entered():
+	get_node('oval_tab').set_position(Vector2(90.32077,32.146347))
+
+func _on_mouse_exited():
+	get_node('oval_tab').set_position(Vector2(70.32077,32.146347))
+"
+
+[sub_resource type="DynamicFont" id=10]
+size = 30
+font_data = ExtResource( 3 )
+
+[sub_resource type="GDScript" id=11]
+script/source = "extends RichTextLabel
+
+var halted
+var counter = 0
+
+func say(string):
+	halted = false
+	push_align(0)
+	while not string.empty() and not halted:
+		var c = string[0]
+		string.erase(0,1)
+		add_text(c)
+		var timer = get_node('Timer4')
+		if not c == \" \" and counter == 1:
+			get_node('AudioStreamPlayer').play()
+		if c == \",\":
+			timer.wait_time = 0.1
+		elif c == \".\" or c == \"!\" or c == \"?\":
+			timer.wait_time = 0.2
+		else:
+			timer.wait_time = 0.03
+		timer.start()
+		yield(timer,\"timeout\")
+		if counter == 0:
+			counter = 1
+		else:
+			counter = 0
+	newline()
+
+func read(file):
+	var text
+	var f = File.new()
+	f.open(file,File.READ)
+	text = f.get_as_text()
+	f.close()
+	say(text)
+
+func halt():
+	halted = true"
+
+[sub_resource type="GDScript" id=12]
+script/source = "extends Container
+
+func _on_mouse_entered():
+	get_node('circle').set_self_modulate('64bf5500')
+
+func _on_mouse_exited():
+		get_node('circle').set_self_modulate('64333a4b')
+"
+
+[sub_resource type="DynamicFont" id=13]
+size = 20
+font_data = ExtResource( 3 )
+
+[sub_resource type="GDScript" id=14]
+script/source = "extends Container
+
+func _on_button_up():
+	get_node('ai_simple').set_scale(Vector2(1,1))
+
+func _on_button_down():
+	get_node('ai_simple').set_scale(Vector2(0.95,0.95))
+
+func _on_mouse_entered():
+	get_node('tab_left').set_self_modulate('782873c8')
+
+func _on_mouse_exited():
+	if not get_node('../AI Panel').is_visible_in_tree():
+		get_node('tab_left').set_self_modulate('3c333a4b')
+"
+
+[sub_resource type="GDScript" id=15]
+script/source = "extends Container
+
+func _ready():
+	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'update_time')
+	update_time()
+
+func update_time():
+	get_node('Label Top').set_text(hour()+\":\"+minute()+\"\\n\"+day())
+	get_node('Label Bot').set_text(\"Week \"+week()+\"\\n\"+quarter()+\" \"+str(g.year))
+	
+	get_node('Calendar/Date').set_text(day()+\", \"+quarter()+\" \"+str(g.year))
+	get_node('Calendar/Time').set_text(hour()+\":\"+minute())
+	
+	for nodes in get_tree().get_nodes_in_group('Days'):
+		nodes.set_modulate('28ffffff')
+	
+	for nodes in get_tree().get_nodes_in_group('Weeks'):
+		nodes.set_modulate('ffffff')
+	
+	get_node('Calendar/Week/'+week()+'/Num').set_modulate('ff6600')
+	
+	for days in get_node('Calendar/Week/'+week()).get_children():
+		days.set_modulate('ffffff')
+	get_node('Calendar/Week/'+week()+'/Num').set_modulate('ff6600')
+	get_node('Calendar/Week/'+week()+'/'+day()).set_modulate('ff6600')
+
+onready var g = get_tree().get_root().get_node('Game')
+func minute():
+	if g.minute < 10:
+		return str(\"0\",g.minute)
+	else:
+		return str(g.minute)
+
+func hour():
+	if g.hour < 10:
+		return str(\"0\",g.hour)
+	else:
+		return str(g.hour)
+
+func day():
+	var days = {
+		0:\"Sunday\",
+		1:\"Monday\",
+		2:\"Tuesday\",
+		3:\"Wednesday\",
+		4:\"Thursday\",
+		5:\"Friday\",
+		6:\"Saturday\"}
+	return days.values()[g.day]
+
+func week():
+	return str(g.week+1)
+
+func quarter():
+	return \"Q\"+str(g.quarter+1)
+
+onready var timer = get_tree().get_root().get_node('Game/Clock')
+func _on_HSlider_value_changed(value):
+	timer.stop()
+	var t = value/100
+	timer.wait_time = 1-t
+	timer.start()
+
+func animate_sml(node):
+	var tween = get_node('Tween')
+	tween.interpolate_property(node,'position',Vector2(30,55),Vector2(-70,55),1,Tween.TRANS_QUAD,Tween.EASE_OUT)
+	tween.interpolate_property(node,'modulate',Color('00ffffff'),Color('ffffff'),1,Tween.TRANS_QUAD,Tween.EASE_OUT,0.2)
+	tween.interpolate_property(node,'position',Vector2(-70,55),Vector2(30,55),1,Tween.TRANS_QUAD,Tween.EASE_IN_OUT,1)
+	tween.interpolate_property(node,'modulate',Color('ffffff'),Color('00ffffff'),1,Tween.TRANS_QUAD,Tween.EASE_IN_OUT,1)
+	tween.start()
+
+func _on_mouse_entered():
+	get_node('tab_right').set_self_modulate('782873c8')
+
+func _on_mouse_exited():
+	if not get_node('HSlider').is_visible_in_tree():
+		get_node('tab_right').set_self_modulate('3c333a4b')
+"
+
+[sub_resource type="DynamicFont" id=16]
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=17]
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=18]
+size = 30
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=19]
+size = 20
+font_data = ExtResource( 3 )
+
+[sub_resource type="GDScript" id=20]
+script/source = "extends TextureRect
+
+func _on_pressed():
+	pass
+
+func _on_mouse_entered():
+	set_self_modulate('782873c8')
+
+func _on_mouse_exited():
+	set_self_modulate('3c333a4b')
+"
+
+[sub_resource type="GDScript" id=21]
+script/source = "extends TextureRect
+
+func _on_pressed():
+	pass
+
+func _on_mouse_entered():
+	set_self_modulate('782873c8')
+
+func _on_mouse_exited():
+	set_self_modulate('3c333a4b')
+"
+
+[sub_resource type="GDScript" id=22]
+script/source = "extends TextureRect
+
+func _ready():
+	_on_mouse_entered()
+	_on_mouse_exited()
+
+func _on_pressed():
+	var g = get_tree().get_root().get_node('Game')
+	for node in g.get_children():
+		if node.get_class() != \"Node\" and node.get_class() != \"Timer\":
+			node.hide()
+	g.get_node('Arcology').show()
+	g.get_node('Arcology/Display').show()
+	g.get_node('GUI').show()
+	if get_node('../../AI Panel').is_visible_in_tree():
+		get_node('../..')._on_AI_pressed()
+	for tab in get_parent().get_children():
+		tab._on_mouse_exited()
+
+func _on_mouse_entered():
+	set_self_modulate('782873c8')
+
+func _on_mouse_exited():
+	if not get_node('../../../Arcology').is_visible_in_tree():
+		set_self_modulate('3c333a4b')
+"
+
+[sub_resource type="GDScript" id=23]
+script/source = "extends TextureRect
+
+func _ready():
+	_on_mouse_entered()
+	_on_mouse_exited()
+
+func _on_pressed():
+	var g = get_tree().get_root().get_node('Game')
+	for node in g.get_children():
+		if node.get_class() != \"Node\" and node.get_class() != \"Timer\":
+			node.hide()
+	g.get_node('Background').show()
+	g.get_node('Background').color_filter('82000f00')
+	g.get_node('Arcology/Display').hide()
+	g.get_node('Finance').show()
+	g.get_node('Finance').reset_scene()
+	g.get_node('GUI').show()
+	if get_node('../../AI Panel').is_visible_in_tree():
+		get_node('../..')._on_AI_pressed()
+	for tab in get_parent().get_children():
+		tab._on_mouse_exited()
+
+func _on_mouse_entered():
+	set_self_modulate('782873c8')
+
+func _on_mouse_exited():
+	if not get_node('../../../Finance').is_visible_in_tree():
+		set_self_modulate('3c333a4b')
+"
+
+[sub_resource type="GDScript" id=24]
+script/source = "extends TextureRect
+
+func _ready():
+	_on_mouse_entered()
+	_on_mouse_exited()
+
+func _on_pressed():
+	var g = get_tree().get_root().get_node('Game')
+	for node in g.get_children():
+		if node.get_class() != \"Node\" and node.get_class() != \"Timer\":
+			node.hide()
+	g.get_node('Background').show()
+	g.get_node('Background').color_filter('82000000')
+	g.get_node('Arcology/Display').hide()
+	g.get_node('Slaves').show()
+	g.get_node('Slaves').reset_scene()
+	g.get_node('GUI').show()
+	if get_node('../../AI Panel').is_visible_in_tree():
+		get_node('../..')._on_AI_pressed()
+	for tab in get_parent().get_children():
+		tab._on_mouse_exited()
+
+func _on_mouse_entered():
+	set_self_modulate('782873c8')
+
+func _on_mouse_exited():
+	if not get_node('../../../Slaves').is_visible_in_tree():
+		set_self_modulate('3c333a4b')
+"
+
+[sub_resource type="GDScript" id=25]
+script/source = "extends TextureRect
+
+func _on_pressed():
+	pass
+
+func _on_mouse_entered():
+	set_self_modulate('782873c8')
+
+func _on_mouse_exited():
+	set_self_modulate('3c333a4b')
+"
+
+[sub_resource type="GDScript" id=26]
+script/source = "extends TextureRect
+
+func _on_pressed():
+	pass
+
+func _on_mouse_entered():
+	set_self_modulate('782873c8')
+
+func _on_mouse_exited():
+	set_self_modulate('3c333a4b')
+"
+
+[sub_resource type="GDScript" id=27]
+script/source = "extends Panel
+
+func _pause():
+	if self.is_visible_in_tree():
+		get_tree().set_pause(false)
+		self.hide()
+		get_node('Saves').hide()
+		get_node('Options').hide()
+	else:
+		get_tree().set_pause(true)
+		self.show()
+
+func _on_SaveLoad_pressed():
+	get_node('Saves').show()
+
+func _on_Options_pressed():
+	get_node('Options').show()
+
+func _on_Main_Menu_pressed():
+	_pause()
+	get_tree().change_scene('res://Main Menu/Main Menu.tscn')
+
+func _input(event):
+	if event.is_action_pressed('ui_cancel') or event.is_action_pressed('ui_back'):
+		if get_node('Saves').is_visible_in_tree():
+			get_node('Saves').hide()
+		elif get_node('Options').is_visible_in_tree():
+			get_node('Options').hide()
+		elif event.is_action_pressed('ui_cancel'):
+			_pause()
+
+func _on_Menu_Button_pressed():
+	_pause()
+"
+
+[sub_resource type="DynamicFont" id=28]
+size = 50
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=29]
+size = 30
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=30]
+size = 30
+font_data = ExtResource( 3 )
+
+[node name="GUI" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+size_flags_horizontal = 2
+size_flags_vertical = 2
+script = ExtResource( 1 )
+
+[node name="AI Panel" type="Panel" parent="."]
+editor/display_folded = true
+visible = false
+self_modulate = Color( 0.245911, 0.274804, 0.308594, 0.980392 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="OLD Navigation Tabs" type="VBoxContainer" parent="AI Panel"]
+editor/display_folded = true
+visible = false
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -308.0
+margin_right = 174.0
+margin_bottom = 200.0
+rect_min_size = Vector2( 174, 0 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+custom_constants/separation = 10
+
+[node name="Arcology" type="Container" parent="AI Panel/OLD Navigation Tabs"]
+editor/display_folded = true
+margin_right = 174.0
+margin_bottom = 64.0
+rect_min_size = Vector2( 174, 64 )
+focus_mode = 2
+mouse_filter = 1
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = SubResource( 1 )
+
+[node name="oval_tab" type="Sprite" parent="AI Panel/OLD Navigation Tabs/Arcology"]
+self_modulate = Color( 0.921569, 0.960784, 1, 0.156863 )
+position = Vector2( 70.3208, 32.1463 )
+texture = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="AI Panel/OLD Navigation Tabs/Arcology"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -77.0
+margin_top = -19.0
+margin_right = 104.0
+margin_bottom = 18.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "Arcology"
+
+[node name="Button" type="TextureButton" parent="AI Panel/OLD Navigation Tabs/Arcology"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -1.0
+margin_top = -6.0
+margin_right = 40.0
+margin_bottom = 5.0
+group = SubResource( 3 )
+
+[node name="Slaves" type="Container" parent="AI Panel/OLD Navigation Tabs"]
+editor/display_folded = true
+margin_top = 74.0
+margin_right = 174.0
+margin_bottom = 138.0
+rect_min_size = Vector2( 174, 64 )
+focus_mode = 2
+mouse_filter = 1
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = SubResource( 4 )
+
+[node name="oval_tab" type="Sprite" parent="AI Panel/OLD Navigation Tabs/Slaves"]
+self_modulate = Color( 0.921569, 0.960784, 1, 0.156863 )
+position = Vector2( 70.3208, 32.1463 )
+texture = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="AI Panel/OLD Navigation Tabs/Slaves"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -77.0
+margin_top = -19.0
+margin_right = 104.0
+margin_bottom = 18.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "Slaves"
+
+[node name="Button" type="TextureButton" parent="AI Panel/OLD Navigation Tabs/Slaves"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -1.0
+margin_top = -6.0
+margin_right = 40.0
+margin_bottom = 5.0
+group = SubResource( 3 )
+
+[node name="Finance" type="Container" parent="AI Panel/OLD Navigation Tabs"]
+editor/display_folded = true
+margin_top = 148.0
+margin_right = 174.0
+margin_bottom = 212.0
+rect_min_size = Vector2( 174, 64 )
+focus_mode = 2
+mouse_filter = 1
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = SubResource( 5 )
+
+[node name="oval_tab" type="Sprite" parent="AI Panel/OLD Navigation Tabs/Finance"]
+self_modulate = Color( 0.921569, 0.960784, 1, 0.156863 )
+position = Vector2( 70.3208, 32.1463 )
+texture = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="AI Panel/OLD Navigation Tabs/Finance"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -77.0
+margin_top = -19.0
+margin_right = 104.0
+margin_bottom = 18.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "Finance"
+
+[node name="Button" type="TextureButton" parent="AI Panel/OLD Navigation Tabs/Finance"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -1.0
+margin_top = -6.0
+margin_right = 40.0
+margin_bottom = 5.0
+group = SubResource( 3 )
+
+[node name="Inventory" type="Container" parent="AI Panel/OLD Navigation Tabs"]
+editor/display_folded = true
+margin_top = 222.0
+margin_right = 174.0
+margin_bottom = 286.0
+rect_min_size = Vector2( 174, 64 )
+focus_mode = 2
+mouse_filter = 1
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = SubResource( 6 )
+
+[node name="oval_tab" type="Sprite" parent="AI Panel/OLD Navigation Tabs/Inventory"]
+self_modulate = Color( 0.921569, 0.960784, 1, 0.156863 )
+position = Vector2( 70.3208, 32.1463 )
+texture = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="AI Panel/OLD Navigation Tabs/Inventory"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -77.0
+margin_top = -19.0
+margin_right = 104.0
+margin_bottom = 18.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "Inventory"
+
+[node name="Button" type="TextureButton" parent="AI Panel/OLD Navigation Tabs/Inventory"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -1.0
+margin_top = -6.0
+margin_right = 40.0
+margin_bottom = 5.0
+group = SubResource( 3 )
+
+[node name="Commerce" type="Container" parent="AI Panel/OLD Navigation Tabs"]
+editor/display_folded = true
+margin_top = 296.0
+margin_right = 174.0
+margin_bottom = 360.0
+rect_min_size = Vector2( 174, 64 )
+focus_mode = 2
+mouse_filter = 1
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = SubResource( 7 )
+
+[node name="oval_tab" type="Sprite" parent="AI Panel/OLD Navigation Tabs/Commerce"]
+self_modulate = Color( 0.921569, 0.960784, 1, 0.156863 )
+position = Vector2( 70.3208, 32.1463 )
+texture = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="AI Panel/OLD Navigation Tabs/Commerce"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -77.0
+margin_top = -19.0
+margin_right = 104.0
+margin_bottom = 18.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "Commerce"
+
+[node name="Button" type="TextureButton" parent="AI Panel/OLD Navigation Tabs/Commerce"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -1.0
+margin_top = -6.0
+margin_right = 40.0
+margin_bottom = 5.0
+group = SubResource( 3 )
+
+[node name="R&D" type="Container" parent="AI Panel/OLD Navigation Tabs"]
+editor/display_folded = true
+margin_top = 370.0
+margin_right = 174.0
+margin_bottom = 434.0
+rect_min_size = Vector2( 174, 64 )
+focus_mode = 2
+mouse_filter = 1
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = SubResource( 8 )
+
+[node name="oval_tab" type="Sprite" parent="AI Panel/OLD Navigation Tabs/R&D"]
+self_modulate = Color( 0.921569, 0.960784, 1, 0.156863 )
+position = Vector2( 70.3208, 32.1463 )
+texture = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="AI Panel/OLD Navigation Tabs/R&D"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -77.0
+margin_top = -19.0
+margin_right = 104.0
+margin_bottom = 18.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "R&D"
+
+[node name="Button" type="TextureButton" parent="AI Panel/OLD Navigation Tabs/R&D"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -1.0
+margin_top = -6.0
+margin_right = 40.0
+margin_bottom = 5.0
+group = SubResource( 3 )
+
+[node name="Policies" type="Container" parent="AI Panel/OLD Navigation Tabs"]
+editor/display_folded = true
+margin_top = 444.0
+margin_right = 174.0
+margin_bottom = 508.0
+rect_min_size = Vector2( 174, 64 )
+focus_mode = 2
+mouse_filter = 1
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = SubResource( 9 )
+
+[node name="oval_tab" type="Sprite" parent="AI Panel/OLD Navigation Tabs/Policies"]
+self_modulate = Color( 0.921569, 0.960784, 1, 0.156863 )
+position = Vector2( 70.3208, 32.1463 )
+texture = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="AI Panel/OLD Navigation Tabs/Policies"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -77.0
+margin_top = -19.0
+margin_right = 104.0
+margin_bottom = 18.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "Policies"
+
+[node name="Button" type="TextureButton" parent="AI Panel/OLD Navigation Tabs/Policies"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -1.0
+margin_top = -6.0
+margin_right = 40.0
+margin_bottom = 5.0
+group = SubResource( 3 )
+
+[node name="Feed" type="VBoxContainer" parent="AI Panel"]
+editor/display_folded = true
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -329.0
+margin_top = -364.0
+margin_right = -11.0
+margin_bottom = 144.0
+rect_min_size = Vector2( 174, 0 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+custom_constants/separation = 10
+
+[node name="Label" type="Label" parent="AI Panel/Feed"]
+margin_right = 318.0
+margin_bottom = 37.0
+custom_fonts/font = SubResource( 10 )
+text = "News Feed:"
+align = 2
+
+[node name="Label2" type="Label" parent="AI Panel/Feed"]
+margin_top = 47.0
+margin_right = 318.0
+margin_bottom = 84.0
+custom_fonts/font = SubResource( 10 )
+text = "Investments:"
+align = 2
+
+[node name="Label3" type="Label" parent="AI Panel/Feed"]
+margin_top = 94.0
+margin_right = 318.0
+margin_bottom = 131.0
+custom_fonts/font = SubResource( 10 )
+text = "Weather Report:"
+align = 2
+
+[node name="Label4" type="Label" parent="AI Panel/Feed"]
+margin_top = 141.0
+margin_right = 318.0
+margin_bottom = 178.0
+custom_fonts/font = SubResource( 10 )
+text = "Arcology Ownership:"
+align = 2
+
+[node name="Label5" type="Label" parent="AI Panel/Feed"]
+margin_top = 188.0
+margin_right = 318.0
+margin_bottom = 225.0
+custom_fonts/font = SubResource( 10 )
+text = "Active Construction:"
+align = 2
+
+[node name="ai_large" type="TextureRect" parent="AI Panel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -814.0
+margin_top = -321.0
+margin_right = -398.0
+margin_bottom = 291.0
+texture = ExtResource( 4 )
+
+[node name="Dialogue" type="RichTextLabel" parent="AI Panel"]
+editor/display_folded = true
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -276.0
+margin_top = -300.0
+margin_right = 524.0
+margin_bottom = 300.0
+scroll_following = true
+script = SubResource( 11 )
+
+[node name="Timer4" type="Timer" parent="AI Panel/Dialogue"]
+wait_time = 0.05
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="AI Panel/Dialogue"]
+stream = ExtResource( 5 )
+volume_db = -30.0
+
+[node name="Thalia" type="Node" parent="AI Panel/Dialogue"]
+
+[node name="Menu Button" type="Container" parent="."]
+editor/display_folded = true
+margin_left = 13.0
+margin_top = 10.0
+margin_right = 43.0
+margin_bottom = 40.0
+script = SubResource( 12 )
+
+[node name="circle" type="TextureRect" parent="Menu Button"]
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.392157 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -15.0
+margin_top = -15.0
+margin_right = 15.0
+margin_bottom = 15.0
+texture = ExtResource( 6 )
+
+[node name="menu" type="TextureRect" parent="Menu Button"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -9.0
+margin_top = -8.0
+margin_right = 9.0
+margin_bottom = 8.0
+texture = ExtResource( 7 )
+
+[node name="Button" type="TextureButton" parent="Menu Button"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Money" type="HBoxContainer" parent="."]
+editor/display_folded = true
+margin_left = 50.0
+margin_top = 13.0
+margin_right = 213.0
+margin_bottom = 37.0
+hint_tooltip = "Money, (Since last week), (Expected weekly costs)"
+size_flags_horizontal = 8
+size_flags_vertical = 8
+
+[node name="Capital" type="Label" parent="Money"]
+show_behind_parent = true
+margin_bottom = 24.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 13 )
+
+[node name="Income" type="Label" parent="Money"]
+self_modulate = Color( 0.218887, 0.589844, 0.242072, 1 )
+margin_left = 55.0
+margin_right = 55.0
+margin_bottom = 24.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 13 )
+
+[node name="Expenses" type="Label" parent="Money"]
+self_modulate = Color( 0.832031, 0.165756, 0.165756, 1 )
+margin_left = 110.0
+margin_right = 110.0
+margin_bottom = 24.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 13 )
+
+[node name="AI" type="Container" parent="."]
+editor/display_folded = true
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_top = -110.0
+margin_right = 110.0
+grow_vertical = 0
+script = SubResource( 14 )
+
+[node name="tab_left" type="TextureRect" parent="AI"]
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.235294 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -55.0
+margin_top = -55.0
+margin_right = 55.0
+margin_bottom = 55.0
+texture = ExtResource( 8 )
+
+[node name="min_left" type="TextureRect" parent="AI"]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -42.0
+margin_top = -42.0
+margin_right = 42.0
+margin_bottom = 42.0
+texture = ExtResource( 9 )
+expand = true
+
+[node name="ai_simple" type="TextureRect" parent="AI"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -32.0
+margin_top = -41.0
+margin_right = 28.0
+margin_bottom = 48.0
+rect_pivot_offset = Vector2( 32.3383, 46.4324 )
+texture = ExtResource( 10 )
+stretch_mode = 3
+
+[node name="Button" type="TextureButton" parent="AI"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+focus_mode = 0
+enabled_focus_mode = 0
+
+[node name="Time" type="Container" parent="."]
+editor/display_folded = true
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -110.0
+margin_top = -110.0
+script = SubResource( 15 )
+
+[node name="play" type="Sprite" parent="Time"]
+modulate = Color( 1, 1, 1, 0 )
+position = Vector2( 199, -48 )
+texture = ExtResource( 11 )
+
+[node name="pause" type="Sprite" parent="Time"]
+modulate = Color( 1, 1, 1, 0 )
+position = Vector2( 199, 18 )
+texture = ExtResource( 12 )
+
+[node name="turtle" type="Sprite" parent="Time"]
+modulate = Color( 1, 1, 1, 0 )
+position = Vector2( 206.302, 141.719 )
+scale = Vector2( 0.75, 0.75 )
+texture = ExtResource( 13 )
+
+[node name="rabbit" type="Sprite" parent="Time"]
+modulate = Color( 1, 1, 1, 0 )
+position = Vector2( 206.026, 86.4861 )
+texture = ExtResource( 14 )
+
+[node name="Panel" type="Sprite" parent="Time"]
+visible = false
+position = Vector2( -203.432, -167.116 )
+texture = ExtResource( 15 )
+
+[node name="tab_right" type="TextureRect" parent="Time"]
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.235294 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -55.0
+margin_top = -55.0
+margin_right = 55.0
+margin_bottom = 55.0
+texture = ExtResource( 16 )
+
+[node name="min_right" type="TextureRect" parent="Time"]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -42.0
+margin_top = -42.0
+margin_right = 42.0
+margin_bottom = 42.0
+rect_rotation = -90.0
+rect_pivot_offset = Vector2( 42, 42 )
+texture = ExtResource( 9 )
+expand = true
+
+[node name="brackets" type="TextureRect" parent="Time"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -47.5
+margin_top = -37.5
+margin_right = 47.5
+margin_bottom = 37.5
+texture = ExtResource( 17 )
+expand = true
+
+[node name="Label Top" type="Label" parent="Time"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -53.0
+margin_top = -37.0
+margin_right = 53.0
+margin_bottom = -1.0
+custom_fonts/font = SubResource( 16 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_constants/line_spacing = -2
+text = "24:00
+Wednesday"
+align = 1
+
+[node name="Label Bot" type="Label" parent="Time"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -53.0
+margin_right = 53.0
+margin_bottom = 36.0
+custom_fonts/font = SubResource( 17 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_constants/line_spacing = -2
+text = "Week 1
+Q1 2119"
+align = 1
+
+[node name="Button" type="TextureButton" parent="Time"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+focus_mode = 0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+toggle_mode = true
+enabled_focus_mode = 0
+
+[node name="Calendar" type="TextureRect" parent="Time"]
+editor/display_folded = true
+visible = false
+margin_left = -493.0
+margin_top = -397.0
+margin_right = 105.0
+margin_bottom = -57.0
+texture = ExtResource( 18 )
+
+[node name="Date" type="Label" parent="Time/Calendar"]
+margin_left = 23.0
+margin_top = -36.0
+margin_right = 86.0
+margin_bottom = 1.0
+custom_fonts/font = SubResource( 18 )
+text = "Date"
+valign = 1
+
+[node name="Time" type="Label" parent="Time/Calendar"]
+margin_left = 509.0
+margin_top = -36.0
+margin_right = 575.0
+margin_bottom = 1.0
+custom_fonts/font = SubResource( 18 )
+text = "Time"
+align = 2
+valign = 1
+
+[node name="Week" type="Container" parent="Time/Calendar"]
+editor/display_folded = true
+margin_left = 11.0
+margin_top = 7.0
+margin_right = 587.0
+margin_bottom = 380.0
+
+[node name="1" type="VBoxContainer" parent="Time/Calendar/Week"]
+editor/display_folded = true
+margin_left = 1.0
+margin_right = 25.0
+margin_bottom = 373.0
+custom_constants/separation = 11
+
+[node name="Sunday" type="Label" parent="Time/Calendar/Week/1" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_right = 24.0
+margin_bottom = 37.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Monday" type="Label" parent="Time/Calendar/Week/1" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 48.0
+margin_right = 24.0
+margin_bottom = 85.0
+custom_fonts/font = SubResource( 18 )
+text = "M"
+align = 1
+valign = 1
+
+[node name="Tuesday" type="Label" parent="Time/Calendar/Week/1" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 96.0
+margin_right = 24.0
+margin_bottom = 133.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Wednesday" type="Label" parent="Time/Calendar/Week/1" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 144.0
+margin_right = 24.0
+margin_bottom = 181.0
+custom_fonts/font = SubResource( 18 )
+text = "W"
+align = 1
+valign = 1
+
+[node name="Thursday" type="Label" parent="Time/Calendar/Week/1" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 192.0
+margin_right = 24.0
+margin_bottom = 229.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Friday" type="Label" parent="Time/Calendar/Week/1" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 240.0
+margin_right = 24.0
+margin_bottom = 277.0
+custom_fonts/font = SubResource( 18 )
+text = "F"
+align = 1
+valign = 1
+
+[node name="Saturday" type="Label" parent="Time/Calendar/Week/1" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 288.0
+margin_right = 24.0
+margin_bottom = 325.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Num" type="Label" parent="Time/Calendar/Week/1" groups=[
+"Weeks",
+]]
+margin_top = 336.0
+margin_right = 24.0
+margin_bottom = 373.0
+custom_fonts/font = SubResource( 18 )
+text = "1"
+align = 1
+valign = 1
+
+[node name="2" type="VBoxContainer" parent="Time/Calendar/Week"]
+editor/display_folded = true
+margin_left = 47.0
+margin_right = 71.0
+margin_bottom = 373.0
+custom_constants/separation = 11
+
+[node name="Sunday" type="Label" parent="Time/Calendar/Week/2" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_right = 24.0
+margin_bottom = 37.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Monday" type="Label" parent="Time/Calendar/Week/2" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 48.0
+margin_right = 24.0
+margin_bottom = 85.0
+custom_fonts/font = SubResource( 18 )
+text = "M"
+align = 1
+valign = 1
+
+[node name="Tuesday" type="Label" parent="Time/Calendar/Week/2" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 96.0
+margin_right = 24.0
+margin_bottom = 133.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Wednesday" type="Label" parent="Time/Calendar/Week/2" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 144.0
+margin_right = 24.0
+margin_bottom = 181.0
+custom_fonts/font = SubResource( 18 )
+text = "W"
+align = 1
+valign = 1
+
+[node name="Thursday" type="Label" parent="Time/Calendar/Week/2" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 192.0
+margin_right = 24.0
+margin_bottom = 229.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Friday" type="Label" parent="Time/Calendar/Week/2" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 240.0
+margin_right = 24.0
+margin_bottom = 277.0
+custom_fonts/font = SubResource( 18 )
+text = "F"
+align = 1
+valign = 1
+
+[node name="Saturday" type="Label" parent="Time/Calendar/Week/2" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 288.0
+margin_right = 24.0
+margin_bottom = 325.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Num" type="Label" parent="Time/Calendar/Week/2" groups=[
+"Weeks",
+]]
+margin_top = 336.0
+margin_right = 24.0
+margin_bottom = 373.0
+custom_fonts/font = SubResource( 18 )
+text = "2"
+align = 1
+valign = 1
+
+[node name="3" type="VBoxContainer" parent="Time/Calendar/Week"]
+editor/display_folded = true
+margin_left = 93.0
+margin_right = 117.0
+margin_bottom = 373.0
+custom_constants/separation = 11
+
+[node name="Sunday" type="Label" parent="Time/Calendar/Week/3" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_right = 24.0
+margin_bottom = 37.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Monday" type="Label" parent="Time/Calendar/Week/3" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 48.0
+margin_right = 24.0
+margin_bottom = 85.0
+custom_fonts/font = SubResource( 18 )
+text = "M"
+align = 1
+valign = 1
+
+[node name="Tuesday" type="Label" parent="Time/Calendar/Week/3" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 96.0
+margin_right = 24.0
+margin_bottom = 133.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Wednesday" type="Label" parent="Time/Calendar/Week/3" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 144.0
+margin_right = 24.0
+margin_bottom = 181.0
+custom_fonts/font = SubResource( 18 )
+text = "W"
+align = 1
+valign = 1
+
+[node name="Thursday" type="Label" parent="Time/Calendar/Week/3" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 192.0
+margin_right = 24.0
+margin_bottom = 229.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Friday" type="Label" parent="Time/Calendar/Week/3" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 240.0
+margin_right = 24.0
+margin_bottom = 277.0
+custom_fonts/font = SubResource( 18 )
+text = "F"
+align = 1
+valign = 1
+
+[node name="Saturday" type="Label" parent="Time/Calendar/Week/3" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 288.0
+margin_right = 24.0
+margin_bottom = 325.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Num" type="Label" parent="Time/Calendar/Week/3" groups=[
+"Weeks",
+]]
+margin_top = 336.0
+margin_right = 24.0
+margin_bottom = 373.0
+custom_fonts/font = SubResource( 18 )
+text = "3"
+align = 1
+valign = 1
+
+[node name="4" type="VBoxContainer" parent="Time/Calendar/Week"]
+editor/display_folded = true
+margin_left = 139.0
+margin_right = 163.0
+margin_bottom = 373.0
+custom_constants/separation = 11
+
+[node name="Sunday" type="Label" parent="Time/Calendar/Week/4" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_right = 24.0
+margin_bottom = 37.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Monday" type="Label" parent="Time/Calendar/Week/4" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 48.0
+margin_right = 24.0
+margin_bottom = 85.0
+custom_fonts/font = SubResource( 18 )
+text = "M"
+align = 1
+valign = 1
+
+[node name="Tuesday" type="Label" parent="Time/Calendar/Week/4" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 96.0
+margin_right = 24.0
+margin_bottom = 133.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Wednesday" type="Label" parent="Time/Calendar/Week/4" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 144.0
+margin_right = 24.0
+margin_bottom = 181.0
+custom_fonts/font = SubResource( 18 )
+text = "W"
+align = 1
+valign = 1
+
+[node name="Thursday" type="Label" parent="Time/Calendar/Week/4" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 192.0
+margin_right = 24.0
+margin_bottom = 229.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Friday" type="Label" parent="Time/Calendar/Week/4" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 240.0
+margin_right = 24.0
+margin_bottom = 277.0
+custom_fonts/font = SubResource( 18 )
+text = "F"
+align = 1
+valign = 1
+
+[node name="Saturday" type="Label" parent="Time/Calendar/Week/4" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 288.0
+margin_right = 24.0
+margin_bottom = 325.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Num" type="Label" parent="Time/Calendar/Week/4" groups=[
+"Weeks",
+]]
+margin_top = 336.0
+margin_right = 24.0
+margin_bottom = 373.0
+custom_fonts/font = SubResource( 18 )
+text = "4"
+align = 1
+valign = 1
+
+[node name="5" type="VBoxContainer" parent="Time/Calendar/Week"]
+editor/display_folded = true
+margin_left = 185.0
+margin_right = 209.0
+margin_bottom = 373.0
+custom_constants/separation = 11
+
+[node name="Sunday" type="Label" parent="Time/Calendar/Week/5" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_right = 24.0
+margin_bottom = 37.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Monday" type="Label" parent="Time/Calendar/Week/5" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 48.0
+margin_right = 24.0
+margin_bottom = 85.0
+custom_fonts/font = SubResource( 18 )
+text = "M"
+align = 1
+valign = 1
+
+[node name="Tuesday" type="Label" parent="Time/Calendar/Week/5" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 96.0
+margin_right = 24.0
+margin_bottom = 133.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Wednesday" type="Label" parent="Time/Calendar/Week/5" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 144.0
+margin_right = 24.0
+margin_bottom = 181.0
+custom_fonts/font = SubResource( 18 )
+text = "W"
+align = 1
+valign = 1
+
+[node name="Thursday" type="Label" parent="Time/Calendar/Week/5" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 192.0
+margin_right = 24.0
+margin_bottom = 229.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Friday" type="Label" parent="Time/Calendar/Week/5" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 240.0
+margin_right = 24.0
+margin_bottom = 277.0
+custom_fonts/font = SubResource( 18 )
+text = "F"
+align = 1
+valign = 1
+
+[node name="Saturday" type="Label" parent="Time/Calendar/Week/5" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 288.0
+margin_right = 24.0
+margin_bottom = 325.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Num" type="Label" parent="Time/Calendar/Week/5" groups=[
+"Weeks",
+]]
+margin_top = 336.0
+margin_right = 24.0
+margin_bottom = 373.0
+custom_fonts/font = SubResource( 18 )
+text = "5"
+align = 1
+valign = 1
+
+[node name="6" type="VBoxContainer" parent="Time/Calendar/Week"]
+editor/display_folded = true
+margin_left = 231.0
+margin_right = 255.0
+margin_bottom = 373.0
+custom_constants/separation = 11
+
+[node name="Sunday" type="Label" parent="Time/Calendar/Week/6" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_right = 24.0
+margin_bottom = 37.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Monday" type="Label" parent="Time/Calendar/Week/6" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 48.0
+margin_right = 24.0
+margin_bottom = 85.0
+custom_fonts/font = SubResource( 18 )
+text = "M"
+align = 1
+valign = 1
+
+[node name="Tuesday" type="Label" parent="Time/Calendar/Week/6" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 96.0
+margin_right = 24.0
+margin_bottom = 133.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Wednesday" type="Label" parent="Time/Calendar/Week/6" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 144.0
+margin_right = 24.0
+margin_bottom = 181.0
+custom_fonts/font = SubResource( 18 )
+text = "W"
+align = 1
+valign = 1
+
+[node name="Thursday" type="Label" parent="Time/Calendar/Week/6" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 192.0
+margin_right = 24.0
+margin_bottom = 229.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Friday" type="Label" parent="Time/Calendar/Week/6" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 240.0
+margin_right = 24.0
+margin_bottom = 277.0
+custom_fonts/font = SubResource( 18 )
+text = "F"
+align = 1
+valign = 1
+
+[node name="Saturday" type="Label" parent="Time/Calendar/Week/6" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 288.0
+margin_right = 24.0
+margin_bottom = 325.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Num" type="Label" parent="Time/Calendar/Week/6" groups=[
+"Weeks",
+]]
+margin_top = 336.0
+margin_right = 24.0
+margin_bottom = 373.0
+custom_fonts/font = SubResource( 18 )
+text = "6"
+align = 1
+valign = 1
+
+[node name="7" type="VBoxContainer" parent="Time/Calendar/Week"]
+editor/display_folded = true
+margin_left = 277.0
+margin_right = 301.0
+margin_bottom = 373.0
+custom_constants/separation = 11
+
+[node name="Sunday" type="Label" parent="Time/Calendar/Week/7" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_right = 24.0
+margin_bottom = 37.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Monday" type="Label" parent="Time/Calendar/Week/7" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 48.0
+margin_right = 24.0
+margin_bottom = 85.0
+custom_fonts/font = SubResource( 18 )
+text = "M"
+align = 1
+valign = 1
+
+[node name="Tuesday" type="Label" parent="Time/Calendar/Week/7" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 96.0
+margin_right = 24.0
+margin_bottom = 133.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Wednesday" type="Label" parent="Time/Calendar/Week/7" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 144.0
+margin_right = 24.0
+margin_bottom = 181.0
+custom_fonts/font = SubResource( 18 )
+text = "W"
+align = 1
+valign = 1
+
+[node name="Thursday" type="Label" parent="Time/Calendar/Week/7" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 192.0
+margin_right = 24.0
+margin_bottom = 229.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Friday" type="Label" parent="Time/Calendar/Week/7" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 240.0
+margin_right = 24.0
+margin_bottom = 277.0
+custom_fonts/font = SubResource( 18 )
+text = "F"
+align = 1
+valign = 1
+
+[node name="Saturday" type="Label" parent="Time/Calendar/Week/7" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 288.0
+margin_right = 24.0
+margin_bottom = 325.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Num" type="Label" parent="Time/Calendar/Week/7" groups=[
+"Weeks",
+]]
+margin_top = 336.0
+margin_right = 24.0
+margin_bottom = 373.0
+custom_fonts/font = SubResource( 18 )
+text = "7"
+align = 1
+valign = 1
+
+[node name="8" type="VBoxContainer" parent="Time/Calendar/Week"]
+editor/display_folded = true
+margin_left = 323.0
+margin_right = 347.0
+margin_bottom = 373.0
+custom_constants/separation = 11
+
+[node name="Sunday" type="Label" parent="Time/Calendar/Week/8" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_right = 24.0
+margin_bottom = 37.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Monday" type="Label" parent="Time/Calendar/Week/8" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 48.0
+margin_right = 24.0
+margin_bottom = 85.0
+custom_fonts/font = SubResource( 18 )
+text = "M"
+align = 1
+valign = 1
+
+[node name="Tuesday" type="Label" parent="Time/Calendar/Week/8" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 96.0
+margin_right = 24.0
+margin_bottom = 133.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Wednesday" type="Label" parent="Time/Calendar/Week/8" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 144.0
+margin_right = 24.0
+margin_bottom = 181.0
+custom_fonts/font = SubResource( 18 )
+text = "W"
+align = 1
+valign = 1
+
+[node name="Thursday" type="Label" parent="Time/Calendar/Week/8" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 192.0
+margin_right = 24.0
+margin_bottom = 229.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Friday" type="Label" parent="Time/Calendar/Week/8" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 240.0
+margin_right = 24.0
+margin_bottom = 277.0
+custom_fonts/font = SubResource( 18 )
+text = "F"
+align = 1
+valign = 1
+
+[node name="Saturday" type="Label" parent="Time/Calendar/Week/8" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 288.0
+margin_right = 24.0
+margin_bottom = 325.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Num" type="Label" parent="Time/Calendar/Week/8" groups=[
+"Weeks",
+]]
+margin_top = 336.0
+margin_right = 24.0
+margin_bottom = 373.0
+custom_fonts/font = SubResource( 18 )
+text = "8"
+align = 1
+valign = 1
+
+[node name="9" type="VBoxContainer" parent="Time/Calendar/Week"]
+editor/display_folded = true
+margin_left = 368.0
+margin_right = 392.0
+margin_bottom = 373.0
+custom_constants/separation = 11
+
+[node name="Sunday" type="Label" parent="Time/Calendar/Week/9" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_right = 24.0
+margin_bottom = 37.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Monday" type="Label" parent="Time/Calendar/Week/9" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 48.0
+margin_right = 24.0
+margin_bottom = 85.0
+custom_fonts/font = SubResource( 18 )
+text = "M"
+align = 1
+valign = 1
+
+[node name="Tuesday" type="Label" parent="Time/Calendar/Week/9" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 96.0
+margin_right = 24.0
+margin_bottom = 133.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Wednesday" type="Label" parent="Time/Calendar/Week/9" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 144.0
+margin_right = 24.0
+margin_bottom = 181.0
+custom_fonts/font = SubResource( 18 )
+text = "W"
+align = 1
+valign = 1
+
+[node name="Thursday" type="Label" parent="Time/Calendar/Week/9" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 192.0
+margin_right = 24.0
+margin_bottom = 229.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Friday" type="Label" parent="Time/Calendar/Week/9" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 240.0
+margin_right = 24.0
+margin_bottom = 277.0
+custom_fonts/font = SubResource( 18 )
+text = "F"
+align = 1
+valign = 1
+
+[node name="Saturday" type="Label" parent="Time/Calendar/Week/9" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 288.0
+margin_right = 24.0
+margin_bottom = 325.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Num" type="Label" parent="Time/Calendar/Week/9" groups=[
+"Weeks",
+]]
+margin_top = 336.0
+margin_right = 24.0
+margin_bottom = 373.0
+custom_fonts/font = SubResource( 18 )
+text = "9"
+align = 1
+valign = 1
+
+[node name="10" type="VBoxContainer" parent="Time/Calendar/Week"]
+editor/display_folded = true
+margin_left = 411.0
+margin_right = 441.0
+margin_bottom = 373.0
+custom_constants/separation = 11
+
+[node name="Sunday" type="Label" parent="Time/Calendar/Week/10" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_right = 30.0
+margin_bottom = 37.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Monday" type="Label" parent="Time/Calendar/Week/10" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 48.0
+margin_right = 30.0
+margin_bottom = 85.0
+custom_fonts/font = SubResource( 18 )
+text = "M"
+align = 1
+valign = 1
+
+[node name="Tuesday" type="Label" parent="Time/Calendar/Week/10" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 96.0
+margin_right = 30.0
+margin_bottom = 133.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Wednesday" type="Label" parent="Time/Calendar/Week/10" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 144.0
+margin_right = 30.0
+margin_bottom = 181.0
+custom_fonts/font = SubResource( 18 )
+text = "W"
+align = 1
+valign = 1
+
+[node name="Thursday" type="Label" parent="Time/Calendar/Week/10" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 192.0
+margin_right = 30.0
+margin_bottom = 229.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Friday" type="Label" parent="Time/Calendar/Week/10" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 240.0
+margin_right = 30.0
+margin_bottom = 277.0
+custom_fonts/font = SubResource( 18 )
+text = "F"
+align = 1
+valign = 1
+
+[node name="Saturday" type="Label" parent="Time/Calendar/Week/10" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 288.0
+margin_right = 30.0
+margin_bottom = 325.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Num" type="Label" parent="Time/Calendar/Week/10" groups=[
+"Weeks",
+]]
+margin_top = 336.0
+margin_right = 30.0
+margin_bottom = 373.0
+custom_fonts/font = SubResource( 18 )
+text = "10"
+align = 1
+valign = 1
+
+[node name="11" type="VBoxContainer" parent="Time/Calendar/Week"]
+editor/display_folded = true
+margin_left = 460.0
+margin_right = 484.0
+margin_bottom = 373.0
+custom_constants/separation = 11
+
+[node name="Sunday" type="Label" parent="Time/Calendar/Week/11" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_right = 24.0
+margin_bottom = 37.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Monday" type="Label" parent="Time/Calendar/Week/11" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 48.0
+margin_right = 24.0
+margin_bottom = 85.0
+custom_fonts/font = SubResource( 18 )
+text = "M"
+align = 1
+valign = 1
+
+[node name="Tuesday" type="Label" parent="Time/Calendar/Week/11" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 96.0
+margin_right = 24.0
+margin_bottom = 133.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Wednesday" type="Label" parent="Time/Calendar/Week/11" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 144.0
+margin_right = 24.0
+margin_bottom = 181.0
+custom_fonts/font = SubResource( 18 )
+text = "W"
+align = 1
+valign = 1
+
+[node name="Thursday" type="Label" parent="Time/Calendar/Week/11" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 192.0
+margin_right = 24.0
+margin_bottom = 229.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Friday" type="Label" parent="Time/Calendar/Week/11" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 240.0
+margin_right = 24.0
+margin_bottom = 277.0
+custom_fonts/font = SubResource( 18 )
+text = "F"
+align = 1
+valign = 1
+
+[node name="Saturday" type="Label" parent="Time/Calendar/Week/11" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 288.0
+margin_right = 24.0
+margin_bottom = 325.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Num" type="Label" parent="Time/Calendar/Week/11" groups=[
+"Weeks",
+]]
+margin_top = 336.0
+margin_right = 24.0
+margin_bottom = 373.0
+custom_fonts/font = SubResource( 18 )
+text = "11"
+align = 1
+valign = 1
+
+[node name="12" type="VBoxContainer" parent="Time/Calendar/Week"]
+editor/display_folded = true
+margin_left = 504.0
+margin_right = 533.0
+margin_bottom = 373.0
+custom_constants/separation = 11
+
+[node name="Sunday" type="Label" parent="Time/Calendar/Week/12" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_right = 29.0
+margin_bottom = 37.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Monday" type="Label" parent="Time/Calendar/Week/12" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 48.0
+margin_right = 29.0
+margin_bottom = 85.0
+custom_fonts/font = SubResource( 18 )
+text = "M"
+align = 1
+valign = 1
+
+[node name="Tuesday" type="Label" parent="Time/Calendar/Week/12" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 96.0
+margin_right = 29.0
+margin_bottom = 133.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Wednesday" type="Label" parent="Time/Calendar/Week/12" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 144.0
+margin_right = 29.0
+margin_bottom = 181.0
+custom_fonts/font = SubResource( 18 )
+text = "W"
+align = 1
+valign = 1
+
+[node name="Thursday" type="Label" parent="Time/Calendar/Week/12" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 192.0
+margin_right = 29.0
+margin_bottom = 229.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Friday" type="Label" parent="Time/Calendar/Week/12" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 240.0
+margin_right = 29.0
+margin_bottom = 277.0
+custom_fonts/font = SubResource( 18 )
+text = "F"
+align = 1
+valign = 1
+
+[node name="Saturday" type="Label" parent="Time/Calendar/Week/12" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 288.0
+margin_right = 29.0
+margin_bottom = 325.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Num" type="Label" parent="Time/Calendar/Week/12" groups=[
+"Weeks",
+]]
+margin_top = 336.0
+margin_right = 29.0
+margin_bottom = 373.0
+custom_fonts/font = SubResource( 18 )
+text = "12"
+align = 1
+valign = 1
+
+[node name="13" type="VBoxContainer" parent="Time/Calendar/Week"]
+editor/display_folded = true
+margin_left = 550.0
+margin_right = 579.0
+margin_bottom = 373.0
+custom_constants/separation = 11
+
+[node name="Sunday" type="Label" parent="Time/Calendar/Week/13" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_right = 29.0
+margin_bottom = 37.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Monday" type="Label" parent="Time/Calendar/Week/13" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 48.0
+margin_right = 29.0
+margin_bottom = 85.0
+custom_fonts/font = SubResource( 18 )
+text = "M"
+align = 1
+valign = 1
+
+[node name="Tuesday" type="Label" parent="Time/Calendar/Week/13" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 96.0
+margin_right = 29.0
+margin_bottom = 133.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Wednesday" type="Label" parent="Time/Calendar/Week/13" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 144.0
+margin_right = 29.0
+margin_bottom = 181.0
+custom_fonts/font = SubResource( 18 )
+text = "W"
+align = 1
+valign = 1
+
+[node name="Thursday" type="Label" parent="Time/Calendar/Week/13" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 192.0
+margin_right = 29.0
+margin_bottom = 229.0
+custom_fonts/font = SubResource( 18 )
+text = "T"
+align = 1
+valign = 1
+
+[node name="Friday" type="Label" parent="Time/Calendar/Week/13" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 240.0
+margin_right = 29.0
+margin_bottom = 277.0
+custom_fonts/font = SubResource( 18 )
+text = "F"
+align = 1
+valign = 1
+
+[node name="Saturday" type="Label" parent="Time/Calendar/Week/13" groups=[
+"Days",
+]]
+modulate = Color( 1, 1, 1, 0.156863 )
+margin_top = 288.0
+margin_right = 29.0
+margin_bottom = 325.0
+custom_fonts/font = SubResource( 18 )
+text = "S"
+align = 1
+valign = 1
+
+[node name="Num" type="Label" parent="Time/Calendar/Week/13" groups=[
+"Weeks",
+]]
+margin_top = 336.0
+margin_right = 29.0
+margin_bottom = 373.0
+custom_fonts/font = SubResource( 18 )
+text = "13"
+align = 1
+valign = 1
+
+[node name="HSlider" type="HSlider" parent="Time"]
+editor/display_folded = true
+visible = false
+margin_left = -351.0
+margin_top = 46.0
+margin_right = -103.0
+margin_bottom = 62.0
+max_value = 99.0
+
+[node name="turtle" type="Sprite" parent="Time/HSlider"]
+position = Vector2( -49.6748, 7.86133 )
+scale = Vector2( 0.75, 0.75 )
+texture = ExtResource( 13 )
+
+[node name="rabbit" type="Sprite" parent="Time/HSlider"]
+position = Vector2( 290.267, 7.64471 )
+texture = ExtResource( 14 )
+
+[node name="Label" type="Label" parent="Time/HSlider"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -59.0
+margin_top = -31.0
+margin_right = 59.0
+margin_bottom = -7.0
+custom_fonts/font = SubResource( 19 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_constants/line_spacing = -2
+text = "Clock Speed:"
+align = 1
+
+[node name="Tween" type="Tween" parent="Time"]
+
+[node name="Navigation Tabs" type="HBoxContainer" parent="."]
+editor/display_folded = true
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -415.0
+margin_top = -110.0
+margin_right = 415.0
+custom_constants/separation = 10
+
+[node name="1" type="TextureRect" parent="Navigation Tabs"]
+editor/display_folded = true
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.231373 )
+margin_right = 110.0
+margin_bottom = 110.0
+texture = ExtResource( 19 )
+script = SubResource( 20 )
+
+[node name="Button" type="TextureButton" parent="Navigation Tabs/1"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="2" type="TextureRect" parent="Navigation Tabs"]
+editor/display_folded = true
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.231373 )
+margin_left = 120.0
+margin_right = 230.0
+margin_bottom = 110.0
+texture = ExtResource( 19 )
+script = SubResource( 21 )
+
+[node name="Button" type="TextureButton" parent="Navigation Tabs/2"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Arcology" type="TextureRect" parent="Navigation Tabs"]
+editor/display_folded = true
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.231373 )
+margin_left = 240.0
+margin_right = 350.0
+margin_bottom = 110.0
+texture = ExtResource( 19 )
+script = SubResource( 22 )
+
+[node name="Icon" type="TextureRect" parent="Navigation Tabs/Arcology"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -46.0
+margin_top = -46.0
+margin_right = 46.0
+margin_bottom = 46.0
+mouse_filter = 2
+texture = ExtResource( 20 )
+
+[node name="Button" type="TextureButton" parent="Navigation Tabs/Arcology"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Finance" type="TextureRect" parent="Navigation Tabs"]
+editor/display_folded = true
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.231373 )
+margin_left = 360.0
+margin_right = 470.0
+margin_bottom = 110.0
+texture = ExtResource( 19 )
+script = SubResource( 23 )
+
+[node name="Icon" type="TextureRect" parent="Navigation Tabs/Finance"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -33.0
+margin_top = -33.0
+margin_right = 33.0
+margin_bottom = 33.0
+mouse_filter = 2
+texture = ExtResource( 21 )
+
+[node name="Button" type="TextureButton" parent="Navigation Tabs/Finance"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Slaves" type="TextureRect" parent="Navigation Tabs"]
+editor/display_folded = true
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.231373 )
+margin_left = 480.0
+margin_right = 590.0
+margin_bottom = 110.0
+texture = ExtResource( 19 )
+script = SubResource( 24 )
+
+[node name="Icon" type="TextureRect" parent="Navigation Tabs/Slaves"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -48.0
+margin_top = -37.0
+margin_right = 48.0
+margin_bottom = 49.0
+mouse_filter = 2
+texture = ExtResource( 22 )
+
+[node name="Button" type="TextureButton" parent="Navigation Tabs/Slaves"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="6" type="TextureRect" parent="Navigation Tabs"]
+editor/display_folded = true
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.231373 )
+margin_left = 600.0
+margin_right = 710.0
+margin_bottom = 110.0
+texture = ExtResource( 19 )
+script = SubResource( 25 )
+
+[node name="Button" type="TextureButton" parent="Navigation Tabs/6"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="7" type="TextureRect" parent="Navigation Tabs"]
+editor/display_folded = true
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.231373 )
+margin_left = 720.0
+margin_right = 830.0
+margin_bottom = 110.0
+texture = ExtResource( 19 )
+script = SubResource( 26 )
+
+[node name="Button" type="TextureButton" parent="Navigation Tabs/7"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Pause Menu" type="Panel" parent="."]
+pause_mode = 2
+editor/display_folded = true
+visible = false
+self_modulate = Color( 1, 1, 1, 0.862745 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = SubResource( 27 )
+
+[node name="Menu" type="VBoxContainer" parent="Pause Menu"]
+editor/display_folded = true
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -212.5
+margin_top = -180.0
+margin_right = 212.5
+margin_bottom = 180.0
+custom_constants/separation = 10
+
+[node name="PAUSED" type="Label" parent="Pause Menu/Menu"]
+margin_right = 425.0
+margin_bottom = 80.0
+rect_min_size = Vector2( 0, 80 )
+custom_fonts/font = SubResource( 28 )
+text = "PAUSED"
+align = 1
+
+[node name="Resume" type="Button" parent="Pause Menu/Menu"]
+margin_top = 90.0
+margin_right = 425.0
+margin_bottom = 150.0
+rect_min_size = Vector2( 160, 60 )
+custom_fonts/font = SubResource( 29 )
+text = "Resume"
+
+[node name="Save-Load" type="Button" parent="Pause Menu/Menu"]
+visible = false
+margin_top = 160.0
+margin_right = 425.0
+margin_bottom = 220.0
+rect_min_size = Vector2( 160, 60 )
+custom_fonts/font = SubResource( 29 )
+text = "Save/Load"
+
+[node name="Options" type="Button" parent="Pause Menu/Menu"]
+margin_top = 230.0
+margin_right = 425.0
+margin_bottom = 290.0
+rect_min_size = Vector2( 160, 60 )
+custom_fonts/font = SubResource( 29 )
+text = "Options"
+
+[node name="Main Menu" type="Button" parent="Pause Menu/Menu"]
+margin_top = 300.0
+margin_right = 425.0
+margin_bottom = 360.0
+rect_min_size = Vector2( 160, 60 )
+custom_fonts/font = SubResource( 30 )
+text = "Main Menu"
+
+[node name="Saves" parent="Pause Menu" instance=ExtResource( 23 )]
+visible = false
+
+[node name="Options" parent="Pause Menu" instance=ExtResource( 24 )]
+visible = false
+[connection signal="button_down" from="AI Panel/OLD Navigation Tabs/Arcology/Button" to="AI Panel/OLD Navigation Tabs/Arcology" method="_on_button_down"]
+[connection signal="button_up" from="AI Panel/OLD Navigation Tabs/Arcology/Button" to="AI Panel/OLD Navigation Tabs/Arcology" method="_on_button_up"]
+[connection signal="mouse_entered" from="AI Panel/OLD Navigation Tabs/Arcology/Button" to="AI Panel/OLD Navigation Tabs/Arcology" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="AI Panel/OLD Navigation Tabs/Arcology/Button" to="AI Panel/OLD Navigation Tabs/Arcology" method="_on_mouse_exited"]
+[connection signal="pressed" from="AI Panel/OLD Navigation Tabs/Arcology/Button" to="AI Panel/OLD Navigation Tabs/Arcology" method="_on_button_pressed"]
+[connection signal="button_down" from="AI Panel/OLD Navigation Tabs/Slaves/Button" to="AI Panel/OLD Navigation Tabs/Slaves" method="_on_button_down"]
+[connection signal="button_up" from="AI Panel/OLD Navigation Tabs/Slaves/Button" to="AI Panel/OLD Navigation Tabs/Slaves" method="_on_button_up"]
+[connection signal="mouse_entered" from="AI Panel/OLD Navigation Tabs/Slaves/Button" to="AI Panel/OLD Navigation Tabs/Slaves" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="AI Panel/OLD Navigation Tabs/Slaves/Button" to="AI Panel/OLD Navigation Tabs/Slaves" method="_on_mouse_exited"]
+[connection signal="pressed" from="AI Panel/OLD Navigation Tabs/Slaves/Button" to="AI Panel/OLD Navigation Tabs/Slaves" method="_on_button_pressed"]
+[connection signal="button_down" from="AI Panel/OLD Navigation Tabs/Finance/Button" to="AI Panel/OLD Navigation Tabs/Finance" method="_on_button_down"]
+[connection signal="button_up" from="AI Panel/OLD Navigation Tabs/Finance/Button" to="AI Panel/OLD Navigation Tabs/Finance" method="_on_button_up"]
+[connection signal="mouse_entered" from="AI Panel/OLD Navigation Tabs/Finance/Button" to="AI Panel/OLD Navigation Tabs/Finance" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="AI Panel/OLD Navigation Tabs/Finance/Button" to="AI Panel/OLD Navigation Tabs/Finance" method="_on_mouse_exited"]
+[connection signal="pressed" from="AI Panel/OLD Navigation Tabs/Finance/Button" to="AI Panel/OLD Navigation Tabs/Finance" method="_on_button_pressed"]
+[connection signal="button_down" from="AI Panel/OLD Navigation Tabs/Inventory/Button" to="AI Panel/OLD Navigation Tabs/Inventory" method="_on_button_down"]
+[connection signal="button_up" from="AI Panel/OLD Navigation Tabs/Inventory/Button" to="AI Panel/OLD Navigation Tabs/Inventory" method="_on_button_up"]
+[connection signal="mouse_entered" from="AI Panel/OLD Navigation Tabs/Inventory/Button" to="AI Panel/OLD Navigation Tabs/Inventory" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="AI Panel/OLD Navigation Tabs/Inventory/Button" to="AI Panel/OLD Navigation Tabs/Inventory" method="_on_mouse_exited"]
+[connection signal="pressed" from="AI Panel/OLD Navigation Tabs/Inventory/Button" to="AI Panel/OLD Navigation Tabs/Inventory" method="_on_button_pressed"]
+[connection signal="button_down" from="AI Panel/OLD Navigation Tabs/Commerce/Button" to="AI Panel/OLD Navigation Tabs/Commerce" method="_on_button_down"]
+[connection signal="button_up" from="AI Panel/OLD Navigation Tabs/Commerce/Button" to="AI Panel/OLD Navigation Tabs/Commerce" method="_on_button_up"]
+[connection signal="mouse_entered" from="AI Panel/OLD Navigation Tabs/Commerce/Button" to="AI Panel/OLD Navigation Tabs/Commerce" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="AI Panel/OLD Navigation Tabs/Commerce/Button" to="AI Panel/OLD Navigation Tabs/Commerce" method="_on_mouse_exited"]
+[connection signal="pressed" from="AI Panel/OLD Navigation Tabs/Commerce/Button" to="AI Panel/OLD Navigation Tabs/Commerce" method="_on_button_pressed"]
+[connection signal="button_down" from="AI Panel/OLD Navigation Tabs/R&D/Button" to="AI Panel/OLD Navigation Tabs/R&D" method="_on_button_down"]
+[connection signal="button_up" from="AI Panel/OLD Navigation Tabs/R&D/Button" to="AI Panel/OLD Navigation Tabs/R&D" method="_on_button_up"]
+[connection signal="mouse_entered" from="AI Panel/OLD Navigation Tabs/R&D/Button" to="AI Panel/OLD Navigation Tabs/R&D" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="AI Panel/OLD Navigation Tabs/R&D/Button" to="AI Panel/OLD Navigation Tabs/R&D" method="_on_mouse_exited"]
+[connection signal="pressed" from="AI Panel/OLD Navigation Tabs/R&D/Button" to="AI Panel/OLD Navigation Tabs/R&D" method="_on_button_pressed"]
+[connection signal="button_down" from="AI Panel/OLD Navigation Tabs/Policies/Button" to="AI Panel/OLD Navigation Tabs/Policies" method="_on_button_down"]
+[connection signal="button_up" from="AI Panel/OLD Navigation Tabs/Policies/Button" to="AI Panel/OLD Navigation Tabs/Policies" method="_on_button_up"]
+[connection signal="mouse_entered" from="AI Panel/OLD Navigation Tabs/Policies/Button" to="AI Panel/OLD Navigation Tabs/Policies" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="AI Panel/OLD Navigation Tabs/Policies/Button" to="AI Panel/OLD Navigation Tabs/Policies" method="_on_mouse_exited"]
+[connection signal="pressed" from="AI Panel/OLD Navigation Tabs/Policies/Button" to="AI Panel/OLD Navigation Tabs/Policies" method="_on_button_pressed"]
+[connection signal="mouse_entered" from="Menu Button/Button" to="Menu Button" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Menu Button/Button" to="Menu Button" method="_on_mouse_exited"]
+[connection signal="pressed" from="Menu Button/Button" to="Pause Menu" method="_on_Menu_Button_pressed"]
+[connection signal="button_down" from="AI/Button" to="AI" method="_on_button_down"]
+[connection signal="button_up" from="AI/Button" to="AI" method="_on_button_up"]
+[connection signal="mouse_entered" from="AI/Button" to="AI" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="AI/Button" to="AI" method="_on_mouse_exited"]
+[connection signal="pressed" from="AI/Button" to="AI" method="_on_button_pressed"]
+[connection signal="pressed" from="AI/Button" to="." method="_on_AI_pressed"]
+[connection signal="mouse_entered" from="Time/Button" to="Time" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Time/Button" to="Time" method="_on_mouse_exited"]
+[connection signal="toggled" from="Time/Button" to="Time" method="_on_Button_toggled"]
+[connection signal="toggled" from="Time/Button" to="." method="_on_Time_toggled"]
+[connection signal="value_changed" from="Time/HSlider" to="Time" method="_on_HSlider_value_changed"]
+[connection signal="mouse_entered" from="Navigation Tabs/1/Button" to="Navigation Tabs/1" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Navigation Tabs/1/Button" to="Navigation Tabs/1" method="_on_mouse_exited"]
+[connection signal="pressed" from="Navigation Tabs/1/Button" to="Navigation Tabs/1" method="_on_pressed"]
+[connection signal="mouse_entered" from="Navigation Tabs/2/Button" to="Navigation Tabs/2" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Navigation Tabs/2/Button" to="Navigation Tabs/2" method="_on_mouse_exited"]
+[connection signal="pressed" from="Navigation Tabs/2/Button" to="Navigation Tabs/2" method="_on_pressed"]
+[connection signal="mouse_entered" from="Navigation Tabs/Arcology/Button" to="Navigation Tabs/Arcology" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Navigation Tabs/Arcology/Button" to="Navigation Tabs/Arcology" method="_on_mouse_exited"]
+[connection signal="pressed" from="Navigation Tabs/Arcology/Button" to="Navigation Tabs/Arcology" method="_on_pressed"]
+[connection signal="mouse_entered" from="Navigation Tabs/Finance/Button" to="Navigation Tabs/Finance" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Navigation Tabs/Finance/Button" to="Navigation Tabs/Finance" method="_on_mouse_exited"]
+[connection signal="pressed" from="Navigation Tabs/Finance/Button" to="Navigation Tabs/Finance" method="_on_pressed"]
+[connection signal="mouse_entered" from="Navigation Tabs/Slaves/Button" to="Navigation Tabs/Slaves" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Navigation Tabs/Slaves/Button" to="Navigation Tabs/Slaves" method="_on_mouse_exited"]
+[connection signal="pressed" from="Navigation Tabs/Slaves/Button" to="Navigation Tabs/Slaves" method="_on_pressed"]
+[connection signal="mouse_entered" from="Navigation Tabs/6/Button" to="Navigation Tabs/6" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Navigation Tabs/6/Button" to="Navigation Tabs/6" method="_on_mouse_exited"]
+[connection signal="pressed" from="Navigation Tabs/6/Button" to="Navigation Tabs/6" method="_on_pressed"]
+[connection signal="mouse_entered" from="Navigation Tabs/7/Button" to="Navigation Tabs/7" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Navigation Tabs/7/Button" to="Navigation Tabs/7" method="_on_mouse_exited"]
+[connection signal="pressed" from="Navigation Tabs/7/Button" to="Navigation Tabs/7" method="_on_pressed"]
+[connection signal="pressed" from="Pause Menu/Menu/Resume" to="Pause Menu" method="_pause"]
+[connection signal="pressed" from="Pause Menu/Menu/Save-Load" to="Pause Menu" method="_on_SaveLoad_pressed"]
+[connection signal="pressed" from="Pause Menu/Menu/Options" to="Pause Menu" method="_on_Options_pressed"]
+[connection signal="pressed" from="Pause Menu/Menu/Main Menu" to="Pause Menu" method="_on_Main_Menu_pressed"]

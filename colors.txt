@@ -1,0 +1,11 @@
+a list of colors used in this project:
+
+
+
+deep orange - #ff7200
+
+sky blue - #2873c8
+
+tomato red - #d42a2a
+
+leaf green - #36953d
