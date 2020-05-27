@@ -1,0 +1,34 @@
+[remap]
+
+importer="texture"
+type="StreamTexture"
+path="res://.import/arousal.svg-6c2201c540e2b8afaf47e0a180d9ca0d.stex"
+metadata={
+"vram_texture": false
+}
+
+[deps]
+
+source_file="res://Slaves/Textures/Gague/Icons/arousal.svg"
+dest_files=[ "res://.import/arousal.svg-6c2201c540e2b8afaf47e0a180d9ca0d.stex" ]
+
+[params]
+
+compress/mode=0
+compress/lossy_quality=0.7
+compress/hdr_mode=0
+compress/bptc_ldr=0
+compress/normal_map=0
+flags/repeat=0
+flags/filter=false
+flags/mipmaps=true
+flags/anisotropic=false
+flags/srgb=2
+process/fix_alpha_border=false
+process/premult_alpha=false
+process/HDR_as_SRGB=false
+process/invert_color=true
+stream=false
+size_limit=0
+detect_3d=false
+svg/scale=1.0

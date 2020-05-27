@@ -2,7 +2,7 @@ extends Control
 
 func _ready():
 	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'tick')
-	for i in range(abs(game.gaussian(3,1))):
+	for i in range(abs(math.gaussian(3,1))):
 		var preset = "kidnappers market"
 		get_node('Slider/HBoxContainer').add_child(get_node('New Slave').new(preset),true)
 	tick()

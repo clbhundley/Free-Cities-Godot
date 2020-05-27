@@ -15,7 +15,8 @@ onready var highlight_blue = load('res://Arcology/blue.material')
 onready var highlight_orange = load('res://Arcology/orange.material')
 
 func _ready():
-	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'quick_save')
+	#get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'quick_save')
+	get_tree().get_root().connect('size_changed',self,'resize')
 	var position = 0
 	if not structure_data:
 		for terra in get_node('New Arcology').generate(size):
@@ -23,6 +24,20 @@ func _ready():
 			structure.add_child(terra)
 			position -= 1.5
 	title.set_text(_name)
+	resize()
+
+var cam_offset = (display.aspect_ratio-1.8)/0.2
+func resize():
+	# use camera.h_offset?
+	cam_offset = (display.aspect_ratio-1.8)/0.2
+	
+	#print("camera ", camera.h_offset)
+	#print("cam_offset ", cam_offset)
+	if view == "Arcology":
+		#camera.h_offset = cam_offset
+		camera.translation.x = cam_offset
+	#elif view == "Terra":
+	#	camera.translation.x = clamp(3-cam_offset/vm, 0, 2)
 
 func sector_ownership():
 	for terra in structure.get_children():
@@ -77,6 +92,7 @@ func swap(old,new):
 	new.rotation_degrees[1] = round(old.rotation_degrees[1])
 	for children in old.get_children():
 		children.queue_free()
+	old.queue_free()
 	old.replace_by(new)
 
 var selected_terra
@@ -150,7 +166,8 @@ func mouse_exited(node):
 func _on_Button_pressed():
 	var t_start = camera.translation
 	var t_modify = structure.get_node(selected_terra).translation[1]
-	var t_end = Vector3(2, t_modify+2, 9)
+	#var t_end = Vector3(2, t_modify+2, 9) ## original position
+	var t_end = Vector3(0, t_modify+2, 9)
 	var r_start = camera.rotation_degrees
 	var r_end = Vector3(-40, 0, 0)
 	title.set_text(selected_terra)
@@ -171,8 +188,17 @@ func _on_Button_pressed():
 	tween.interpolate_property(camera,'rotation_degrees',r_start,r_end,1,Tween.TRANS_SINE,Tween.EASE_IN_OUT)
 	tween.start()
 
+#var test_offset = 0
 var camrot = 0.0
 func _input(event):
+#	if event.is_action_pressed('ui_page_up'):
+#		test_offset += 1
+#		print(test_offset)
+#		camera.translation.x = test_offset
+#	if event.is_action_pressed('ui_page_down'):
+#		test_offset -= 1
+#		print(test_offset)
+#		camera.translation.x = test_offset
 	if self.visible and not get_tree().get_root().get_node('Game/GUI/AI Panel').is_visible_in_tree():
 		if (event.is_class("InputEventMouseMotion")):
 			if (event.button_mask&(BUTTON_MASK_LEFT)):
@@ -210,7 +236,7 @@ func _input(event):
 							return
 				var t_start = camera.translation
 				var t_modify = structure.get_node(selected_terra).translation[1]
-				var t_end = Vector3(0, -8.5, 16)
+				var t_end = Vector3(cam_offset, -8.5, 16)
 				var r_start = camera.rotation_degrees
 				var r_end = Vector3(-4, -20, 0)
 				title.set_text(_name)
@@ -233,7 +259,7 @@ func _input(event):
 
 func quick_save():
 	var file = File.new()
-	var path = 'user://Data/Slot %s/Arcology.json'%game.data_slot
+	var path = 'user://Data/Slot %s/Arcology.json'%data.data_slot
 	file.open(path,File.WRITE)
 	file.store_line(to_json(_save()))
 	file.close()

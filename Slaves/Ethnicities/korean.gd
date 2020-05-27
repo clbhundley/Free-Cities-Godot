@@ -9,8 +9,8 @@ static func traits():
 		hair_color = "black",
 		eye_color = "brown",
 		body_type = null,
-		height = str(game.gaussian(157,8)) + " cm",
-		weight = str(game.gaussian(57,8)) + " kg",
+		height = str(math.gaussian(157,8)) + " cm",
+		weight = str(math.gaussian(57,8)) + " kg",
 		breast_size = chest(),
 		penis_size = penis()}
 
@@ -21,10 +21,10 @@ static func chest():
 	return {
 	'breast_size':2,
 	'breast_variation':2,
-	'chest_size':game.gaussian(28,3)}
+	'chest_size':math.gaussian(28,3)}
 
 static func penis():
-	var size = game.gaussian(2,1)
+	var size = math.gaussian(2,1)
 	if size < 0:
 		size = 0
 	return size

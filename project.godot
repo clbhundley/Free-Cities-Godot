@@ -21,19 +21,45 @@ config/icon="res://icon.png"
 
 [autoload]
 
-game="*res://game.gd"
-display="*res://display.gd"
+data="*res://Library/data.gd"
+display="*res://Library/display.gd"
+math="*res://Library/math.gd"
+dice="*res://Library/dice.gd"
+time="*res://Library/time.gd"
+game="*res://Library/game.gd"
 
 [display]
 
 window/size/width=1920
 window/size/height=1080
 window/dpi/allow_hidpi=true
-window/stretch/shrink="1"
 
 [gui]
 
 timers/tooltip_delay_sec=0.3
+
+[importer_defaults]
+
+texture={
+"compress/bptc_ldr": 0,
+"compress/hdr_mode": 0,
+"compress/lossy_quality": 0.7,
+"compress/mode": 0,
+"compress/normal_map": 0,
+"detect_3d": false,
+"flags/anisotropic": false,
+"flags/filter": false,
+"flags/mipmaps": true,
+"flags/repeat": 0,
+"flags/srgb": 2,
+"process/HDR_as_SRGB": false,
+"process/fix_alpha_border": false,
+"process/invert_color": true,
+"process/premult_alpha": false,
+"size_limit": 0,
+"stream": false,
+"svg/scale": 1.0
+}
 
 [input]
 
@@ -67,9 +93,9 @@ speed={
 
 [rendering]
 
-quality/filters/anisotropic_filter_level=1
+quality/driver/fallback_to_gles2=true
+quality/2d/use_pixel_snap=true
 quality/shadows/filter_mode=0
-quality/filters/use_nearest_mipmap_filter=true
 environment/default_clear_color=Color( 0, 0, 0, 1 )
 quality/filters/msaa=4
 quality/depth/hdr=false

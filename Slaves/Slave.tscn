@@ -1,4 +1,4 @@
-[gd_scene load_steps=109 format=2]
+[gd_scene load_steps=116 format=2]
 
 [ext_resource path="res://Slaves/slave.gd" type="Script" id=1]
 [ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=2]
@@ -54,360 +54,361 @@
 [ext_resource path="res://Slaves/Textures/Small Model/Torso/clavicle.png" type="Texture" id=52]
 [ext_resource path="res://Slaves/Textures/Small Model/Feet/feet.png" type="Texture" id=53]
 [ext_resource path="res://Slaves/Textures/Small Model/Hair/hair fore neat.png" type="Texture" id=54]
-[ext_resource path="res://Slaves/Textures/Gauge/Fill/100.png" type="Texture" id=55]
-[ext_resource path="res://Slaves/Textures/Gauge/Fill/10.png" type="Texture" id=56]
-[ext_resource path="res://Slaves/Textures/Gauge/Fill/20.png" type="Texture" id=57]
-[ext_resource path="res://Slaves/Textures/Gauge/Fill/30.png" type="Texture" id=58]
-[ext_resource path="res://Slaves/Textures/Gauge/Fill/40.png" type="Texture" id=59]
-[ext_resource path="res://Slaves/Textures/Gauge/Fill/50.png" type="Texture" id=60]
-[ext_resource path="res://Slaves/Textures/Gauge/Fill/60.png" type="Texture" id=61]
-[ext_resource path="res://Slaves/Textures/Gauge/Fill/70.png" type="Texture" id=62]
-[ext_resource path="res://Slaves/Textures/Gauge/Fill/80.png" type="Texture" id=63]
-[ext_resource path="res://Slaves/Textures/Gauge/Fill/90.png" type="Texture" id=64]
-[ext_resource path="res://Slaves/Textures/Gauge/Icons/health.png" type="Texture" id=65]
-[ext_resource path="res://Slaves/Textures/Gauge/Icons/happiness.png" type="Texture" id=66]
-[ext_resource path="res://Slaves/Textures/Gauge/Icons/arousal.png" type="Texture" id=67]
-[ext_resource path="res://Slaves/Textures/Gauge/Icons/fatigue.png" type="Texture" id=68]
-[ext_resource path="res://Slaves/Textures/Gauge/Icons/hunger.png" type="Texture" id=69]
-[ext_resource path="res://Slaves/Textures/Gauge/Icons/bathroom.png" type="Texture" id=70]
+[ext_resource path="res://theme.tres" type="Theme" id=71]
+[ext_resource path="res://Slaves/Textures/Gague/Wheel/20.svg" type="Texture" id=72]
+[ext_resource path="res://Slaves/Textures/Gague/Wheel/80.svg" type="Texture" id=73]
+[ext_resource path="res://Slaves/Textures/Gague/Wheel/70.svg" type="Texture" id=74]
+[ext_resource path="res://Slaves/Textures/Gague/Wheel/100.svg" type="Texture" id=75]
+[ext_resource path="res://Slaves/Textures/Gague/Wheel/40.svg" type="Texture" id=76]
+[ext_resource path="res://Slaves/Textures/Gague/Wheel/50.svg" type="Texture" id=77]
+[ext_resource path="res://Slaves/Textures/Gague/Wheel/60.svg" type="Texture" id=78]
+[ext_resource path="res://Slaves/Textures/Gague/Wheel/90.svg" type="Texture" id=79]
+[ext_resource path="res://Slaves/Textures/Gague/Icons/health.svg" type="Texture" id=80]
+[ext_resource path="res://Slaves/Textures/Gague/Wheel/10.svg" type="Texture" id=81]
+[ext_resource path="res://Slaves/Textures/Gague/Wheel/30.svg" type="Texture" id=82]
+[ext_resource path="res://Slaves/Textures/Gague/Icons/arousal.svg" type="Texture" id=83]
+[ext_resource path="res://Slaves/Textures/Gague/Icons/fatigue.svg" type="Texture" id=84]
+[ext_resource path="res://Slaves/Textures/Gague/Icons/happiness.svg" type="Texture" id=85]
+[ext_resource path="res://Slaves/Textures/Gague/Icons/hunger.svg" type="Texture" id=86]
+[ext_resource path="res://Slaves/Textures/Gague/Icons/bathroom.svg" type="Texture" id=87]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends Node
 
-onready var s = get_parent()
+onready var _slave = get_parent()
 
 func _level():
 	var level = 0
-	level += s.health
-	level += s.intelligence
-	level += s.devotion
-	level += s.trust
-	level += s.face*10
-	if s.figure < -50 or s.figure > 50:
+	level += _slave.health
+	level += _slave.intelligence
+	level += _slave.devotion
+	level += _slave.trust
+	level += _slave.face*10
+	if _slave.figure < -50 or _slave.figure > 50:
 		level -= 10
-	elif s.figure < -95 or s.figure > 95:
+	elif _slave.figure < -95 or _slave.figure > 95:
 		level -= 20
-	level += s.libido
-	level += s.male_attraction
-	level += s.female_attraction
-	level += s.sexual_skill
-	level += s.oral_skill
-	level += s.anal_skill
-	level += s.vaginal_skill
-	level += s.penis_skill
-	level += s.anal_skill
-	level += s.prostitution_skill
-	level += s.entertainment_skill
-	level += s.combat_skill
+	level += _slave.libido
+	level += _slave.male_attraction
+	level += _slave.female_attraction
+	level += _slave.sexual_skill
+	level += _slave.oral_skill
+	level += _slave.anal_skill
+	level += _slave.vaginal_skill
+	level += _slave.penis_skill
+	level += _slave.anal_skill
+	level += _slave.prostitution_skill
+	level += _slave.entertainment_skill
+	level += _slave.combat_skill
 	return(floor(level))
 
 func _health():
 	var text
-	if s.health <= 0:
+	if _slave.health <= 0:
 		text = \"[color=#860000]Deceased[/color]\"
-	elif s.health < 10:
+	elif _slave.health < 10:
 		text = \"[color=#c80000]Near death[/color]\"
-	elif s.health < 20:
+	elif _slave.health < 20:
 		text = \"[color=#c85f00]Extremely unhealthy[/color]\"
-	elif s.health < 30:
+	elif _slave.health < 30:
 		text = \"[color=#c88c00]Very unhealthy[/color]\"
-	elif s.health < 40:
+	elif _slave.health < 40:
 		text = \"[color=#c8a500]Unhealthy[/color]\"
-	elif s.health < 50:
+	elif _slave.health < 50:
 		text = \"[color=#7a8c00]Somewhat unhealthy[/color]\"
-	elif s.health < 60:
+	elif _slave.health < 60:
 		text = \"[color=#5a8c00]Healthy[/color]\"
-	elif s.health < 80:
+	elif _slave.health < 80:
 		text = \"[color=#3c8c00]Very healthy[/color]\"
-	elif s.health < 100:
+	elif _slave.health < 100:
 		text = \"[color=#288c00]Extremely healthy[/color]\"
-	elif s.health < 110:
+	elif _slave.health < 110:
 		text = \"[color=#0e8c00]Perfectly healthy[/color]\"
-	elif s.health >= 110:
+	elif _slave.health >= 110:
 		text = \"[color=#008c28]Unnaturally healthy[/color]\"
 	return(text)
 
 func _fatigue():
 	var text
-	if s.fatigue <= 0:
+	if _slave.fatigue <= 0:
 		text = \"[color=#c80000]Completely exhausted[/color]\"
-	elif s.fatigue < 10:
+	elif _slave.fatigue < 10:
 		text = \"[color=#c85f00]Exhausted[/color]\"
-	elif s.fatigue < 20:
+	elif _slave.fatigue < 20:
 		text = \"[color=#c88c00]Very tired[/color]\"
-	elif s.fatigue < 30:
+	elif _slave.fatigue < 30:
 		text = \"[color=#c8a500]Tired[/color]\"
-	elif s.fatigue < 40:
+	elif _slave.fatigue < 40:
 		text = \"[color=#7a8c00]Drowsy[/color]\"
-	elif s.fatigue < 50:
+	elif _slave.fatigue < 50:
 		text = \"[color=#5a8c00]Awake[/color]\"
-	elif s.fatigue < 60:
+	elif _slave.fatigue < 60:
 		text = \"[color=#3c8c00]Fresh[/color]\"
-	elif s.fatigue < 80:
+	elif _slave.fatigue < 80:
 		text = \"[color=#288c00]Energetic[/color]\"
-	elif s.fatigue < 100:
+	elif _slave.fatigue < 100:
 		text = \"[color=#0e8c00]Very energetic[/color]\"
-	elif s.fatigue >= 100:
+	elif _slave.fatigue >= 100:
 		text = \"[color=#008c28]Extremely energetic[/color]\"
 	return(text)
 
 func _intelligence():
 	var text
-	if s.intelligence < 25:
+	if _slave.intelligence < 25:
 		text = \"[color=#d70000]Vegetable[/color]\"
-	elif s.intelligence < 50:
+	elif _slave.intelligence < 50:
 		text = \"[color=#d74b00]Handicapped[/color]\"
-	elif s.intelligence < 75:
+	elif _slave.intelligence < 75:
 		text = \"[color=#c89600]Slow[/color]\"
-	elif s.intelligence < 125:
+	elif _slave.intelligence < 125:
 		text = \"[color=#ffffff]Average intelligence[/color]\"
-	elif s.intelligence < 150:
+	elif _slave.intelligence < 150:
 		text = \"[color=#00aa0a]Sharp[/color]\"
-	elif s.intelligence < 175:
+	elif _slave.intelligence < 175:
 		text = \"[color=#00afb4]Superior intelligence[/color]\"
-	elif s.intelligence >= 175:
+	elif _slave.intelligence >= 175:
 		text = \"[color=aqua]Exceptional intelligence[/color]\"
 	return(text)
 
 func _devotion():
 	var text
-	if s.devotion < -95:
+	if _slave.devotion < -95:
 		text = \"[color=#9400d3]Utterly hateful[/color]\"
-	elif s.devotion < -50:
+	elif _slave.devotion < -50:
 		text = \"[color=#9400d3]Hateful[/color]\"
-	elif s.devotion < -20:
+	elif _slave.devotion < -20:
 		text = \"[color=#ba55d3]Resistant[/color]\"
-	elif s.devotion < 20:
+	elif _slave.devotion < 20:
 		text = \"[color=#c8c800]Ambivalent[/color]\"
-	elif s.devotion < 50:
+	elif _slave.devotion < 50:
 		text = \"[color=#ff69b4]Accepting[/color]\"
-	elif s.devotion < 95:
+	elif _slave.devotion < 95:
 		text = \"[color=#ff1493]Devoted[/color]\"
-	elif s.devotion >= 95:
+	elif _slave.devotion >= 95:
 		text = \"[color=fuchsia]Worshipful[/color]\"
 	return(text)
 
 func _trust():
 	var text
-	if s.trust < -95:
+	if _slave.trust < -95:
 		text = \"[color=#daa520]Abjectly terrified[/color]\"
-	elif s.trust < -50:
+	elif _slave.trust < -50:
 		text = \"[color=#daa520]Terrified[/color]\"
-	elif s.trust < -20:
+	elif _slave.trust < -20:
 		text = \"[color=#dab700]Frightened[/color]\"
-	elif s.trust < 20:
+	elif _slave.trust < 20:
 		text = \"[color=#c8c800]Fearful[/color]\"
-	elif s.trust < 50:
+	elif _slave.trust < 50:
 		text = \"[color=#66cdaa]Careful[/color]\"
-	elif s.trust < 95:
+	elif _slave.trust < 95:
 		text = \"[color=#3cb371]Trusting[/color]\"
-	elif s.trust >= 95:
+	elif _slave.trust >= 95:
 		text = \"[color=#2e8b57]Absolute trust[/color]\"
 	return(text)
 
 func _face():
 	var text
-	if s.face <= 0:
+	if _slave.face <= 0:
 		text = \"[color=#c80000]Hideous[/color]\"
-	elif s.face < 2:
+	elif _slave.face < 2:
 		text = \"[color=#c88c00]Ugly[/color]\"
-	elif s.face < 6:
+	elif _slave.face < 6:
 		text = \"[color=#ffffff]Average face[/color]\"
-	elif s.face <= 8:
+	elif _slave.face <= 8:
 		text = \"[color=#3c8c00]Pretty[/color]\"
-	elif s.face > 8:
+	elif _slave.face > 8:
 		text = \"[color=#008c28]Beautiful[/color]\"
 	return (text)
 
 func _figure():
 	var text
-	if s.figure < -95:
+	if _slave.figure < -95:
 		text = \"[color=#c80000]Emaciated[/color]\"
-	elif s.figure < -50:
+	elif _slave.figure < -50:
 		text = \"[color=#c8a500]Skinny[/color]\"
-	elif s.figure < -20:
+	elif _slave.figure < -20:
 		text = \"[color=#3c8c00]Thin[/color]\"
-	elif s.figure < 20:
+	elif _slave.figure < 20:
 		text = \"[color=#ffffff]Average weight[/color]\"
-	elif s.figure < 50:
+	elif _slave.figure < 50:
 		text = \"[color=#3c8c00]Plush[/color]\"
-	elif s.figure < 95:
+	elif _slave.figure < 95:
 		text = \"[color=#c8a500]Fat[/color]\"
-	elif s.figure >= 95:
+	elif _slave.figure >= 95:
 		text = \"[color=#c80000]Overweight[/color]\"
 	return(text)
 
 func _libido():
 	var text
-	if s.libido < 25:
+	if _slave.libido < 25:
 		text = \"[color=#ff4500]Frigid[/color]\"
-	elif s.libido < 50:
+	elif _slave.libido < 50:
 		text = \"[color=#ffa500]Repressed[/color]\"
-	elif s.libido < 75:
+	elif _slave.libido < 75:
 		text = \"[color=#ffd100]Chaste[/color]\"
-	elif s.libido < 125:
+	elif _slave.libido < 125:
 		text = \"[color=#ffbbdd]Average libido[/color]\"
-	elif s.libido < 150:
+	elif _slave.libido < 150:
 		text = \"[color=#ff69b4]Lustful[/color]\"
-	elif s.libido < 175:
+	elif _slave.libido < 175:
 		text = \"[color=#ff1493]Sex addict[/color]\"
-	elif s.libido >= 175:
+	elif _slave.libido >= 175:
 		text = \"[color=fuchsia]Nympho[/color]\"
 	return(text)
 
 func _male_attraction():
 	var text
-	if s.male_attraction <= -100:
+	if _slave.male_attraction <= -100:
 		text = \"[color=#ff0000]Hates men[/color]\"
-	elif s.male_attraction < -75:
+	elif _slave.male_attraction < -75:
 		text = \"[color=#ff4500]Disgusted by men[/color]\"
-	elif s.male_attraction < -50:
+	elif _slave.male_attraction < -50:
 		text = \"[color=#ffa500]Dislikes men[/color]\"
-	elif s.male_attraction < -25:
+	elif _slave.male_attraction < -25:
 		text = \"[color=#ffd100]Turned off by men[/color]\"
-	elif s.male_attraction <= 0:
+	elif _slave.male_attraction <= 0:
 		text = \"[color=#ffffff]No feelings towards men[/color]\"
-	elif s.male_attraction < 25:
+	elif _slave.male_attraction < 25:
 		text = \"[color=#ffbbdd]Likes men[/color]\"
-	elif s.male_attraction < 50:
+	elif _slave.male_attraction < 50:
 		text = \"[color=#ff69b4]Attracted to men[/color]\"
-	elif s.male_attraction < 75:
+	elif _slave.male_attraction < 75:
 		text = \"[color=#ff1493]Aroused by men[/color]\"
-	elif s.male_attraction <= 100:
+	elif _slave.male_attraction >= 75:
 		text = \"[color=fuchsia]Passionate about men[/color]\"
 	return(text)
 
 func _female_attraction():
 	var text
-	if s.female_attraction <= -100:
+	if _slave.female_attraction <= -100:
 		text = \"[color=#ff0000]Hates women[/color]\"
-	elif s.female_attraction < -75:
+	elif _slave.female_attraction < -75:
 		text = \"[color=#ff4500]Disgusted by women[/color]\"
-	elif s.female_attraction < -50:
+	elif _slave.female_attraction < -50:
 		text = \"[color=#ffa500]Dislikes women[/color]\"
-	elif s.female_attraction < -25:
+	elif _slave.female_attraction < -25:
 		text = \"[color=#ffd100]Turned off by women[/color]\"
-	elif s.female_attraction <= 0:
+	elif _slave.female_attraction <= 0:
 		text = \"[color=#ffffff]No feelings towards women[/color]\"
-	elif s.female_attraction < 25:
+	elif _slave.female_attraction < 25:
 		text = \"[color=#ffbbdd]Likes women[/color]\"
-	elif s.female_attraction < 50:
+	elif _slave.female_attraction < 50:
 		text = \"[color=ff69b4]Attracted to women[/color]\"
-	elif s.female_attraction < 75:
+	elif _slave.female_attraction < 75:
 		text = \"[color=ff1493]Aroused by women[/color]\"
-	elif s.female_attraction <= 100:
+	elif _slave.female_attraction >= 75:
 		text = \"[color=fuchsia]Passionate about women[/color]\"
 	return(text)
 
 func _sexual_skill():
 	var text
-	if s.sexual_skill < 25:
+	if _slave.sexual_skill < 25:
 		text = \"[color=#c89600]Unskilled at sex[/color]\"
-	elif s.sexual_skill < 50:
+	elif _slave.sexual_skill < 50:
 		text = \"[color=#ffffff]Basic sexual skills[/color]\"
-	elif s.sexual_skill < 150:
+	elif _slave.sexual_skill < 150:
 		text = \"[color=#00aa0a]Skilled at sex[/color]\"
-	elif s.sexual_skill < 200:
+	elif _slave.sexual_skill < 200:
 		text = \"[color=#00afb4]Sexual expert[/color]\"
-	elif s.sexual_skill <= 300:
+	elif _slave.sexual_skill >= 200:
 		text = \"[color=aqua]Sexual master[/color]\"
 	return(text)
 
 func _oral_skill():
 	var text
-	if s.oral_skill < 25:
+	if _slave.oral_skill < 25:
 		text = \"[color=#c89600]Unskilled at oral[/color]\"
-	elif s.oral_skill < 50:
+	elif _slave.oral_skill < 50:
 		text = \"[color=#ffffff]Basic oral skills[/color]\"
-	elif s.oral_skill < 150:
+	elif _slave.oral_skill < 150:
 		text = \"[color=#00aa0a]Skilled at oral[/color]\"
-	elif s.oral_skill < 200:
+	elif _slave.oral_skill < 200:
 		text = \"[color=#00afb4]Oral expert[/color]\"
-	elif s.oral_skill <= 300:
+	elif _slave.oral_skill >= 200:
 		text = \"[color=aqua]Oral master[/color]\"
 	return(text)
 
 func _anal_skill():
 	var text
-	if s.anal_skill < 25:
+	if _slave.anal_skill < 25:
 		text = \"[color=#c89600]Unskilled at anal[/color]\"
-	elif s.anal_skill < 50:
+	elif _slave.anal_skill < 50:
 		text = \"[color=#ffffff]Basic anal skills[/color]\"
-	elif s.anal_skill < 150:
+	elif _slave.anal_skill < 150:
 		text = \"[color=#00aa0a]Skilled at anal sex[/color]\"
-	elif s.anal_skill < 200:
+	elif _slave.anal_skill < 200:
 		text = \"[color=#00afb4]Anal expert[/color]\"
-	elif s.anal_skill <= 300:
+	elif _slave.anal_skill >= 200:
 		text = \"[color=aqua]Anal master[/color]\"
 	return(text)
 
 func _vaginal_skill():
 	var text
-	if s.vaginal_skill < 25:
+	if _slave.vaginal_skill < 25:
 		text = \"[color=#c89600]Unskilled at vaginal[/color]\"
-	elif s.vaginal_skill < 50:
+	elif _slave.vaginal_skill < 50:
 		text = \"[color=#ffffff]Basic vaginal skills[/color]\"
-	elif s.vaginal_skill < 150:
+	elif _slave.vaginal_skill < 150:
 		text = \"[color=#00aa0a]Skilled at vaginal sex[/color]\"
-	elif s.vaginal_skill < 200:
+	elif _slave.vaginal_skill < 200:
 		text = \"[color=#00afb4]Vaginal expert[/color]\"
-	elif s.vaginal_skill <= 300:
+	elif _slave.vaginal_skill >= 200:
 		text = \"[color=aqua]Vaginal master[/color]\"
 	return(text)
 
 func _penis_skill():
 	var text
-	if s.penis_skill < 25:
+	if _slave.penis_skill < 25:
 		text = \"[color=#c89600]Unskilled stud[/color]\"
-	elif s.penis_skill < 50:
+	elif _slave.penis_skill < 50:
 		text = \"[color=#ffffff]Basic stud[/color]\"
-	elif s.penis_skill < 150:
+	elif _slave.penis_skill < 150:
 		text = \"[color=#00aa0a]Skilled stud[/color]\"
-	elif s.penis_skill < 200:
+	elif _slave.penis_skill < 200:
 		text = \"[color=#00afb4]Expert stud[/color]\"
-	elif s.penis_skill <= 300:
+	elif _slave.penis_skill >= 200:
 		text = \"[color=aqua]Master stud[/color]\"
 	return(text)
 
 func _prostitution_skill():
 	var text
-	if s.prostitution_skill < 25:
+	if _slave.prostitution_skill < 25:
 		text = \"[color=#c89600]Unskilled at prostitution[/color]\"
-	elif s.prostitution_skill < 50:
+	elif _slave.prostitution_skill < 50:
 		text = \"[color=#ffffff]Basic prostitution skills[/color]\"
-	elif s.prostitution_skill < 150:
+	elif _slave.prostitution_skill < 150:
 		text = \"[color=#00aa0a]Skilled prostitute[/color]\"
-	elif s.prostitution_skill < 200:
+	elif _slave.prostitution_skill < 200:
 		text = \"[color=#00afb4]Expert prostitute[/color]\"
-	elif s.prostitution_skill <= 300:
+	elif _slave.prostitution_skill >= 200:
 		text = \"[color=aqua]Masterful prostitute[/color]\"
 	return(text)
 
 func _entertainment_skill():
 	var text
-	if s.entertainment_skill < 25:
+	if _slave.entertainment_skill < 25:
 		text = \"[color=#c89600]Unskilled at entertainment[/color]\"
-	elif s.entertainment_skill < 50:
+	elif _slave.entertainment_skill < 50:
 		text = \"[color=#ffffff]Basic entertainment skills[/color]\"
-	elif s.entertainment_skill < 150:
+	elif _slave.entertainment_skill < 150:
 		text = \"[color=#00aa0a]Skilled entertainer[/color]\"
-	elif s.entertainment_skill < 200:
+	elif _slave.entertainment_skill < 200:
 		text = \"[color=#00afb4]Expert entertainer[/color]\"
-	elif s.entertainment_skill <= 300:
+	elif _slave.entertainment_skill >= 200:
 		text = \"[color=aqua]Masterful entertainer[/color]\"
 	return(text)
 
 func _combat_skill():
 	var text
-	if s.combat_skill < 25:
+	if _slave.combat_skill < 25:
 		text = \"[color=#c89600]Unskilled at combat[/color]\"
-	elif s.combat_skill < 50:
+	elif _slave.combat_skill < 50:
 		text = \"[color=#ffffff]Basic combat skills[/color]\"
-	elif s.combat_skill < 150:
+	elif _slave.combat_skill < 150:
 		text = \"[color=#00aa0a]Skilled fighter[/color]\"
-	elif s.combat_skill < 200:
+	elif _slave.combat_skill < 200:
 		text = \"[color=#00afb4]Expert fighter[/color]\"
-	elif s.combat_skill <= 300:
+	elif _slave.combat_skill >= 200:
 		text = \"[color=aqua]Masterful fighter[/color]\"
 	return(text)
 
@@ -491,7 +492,7 @@ func _combat_skill():
 [sub_resource type="GDScript" id=2]
 script/source = "extends Node
 
-onready var s = get_node('../../')
+onready var _slave = owner
 #onready var wew = get_node('../../Actions/'+action)
 
 func _ready():
@@ -500,25 +501,25 @@ func _ready():
 	pass
 
 func tick():
-	s.get_node('Top/Text/Status').set_text(\"Resting\")
+	_slave.get_node('Top/Status').set_text(\"Resting\")
 
 func next_action():
-	if s.bathroom > 50:
-		s.action = \"Bathroom\"
-	elif s.hunger > 40:
-		s.action = \"Eating\"
-	elif s.fatigue > 70:
-		s.action = \"Sleeping\"
-	elif s.arousal > 50:
-		s.action = \"Masturbation\"
+	if _slave.bathroom > 50:
+		_slave.action = \"Bathroom\"
+	elif _slave.hunger > 40:
+		_slave.action = \"Eating\"
+	elif _slave.fatigue > 70:
+		_slave.action = \"Sleeping\"
+	elif _slave.arousal > 50:
+		_slave.action = \"Masturbation\"
 	else:
-		s.action = \"Idle\"
+		_slave.action = \"Idle\"
 "
 
 [sub_resource type="GDScript" id=3]
 script/source = "extends Node
 
-onready var s = get_node('../../')
+onready var _slave = owner
 #onready var wew = get_node('../../Actions/'+action)
 
 func _ready():
@@ -527,80 +528,81 @@ func _ready():
 	pass
 
 func tick():
-	s.get_node('Top/Text/Status').set_text(\"Prostitute\")
+	_slave.get_node('Top/Status').set_text(\"Prostitute\")
 
 func next_action():
-	if s.bathroom > 60:
-		s.action = \"Bathroom\"
-	elif s.hunger > 50:
-		s.action = \"Eating\"
-	elif s.fatigue > 70:
-		s.action = \"Sleeping\"
-	elif s.arousal > 80:
-		s.action = \"Masturbation\"
+	if _slave.bathroom > 60:
+		_slave.action = \"Bathroom\"
+	elif _slave.hunger > 50:
+		_slave.action = \"Eating\"
+	elif _slave.fatigue > 70:
+		_slave.action = \"Sleeping\"
+	elif _slave.arousal > 80:
+		_slave.action = \"Masturbation\"
 	else:
-		s.action = \"Awaiting customer\"
+		_slave.action = \"Awaiting customer\"
 "
 
 [sub_resource type="GDScript" id=4]
 script/source = "extends Node
 
-onready var s = get_node('../../')
+onready var _slave = owner
 
 func tick():
-	pass"
+	pass
+"
 
 [sub_resource type="GDScript" id=5]
 script/source = "extends Node
 
-onready var s = get_node('../../')
+onready var _slave = owner
 var total_time
-var time = 0
+var current_time = 0
 
 func start():
-	total_time = abs(game.gaussian(100,10))
-	s.get_node('Activity/Action').set_text(name)
-	s.get_node('Activity/ProgressBar').max_value = total_time
+	total_time = abs(math.gaussian(100,10))
+	_slave.get_node('Activity/Action').set_text(name)
+	_slave.get_node('Activity/ProgressBar').max_value = total_time
 	step()
 
 func step():
-		time += 1
-		s.get_node('Activity/ProgressBar').set(\"value\",time)
-		s.get_node('Activity/Time').set_text(game.time_remaining(time,total_time))
+		current_time += 1
+		_slave.get_node('Activity/ProgressBar').set(\"value\",current_time)
+		_slave.get_node('Activity/Time').set_text(math.time_remaining(current_time,total_time))
 
 func tick():
-	if time == 0:
+	if current_time == 0:
 		start()
-	elif time < total_time:
+	elif current_time < total_time:
 		step()
 	else:
-		time = 0
-		s._action_ended()
+		current_time = 0
+		_slave._action_ended()
 "
 
 [sub_resource type="GDScript" id=6]
 script/source = "extends Node
 
-onready var s = get_node('../../')
+onready var _slave = owner
 var total_time
-var time = 0
+var current_time = 0
 
 func start():
-	s.is_awake = false
-	var f = round(s.fatigue/10)
-	if f == 0:
-		f = 1
-	total_time = abs(game.gaussian(3600,200))*f
-	s.get_node('Activity/Action').set_text(name)
-	s.get_node('Activity/ProgressBar').max_value = total_time
+	_slave.is_awake = false
+	var fatigue = round(_slave.fatigue/10)
+	if fatigue == 0:
+		fatigue = 1
+	total_time = abs(math.gaussian(3600,200))*fatigue
+	_slave.get_node('Activity/Action').set_text(name)
+	_slave.get_node('Activity/ProgressBar').max_value = total_time
 	step()
 
 func step():
-	time += 1
-	if s.fatigue > 0:
-		s.fatigue -= 0.0028
-	s.get_node('Activity/ProgressBar').set(\"value\",time)
-	s.get_node('Activity/Time').set_text(game.time_remaining(time,total_time))
+	current_time += 1
+	if _slave.fatigue > 0:
+		_slave.fatigue -= 0.0028
+	_slave.get_node('Activity/ProgressBar').set(\"value\",current_time)
+	_slave.get_node('Activity/Time').set_text(math.time_remaining(current_time,total_time))
 		
 #		if s.health <= 0: #Deceased
 #			pass
@@ -642,187 +644,189 @@ func step():
 #			s.fatigue += 0.0001
 
 func tick():
-	if time == 0:
+	if current_time == 0:
 		start()
-	elif time < total_time:
+	elif current_time < total_time:
 		step()
 	else:
-		time = 0
-		s.is_awake = true
-		s._action_ended()
+		current_time = 0
+		_slave.is_awake = true
+		_slave._action_ended()
 "
 
 [sub_resource type="GDScript" id=7]
 script/source = "extends Node
 
-onready var s = get_node('../../')
+onready var _slave = owner
 var total_time
-var time = 0
+var current_time = 0
 
 func start():
-	var h = round(s.hunger/10)
-	if h == 0:
-		h = 1
-	total_time = abs(game.gaussian(55,11))*h
-	s.get_node('Activity/Action').set_text(name)
-	s.get_node('Activity/ProgressBar').max_value = total_time
+	var hunger = round(_slave.hunger/10)
+	if hunger == 0:
+		hunger = 1
+	total_time = abs(math.gaussian(55,11))*hunger
+	_slave.get_node('Activity/Action').set_text(name)
+	_slave.get_node('Activity/ProgressBar').max_value = total_time
 	step()
 
 func step():
-	time += 1
-	if s.hunger > 0:
-		s.hunger -= 0.2
-	s.get_node('Activity/ProgressBar').set(\"value\",time)
-	s.get_node('Activity/Time').set_text(game.time_remaining(time,total_time))
+	current_time += 1
+	if _slave.hunger > 0:
+		_slave.hunger -= 0.2
+	_slave.get_node('Activity/ProgressBar').set(\"value\",current_time)
+	_slave.get_node('Activity/Time').set_text(math.time_remaining(current_time,total_time))
 
 func tick():
-	if time == 0:
-		game.money(-5)
+	if current_time == 0:
+		game.update_money(-5)
 		start()
-	elif time < total_time:
+	elif current_time < total_time:
 		step()
 	else:
-		time = 0
-		s._action_ended()
+		current_time = 0
+		_slave._action_ended()
 "
 
 [sub_resource type="GDScript" id=8]
 script/source = "extends Node
 
-onready var s = get_node('../../')
+onready var _slave = owner
 var total_time
-var time = 0
+var current_time = 0
 
 func start():
-	var b = round(s.bathroom/10)
-	if b == 0:
-		b = 1
-	total_time = abs(game.gaussian(45,8))*b
-	s.get_node('Activity/Action').set_text(\"Using bathroom\")
-	s.get_node('Activity/ProgressBar').max_value = total_time
+	var bathroom = round(_slave.bathroom/10)
+	if bathroom == 0:
+		bathroom = 1
+	total_time = abs(math.gaussian(45,8))*bathroom
+	_slave.get_node('Activity/Action').set_text(\"Using bathroom\")
+	_slave.get_node('Activity/ProgressBar').max_value = total_time
 	step()
 
 func step():
-	time += 1
-	if s.bathroom > 0:
-		s.bathroom -= 0.3
-	s.get_node('Activity/ProgressBar').set(\"value\",time)
-	s.get_node('Activity/Time').set_text(game.time_remaining(time,total_time))
+	current_time += 1
+	if _slave.bathroom > 0:
+		_slave.bathroom -= 0.3
+	_slave.get_node('Activity/ProgressBar').set(\"value\",current_time)
+	_slave.get_node('Activity/Time').set_text(math.time_remaining(current_time,total_time))
 
 func tick():
-	if time == 0:
+	if current_time == 0:
 		start()
-	elif time < total_time:
+	elif current_time < total_time:
 		step()
 	else:
-		time = 0
-		s._action_ended()
+		current_time = 0
+		_slave._action_ended()
 "
 
 [sub_resource type="GDScript" id=9]
 script/source = "extends Node
 
-onready var s = get_node('../../')
+onready var _slave = owner
 var total_time
-var time = 0
+var current_time = 0
 
 func start():
-	var a = round(s.arousal/10)
-	if a == 0:
-		a = 1
-	total_time = abs(game.gaussian(230,21))*a
-	s.get_node('Activity/Action').set_text(\"Masturbating\")
-	s.get_node('Activity/ProgressBar').max_value = total_time
+	var arousal = round(_slave.arousal/10)
+	if arousal == 0:
+		arousal = 1
+	total_time = abs(math.gaussian(230,21))*arousal
+	_slave.get_node('Activity/Action').set_text(\"Masturbating\")
+	_slave.get_node('Activity/ProgressBar').max_value = total_time
 	step()
 
 func step():
-	time += 1
-	if s.arousal > 0:
-		s.arousal -= 0.1
-	s.get_node('Activity/ProgressBar').set(\"value\",time)
-	s.get_node('Activity/Time').set_text(game.time_remaining(time,total_time))
+	current_time += 1
+	if _slave.arousal > 0:
+		_slave.arousal -= 0.1
+	_slave.get_node('Activity/ProgressBar').set(\"value\",current_time)
+	_slave.get_node('Activity/Time').set_text(math.time_remaining(current_time,total_time))
 
 func tick():
-	if time == 0:
+	if current_time == 0:
 		start()
-	elif time < total_time:
+	elif current_time < total_time:
 		step()
 	else:
-		time = 0
-		s._action_ended()
+		current_time = 0
+		_slave._action_ended()
 "
 
 [sub_resource type="GDScript" id=10]
 script/source = "extends Node
 
-onready var s = get_node('../../')
+onready var _slave = owner
 var total_time
-var time = 0
+var current_time = 0
 
 func start():
-	var a = round(s.arousal/10)
-	if a == 0:
-		a = 1
-	total_time = abs(game.gaussian(230,21))*a
-	s.get_node('Activity/Action').set_text(\"Awaiting customer\")
-	s.get_node('Activity/ProgressBar').max_value = total_time
+	#time to acquire customer based on slave arousal?
+	var arousal = round(_slave.arousal/10)
+	if arousal == 0:
+		arousal = 1
+	total_time = abs(math.gaussian(230,21))*arousal
+	_slave.get_node('Activity/Action').set_text(\"Awaiting customer\")
+	_slave.get_node('Activity/ProgressBar').max_value = total_time
 	step()
 
 func step():
-	time += 1
-	if s.arousal > 0:
-		s.arousal -= 0.1
-	s.get_node('Activity/ProgressBar').set(\"value\",time)
-	s.get_node('Activity/Time').set_text(game.time_remaining(time,total_time))
+	current_time += 1
+	if _slave.arousal <= 90:  #anticipation
+		_slave.arousal += 0.1
+	_slave.get_node('Activity/ProgressBar').set(\"value\",current_time)
+	_slave.get_node('Activity/Time').set_text(math.time_remaining(current_time,total_time))
 
 func tick():
-	if time == 0:
+	if current_time == 0:
 		start()
-	elif time < total_time:
+	elif current_time < total_time:
 		step()
 	else:
-		time = 0
-		s.action = \"Servicing customer\"
+		current_time = 0
+		_slave.action = \"Servicing customer\"
 "
 
 [sub_resource type="GDScript" id=11]
 script/source = "extends Node
 
-onready var s = get_node('../../')
+onready var _slave = owner
 var total_time
-var time = 0
+var current_time = 0
 
 func start():
-	var a = round(s.arousal/10)
-	if a == 0:
-		a = 1
-	total_time = abs(game.gaussian(230,21))*a
-	s.get_node('Activity/Action').set_text(\"Servicing customer\")
-	s.get_node('Activity/ProgressBar').max_value = total_time
+	#time to satisfy customer based on slave arousal?
+	var arousal = round(_slave.arousal/10)
+	if arousal == 0:
+		arousal = 1
+	total_time = abs(math.gaussian(230,21))*arousal
+	_slave.get_node('Activity/Action').set_text(\"Servicing customer\")
+	_slave.get_node('Activity/ProgressBar').max_value = total_time
 	step()
 
 func step():
-	time += 1
-	if s.arousal > 0:
-		s.arousal -= 0.1
-	s.get_node('Activity/ProgressBar').set(\"value\",time)
-	s.get_node('Activity/Time').set_text(game.time_remaining(time,total_time))
+	current_time += 1
+	if _slave.arousal > 0:    #satisfaction
+		_slave.arousal -= 0.1
+	_slave.get_node('Activity/ProgressBar').set(\"value\",current_time)
+	_slave.get_node('Activity/Time').set_text(math.time_remaining(current_time,total_time))
 
 func tick():
-	if time == 0:
+	if current_time == 0:
 		start()
-	elif time < total_time:
+	elif current_time < total_time:
 		step()
 	else:
-		time = 0
-		game.money(abs(game.gaussian(50,20)))
-		s._action_ended()
+		current_time = 0
+		game.update_money(abs(math.gaussian(50,20)))
+		_slave._action_ended()
 "
 
 [sub_resource type="GDScript" id=12]
 script/source = "extends Node
 
-onready var s = get_node('../../')
+onready var _slave = owner
 
 var active = true
 
@@ -887,71 +891,71 @@ func tick():
 [sub_resource type="GDScript" id=13]
 script/source = "extends Node
 
-onready var s = get_node('../../')
+onready var _slave = owner
 
 var active = true
 
 func tick():
-	if s.is_awake:
-		if s.fatigue < 80:
-			s.fatigue += 0.0014
-		elif s.fatigue < 100:
-			s.fatigue += 0.0007
+	if _slave.is_awake:
+		if _slave.fatigue < 80:
+			_slave.fatigue += 0.0014
+		elif _slave.fatigue < 100:
+			_slave.fatigue += 0.0007
 "
 
 [sub_resource type="GDScript" id=14]
 script/source = "extends Node
 
-onready var s = get_node('../../')
+onready var _slave = owner
 
 var active = true
 
 func tick():
-	if s.hunger < 100:
-		if s.is_awake:
-			s.hunger += 0.0018
+	if _slave.hunger < 100:
+		if _slave.is_awake:
+			_slave.hunger += 0.0018
 		else:
-			s.hunger += 0.0014
+			_slave.hunger += 0.0014
 "
 
 [sub_resource type="GDScript" id=15]
 script/source = "extends Node
 
-onready var s = get_node('../../')
+onready var _slave = owner
 
 var active = true
 
 func tick():
-	if s.bathroom < 100:
-		if s.is_awake:
-			s.bathroom += 0.0036
+	if _slave.bathroom < 100:
+		if _slave.is_awake:
+			_slave.bathroom += 0.0036
 		else:
-			s.bathroom += 0.0026
+			_slave.bathroom += 0.0026
 "
 
 [sub_resource type="GDScript" id=16]
 script/source = "extends Node
 
-onready var s = get_node('../../')
+onready var _slave = owner
 
 var active = true
 
 func tick():
-	if s.arousal < 100:
-		if s.libido < 25:
-			s.arousal += 0.0004
-		elif s.libido < 50:
-			s.arousal += 0.0005
-		elif s.libido < 75:
-			s.arousal += 0.0006
-		elif s.libido < 125:
-			s.arousal += 0.0007
-		elif s.libido < 150:
-			s.arousal += 0.0008
-		elif s.libido < 175:
-			s.arousal += 0.0009
-		elif s.libido >= 175:
-			s.arousal += 0.001
+	if _slave.arousal < 100:
+		if _slave.libido < 25:
+			_slave.arousal += 0.0004
+		elif _slave.libido < 50:
+			_slave.arousal += 0.0005
+		elif _slave.libido < 75:
+			_slave.arousal += 0.0006
+		elif _slave.libido < 125:
+			_slave.arousal += 0.0007
+		elif _slave.libido < 150:
+			_slave.arousal += 0.0008
+		elif _slave.libido < 175:
+			_slave.arousal += 0.0009
+		elif _slave.libido >= 175:
+			_slave.arousal += 0.001
 "
 
 [sub_resource type="GDScript" id=17]
@@ -1158,20 +1162,112 @@ font_data = ExtResource( 2 )
 size = 25
 font_data = ExtResource( 2 )
 
-[sub_resource type="GDScript" id=32]
+[sub_resource type="DynamicFont" id=32]
+resource_name = "Rubik-Light"
+size = 20
+font_data = ExtResource( 2 )
+
+[sub_resource type="GDScript" id=33]
+script/source = "extends RichTextLabel
+
+onready var _slave = owner
+
+#func _ready():
+#	set_stats()
+
+func set_stats():
+	parse_bbcode(
+	str(_slave.age)+\", \"+_slave.ethnicity+\", \"+_slave.gender+\"\\n\"+
+	_slave.stats._intelligence()+\"\\n\"+
+	_slave.stats._devotion()+\", \"+_slave.stats._trust())
+"
+
+[sub_resource type="GDScript" id=34]
+script/source = "extends RichTextLabel
+
+onready var _slave = owner
+
+#func _ready():
+#	set_stats()
+
+func set_stats():
+	parse_bbcode(
+	_slave.stats._face()+\"\\n\"+
+	_slave.stats._figure()+\"\\n\"+
+	_slave.voice)
+"
+
+[sub_resource type="GDScript" id=35]
+script/source = "extends RichTextLabel
+
+onready var _slave = owner
+
+#func _ready():
+#	set_stats()
+
+func set_stats():
+	parse_bbcode(
+	_slave.stats._libido()+\"\\n\"+
+	_slave.stats._male_attraction()+\"\\n\"+
+	_slave.stats._female_attraction()+\"\\n\"+
+	\"#Fetishes\")
+"
+
+[sub_resource type="GDScript" id=36]
+script/source = "extends RichTextLabel
+
+onready var _slave = owner
+
+#func _ready():
+#	set_stats()
+
+func set_stats():
+	parse_bbcode(
+	_slave.stats._sexual_skill()+\"\\n\"+
+	_slave.stats._prostitution_skill()+\"\\n\"+
+	_slave.stats._entertainment_skill()+\"\\n\"+
+	_slave.stats._combat_skill())
+"
+
+[sub_resource type="GDScript" id=37]
+script/source = "extends RichTextLabel
+
+onready var _slave = owner
+
+#func _ready():
+#	set_stats()
+
+func set_stats():
+	parse_bbcode(
+	\"#Behavioral trait\"+\"\\n\"+
+	\"#Sexual trait\"+\"\\n\"+
+	\"#Relationships\")
+"
+
+[sub_resource type="GDScript" id=38]
 script/source = "extends Control
 
-onready var s = get_node('../../../')
+onready var _slave = owner
+
+func _on_mouse_entered():
+	get_node('Title').show()
+	get_node('Value').show()
+	get_node('Icon').hide()
+
+func _on_mouse_exited():
+	get_node('Title').hide()
+	get_node('Value').hide()
+	get_node('Icon').show()
 
 func _ready():
 	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'_set_gauge')
 	_set_gauge()
 
 func _set_gauge():
-	get_node('Value').set_text(str(int(s.health)))
+	get_node('Value').set_text(str(int(_slave.health)))
 	for nodes in get_node('Fill').get_children():
 		nodes.hide()
-	if s.health >= 100:
+	if _slave.health >= 100:
 		get_node('Fill/overlay').show()
 	else:
 		get_node('Fill/overlay').hide()
@@ -1179,112 +1275,118 @@ func _set_gauge():
 	get_node('Fill/'+_round()).set_modulate(_color())
 
 func _round():
-	if s.health >= 100:
-		return str(int(round(s.health/10)*10)-100)
+	if _slave.health >= 100:
+		return str(int(round(_slave.health/10)*10)-100)
 	else:
-		return str(int(round(s.health/10)*10))
+		return str(int(round(_slave.health/10)*10))
 
 func _color():
 	var color
-	if s.health <= 10:
+	if _slave.health <= 10:
 		color = \"ff0000\"
-	elif s.health < 20:
+	elif _slave.health < 20:
 		color = \"ff4500\"
-	elif s.health < 30:
+	elif _slave.health < 30:
 		color = \"ffa500\"
-	elif s.health < 40:
+	elif _slave.health < 40:
 		color = \"ffd100\"
-	elif s.health < 50:
+	elif _slave.health < 50:
 		color = \"ffff00\"
-	elif s.health < 60:
+	elif _slave.health < 60:
 		color = \"9acd32\"
-	elif s.health < 70:
+	elif _slave.health < 70:
 		color = \"5bfb5b\"
-	elif s.health < 80:
+	elif _slave.health < 80:
 		color = \"00ff00\"
-	elif s.health < 90:
+	elif _slave.health < 90:
 		color = \"00ca00\"
-	elif s.health < 100:
+	elif _slave.health < 100:
 		color = \"009e00\"
-	elif s.health < 110:
+	elif _slave.health < 110:
 		color = \"008000\"
-	elif s.health < 120:
+	elif _slave.health < 120:
 		color = \"008032\"
-	elif s.health < 130:
+	elif _slave.health < 130:
 		color = \"00bc6c\"
-	elif s.health < 140:
+	elif _slave.health < 140:
 		color = \"00e5a4\"
-	elif s.health < 150:
+	elif _slave.health < 150:
 		color = \"00e4c4\"
-	elif s.health < 160:
+	elif _slave.health < 160:
 		color = \"00ffed\"
-	elif s.health < 170:
+	elif _slave.health < 170:
 		color = \"00edff\"
-	elif s.health < 180:
+	elif _slave.health < 180:
 		color = \"00c9ff\"
-	elif s.health < 190:
+	elif _slave.health < 190:
 		color = \"00a5ff\"
-	elif s.health >= 190:
+	elif _slave.health >= 190:
 		color = \"0096ff\"
 	return(color)
-
-func _on_mouse_entered():
-	get_node('Title').show()
-	get_node('Value').show()
-	get_node('Icon').hide()
-
-func _on_mouse_exited():
-	get_node('Title').hide()
-	get_node('Value').hide()
-	get_node('Icon').show()
 "
 
-[sub_resource type="DynamicFont" id=33]
+[sub_resource type="DynamicFont" id=39]
 size = 25
 font_data = ExtResource( 2 )
 
-[sub_resource type="GDScript" id=34]
+[sub_resource type="GDScript" id=40]
 script/source = "extends Control
 
-onready var s = get_node('../../../')
+onready var _slave = owner
+
+func _on_mouse_entered():
+	get_node('Title').show()
+	get_node('Value').show()
+	get_node('Icon').hide()
+
+func _on_mouse_exited():
+	get_node('Title').hide()
+	get_node('Value').hide()
+	get_node('Icon').show()
 
 func _ready():
 	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'_set_gauge')
 	_set_gauge()
 
 func _set_gauge():
-	get_node('Value').set_text(str(int(s.happiness)))
+	get_node('Value').set_text(str(int(_slave.happiness)))
 	for nodes in get_node('Fill').get_children():
 		nodes.hide()
 	get_node('Fill/'+_round()).show()
 	get_node('Fill/'+_round()).set_modulate(_color())
 
 func _round():
-	return str(int(round(s.happiness/10)*10))
+	return str(int(round(_slave.happiness/10)*10))
 
 func _color():
 	var color
-	if s.happiness <= 10:
+	if _slave.happiness <= 10:
 		color = \"ffffe5\"
-	elif s.happiness < 20:
+	elif _slave.happiness < 20:
 		color = \"ffffcc\"
-	elif s.happiness < 30:
+	elif _slave.happiness < 30:
 		color = \"ffffb2\"
-	elif s.happiness < 40:
+	elif _slave.happiness < 40:
 		color = \"ffff99\"
-	elif s.happiness < 50:
+	elif _slave.happiness < 50:
 		color = \"ffff7f\"
-	elif s.happiness < 60:
+	elif _slave.happiness < 60:
 		color = \"ffff66\"
-	elif s.happiness < 70:
+	elif _slave.happiness < 70:
 		color = \"ffff4c\"
-	elif s.happiness < 80:
+	elif _slave.happiness < 80:
 		color = \"ffff32\"
-	elif s.happiness < 90:
+	elif _slave.happiness < 90:
 		color = \"ffff19\"
-	elif s.happiness >= 90:
+	elif _slave.happiness >= 90:
 		color = \"ffff00\"
 	return(color)
+"
+
+[sub_resource type="GDScript" id=41]
+script/source = "extends Control
+
+onready var _slave = owner
 
 func _on_mouse_entered():
 	get_node('Title').show()
@@ -1295,54 +1397,54 @@ func _on_mouse_exited():
 	get_node('Title').hide()
 	get_node('Value').hide()
 	get_node('Icon').show()
-"
-
-[sub_resource type="GDScript" id=35]
-script/source = "extends Control
-
-onready var s = get_node('../../../')
 
 func _ready():
 	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'_set_gauge')
 	_set_gauge()
 
 func _set_gauge():
-	get_node('Value').set_text(str(int(s.arousal)))
+	get_node('Value').set_text(str(int(_slave.arousal)))
 	for nodes in get_node('Fill').get_children():
 		nodes.hide()
 	get_node('Fill/'+_round()).show()
 	get_node('Fill/'+_round()).set_modulate(_color())
 
 func _round():
-	return str(int(round(s.arousal/10)*10))
+	return str(int(round(_slave.arousal/10)*10))
 
 func _color():
 	var color
-	if s.arousal <= 10:
+	if _slave.arousal <= 10:
 		color = \"ffe5ff\"
-	elif s.arousal < 20:
+	elif _slave.arousal < 20:
 		color = \"ffccff\"
-	elif s.arousal < 30:
+	elif _slave.arousal < 30:
 		color = \"ffb2ff\"
-	elif s.arousal < 40:
+	elif _slave.arousal < 40:
 		color = \"ff99ff\"
-	elif s.arousal < 50:
+	elif _slave.arousal < 50:
 		color = \"ff7fff\"
-	elif s.arousal < 60:
+	elif _slave.arousal < 60:
 		color = \"ff66ff\"
-	elif s.arousal < 70:
+	elif _slave.arousal < 70:
 		color = \"ff4cff\"
-	elif s.arousal < 80:
+	elif _slave.arousal < 80:
 		color = \"ff32ff\"
-	elif s.arousal < 90:
+	elif _slave.arousal < 90:
 		color = \"ff19ff\"
-	elif s.arousal < 100:
+	elif _slave.arousal < 100:
 		color = \"ff00ff\"
-	elif s.arousal < 110:
+	elif _slave.arousal < 110:
 		color = \"ff00dd\"
-	elif s.arousal >= 110:
+	elif _slave.arousal >= 110:
 		color = \"ff00a7\"
 	return(color)
+"
+
+[sub_resource type="GDScript" id=42]
+script/source = "extends Control
+
+onready var _slave = owner
 
 func _on_mouse_entered():
 	get_node('Title').show()
@@ -1353,50 +1455,50 @@ func _on_mouse_exited():
 	get_node('Title').hide()
 	get_node('Value').hide()
 	get_node('Icon').show()
-"
-
-[sub_resource type="GDScript" id=36]
-script/source = "extends Control
-
-onready var s = get_node('../../../')
 
 func _ready():
 	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'_set_gauge')
 	_set_gauge()
 
 func _set_gauge():
-	get_node('Value').set_text(str(int(s.fatigue)))
+	get_node('Value').set_text(str(int(_slave.fatigue)))
 	for nodes in get_node('Fill').get_children():
 		nodes.hide()
 	get_node('Fill/'+_round()).show()
 	get_node('Fill/'+_round()).set_modulate(_color())
 
 func _round():
-	return str(int(round(s.fatigue/10)*10))
+	return str(int(round(_slave.fatigue/10)*10))
 
 func _color():
 	var color
-	if s.fatigue <= 10:
+	if _slave.fatigue <= 10:
 		color = \"eaeded\"
-	elif s.fatigue < 20:
+	elif _slave.fatigue < 20:
 		color = \"d5dbdb\"
-	elif s.fatigue < 30:
+	elif _slave.fatigue < 30:
 		color = \"c0caca\"
-	elif s.fatigue < 40:
+	elif _slave.fatigue < 40:
 		color = \"abb8b8\"
-	elif s.fatigue < 50:
+	elif _slave.fatigue < 50:
 		color = \"97a7a7\"
-	elif s.fatigue < 60:
+	elif _slave.fatigue < 60:
 		color = \"829595\"
-	elif s.fatigue < 70:
+	elif _slave.fatigue < 70:
 		color = \"6d8383\"
-	elif s.fatigue < 80:
+	elif _slave.fatigue < 80:
 		color = \"587272\"
-	elif s.fatigue < 90:
+	elif _slave.fatigue < 90:
 		color = \"436060\"
-	elif s.fatigue >= 90:
+	elif _slave.fatigue >= 90:
 		color = \"2f4f4f\"
 	return(color)
+"
+
+[sub_resource type="GDScript" id=43]
+script/source = "extends Control
+
+onready var _slave = owner
 
 func _on_mouse_entered():
 	get_node('Title').show()
@@ -1407,56 +1509,56 @@ func _on_mouse_exited():
 	get_node('Title').hide()
 	get_node('Value').hide()
 	get_node('Icon').show()
-"
-
-[sub_resource type="GDScript" id=37]
-script/source = "extends Control
-
-onready var s = get_node('../../../')
 
 func _ready():
 	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'_set_gauge')
 	_set_gauge()
 
 func _set_gauge():
-	get_node('Value').set_text(str(int(s.hunger)))
+	get_node('Value').set_text(str(int(_slave.hunger)))
 	for nodes in get_node('Fill').get_children():
 		nodes.hide()
 	get_node('Fill/'+_round()).show()
 	get_node('Fill/'+_round()).set_modulate(_color())
 
 func _round():
-	return str(int(round(s.hunger/10)*10))
+	return str(int(round(_slave.hunger/10)*10))
 
 func _color():
 	var color
-	if s.hunger <= 10:
+	if _slave.hunger <= 10:
 		color = \"ffece5\"
-	elif s.hunger < 20:
+	elif _slave.hunger < 20:
 		color = \"ffd9cc\"
-	elif s.hunger < 30:
+	elif _slave.hunger < 30:
 		color = \"ffc7b2\"
-	elif s.hunger < 40:
+	elif _slave.hunger < 40:
 		color = \"ffb499\"
-	elif s.hunger < 50:
+	elif _slave.hunger < 50:
 		color = \"ffa27f\"
-	elif s.hunger < 60:
+	elif _slave.hunger < 60:
 		color = \"ff8f66\"
-	elif s.hunger < 70:
+	elif _slave.hunger < 70:
 		color = \"ff7c4c\"
-	elif s.hunger < 80:
+	elif _slave.hunger < 80:
 		color = \"ff6a32\"
-	elif s.hunger < 90:
+	elif _slave.hunger < 90:
 		color = \"ff5719\"
-	elif s.hunger < 100:
+	elif _slave.hunger < 100:
 		color = \"ff4500\"
-	elif s.hunger < 110:
+	elif _slave.hunger < 110:
 		color = \"ff2900\"
-	elif s.hunger < 120:
+	elif _slave.hunger < 120:
 		color = \"ff1700\"
-	elif s.hunger >= 120:
+	elif _slave.hunger >= 120:
 		color = \"ff0000\"
 	return(color)
+"
+
+[sub_resource type="GDScript" id=44]
+script/source = "extends Control
+
+onready var _slave = owner
 
 func _on_mouse_entered():
 	get_node('Title').show()
@@ -1467,77 +1569,64 @@ func _on_mouse_exited():
 	get_node('Title').hide()
 	get_node('Value').hide()
 	get_node('Icon').show()
-"
-
-[sub_resource type="GDScript" id=38]
-script/source = "extends Control
-
-onready var s = get_node('../../../')
 
 func _ready():
 	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'_set_gauge')
 	_set_gauge()
 
 func _set_gauge():
-	get_node('Value').set_text(str(int(s.bathroom)))
+	get_node('Value').set_text(str(int(_slave.bathroom)))
 	for nodes in get_node('Fill').get_children():
 		nodes.hide()
 	get_node('Fill/'+_round()).show()
 	get_node('Fill/'+_round()).set_modulate(_color())
 
 func _round():
-	return str(int(round(s.bathroom/10)*10))
+	return str(int(round(_slave.bathroom/10)*10))
 
 func _color():
 	var color
-	if s.bathroom <= 10:
+	if _slave.bathroom <= 10:
 		color = \"e5e5fa\"
-	elif s.bathroom < 20:
+	elif _slave.bathroom < 20:
 		color = \"ccccf5\"
-	elif s.bathroom < 30:
+	elif _slave.bathroom < 30:
 		color = \"b2b2f0\"
-	elif s.bathroom < 40:
+	elif _slave.bathroom < 40:
 		color = \"9999eb\"
-	elif s.bathroom < 50:
+	elif _slave.bathroom < 50:
 		color = \"7f7fe6\"
-	elif s.bathroom < 60:
+	elif _slave.bathroom < 60:
 		color = \"6666e1\"
-	elif s.bathroom < 70:
+	elif _slave.bathroom < 70:
 		color = \"4c4cdc\"
-	elif s.bathroom < 80:
+	elif _slave.bathroom < 80:
 		color = \"3232d7\"
-	elif s.bathroom < 90:
+	elif _slave.bathroom < 90:
 		color = \"1919d2\"
-	elif s.bathroom < 100:
+	elif _slave.bathroom < 100:
 		color = \"0000cd\"
-	elif s.bathroom >= 100:
+	elif _slave.bathroom >= 100:
 		color = \"0000ff\"
 	return(color)
-
-func _on_mouse_entered():
-	get_node('Title').show()
-	get_node('Value').show()
-	get_node('Icon').hide()
-
-func _on_mouse_exited():
-	get_node('Title').hide()
-	get_node('Value').hide()
-	get_node('Icon').show()
 "
 
 [node name="Slave" type="Control"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_right = -1470.0
-margin_bottom = -380.0
+margin_right = 450.0
+margin_bottom = 700.0
 rect_min_size = Vector2( 450, 700 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme = ExtResource( 71 )
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Stats" type="Node" parent="."]
 script = SubResource( 1 )
 
 [node name="Assignments" type="Node" parent="."]
-editor/display_folded = true
 
 [node name="Rest" type="Node" parent="Assignments"]
 script = SubResource( 2 )
@@ -1578,7 +1667,6 @@ script = SubResource( 3 )
 [node name="Fluid Extraction" type="Node" parent="Assignments"]
 
 [node name="Actions" type="Node" parent="."]
-editor/display_folded = true
 
 [node name="None" type="Node" parent="Actions"]
 script = SubResource( 4 )
@@ -1609,7 +1697,6 @@ script = SubResource( 10 )
 script = SubResource( 11 )
 
 [node name="Effects" type="Node" parent="."]
-editor/display_folded = true
 
 [node name="Health" type="Node" parent="Effects"]
 script = SubResource( 12 )
@@ -1662,134 +1749,166 @@ script = SubResource( 27 )
 [node name="Smart Piercing" type="Node" parent="Effects"]
 script = SubResource( 28 )
 
-[node name="Top" type="TextureButton" parent="."]
-editor/display_folded = true
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_bottom = -590.0
-
-[node name="Level" type="Label" parent="Top"]
-anchor_top = 0.5
-anchor_bottom = 0.5
-margin_left = 11.0
-margin_top = -29.5
-margin_right = 133.0
-margin_bottom = 30.5
-custom_fonts/font = SubResource( 29 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-text = "345 |"
-
-[node name="Text" type="Container" parent="Top"]
-editor/display_folded = true
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-margin_left = -328.0
-margin_top = -30.5
-margin_right = -97.0
-margin_bottom = 31.5
-mouse_filter = 2
-
-[node name="Name" type="Label" parent="Top/Text"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -100.5
-margin_top = -37.0
-margin_right = 100.5
-margin_bottom = 11.0
-custom_fonts/font = SubResource( 30 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-text = "Name Here"
-
-[node name="Status" type="Label" parent="Top/Text"]
-anchor_top = 1.0
-anchor_bottom = 1.0
-margin_left = 17.0
-margin_top = -29.0
-margin_right = 182.0
-margin_bottom = 2.0
-custom_fonts/font = SubResource( 31 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-text = "Public Servant"
-
-[node name="Price" type="Label" parent="Top/Text"]
-visible = false
-anchor_top = 1.0
-anchor_bottom = 1.0
-margin_left = 17.0
-margin_top = -29.0
-margin_right = 111.0
-margin_bottom = 2.0
-custom_fonts/font = SubResource( 31 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-text = "¤20,000"
-
 [node name="Activity" type="Control" parent="."]
-editor/display_folded = true
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -215.0
-margin_top = 94.0
-margin_right = 215.0
-margin_bottom = 124.0
+anchor_left = 0.0222222
+anchor_top = 0.105714
+anchor_right = 0.977778
+anchor_bottom = 0.147143
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="ProgressBar" type="ProgressBar" parent="Activity"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_fonts/font = ExtResource( 3 )
 step = 1.0
 percent_visible = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Action" type="Label" parent="Activity"]
 anchor_left = 1.0
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
-margin_left = -64.0
-margin_top = -11.5
-margin_right = -6.0
-margin_bottom = 12.5
+margin_left = -63.0
+margin_top = -12.0
+margin_right = -5.0
+margin_bottom = 12.0
 grow_horizontal = 0
 custom_fonts/font = ExtResource( 3 )
 text = "Action"
 align = 2
-valign = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Time" type="Label" parent="Activity"]
 anchor_top = 0.5
 anchor_bottom = 0.5
-margin_left = 6.0
-margin_top = -11.5
-margin_right = 76.0
-margin_bottom = 12.5
+margin_left = 5.0
+margin_top = -12.0
+margin_right = 75.0
+margin_bottom = 12.0
 custom_fonts/font = ExtResource( 3 )
 text = "0:00:00"
 align = 3
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="Tween" type="Tween" parent="Activity"]
+[node name="Top" type="TextureButton" parent="."]
+anchor_right = 1.0
+anchor_bottom = 0.151
+margin_bottom = 0.299995
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Level" type="Label" parent="Top"]
+anchor_left = 0.0222222
+anchor_top = 0.0754717
+anchor_right = 0.217778
+anchor_bottom = 0.641509
+margin_left = 3.8147e-06
+margin_top = 3.8147e-06
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 29 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "345"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Line" type="Label" parent="Top"]
+anchor_left = 0.208889
+anchor_top = 0.0754717
+anchor_right = 0.233334
+anchor_bottom = 0.64151
+margin_right = -7.62939e-06
+margin_bottom = -7.62939e-06
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 29 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "|"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Name" type="Label" parent="Top"]
+anchor_left = 0.26
+anchor_top = 0.00943396
+anchor_right = 0.706667
+anchor_bottom = 0.462264
+margin_right = -3.05176e-05
+custom_fonts/font = SubResource( 30 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "Name Here"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Status" type="Label" parent="Top"]
+anchor_left = 0.264445
+anchor_top = 0.386792
+anchor_right = 0.631112
+anchor_bottom = 0.679245
+custom_fonts/font = SubResource( 31 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "Public Servant"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Price" type="Label" parent="Top"]
+visible = false
+anchor_left = 0.272507
+anchor_top = 0.38972
+anchor_right = 0.481396
+anchor_bottom = 0.682173
+margin_right = 1.52588e-05
+margin_bottom = -7.62939e-06
+custom_fonts/font = SubResource( 31 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "¤20,000"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Model" type="Control" parent="."]
-editor/display_folded = true
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -230.0
-margin_top = -577.0
+anchor_left = 0.489
+anchor_top = 0.176
+anchor_right = 0.489
+anchor_bottom = 0.176
+margin_left = -0.0500031
+margin_top = -0.200012
+margin_right = 229.95
+margin_bottom = 576.8
 script = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Arms" type="Control" parent="Model"]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -230.0
 margin_bottom = -570.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Left" type="Control" parent="Model/Arms"]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 
@@ -1813,7 +1932,6 @@ position = Vector2( 202.162, 157.657 )
 texture = ExtResource( 8 )
 
 [node name="Right" type="Control" parent="Model/Arms"]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 
@@ -1836,12 +1954,37 @@ modulate = Color( 0.0957947, 0.492462, 0.570313, 1 )
 position = Vector2( 115.99, 61.9714 )
 texture = ExtResource( 12 )
 
-[node name="Torso" type="Control" parent="Model"]
-editor/display_folded = true
+[node name="Legs" type="Control" parent="Model"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -230.0
 margin_bottom = -570.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="narrow" type="Sprite" parent="Model/Legs"]
+visible = false
+position = Vector2( 105.466, 388.379 )
+texture = ExtResource( 21 )
+
+[node name="normal" type="Sprite" parent="Model/Legs"]
+position = Vector2( 106.302, 389.41 )
+texture = ExtResource( 22 )
+
+[node name="wide" type="Sprite" parent="Model/Legs"]
+visible = false
+position = Vector2( 110.393, 387.678 )
+texture = ExtResource( 23 )
+
+[node name="Torso" type="Control" parent="Model"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -230.0
+margin_bottom = -570.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="unnatural" type="Sprite" parent="Model/Torso"]
 visible = false
@@ -1862,7 +2005,6 @@ position = Vector2( 114.799, 54.9955 )
 texture = ExtResource( 16 )
 
 [node name="Butt" type="Control" parent="Model"]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -230.0
@@ -1887,34 +2029,12 @@ visible = false
 position = Vector2( 154.821, 300.304 )
 texture = ExtResource( 20 )
 
-[node name="Legs" type="Control" parent="Model"]
-editor/display_folded = true
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_right = -230.0
-margin_bottom = -570.0
-
-[node name="narrow" type="Sprite" parent="Model/Legs"]
-visible = false
-position = Vector2( 105.466, 388.379 )
-texture = ExtResource( 21 )
-
-[node name="normal" type="Sprite" parent="Model/Legs"]
-position = Vector2( 106.302, 389.41 )
-texture = ExtResource( 22 )
-
-[node name="wide" type="Sprite" parent="Model/Legs"]
-visible = false
-position = Vector2( 110.393, 387.678 )
-texture = ExtResource( 23 )
-
 [node name="vagina" type="Sprite" parent="Model"]
 visible = false
 position = Vector2( 96.4092, 269.795 )
 texture = ExtResource( 24 )
 
 [node name="Testicles" type="Control" parent="Model"]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -230.0
@@ -1951,7 +2071,6 @@ position = Vector2( 91.0294, 277.653 )
 texture = ExtResource( 28 )
 
 [node name="Penis" type="Control" parent="Model"]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -230.0
@@ -1993,7 +2112,6 @@ position = Vector2( 61.4927, 227.323 )
 texture = ExtResource( 35 )
 
 [node name="Belly" type="Control" parent="Model"]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = -1.0
@@ -2012,14 +2130,12 @@ position = Vector2( 105.019, 204.08 )
 texture = ExtResource( 37 )
 
 [node name="Breasts" type="Control" parent="Model"]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -230.0
 margin_bottom = -570.0
 
 [node name="AA" type="Sprite" parent="Model/Breasts"]
-editor/display_folded = true
 visible = false
 position = Vector2( 107.535, 149.511 )
 texture = ExtResource( 38 )
@@ -2029,7 +2145,6 @@ position = Vector2( -7.23105, 12.6901 )
 texture = ExtResource( 39 )
 
 [node name="A" type="Sprite" parent="Model/Breasts"]
-editor/display_folded = true
 visible = false
 position = Vector2( 107.535, 149.511 )
 texture = ExtResource( 38 )
@@ -2039,7 +2154,6 @@ position = Vector2( -7.23105, 12.6901 )
 texture = ExtResource( 39 )
 
 [node name="B" type="Sprite" parent="Model/Breasts"]
-editor/display_folded = true
 visible = false
 position = Vector2( 106.877, 149.832 )
 texture = ExtResource( 40 )
@@ -2049,7 +2163,6 @@ position = Vector2( -9.32025, 20.4908 )
 texture = ExtResource( 41 )
 
 [node name="C" type="Sprite" parent="Model/Breasts"]
-editor/display_folded = true
 visible = false
 position = Vector2( 105.753, 151.163 )
 texture = ExtResource( 42 )
@@ -2059,7 +2172,6 @@ position = Vector2( -14.3845, 23.3575 )
 texture = ExtResource( 43 )
 
 [node name="D" type="Sprite" parent="Model/Breasts"]
-editor/display_folded = true
 visible = false
 position = Vector2( 100.679, 164.538 )
 texture = ExtResource( 44 )
@@ -2069,7 +2181,6 @@ position = Vector2( -15.9164, 33.9278 )
 texture = ExtResource( 45 )
 
 [node name="DD" type="Sprite" parent="Model/Breasts"]
-editor/display_folded = true
 visible = false
 position = Vector2( 98.679, 168.538 )
 texture = ExtResource( 44 )
@@ -2079,7 +2190,6 @@ position = Vector2( -15.9164, 33.9278 )
 texture = ExtResource( 45 )
 
 [node name="E" type="Sprite" parent="Model/Breasts"]
-editor/display_folded = true
 visible = false
 position = Vector2( 93.8192, 189.875 )
 texture = ExtResource( 46 )
@@ -2089,7 +2199,6 @@ position = Vector2( -15.7899, 44.0356 )
 texture = ExtResource( 47 )
 
 [node name="EE" type="Sprite" parent="Model/Breasts"]
-editor/display_folded = true
 visible = false
 position = Vector2( 93.8192, 190.875 )
 texture = ExtResource( 46 )
@@ -2099,7 +2208,6 @@ position = Vector2( -15.7899, 44.0356 )
 texture = ExtResource( 47 )
 
 [node name="F" type="Sprite" parent="Model/Breasts"]
-editor/display_folded = true
 visible = false
 position = Vector2( 85.4927, 213.623 )
 texture = ExtResource( 48 )
@@ -2109,7 +2217,6 @@ position = Vector2( -12.2491, 50.9612 )
 texture = ExtResource( 49 )
 
 [node name="FF" type="Sprite" parent="Model/Breasts"]
-editor/display_folded = true
 visible = false
 position = Vector2( 85.4927, 215.623 )
 texture = ExtResource( 48 )
@@ -2119,7 +2226,6 @@ position = Vector2( -12.2491, 50.9612 )
 texture = ExtResource( 49 )
 
 [node name="G" type="Sprite" parent="Model/Breasts"]
-editor/display_folded = true
 visible = false
 position = Vector2( 81.1991, 233.862 )
 texture = ExtResource( 50 )
@@ -2129,7 +2235,6 @@ position = Vector2( -15.0348, 63.4863 )
 texture = ExtResource( 51 )
 
 [node name="GG" type="Sprite" parent="Model/Breasts"]
-editor/display_folded = true
 visible = false
 position = Vector2( 80.1991, 229.862 )
 texture = ExtResource( 50 )
@@ -2143,7 +2248,6 @@ position = Vector2( 116.522, 112.659 )
 texture = ExtResource( 52 )
 
 [node name="Feet" type="Control" parent="Model"]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -230.0
@@ -2158,114 +2262,282 @@ modulate = Color( 0.0957947, 0.492462, 0.570313, 1 )
 position = Vector2( 123.252, 61.3375 )
 texture = ExtResource( 54 )
 
-[node name="Gauges" type="VBoxContainer" parent="."]
-editor/display_folded = true
-anchor_top = 0.5
-anchor_bottom = 0.5
-margin_left = 10.0
-margin_top = -204.0
-margin_right = 208.0
-margin_bottom = -60.0
-custom_constants/separation = 20
+[node name="Stats Display" type="Control" parent="."]
+anchor_left = 0.0222222
+anchor_top = 0.415714
+anchor_right = 0.6
+anchor_bottom = 0.987143
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="Upper" type="HBoxContainer" parent="Gauges"]
-editor/display_folded = true
-margin_right = 198.0
-margin_bottom = 62.0
-custom_constants/separation = 6
+[node name="Basic" type="RichTextLabel" parent="Stats Display"]
+anchor_right = 1.10385
+anchor_bottom = 0.1675
+custom_fonts/normal_font = SubResource( 32 )
+custom_constants/line_separation = -3
+text = "str(age), ethnicity, gender
+stats._intelligence()
+stats._devotion(), stats._trust()"
+scroll_active = false
+script = SubResource( 33 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Appearance" type="RichTextLabel" parent="Stats Display"]
+anchor_top = 0.18
+anchor_right = 1.10385
+anchor_bottom = 0.3475
+custom_fonts/normal_font = SubResource( 32 )
+custom_constants/line_separation = -3
+text = "stats._face()
+stats._figure()
+voice()"
+scroll_active = false
+script = SubResource( 34 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Sexuality" type="RichTextLabel" parent="Stats Display"]
+anchor_top = 0.36
+anchor_right = 1.10385
+anchor_bottom = 0.58
+custom_fonts/normal_font = SubResource( 32 )
+custom_constants/line_separation = -3
+text = "stats._libido()
+stats._male_attraction()
+stats._female_attraction()
+#Fetishes()"
+scroll_active = false
+script = SubResource( 35 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Skills" type="RichTextLabel" parent="Stats Display"]
+anchor_top = 0.5925
+anchor_right = 1.10385
+anchor_bottom = 0.8125
+custom_fonts/normal_font = SubResource( 32 )
+custom_constants/line_separation = -3
+text = "stats._sexual_skill()
+stats._prostitution_skill()
+stats._entertainment_skill()
+stats._combat_skill()"
+scroll_active = false
+script = SubResource( 36 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Traits" type="RichTextLabel" parent="Stats Display"]
+anchor_top = 0.825
+anchor_right = 1.10385
+anchor_bottom = 0.9925
+custom_fonts/normal_font = SubResource( 32 )
+custom_constants/line_separation = -3
+text = "#Behavioral trait
+#Sexual trait
+#Relationships()"
+scroll_active = false
+script = SubResource( 37 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Gauges" type="Control" parent="."]
+anchor_left = 0.0222222
+anchor_top = 0.185714
+anchor_right = 0.466667
+anchor_bottom = 0.4
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Upper" type="Control" parent="Gauges"]
+anchor_right = 1.0
+anchor_bottom = 0.426667
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Health" type="Control" parent="Gauges/Upper"]
-editor/display_folded = true
-margin_right = 62.0
-margin_bottom = 62.0
-rect_min_size = Vector2( 62, 62 )
-script = SubResource( 32 )
+anchor_right = 0.319999
+anchor_bottom = 1.0
+margin_right = -3.8147e-06
+script = SubResource( 38 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Fill" type="Control" parent="Gauges/Upper/Health"]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="overlay" type="Sprite" parent="Gauges/Upper/Health/Fill"]
+[node name="overlay" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
 visible = false
 modulate = Color( 0.054902, 0.54902, 0, 1 )
-position = Vector2( 32.4663, 32.3188 )
-texture = ExtResource( 55 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 75 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="0" type="Sprite" parent="Gauges/Upper/Health/Fill"]
+[node name="0" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
 visible = false
-position = Vector2( 39.9628, 7.82605 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="10" type="Sprite" parent="Gauges/Upper/Health/Fill"]
+[node name="10" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
 visible = false
-position = Vector2( 40.4663, 8.31883 )
-texture = ExtResource( 56 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 81 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="20" type="Sprite" parent="Gauges/Upper/Health/Fill"]
+[node name="20" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
 visible = false
-position = Vector2( 46.4663, 13.3188 )
-texture = ExtResource( 57 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 72 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="30" type="Sprite" parent="Gauges/Upper/Health/Fill"]
+[node name="30" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
 visible = false
-position = Vector2( 47.4663, 21.3188 )
-texture = ExtResource( 58 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 82 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="40" type="Sprite" parent="Gauges/Upper/Health/Fill"]
+[node name="40" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
 visible = false
-position = Vector2( 47.4663, 29.3188 )
-texture = ExtResource( 59 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 76 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="50" type="Sprite" parent="Gauges/Upper/Health/Fill"]
+[node name="50" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
 visible = false
-position = Vector2( 47.4663, 32.3188 )
-texture = ExtResource( 60 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 77 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="60" type="Sprite" parent="Gauges/Upper/Health/Fill"]
+[node name="60" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
 visible = false
-position = Vector2( 38.4663, 32.3188 )
-texture = ExtResource( 61 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 78 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="70" type="Sprite" parent="Gauges/Upper/Health/Fill"]
+[node name="70" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
 visible = false
-position = Vector2( 33.4663, 32.3188 )
-texture = ExtResource( 62 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 74 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="80" type="Sprite" parent="Gauges/Upper/Health/Fill"]
+[node name="80" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
 visible = false
-position = Vector2( 32.4663, 32.3188 )
-texture = ExtResource( 63 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 73 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="90" type="Sprite" parent="Gauges/Upper/Health/Fill"]
+[node name="90" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
 visible = false
-position = Vector2( 32.4663, 32.3188 )
-texture = ExtResource( 64 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 79 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="100" type="Sprite" parent="Gauges/Upper/Health/Fill"]
+[node name="100" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
 visible = false
-position = Vector2( 32.4663, 32.3188 )
-texture = ExtResource( 55 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 75 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Icon" type="TextureRect" parent="Gauges/Upper/Health"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -14.0
-margin_top = -14.0
-margin_right = 16.0
-margin_bottom = 16.0
-texture = ExtResource( 65 )
+anchor_left = 0.25
+anchor_top = 0.25
+anchor_right = 0.75
+anchor_bottom = 0.75
+texture = ExtResource( 80 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Title" type="Label" parent="Gauges/Upper/Health"]
 visible = false
 anchor_left = 0.5
 anchor_right = 0.5
-margin_left = -33.0
-margin_top = -14.0
-margin_right = 34.0
+margin_left = -30.0
+margin_top = -24.0
+margin_right = 30.0
+grow_horizontal = 2
+grow_vertical = 2
 text = "Health"
 align = 1
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Value" type="Label" parent="Gauges/Upper/Health"]
 visible = false
@@ -2273,105 +2545,187 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -20.0
-margin_top = -15.0
-margin_right = 22.0
-margin_bottom = 16.0
-custom_fonts/font = SubResource( 33 )
+margin_left = -21.0
+margin_top = -15.5
+margin_right = 21.0
+margin_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 39 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Button" type="Control" parent="Gauges/Upper/Health"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Happiness" type="Control" parent="Gauges/Upper"]
-editor/display_folded = true
-margin_left = 68.0
-margin_right = 130.0
-margin_bottom = 62.0
-rect_min_size = Vector2( 62, 62 )
-script = SubResource( 34 )
+anchor_left = 0.339999
+anchor_right = 0.66
+anchor_bottom = 1.0
+script = SubResource( 40 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Fill" type="Control" parent="Gauges/Upper/Happiness"]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="0" type="Sprite" parent="Gauges/Upper/Happiness/Fill"]
+[node name="0" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
 visible = false
-position = Vector2( 39.9628, 7.82605 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="10" type="Sprite" parent="Gauges/Upper/Happiness/Fill"]
+[node name="10" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
 visible = false
-position = Vector2( 40.9628, 8.82605 )
-texture = ExtResource( 56 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 81 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="20" type="Sprite" parent="Gauges/Upper/Happiness/Fill"]
+[node name="20" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
 visible = false
-position = Vector2( 45.9628, 13.826 )
-texture = ExtResource( 57 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 72 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="30" type="Sprite" parent="Gauges/Upper/Happiness/Fill"]
+[node name="30" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
 visible = false
-position = Vector2( 46.9628, 21.826 )
-texture = ExtResource( 58 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 82 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="40" type="Sprite" parent="Gauges/Upper/Happiness/Fill"]
+[node name="40" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
 visible = false
-position = Vector2( 46.9628, 29.826 )
-texture = ExtResource( 59 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 76 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="50" type="Sprite" parent="Gauges/Upper/Happiness/Fill"]
+[node name="50" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
 visible = false
-position = Vector2( 46.9628, 31.826 )
-texture = ExtResource( 60 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 77 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="60" type="Sprite" parent="Gauges/Upper/Happiness/Fill"]
+[node name="60" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
 visible = false
-position = Vector2( 37.9628, 31.826 )
-texture = ExtResource( 61 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 78 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="70" type="Sprite" parent="Gauges/Upper/Happiness/Fill"]
+[node name="70" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
 visible = false
-position = Vector2( 32.9628, 31.826 )
-texture = ExtResource( 62 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 74 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="80" type="Sprite" parent="Gauges/Upper/Happiness/Fill"]
+[node name="80" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
 visible = false
-position = Vector2( 31.9628, 31.826 )
-texture = ExtResource( 63 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 73 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="90" type="Sprite" parent="Gauges/Upper/Happiness/Fill"]
+[node name="90" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
 visible = false
-position = Vector2( 31.9628, 31.826 )
-texture = ExtResource( 64 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 79 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="100" type="Sprite" parent="Gauges/Upper/Happiness/Fill"]
+[node name="100" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
 visible = false
-position = Vector2( 31.9628, 31.826 )
-texture = ExtResource( 55 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 75 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Icon" type="TextureRect" parent="Gauges/Upper/Happiness"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -12.0
-margin_top = -10.0
-margin_right = 14.0
-margin_bottom = 14.0
-texture = ExtResource( 66 )
+anchor_left = 0.25
+anchor_top = 0.265625
+anchor_right = 0.75
+anchor_bottom = 0.765625
+texture = ExtResource( 85 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Title" type="Label" parent="Gauges/Upper/Happiness"]
 visible = false
 anchor_left = 0.5
 anchor_right = 0.5
-margin_left = -33.0
-margin_top = -14.0
-margin_right = 40.0
+margin_left = -48.0
+margin_top = -24.0
+margin_right = 48.0
+grow_horizontal = 2
+grow_vertical = 2
 text = "Happiness"
 align = 1
+valign = 2
 
 [node name="Value" type="Label" parent="Gauges/Upper/Happiness"]
 visible = false
@@ -2379,105 +2733,187 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -20.0
-margin_top = -15.0
-margin_right = 22.0
-margin_bottom = 16.0
-custom_fonts/font = SubResource( 33 )
+margin_left = -21.0
+margin_top = -15.5
+margin_right = 21.0
+margin_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 39 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Button" type="Control" parent="Gauges/Upper/Happiness"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Arousal" type="Control" parent="Gauges/Upper"]
-editor/display_folded = true
-margin_left = 136.0
-margin_right = 198.0
-margin_bottom = 62.0
-rect_min_size = Vector2( 62, 62 )
-script = SubResource( 35 )
+anchor_left = 0.68
+anchor_right = 0.999999
+anchor_bottom = 1.0
+script = SubResource( 41 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Fill" type="Control" parent="Gauges/Upper/Arousal"]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="0" type="Sprite" parent="Gauges/Upper/Arousal/Fill"]
+[node name="0" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
 visible = false
-position = Vector2( 39.9628, 7.82605 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="10" type="Sprite" parent="Gauges/Upper/Arousal/Fill"]
+[node name="10" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
 visible = false
-position = Vector2( 40.9628, 8.82605 )
-texture = ExtResource( 56 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 81 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="20" type="Sprite" parent="Gauges/Upper/Arousal/Fill"]
+[node name="20" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
 visible = false
-position = Vector2( 45.9628, 13.826 )
-texture = ExtResource( 57 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 72 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="30" type="Sprite" parent="Gauges/Upper/Arousal/Fill"]
+[node name="30" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
 visible = false
-position = Vector2( 46.9628, 21.826 )
-texture = ExtResource( 58 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 82 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="40" type="Sprite" parent="Gauges/Upper/Arousal/Fill"]
+[node name="40" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
 visible = false
-position = Vector2( 46.9628, 29.826 )
-texture = ExtResource( 59 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 76 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="50" type="Sprite" parent="Gauges/Upper/Arousal/Fill"]
+[node name="50" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
 visible = false
-position = Vector2( 46.9628, 31.826 )
-texture = ExtResource( 60 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 77 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="60" type="Sprite" parent="Gauges/Upper/Arousal/Fill"]
+[node name="60" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
 visible = false
-position = Vector2( 37.9628, 31.826 )
-texture = ExtResource( 61 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 78 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="70" type="Sprite" parent="Gauges/Upper/Arousal/Fill"]
+[node name="70" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
 visible = false
-position = Vector2( 32.9628, 31.826 )
-texture = ExtResource( 62 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 74 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="80" type="Sprite" parent="Gauges/Upper/Arousal/Fill"]
+[node name="80" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
 visible = false
-position = Vector2( 31.9628, 31.826 )
-texture = ExtResource( 63 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 73 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="90" type="Sprite" parent="Gauges/Upper/Arousal/Fill"]
+[node name="90" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
 visible = false
-position = Vector2( 31.9628, 31.826 )
-texture = ExtResource( 64 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 79 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="100" type="Sprite" parent="Gauges/Upper/Arousal/Fill"]
+[node name="100" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
 visible = false
-position = Vector2( 31.9628, 31.826 )
-texture = ExtResource( 55 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 75 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Icon" type="TextureRect" parent="Gauges/Upper/Arousal"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -13.0
-margin_top = -12.0
-margin_right = 15.0
-margin_bottom = 16.0
-texture = ExtResource( 67 )
+anchor_left = 0.25
+anchor_top = 0.28125
+anchor_right = 0.75
+anchor_bottom = 0.78125
+texture = ExtResource( 83 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Title" type="Label" parent="Gauges/Upper/Arousal"]
 visible = false
 anchor_left = 0.5
 anchor_right = 0.5
-margin_left = -33.0
-margin_top = -14.0
-margin_right = 40.0
+margin_left = -34.5
+margin_top = -24.0
+margin_right = 34.5
+grow_horizontal = 2
+grow_vertical = 2
 text = "Arousal"
 align = 1
+valign = 2
 
 [node name="Value" type="Label" parent="Gauges/Upper/Arousal"]
 visible = false
@@ -2485,111 +2921,194 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -20.0
-margin_top = -15.0
-margin_right = 22.0
-margin_bottom = 16.0
-custom_fonts/font = SubResource( 33 )
+margin_left = -21.0
+margin_top = -15.5
+margin_right = 21.0
+margin_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 39 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Button" type="Control" parent="Gauges/Upper/Arousal"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="Lower" type="HBoxContainer" parent="Gauges"]
-editor/display_folded = true
-margin_top = 82.0
-margin_right = 198.0
-margin_bottom = 144.0
-custom_constants/separation = 6
-
-[node name="Fatigue" type="Control" parent="Gauges/Lower"]
-editor/display_folded = true
-margin_right = 62.0
-margin_bottom = 62.0
-rect_min_size = Vector2( 62, 62 )
-script = SubResource( 36 )
-
-[node name="Fill" type="Control" parent="Gauges/Lower/Fatigue"]
-editor/display_folded = true
+[node name="Lower" type="Control" parent="Gauges"]
+anchor_top = 0.573334
 anchor_right = 1.0
 anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="0" type="Sprite" parent="Gauges/Lower/Fatigue/Fill"]
-visible = false
-position = Vector2( 39.9628, 7.82605 )
+[node name="Fatigue" type="Control" parent="Gauges/Lower"]
+anchor_right = 0.32
+anchor_bottom = 1.0
+script = SubResource( 42 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="10" type="Sprite" parent="Gauges/Lower/Fatigue/Fill"]
-visible = false
-position = Vector2( 40.9628, 8.82605 )
-texture = ExtResource( 56 )
+[node name="Fill" type="Control" parent="Gauges/Lower/Fatigue"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="20" type="Sprite" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="0" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
 visible = false
-position = Vector2( 45.9628, 13.826 )
-texture = ExtResource( 57 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="30" type="Sprite" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="10" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
 visible = false
-position = Vector2( 46.9628, 21.826 )
-texture = ExtResource( 58 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 81 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="40" type="Sprite" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="20" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
 visible = false
-position = Vector2( 46.9628, 29.826 )
-texture = ExtResource( 59 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 72 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="50" type="Sprite" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="30" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
 visible = false
-position = Vector2( 46.9628, 31.826 )
-texture = ExtResource( 60 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 82 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="60" type="Sprite" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="40" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
 visible = false
-position = Vector2( 37.9628, 31.826 )
-texture = ExtResource( 61 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 76 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="70" type="Sprite" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="50" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
 visible = false
-position = Vector2( 32.9628, 31.826 )
-texture = ExtResource( 62 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 77 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="80" type="Sprite" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="60" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
 visible = false
-position = Vector2( 31.9628, 31.826 )
-texture = ExtResource( 63 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 78 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="90" type="Sprite" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="70" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
 visible = false
-position = Vector2( 31.9628, 31.826 )
-texture = ExtResource( 64 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 74 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="100" type="Sprite" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="80" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
 visible = false
-position = Vector2( 31.9628, 31.826 )
-texture = ExtResource( 55 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 73 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="90" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 79 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="100" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 75 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Icon" type="TextureRect" parent="Gauges/Lower/Fatigue"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -12.0
-margin_top = -18.0
-margin_right = 14.0
-margin_bottom = 19.0
-texture = ExtResource( 68 )
+anchor_left = 0.265625
+anchor_top = 0.265625
+anchor_right = 0.765625
+anchor_bottom = 0.765625
+texture = ExtResource( 84 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Title" type="Label" parent="Gauges/Lower/Fatigue"]
 visible = false
 anchor_left = 0.5
 anchor_right = 0.5
-margin_left = -33.0
-margin_top = -14.0
-margin_right = 40.0
+margin_left = -34.0
+margin_top = -24.0
+margin_right = 34.0
+grow_horizontal = 2
+grow_vertical = 2
 text = "Fatigue"
 align = 1
+valign = 2
 
 [node name="Value" type="Label" parent="Gauges/Lower/Fatigue"]
 visible = false
@@ -2597,105 +3116,187 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -20.0
-margin_top = -15.0
-margin_right = 22.0
-margin_bottom = 16.0
-custom_fonts/font = SubResource( 33 )
+margin_left = -21.0
+margin_top = -15.5
+margin_right = 21.0
+margin_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 39 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Button" type="Control" parent="Gauges/Lower/Fatigue"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Hunger" type="Control" parent="Gauges/Lower"]
-editor/display_folded = true
-margin_left = 68.0
-margin_right = 130.0
-margin_bottom = 62.0
-rect_min_size = Vector2( 62, 62 )
-script = SubResource( 37 )
+anchor_left = 0.339999
+anchor_right = 0.659999
+anchor_bottom = 1.0
+script = SubResource( 43 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Fill" type="Control" parent="Gauges/Lower/Hunger"]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="0" type="Sprite" parent="Gauges/Lower/Hunger/Fill"]
+[node name="0" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
 visible = false
-position = Vector2( 39.9628, 7.82605 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="10" type="Sprite" parent="Gauges/Lower/Hunger/Fill"]
+[node name="10" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
 visible = false
-position = Vector2( 40.9628, 8.82605 )
-texture = ExtResource( 56 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 81 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="20" type="Sprite" parent="Gauges/Lower/Hunger/Fill"]
+[node name="20" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
 visible = false
-position = Vector2( 45.9628, 13.826 )
-texture = ExtResource( 57 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 72 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="30" type="Sprite" parent="Gauges/Lower/Hunger/Fill"]
+[node name="30" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
 visible = false
-position = Vector2( 46.9628, 21.826 )
-texture = ExtResource( 58 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 82 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="40" type="Sprite" parent="Gauges/Lower/Hunger/Fill"]
+[node name="40" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
 visible = false
-position = Vector2( 46.9628, 29.826 )
-texture = ExtResource( 59 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 76 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="50" type="Sprite" parent="Gauges/Lower/Hunger/Fill"]
+[node name="50" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
 visible = false
-position = Vector2( 46.9628, 31.826 )
-texture = ExtResource( 60 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 77 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="60" type="Sprite" parent="Gauges/Lower/Hunger/Fill"]
+[node name="60" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
 visible = false
-position = Vector2( 37.9628, 31.826 )
-texture = ExtResource( 61 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 78 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="70" type="Sprite" parent="Gauges/Lower/Hunger/Fill"]
+[node name="70" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
 visible = false
-position = Vector2( 32.9628, 31.826 )
-texture = ExtResource( 62 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 74 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="80" type="Sprite" parent="Gauges/Lower/Hunger/Fill"]
+[node name="80" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
 visible = false
-position = Vector2( 31.9628, 31.826 )
-texture = ExtResource( 63 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 73 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="90" type="Sprite" parent="Gauges/Lower/Hunger/Fill"]
+[node name="90" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
 visible = false
-position = Vector2( 31.9628, 31.826 )
-texture = ExtResource( 64 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 79 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="100" type="Sprite" parent="Gauges/Lower/Hunger/Fill"]
+[node name="100" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
 visible = false
-position = Vector2( 31.9628, 31.826 )
-texture = ExtResource( 55 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 75 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Icon" type="TextureRect" parent="Gauges/Lower/Hunger"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -12.0
-margin_top = -13.0
-margin_right = 15.0
-margin_bottom = 14.0
-texture = ExtResource( 69 )
+anchor_left = 0.25
+anchor_top = 0.25
+anchor_right = 0.75
+anchor_bottom = 0.75
+texture = ExtResource( 86 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Title" type="Label" parent="Gauges/Lower/Hunger"]
 visible = false
 anchor_left = 0.5
 anchor_right = 0.5
-margin_left = -33.0
-margin_top = -14.0
-margin_right = 40.0
+margin_left = -34.0
+margin_top = -24.0
+margin_right = 34.0
+grow_horizontal = 2
+grow_vertical = 2
 text = "Hunger"
 align = 1
+valign = 2
 
 [node name="Value" type="Label" parent="Gauges/Lower/Hunger"]
 visible = false
@@ -2703,105 +3304,187 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -20.0
-margin_top = -15.0
-margin_right = 22.0
-margin_bottom = 16.0
-custom_fonts/font = SubResource( 33 )
+margin_left = -21.0
+margin_top = -15.5
+margin_right = 21.0
+margin_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 39 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Button" type="Control" parent="Gauges/Lower/Hunger"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Bathroom" type="Control" parent="Gauges/Lower"]
-editor/display_folded = true
-margin_left = 136.0
-margin_right = 198.0
-margin_bottom = 62.0
-rect_min_size = Vector2( 62, 62 )
-script = SubResource( 38 )
-
-[node name="Fill" type="Control" parent="Gauges/Lower/Bathroom"]
-editor/display_folded = true
+anchor_left = 0.68
 anchor_right = 1.0
 anchor_bottom = 1.0
+script = SubResource( 44 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="0" type="Sprite" parent="Gauges/Lower/Bathroom/Fill"]
-visible = false
-position = Vector2( 39.9628, 7.82605 )
+[node name="Fill" type="Control" parent="Gauges/Lower/Bathroom"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="10" type="Sprite" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="0" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
 visible = false
-position = Vector2( 40.9628, 8.82605 )
-texture = ExtResource( 56 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="20" type="Sprite" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="10" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
 visible = false
-position = Vector2( 45.9628, 13.826 )
-texture = ExtResource( 57 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 81 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="30" type="Sprite" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="20" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
 visible = false
-position = Vector2( 46.9628, 21.826 )
-texture = ExtResource( 58 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 72 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="40" type="Sprite" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="30" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
 visible = false
-position = Vector2( 46.9628, 29.826 )
-texture = ExtResource( 59 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 82 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="50" type="Sprite" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="40" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
 visible = false
-position = Vector2( 46.9628, 31.826 )
-texture = ExtResource( 60 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 76 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="60" type="Sprite" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="50" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
 visible = false
-position = Vector2( 37.9628, 31.826 )
-texture = ExtResource( 61 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 77 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="70" type="Sprite" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="60" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
 visible = false
-position = Vector2( 32.9628, 31.826 )
-texture = ExtResource( 62 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 78 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="80" type="Sprite" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="70" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
 visible = false
-position = Vector2( 31.9628, 31.826 )
-texture = ExtResource( 63 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 74 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="90" type="Sprite" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="80" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
 visible = false
-position = Vector2( 31.9628, 31.826 )
-texture = ExtResource( 64 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 73 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="100" type="Sprite" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="90" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
 visible = false
-position = Vector2( 31.9628, 31.826 )
-texture = ExtResource( 55 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 79 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="100" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 75 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Icon" type="TextureRect" parent="Gauges/Lower/Bathroom"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -12.0
-margin_top = -13.0
-margin_right = 13.0
-margin_bottom = 14.0
-texture = ExtResource( 70 )
+anchor_left = 0.25
+anchor_top = 0.25
+anchor_right = 0.75
+anchor_bottom = 0.75
+texture = ExtResource( 87 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Title" type="Label" parent="Gauges/Lower/Bathroom"]
 visible = false
 anchor_left = 0.5
 anchor_right = 0.5
-margin_left = -33.0
-margin_top = -14.0
-margin_right = 40.0
+margin_left = -45.0
+margin_top = -24.0
+margin_right = 45.0
+grow_horizontal = 2
+grow_vertical = 2
 text = "Bathroom"
 align = 1
+valign = 2
 
 [node name="Value" type="Label" parent="Gauges/Lower/Bathroom"]
 visible = false
@@ -2809,81 +3492,34 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -20.0
-margin_top = -15.0
-margin_right = 22.0
-margin_bottom = 16.0
-custom_fonts/font = SubResource( 33 )
+margin_left = -21.0
+margin_top = -15.5
+margin_right = 21.0
+margin_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 39 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Button" type="Control" parent="Gauges/Lower/Bathroom"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-
-[node name="Value" type="RichTextLabel" parent="."]
-anchor_top = 1.0
-anchor_bottom = 1.0
-margin_left = 10.0
-margin_top = -382.0
-margin_right = 208.0
-margin_bottom = -20.0
-custom_constants/line_separation = 3
-bbcode_enabled = true
-bbcode_text = "str(age), ethnicity, gender
-stats._intelligence()
-stats._devotion(), stats._trust()
-
-stats._face()
-stats._figure()
-voice
-
-stats._libido()
-stats._male_attraction()
-stats._female_attraction()
-#Fetishes
-
-stats._sexual_skill()
-stats._prostitution_skill()
-stats._entertainment_skill()
-stats._combat_skill()
-
-#Behavioral trait
-#Sexual trait
-#Relationships\""
-meta_underlined = false
-text = "str(age), ethnicity, gender
-stats._intelligence()
-stats._devotion(), stats._trust()
-
-stats._face()
-stats._figure()
-voice
-
-stats._libido()
-stats._male_attraction()
-stats._female_attraction()
-#Fetishes
-
-stats._sexual_skill()
-stats._prostitution_skill()
-stats._entertainment_skill()
-stats._combat_skill()
-
-#Behavioral trait
-#Sexual trait
-#Relationships\""
-scroll_active = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Panel" type="Panel" parent="."]
-editor/display_folded = true
 visible = false
 self_modulate = Color( 0.242798, 0.68877, 0.863281, 0.745098 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="Buttons" type="VBoxContainer" parent="Panel"]
-editor/display_folded = true
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -2898,7 +3534,6 @@ custom_constants/separation = 20
 margin_right = 147.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 120, 40 )
-mouse_filter = 1
 custom_fonts/font = ExtResource( 3 )
 text = "Resting"
 items = [ "Resting", null, false, 0, null, "Prostitute", null, false, 1, null ]
@@ -2909,7 +3544,6 @@ margin_top = 60.0
 margin_right = 147.0
 margin_bottom = 100.0
 rect_min_size = Vector2( 120, 40 )
-mouse_filter = 1
 custom_fonts/font = ExtResource( 3 )
 text = "Examine"
 
@@ -2918,7 +3552,6 @@ margin_top = 120.0
 margin_right = 147.0
 margin_bottom = 160.0
 rect_min_size = Vector2( 120, 40 )
-mouse_filter = 1
 custom_fonts/font = ExtResource( 3 )
 text = "Summon"
 
@@ -2927,12 +3560,10 @@ margin_top = 180.0
 margin_right = 147.0
 margin_bottom = 220.0
 rect_min_size = Vector2( 120, 40 )
-mouse_filter = 1
 custom_fonts/font = ExtResource( 3 )
 text = "Sell"
 
 [node name="Selling Buttons" type="VBoxContainer" parent="Panel"]
-editor/display_folded = true
 visible = false
 anchor_left = 0.5
 anchor_top = 0.5
@@ -2962,6 +3593,7 @@ custom_fonts/font = ExtResource( 3 )
 text = "Examine"
 [connection signal="mouse_entered" from="Top" to="." method="_on_Top_mouse_entered"]
 [connection signal="mouse_exited" from="Top" to="." method="_on_Top_mouse_exited"]
+[connection signal="pressed" from="Top" to="." method="_on_Top_pressed"]
 [connection signal="mouse_entered" from="Gauges/Upper/Health/Button" to="Gauges/Upper/Health" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="Gauges/Upper/Health/Button" to="Gauges/Upper/Health" method="_on_mouse_exited"]
 [connection signal="mouse_entered" from="Gauges/Upper/Happiness/Button" to="Gauges/Upper/Happiness" method="_on_mouse_entered"]
@@ -2974,13 +3606,8 @@ text = "Examine"
 [connection signal="mouse_exited" from="Gauges/Lower/Hunger/Button" to="Gauges/Lower/Hunger" method="_on_mouse_exited"]
 [connection signal="mouse_entered" from="Gauges/Lower/Bathroom/Button" to="Gauges/Lower/Bathroom" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="Gauges/Lower/Bathroom/Button" to="Gauges/Lower/Bathroom" method="_on_mouse_exited"]
-[connection signal="mouse_entered" from="Panel" to="." method="_on_Top_mouse_entered"]
-[connection signal="mouse_exited" from="Panel" to="." method="_on_Top_mouse_exited"]
 [connection signal="item_selected" from="Panel/Buttons/Assignment" to="." method="_on_Assignment_item_selected"]
-[connection signal="mouse_entered" from="Panel/Buttons/Assignment" to="." method="_on_Top_mouse_entered"]
-[connection signal="mouse_entered" from="Panel/Buttons/Examine" to="." method="_on_Top_mouse_entered"]
-[connection signal="mouse_entered" from="Panel/Buttons/Summon" to="." method="_on_Top_mouse_entered"]
-[connection signal="mouse_entered" from="Panel/Buttons/Sell" to="." method="_on_Top_mouse_entered"]
-[connection signal="mouse_entered" from="Panel/Selling Buttons/Buy" to="." method="_on_Top_mouse_entered"]
+[connection signal="pressed" from="Panel/Buttons/Examine" to="." method="_on_Examine_pressed"]
+[connection signal="pressed" from="Panel/Buttons/Summon" to="." method="_on_Summon_pressed"]
+[connection signal="pressed" from="Panel/Buttons/Sell" to="." method="_on_Sell_pressed"]
 [connection signal="pressed" from="Panel/Selling Buttons/Buy" to="." method="_on_Buy_pressed"]
-[connection signal="mouse_entered" from="Panel/Selling Buttons/Examine" to="." method="_on_Top_mouse_entered"]

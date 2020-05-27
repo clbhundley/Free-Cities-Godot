@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=2]
+[gd_scene load_steps=25 format=2]
 
 [ext_resource path="res://Main Menu/main menu.gd" type="Script" id=1]
 [ext_resource path="res://Main Menu/arcghost.png" type="Texture" id=2]
@@ -19,6 +19,7 @@
 [ext_resource path="res://GUI/Options.tscn" type="PackedScene" id=17]
 [ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=18]
 [ext_resource path="res://Textures/line.png" type="Texture" id=19]
+[ext_resource path="res://theme.tres" type="Theme" id=20]
 
 [sub_resource type="CanvasItemMaterial" id=1]
 
@@ -27,55 +28,65 @@ size = 30
 font_data = ExtResource( 18 )
 
 [sub_resource type="GDScript" id=3]
-script/source = "extends Container
+script/source = "extends Control
 
 var save_data
 
 func _ready():
-	save_data = game.load_game(name)
+	save_data = data.load_game(name)
 	if not save_data:
 		get_node('Info').set_text(\"Empty\")
 		get_node('Info').set_anchors_and_margins_preset(PRESET_CENTER)
 	if save_data:
-		get_node('Info').set_text(save_data['arcology']['name']+\"  |  \"+save_data['index']['os_date']+\", \"+save_data['index']['os_time'])
+		get_node('Info').set_text(save_data['arcology']['name']+\"  |  \"+
+		save_data['index']['os_date']+\", \"+save_data['index']['os_time'])
 		get_node('Info').set_anchors_and_margins_preset(PRESET_CENTER)
 
 func _on_mouse_entered():
-	get_node('Top').set_modulate('8cff7200')
-	get_node('Bot').set_modulate('8cff7200')
+	get_node('Top Line').set_modulate('8cff7200')
+	get_node('Bottom Line').set_modulate('8cff7200')
 
 func _on_mouse_exited():
-	get_node('Top').set_modulate('64ffffff')
-	get_node('Bot').set_modulate('64ffffff')
+	get_node('Top Line').set_modulate('64ffffff')
+	get_node('Bottom Line').set_modulate('64ffffff')
 
 func _on_pressed():
-	var dg = get_node('ConfirmationDialog')
 	if save_data:
-		dg.set_text(\"\\n\"+
+		get_tree().get_root().connect('size_changed',self,'responsive_popup')
+		$ConfirmationDialog.set_text(\"\\n\"+
 			\"Slot \"+name+\" contains save data:\"+\"\\n\"+
 			\"\\n\"+
-			save_data['arcology']['name']+\"  |  \"+save_data['index']['os_date']+\", \"+save_data['index']['os_time']+\"\\n\"+
+			save_data['arcology']['name']+\"  |  \"+save_data['index']['os_date']+
+			\", \"+save_data['index']['os_time']+\"\\n\"+
 			\"\\n\"+
 			\"Would you like to overwrite this data with a new game?\")
-		dg.popup_centered()
+		$ConfirmationDialog.popup_centered()
 	else:
-		game.data_slot = name
+		data.save_slot = name
 		game.queue_save = true
 		get_tree().change_scene(\"res://Game.tscn\")
 
 func _on_ConfirmationDialog_confirmed():
-	game.delete_game(name)
-	game.data_slot = name
+	data.delete_game(name)
+	data.save_slot = name
 	game.queue_save = true
 	get_tree().change_scene(\"res://Game.tscn\")
+
+func responsive_popup():
+	var screen_size = get_tree().get_root().get_size()
+	var popup_size = Vector2(600,450)
+	var ratio = screen_size/popup_size
+	$ConfirmationDialog.rect_size = (popup_size*ratio)-Vector2(900,450)
+	if $ConfirmationDialog.is_visible_in_tree():
+		$ConfirmationDialog.popup_centered()
 "
 
 [sub_resource type="GDScript" id=4]
 script/source = "extends AcceptDialog
 
 func _ready():
-	if not game.config.get_value(\"confirmation\", \"skip\") == true:
-		call_deferred('popup')
+	if not data.config.get_value(\"confirmation\", \"skip\") == true:
+		call_deferred('popup_centered')
 
 func _on_ConfirmationDialog_confirmed():
 	hide()
@@ -85,77 +96,106 @@ func _on_ConfirmationDialog_confirmed():
 material = SubResource( 1 )
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_left = -19.5632
+margin_top = -6.42374
+margin_right = -19.5632
+margin_bottom = -6.42371
 mouse_filter = 2
+theme = ExtResource( 20 )
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="arcghost" type="TextureRect" parent="."]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -839.0
-margin_top = -546.0
-margin_right = 1177.0
-margin_bottom = 714.0
+anchor_left = 0.0630208
+anchor_top = -0.00555556
+anchor_right = 1.11302
+anchor_bottom = 1.16111
 rect_pivot_offset = Vector2( 755.713, 578.17 )
 texture = ExtResource( 2 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="Buttons" type="VBoxContainer" parent="."]
-editor/display_folded = true
-margin_left = 40.0
-margin_top = 40.0
-margin_right = 576.0
-margin_bottom = 588.0
+[node name="Buttons" type="Control" parent="."]
+anchor_left = 0.0208333
+anchor_top = 0.037037
+anchor_right = 0.320833
+anchor_bottom = 0.581481
+margin_right = 0.000610352
+margin_bottom = 0.000488281
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="New Game" type="TextureButton" parent="Buttons"]
-margin_right = 576.0
-margin_bottom = 144.0
+anchor_right = 1.0
+anchor_bottom = 0.244898
 texture_normal = ExtResource( 3 )
 texture_pressed = ExtResource( 4 )
 texture_hover = ExtResource( 5 )
+expand = true
+stretch_mode = 5
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Load Game" type="TextureButton" parent="Buttons"]
-margin_top = 148.0
-margin_right = 576.0
-margin_bottom = 292.0
+anchor_top = 0.251701
+anchor_right = 1.0
+anchor_bottom = 0.496599
 texture_normal = ExtResource( 6 )
 texture_pressed = ExtResource( 7 )
 texture_hover = ExtResource( 8 )
+expand = true
+stretch_mode = 5
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Options" type="TextureButton" parent="Buttons"]
-margin_top = 296.0
-margin_right = 576.0
-margin_bottom = 440.0
+anchor_top = 0.503401
+anchor_right = 1.0
+anchor_bottom = 0.748299
 texture_normal = ExtResource( 9 )
 texture_pressed = ExtResource( 10 )
 texture_hover = ExtResource( 11 )
+expand = true
+stretch_mode = 5
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Exit" type="TextureButton" parent="Buttons"]
-margin_top = 444.0
-margin_right = 576.0
-margin_bottom = 588.0
+anchor_top = 0.755102
+anchor_right = 1.0
+anchor_bottom = 1.0
 texture_normal = ExtResource( 12 )
 texture_pressed = ExtResource( 13 )
 texture_hover = ExtResource( 14 )
+expand = true
+stretch_mode = 5
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Label" type="Label" parent="."]
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -463.0
-margin_top = -71.0
-margin_right = -20.0
-margin_bottom = -20.0
+anchor_left = 0.829167
+anchor_top = 0.940741
+anchor_right = 0.994792
+anchor_bottom = 0.987963
 grow_horizontal = 0
 grow_vertical = 0
-rect_min_size = Vector2( 443, 50 )
-size_flags_horizontal = 3
 size_flags_vertical = 0
 custom_fonts/font = ExtResource( 15 )
-text = "Placeholder image:
-Paolo Soleri - Babel IIB, flat land arcology design"
-autowrap = true
+text = "Paolo Soleri
+Babel IIB, flat land arcology design"
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Saves" parent="." instance=ExtResource( 16 )]
 visible = false
@@ -164,13 +204,14 @@ visible = false
 visible = false
 
 [node name="New Game" type="Control" parent="."]
-editor/display_folded = true
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Saves" type="Control" parent="New Game"]
-editor/display_folded = true
 self_modulate = Color( 0.286377, 0.569544, 0.796875, 1 )
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -181,67 +222,75 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="Data" type="Panel" parent="New Game/Saves"]
-editor/display_folded = true
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -333.0
-margin_top = -315.0
-margin_right = 333.0
-margin_bottom = 315.0
+anchor_left = 0.408
+anchor_top = 0.371
+anchor_right = 0.593
+anchor_bottom = 0.66
+margin_left = -153.36
+margin_top = -140.68
+margin_right = 151.44
+margin_bottom = 107.2
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Label" type="Label" parent="New Game/Saves/Data"]
 anchor_left = 0.5
 anchor_right = 0.5
-margin_left = -118.0
-margin_top = 30.0
-margin_right = 117.0
-margin_bottom = 67.0
+margin_left = -117.5
+margin_top = 20.0
+margin_right = 117.5
+margin_bottom = 57.0
 custom_fonts/font = SubResource( 2 )
 text = "Choose Data Slot"
 align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="Slots" type="VBoxContainer" parent="New Game/Saves/Data"]
-editor/display_folded = true
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -262.0
-margin_top = -208.0
-margin_right = 261.0
-margin_bottom = 238.0
-custom_constants/separation = 20
+[node name="Slots" type="Control" parent="New Game/Saves/Data"]
+anchor_left = 0.107357
+anchor_top = 0.143464
+anchor_right = 0.892643
+anchor_bottom = 0.920822
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="1" type="Container" parent="New Game/Saves/Data/Slots"]
-editor/display_folded = true
-margin_right = 523.0
-margin_bottom = 34.0
+[node name="1" type="Control" parent="New Game/Saves/Data/Slots"]
+anchor_right = 0.999444
+anchor_bottom = 0.0825243
 rect_min_size = Vector2( 0, 34 )
 size_flags_vertical = 0
 script = SubResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="Top" type="TextureRect" parent="New Game/Saves/Data/Slots/1"]
+[node name="Top Line" type="TextureRect" parent="New Game/Saves/Data/Slots/1"]
 modulate = Color( 1, 1, 1, 0.392157 )
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -250.5
-margin_right = 249.5
-margin_bottom = 2.0
+anchor_right = 1.0
+margin_top = -1.0
+margin_bottom = 1.0
+rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Label" type="Label" parent="New Game/Saves/Data/Slots/1"]
-anchor_top = 0.5
-anchor_bottom = 0.5
-margin_left = -12.0
-margin_top = -12.0
-margin_right = -1.0
-margin_bottom = 12.0
+anchor_left = -0.0382409
+anchor_top = 0.176471
+anchor_right = -0.0152964
+anchor_bottom = 0.882353
 custom_fonts/font = ExtResource( 15 )
 text = "1"
 align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Info" type="Label" parent="New Game/Saves/Data/Slots/1"]
 anchor_left = 0.5
@@ -249,21 +298,22 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -20.0
-margin_top = -12.0
+margin_top = -11.0
 margin_right = 20.0
-margin_bottom = 12.0
+margin_bottom = 13.0
 custom_fonts/font = ExtResource( 15 )
 align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="Bot" type="TextureRect" parent="New Game/Saves/Data/Slots/1"]
+[node name="Bottom Line" type="TextureRect" parent="New Game/Saves/Data/Slots/1"]
 modulate = Color( 1, 1, 1, 0.392157 )
-anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -250.0
-margin_top = -2.0
-margin_right = 250.0
+rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
 
@@ -276,41 +326,50 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -299.5
-margin_top = -1.0
-margin_right = 300.5
-margin_bottom = 449.0
+margin_left = -300.0
+margin_top = -225.0
+margin_right = 300.0
+margin_bottom = 225.0
 window_title = "Overwrite Data?"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="2" type="Container" parent="New Game/Saves/Data/Slots"]
-editor/display_folded = true
-margin_top = 54.0
-margin_right = 523.0
-margin_bottom = 88.0
+[node name="2" type="Control" parent="New Game/Saves/Data/Slots"]
+anchor_top = 0.131068
+anchor_right = 0.999444
+anchor_bottom = 0.213592
 rect_min_size = Vector2( 0, 34 )
 size_flags_vertical = 0
 script = SubResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="Top" type="TextureRect" parent="New Game/Saves/Data/Slots/2"]
+[node name="Top Line" type="TextureRect" parent="New Game/Saves/Data/Slots/2"]
 modulate = Color( 1, 1, 1, 0.392157 )
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -250.5
-margin_right = 249.5
-margin_bottom = 2.0
+anchor_right = 1.0
+margin_top = -1.0
+margin_bottom = 1.0
+rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Label" type="Label" parent="New Game/Saves/Data/Slots/2"]
-anchor_top = 0.5
-anchor_bottom = 0.5
-margin_left = -12.0
-margin_top = -12.0
-margin_right = -1.0
-margin_bottom = 12.0
+anchor_left = -0.0382409
+anchor_top = 0.176471
+anchor_right = -0.0152964
+anchor_bottom = 0.882353
 custom_fonts/font = ExtResource( 15 )
 text = "2"
 align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Info" type="Label" parent="New Game/Saves/Data/Slots/2"]
 anchor_left = 0.5
@@ -318,21 +377,19 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -20.0
-margin_top = -12.0
+margin_top = -11.0
 margin_right = 20.0
-margin_bottom = 12.0
+margin_bottom = 13.0
 custom_fonts/font = ExtResource( 15 )
 align = 1
+valign = 1
 
-[node name="Bot" type="TextureRect" parent="New Game/Saves/Data/Slots/2"]
+[node name="Bottom Line" type="TextureRect" parent="New Game/Saves/Data/Slots/2"]
 modulate = Color( 1, 1, 1, 0.392157 )
-anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -250.0
-margin_top = -2.0
-margin_right = 250.0
+rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
 
@@ -345,41 +402,50 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = 398.5
-margin_top = 468.0
-margin_right = 998.5
-margin_bottom = 918.0
+margin_left = -300.0
+margin_top = -225.0
+margin_right = 300.0
+margin_bottom = 225.0
 window_title = "Overwrite Data?"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="3" type="Container" parent="New Game/Saves/Data/Slots"]
-editor/display_folded = true
-margin_top = 108.0
-margin_right = 523.0
-margin_bottom = 142.0
+[node name="3" type="Control" parent="New Game/Saves/Data/Slots"]
+anchor_top = 0.262136
+anchor_right = 0.999444
+anchor_bottom = 0.34466
 rect_min_size = Vector2( 0, 34 )
 size_flags_vertical = 0
 script = SubResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="Top" type="TextureRect" parent="New Game/Saves/Data/Slots/3"]
+[node name="Top Line" type="TextureRect" parent="New Game/Saves/Data/Slots/3"]
 modulate = Color( 1, 1, 1, 0.392157 )
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -250.5
-margin_right = 249.5
-margin_bottom = 2.0
+anchor_right = 1.0
+margin_top = -1.0
+margin_bottom = 1.0
+rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Label" type="Label" parent="New Game/Saves/Data/Slots/3"]
-anchor_top = 0.5
-anchor_bottom = 0.5
-margin_left = -12.0
-margin_top = -12.0
-margin_right = -1.0
-margin_bottom = 12.0
+anchor_left = -0.0382409
+anchor_top = 0.176471
+anchor_right = -0.0152964
+anchor_bottom = 0.882353
 custom_fonts/font = ExtResource( 15 )
 text = "3"
 align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Info" type="Label" parent="New Game/Saves/Data/Slots/3"]
 anchor_left = 0.5
@@ -387,21 +453,19 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -20.0
-margin_top = -12.0
+margin_top = -11.0
 margin_right = 20.0
-margin_bottom = 12.0
+margin_bottom = 13.0
 custom_fonts/font = ExtResource( 15 )
 align = 1
+valign = 1
 
-[node name="Bot" type="TextureRect" parent="New Game/Saves/Data/Slots/3"]
+[node name="Bottom Line" type="TextureRect" parent="New Game/Saves/Data/Slots/3"]
 modulate = Color( 1, 1, 1, 0.392157 )
-anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -250.0
-margin_top = -2.0
-margin_right = 250.0
+rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
 
@@ -414,41 +478,50 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = 398.5
-margin_top = 414.0
-margin_right = 998.5
-margin_bottom = 864.0
+margin_left = -300.0
+margin_top = -225.0
+margin_right = 300.0
+margin_bottom = 225.0
 window_title = "Overwrite Data?"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="4" type="Container" parent="New Game/Saves/Data/Slots"]
-editor/display_folded = true
-margin_top = 162.0
-margin_right = 523.0
-margin_bottom = 196.0
+[node name="4" type="Control" parent="New Game/Saves/Data/Slots"]
+anchor_top = 0.393204
+anchor_right = 0.999444
+anchor_bottom = 0.475728
 rect_min_size = Vector2( 0, 34 )
 size_flags_vertical = 0
 script = SubResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="Top" type="TextureRect" parent="New Game/Saves/Data/Slots/4"]
+[node name="Top Line" type="TextureRect" parent="New Game/Saves/Data/Slots/4"]
 modulate = Color( 1, 1, 1, 0.392157 )
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -250.5
-margin_right = 249.5
-margin_bottom = 2.0
+anchor_right = 1.0
+margin_top = -1.0
+margin_bottom = 1.0
+rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Label" type="Label" parent="New Game/Saves/Data/Slots/4"]
-anchor_top = 0.5
-anchor_bottom = 0.5
-margin_left = -12.0
-margin_top = -12.0
-margin_right = -1.0
-margin_bottom = 12.0
+anchor_left = -0.0382409
+anchor_top = 0.176471
+anchor_right = -0.0152964
+anchor_bottom = 0.882353
 custom_fonts/font = ExtResource( 15 )
 text = "4"
 align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Info" type="Label" parent="New Game/Saves/Data/Slots/4"]
 anchor_left = 0.5
@@ -456,21 +529,22 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -20.0
-margin_top = -12.0
+margin_top = -11.0
 margin_right = 20.0
-margin_bottom = 12.0
+margin_bottom = 13.0
 custom_fonts/font = ExtResource( 15 )
 align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="Bot" type="TextureRect" parent="New Game/Saves/Data/Slots/4"]
+[node name="Bottom Line" type="TextureRect" parent="New Game/Saves/Data/Slots/4"]
 modulate = Color( 1, 1, 1, 0.392157 )
-anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -250.0
-margin_top = -2.0
-margin_right = 250.0
+rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
 
@@ -483,41 +557,51 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = 398.5
-margin_top = 360.0
-margin_right = 998.5
-margin_bottom = 810.0
+margin_left = -300.0
+margin_top = -225.0
+margin_right = 300.0
+margin_bottom = 225.0
 window_title = "Overwrite Data?"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="5" type="Container" parent="New Game/Saves/Data/Slots"]
-editor/display_folded = true
-margin_top = 216.0
-margin_right = 523.0
-margin_bottom = 250.0
+[node name="5" type="Control" parent="New Game/Saves/Data/Slots"]
+anchor_top = 0.524272
+anchor_right = 0.999444
+anchor_bottom = 0.606796
+margin_bottom = -1.52588e-05
 rect_min_size = Vector2( 0, 34 )
 size_flags_vertical = 0
 script = SubResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="Top" type="TextureRect" parent="New Game/Saves/Data/Slots/5"]
+[node name="Top Line" type="TextureRect" parent="New Game/Saves/Data/Slots/5"]
 modulate = Color( 1, 1, 1, 0.392157 )
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -250.5
-margin_right = 249.5
-margin_bottom = 2.0
+anchor_right = 1.0
+margin_top = -1.0
+margin_bottom = 1.0
+rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Label" type="Label" parent="New Game/Saves/Data/Slots/5"]
-anchor_top = 0.5
-anchor_bottom = 0.5
-margin_left = -12.0
-margin_top = -12.0
-margin_right = -1.0
-margin_bottom = 12.0
+anchor_left = -0.0382409
+anchor_top = 0.176471
+anchor_right = -0.0152964
+anchor_bottom = 0.882353
 custom_fonts/font = ExtResource( 15 )
 text = "5"
 align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Info" type="Label" parent="New Game/Saves/Data/Slots/5"]
 anchor_left = 0.5
@@ -525,21 +609,19 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -20.0
-margin_top = -12.0
+margin_top = -11.0
 margin_right = 20.0
-margin_bottom = 12.0
+margin_bottom = 13.0
 custom_fonts/font = ExtResource( 15 )
 align = 1
+valign = 1
 
-[node name="Bot" type="TextureRect" parent="New Game/Saves/Data/Slots/5"]
+[node name="Bottom Line" type="TextureRect" parent="New Game/Saves/Data/Slots/5"]
 modulate = Color( 1, 1, 1, 0.392157 )
-anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -250.0
-margin_top = -2.0
-margin_right = 250.0
+rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
 
@@ -552,41 +634,50 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = 398.5
-margin_top = 306.0
-margin_right = 998.5
-margin_bottom = 756.0
+margin_left = -300.0
+margin_top = -225.0
+margin_right = 300.0
+margin_bottom = 225.0
 window_title = "Overwrite Data?"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="6" type="Container" parent="New Game/Saves/Data/Slots"]
-editor/display_folded = true
-margin_top = 270.0
-margin_right = 523.0
-margin_bottom = 304.0
+[node name="6" type="Control" parent="New Game/Saves/Data/Slots"]
+anchor_top = 0.65534
+anchor_right = 0.999444
+anchor_bottom = 0.737864
 rect_min_size = Vector2( 0, 34 )
 size_flags_vertical = 0
 script = SubResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="Top" type="TextureRect" parent="New Game/Saves/Data/Slots/6"]
+[node name="Top Line" type="TextureRect" parent="New Game/Saves/Data/Slots/6"]
 modulate = Color( 1, 1, 1, 0.392157 )
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -250.5
-margin_right = 249.5
-margin_bottom = 2.0
+anchor_right = 1.0
+margin_top = -1.0
+margin_bottom = 1.0
+rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Label" type="Label" parent="New Game/Saves/Data/Slots/6"]
-anchor_top = 0.5
-anchor_bottom = 0.5
-margin_left = -12.0
-margin_top = -12.0
-margin_right = -1.0
-margin_bottom = 12.0
+anchor_left = -0.0382409
+anchor_top = 0.176471
+anchor_right = -0.0152964
+anchor_bottom = 0.882353
 custom_fonts/font = ExtResource( 15 )
 text = "6"
 align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Info" type="Label" parent="New Game/Saves/Data/Slots/6"]
 anchor_left = 0.5
@@ -594,21 +685,19 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -20.0
-margin_top = -12.0
+margin_top = -11.0
 margin_right = 20.0
-margin_bottom = 12.0
+margin_bottom = 13.0
 custom_fonts/font = ExtResource( 15 )
 align = 1
+valign = 1
 
-[node name="Bot" type="TextureRect" parent="New Game/Saves/Data/Slots/6"]
+[node name="Bottom Line" type="TextureRect" parent="New Game/Saves/Data/Slots/6"]
 modulate = Color( 1, 1, 1, 0.392157 )
-anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -250.0
-margin_top = -2.0
-margin_right = 250.0
+rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
 
@@ -621,41 +710,50 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = 398.5
-margin_top = 252.0
-margin_right = 998.5
-margin_bottom = 702.0
+margin_left = -300.0
+margin_top = -225.0
+margin_right = 300.0
+margin_bottom = 225.0
 window_title = "Overwrite Data?"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="7" type="Container" parent="New Game/Saves/Data/Slots"]
-editor/display_folded = true
-margin_top = 324.0
-margin_right = 523.0
-margin_bottom = 358.0
+[node name="7" type="Control" parent="New Game/Saves/Data/Slots"]
+anchor_top = 0.786408
+anchor_right = 0.999444
+anchor_bottom = 0.868932
 rect_min_size = Vector2( 0, 34 )
 size_flags_vertical = 0
 script = SubResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="Top" type="TextureRect" parent="New Game/Saves/Data/Slots/7"]
+[node name="Top Line" type="TextureRect" parent="New Game/Saves/Data/Slots/7"]
 modulate = Color( 1, 1, 1, 0.392157 )
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -250.5
-margin_right = 249.5
-margin_bottom = 2.0
+anchor_right = 1.0
+margin_top = -1.0
+margin_bottom = 1.0
+rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Label" type="Label" parent="New Game/Saves/Data/Slots/7"]
-anchor_top = 0.5
-anchor_bottom = 0.5
-margin_left = -12.0
-margin_top = -12.0
-margin_right = -1.0
-margin_bottom = 12.0
+anchor_left = -0.0382409
+anchor_top = 0.176471
+anchor_right = -0.0152964
+anchor_bottom = 0.882353
 custom_fonts/font = ExtResource( 15 )
 text = "7"
 align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Info" type="Label" parent="New Game/Saves/Data/Slots/7"]
 anchor_left = 0.5
@@ -663,21 +761,19 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -20.0
-margin_top = -12.0
+margin_top = -11.0
 margin_right = 20.0
-margin_bottom = 12.0
+margin_bottom = 13.0
 custom_fonts/font = ExtResource( 15 )
 align = 1
+valign = 1
 
-[node name="Bot" type="TextureRect" parent="New Game/Saves/Data/Slots/7"]
+[node name="Bottom Line" type="TextureRect" parent="New Game/Saves/Data/Slots/7"]
 modulate = Color( 1, 1, 1, 0.392157 )
-anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -250.0
-margin_top = -2.0
-margin_right = 250.0
+rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
 
@@ -690,41 +786,50 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = 398.5
-margin_top = 198.0
-margin_right = 998.5
-margin_bottom = 648.0
+margin_left = -300.0
+margin_top = -225.0
+margin_right = 300.0
+margin_bottom = 225.0
 window_title = "Overwrite Data?"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="8" type="Container" parent="New Game/Saves/Data/Slots"]
-editor/display_folded = true
-margin_top = 378.0
-margin_right = 523.0
-margin_bottom = 412.0
+[node name="8" type="Control" parent="New Game/Saves/Data/Slots"]
+anchor_top = 0.917476
+anchor_right = 0.999444
+anchor_bottom = 1.0
 rect_min_size = Vector2( 0, 34 )
 size_flags_vertical = 0
 script = SubResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
-[node name="Top" type="TextureRect" parent="New Game/Saves/Data/Slots/8"]
+[node name="Top Line" type="TextureRect" parent="New Game/Saves/Data/Slots/8"]
 modulate = Color( 1, 1, 1, 0.392157 )
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -250.5
-margin_right = 249.5
-margin_bottom = 2.0
+anchor_right = 1.0
+margin_top = -1.0
+margin_bottom = 1.0
+rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Label" type="Label" parent="New Game/Saves/Data/Slots/8"]
-anchor_top = 0.5
-anchor_bottom = 0.5
-margin_left = -12.0
-margin_top = -12.0
-margin_right = -1.0
-margin_bottom = 12.0
+anchor_left = -0.0382409
+anchor_top = 0.176471
+anchor_right = -0.0152964
+anchor_bottom = 0.882353
 custom_fonts/font = ExtResource( 15 )
 text = "8"
 align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Info" type="Label" parent="New Game/Saves/Data/Slots/8"]
 anchor_left = 0.5
@@ -732,21 +837,19 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -20.0
-margin_top = -12.0
+margin_top = -11.0
 margin_right = 20.0
-margin_bottom = 12.0
+margin_bottom = 13.0
 custom_fonts/font = ExtResource( 15 )
 align = 1
+valign = 1
 
-[node name="Bot" type="TextureRect" parent="New Game/Saves/Data/Slots/8"]
+[node name="Bottom Line" type="TextureRect" parent="New Game/Saves/Data/Slots/8"]
 modulate = Color( 1, 1, 1, 0.392157 )
-anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -250.0
-margin_top = -2.0
-margin_right = 250.0
+rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
 
@@ -759,11 +862,14 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = 398.5
-margin_top = 144.0
-margin_right = 998.5
-margin_bottom = 594.0
+margin_left = -300.0
+margin_top = -225.0
+margin_right = 300.0
+margin_bottom = 225.0
 window_title = "Overwrite Data?"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="AcceptDialog" type="AcceptDialog" parent="."]
 anchor_left = 0.5

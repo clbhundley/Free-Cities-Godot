@@ -4,7 +4,9 @@ var region = "Asia"
 
 func new(preset=null,selling=false):
 	randomize()
+	
 	var _slave = load('res://Slaves/Slave.tscn').instance()
+	
 	if not _slave.ethnicity:
 		_slave.ethnicity = _ethnicity(region)
 	var traits = load('res://Slaves/Ethnicities/%s.gd'%_slave.ethnicity.to_lower()).traits()
@@ -48,51 +50,51 @@ func new(preset=null,selling=false):
 	if not _slave.voice:
 		_slave.voice = _voice(_slave.gender)
 	if not _slave.health:
-		_slave.health = game.gaussian(50,12)
+		_slave.health = math.gaussian(50,12)
 	if not _slave.fatigue:
-		_slave.fatigue = game.gaussian(40,12)
+		_slave.fatigue = math.gaussian(40,12)
 	if not _slave.hunger:
-		_slave.hunger = game.gaussian(85,5)
+		_slave.hunger = math.gaussian(85,5)
 	if not _slave.bathroom:
-		_slave.bathroom = game.gaussian(90,5)
+		_slave.bathroom = math.gaussian(90,5)
 	if not _slave.intelligence:
-		_slave.intelligence = game.gaussian(100,25)
+		_slave.intelligence = math.gaussian(100,25)
 	if not _slave.libido:
-		_slave.libido = game.gaussian(100,25)
+		_slave.libido = math.gaussian(100,25)
 	if not _slave.male_attraction:
-		_slave.male_attraction = game.gaussian(0,25)
+		_slave.male_attraction = math.gaussian(0,25)
 	if not _slave.female_attraction:
-		_slave.female_attraction = game.gaussian(0,25)
+		_slave.female_attraction = math.gaussian(0,25)
 	if not _slave.devotion:
-		_slave.devotion = game.gaussian(-50,25)
+		_slave.devotion = math.gaussian(-50,25)
 	if not _slave.trust:
-		_slave.trust = game.gaussian(-50,25)
+		_slave.trust = math.gaussian(-50,25)
 	if not _slave.happiness:
-		_slave.happiness = abs(game.gaussian(40,10))
+		_slave.happiness = abs(math.gaussian(40,10))
 	if not _slave.social:
-		_slave.social = game.gaussian(5,10)
+		_slave.social = math.gaussian(5,10)
 	if not _slave.face:
-		_slave.face = game.gaussian(5,3)
+		_slave.face = math.gaussian(5,3)
 	if not _slave.figure:
-		_slave.figure = game.gaussian(0,62)
+		_slave.figure = math.gaussian(0,62)
 	if not _slave.arousal:
-		_slave.arousal = abs(game.gaussian(10,5))
+		_slave.arousal = abs(math.gaussian(10,5))
 	if not _slave.sexual_skill:
-		_slave.sexual_skill = abs(game.gaussian(10,25))
+		_slave.sexual_skill = abs(math.gaussian(10,25))
 	if not _slave.oral_skill:
-		_slave.oral_skill = abs(game.gaussian(10,25))
+		_slave.oral_skill = abs(math.gaussian(10,25))
 	if not _slave.anal_skill:
-		_slave.anal_skill = abs(game.gaussian(10,25))
+		_slave.anal_skill = abs(math.gaussian(10,25))
 	if not _slave.vaginal_skill:
-		_slave.vaginal_skill = abs(game.gaussian(10,25))
+		_slave.vaginal_skill = abs(math.gaussian(10,25))
 	if not _slave.penis_skill:
-		_slave.penis_skill = abs(game.gaussian(10,25))
+		_slave.penis_skill = abs(math.gaussian(10,25))
 	if not _slave.prostitution_skill:
-		_slave.prostitution_skill = abs(game.gaussian(10,25))
+		_slave.prostitution_skill = abs(math.gaussian(10,25))
 	if not _slave.entertainment_skill:
-		_slave.entertainment_skill = abs(game.gaussian(10,25))
+		_slave.entertainment_skill = abs(math.gaussian(10,25))
 	if not _slave.combat_skill:
-		_slave.combat_skill = abs(game.gaussian(10,25))
+		_slave.combat_skill = abs(math.gaussian(10,25))
 	
 	var gauges = ['happiness','arousal','fatigue','hunger','bathroom']
 	for value in gauges:
@@ -114,7 +116,7 @@ func _ethnicity(region):
 func chest(traits,_slave): # http://www.averageheight.co/breast-cup-size-by-country
 	var cup_sizes = ["AA","A","B","C","D","DD","E","F","FF","G","GG","H","HH","J","JJ","K"]
 	var band_size = int(traits.breast_size['chest_size'])
-	var bust_size = game.gaussian(band_size+traits.breast_size['breast_size'],traits.breast_size['breast_variation'])
+	var bust_size = math.gaussian(band_size+traits.breast_size['breast_size'],traits.breast_size['breast_variation'])
 	if bust_size < band_size:
 		bust_size = band_size
 	var cup = bust_size - band_size
@@ -202,7 +204,7 @@ func hair_color(traits,_slave):
 		return colors[traits.hair_color()]
 
 func _gender():
-	var roll = game.gaussian(100,25)
+	var roll = math.gaussian(100,25)
 	var roll2 = randi()%3+0
 	if roll <= 55:
 		return "Trans female"
@@ -283,13 +285,13 @@ func _voice(gender):
 #		eye_color = traits.eye_color(),
 #		chest = chest(),
 #		genitals = genitals(),
-#		intelligence = game.gaussian(100,25),
-#		devotion = game.gaussian(-50,25),
-#		trust = game.gaussian(-50,25),
-#		health = game.gaussian(40,12),
-#		face = game.gaussian(5,3),
-#		sexuality = game.gaussian(10,10),
-#		social = game.gaussian(5,10),
-#		education = game.gaussian(0,10),
-#		domestic = game.gaussian(-2,10),
-#		combat = game.gaussian(-5,10)}
+#		intelligence = math.gaussian(100,25),
+#		devotion = math.gaussian(-50,25),
+#		trust = math.gaussian(-50,25),
+#		health = math.gaussian(40,12),
+#		face = math.gaussian(5,3),
+#		sexuality = math.gaussian(10,10),
+#		social = math.gaussian(5,10),
+#		education = math.gaussian(0,10),
+#		domestic = math.gaussian(-2,10),
+#		combat = math.gaussian(-5,10)}

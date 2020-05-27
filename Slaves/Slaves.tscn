@@ -5,6 +5,7 @@
 [ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://Textures/line.png" type="Texture" id=4]
 [ext_resource path="res://Fonts/Rubik-Light.tres" type="DynamicFont" id=5]
+[ext_resource path="res://Slaves/Slider.tscn" type="PackedScene" id=6]
 
 [sub_resource type="DynamicFont" id=1]
 size = 50
@@ -15,61 +16,6 @@ size = 30
 font_data = ExtResource( 3 )
 
 [sub_resource type="GDScript" id=3]
-script/source = "extends Container
-
-var slide = 310
-onready var hbox = get_node('HBoxContainer')
-onready var tween = get_node('Tween')
-var length = 0
-
-func shown():
-	if self.is_visible_in_tree():
-		return true
-
-func _input(event):
-	if shown():
-		if (event.is_class('InputEventMouseMotion')):
-			if (event.button_mask&(BUTTON_MASK_LEFT)):
-				if slide > 310:
-					slide = 310
-				elif slide < length:
-					slide = length
-				else:
-					slide += event.relative.x*1.4
-					tween.interpolate_method(hbox,'set_position',hbox.get_position(),Vector2(slide,0),0.8,Tween.TRANS_CUBIC,Tween.EASE_OUT)
-					tween.start()
-	
-	if event.is_action_pressed('ui_page_up'):
-		if shown():
-			if slide < 310:
-				slide += 100
-				tween.interpolate_method(hbox,'set_position',hbox.get_position(),Vector2(slide,0),0.8,Tween.TRANS_QUART,Tween.EASE_OUT)
-				tween.start()
-	
-	if event.is_action_pressed('ui_page_down'):
-		if shown():
-			if slide > length:
-				slide -= 100
-				tween.interpolate_method(hbox,'set_position',hbox.get_position(),Vector2(slide,0),0.8,Tween.TRANS_QUART,Tween.EASE_OUT)
-				tween.start()
-
-func update_length():
-	var list_size = get_node('HBoxContainer').get_children().size()
-	if list_size == 3:
-		length = 0
-	if list_size > 3:
-		length = (list_size-3)*-640
-
-func reset():
-	slide = 310
-	hbox.set_position(Vector2(slide,0))
-
-func _on_Slider_visibility_changed():
-	update_length()
-	reset()
-"
-
-[sub_resource type="GDScript" id=4]
 script/source = "extends Panel
 
 func _input(event):
@@ -93,13 +39,14 @@ func clear():
 	for nodes in get_node('ScrollContainer/VBoxContainer').get_children():
 		nodes.set('custom_styles/panel',null)
 	get_node('View').hide()
-	self.hide()"
+	self.hide()
+"
 
-[sub_resource type="DynamicFont" id=5]
+[sub_resource type="DynamicFont" id=4]
 size = 30
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=6]
+[sub_resource type="GDScript" id=5]
 script/source = "extends Panel
 
 func _ready():
@@ -118,11 +65,11 @@ func _on_Button_pressed():
 	get_node('../../../Description').set_text(\"Slaves aquired from old-world slums will tend to be low-quality and resistant.\")
 	get_node('../../../').selection = \"Kidnappers Market\""
 
-[sub_resource type="DynamicFont" id=7]
+[sub_resource type="DynamicFont" id=6]
 size = 30
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=8]
+[sub_resource type="GDScript" id=7]
 script/source = "extends Panel
 
 func _ready():
@@ -141,16 +88,16 @@ func _on_Button_pressed():
 	get_node('../../../Description').set_text(\"Second-hand slaves will be affected by the prosperity and culture of their previous owner.\")
 	get_node('../../../').selection = \"Neighboring Arcologies\""
 
-[sub_resource type="DynamicFont" id=9]
+[sub_resource type="DynamicFont" id=8]
 size = 30
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=10]
+[sub_resource type="GDScript" id=9]
 script/source = "extends Control
 
 var active_phase
 var total_time
-var time
+var current_time
 
 func _ready():
 	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'tick')
@@ -161,34 +108,34 @@ func tick():
 	call(active_phase)
 
 func tba():
-	if time == 0:
-		total_time = 3600*abs(game.gaussian(2,2))
-		time += 1
+	if current_time == 0:
+		total_time = 3600*abs(math.gaussian(2,2))
+		current_time += 1
 		get_node('Header/Delivery').set_text(\"Delivery: TBA\")
-	elif time < total_time:
-		time += 1
+	elif current_time < total_time:
+		current_time += 1
 		get_node('Header/Delivery').set_text(\"Delivery: TBA\")
 	else:
 		active_phase = \"timer\"
-		time = 0
+		current_time = 0
 
 func timer():
-	if time == 0:
-		total_time = 3600*abs(game.gaussian(32,4))
-		time += 1
-		get_node('Header/Delivery').set_text(\"Delivery: \"+game.time_remaining(time,total_time))
-	elif time < total_time:
-		time += 1
-		get_node('Header/Delivery').set_text(\"Delivery: \"+game.time_remaining(time,total_time))
+	if current_time == 0:
+		total_time = 3600*abs(math.gaussian(32,4))
+		current_time += 1
+		get_node('Header/Delivery').set_text(\"Delivery: \"+math.time_remaining(current_time,total_time))
+	elif current_time < total_time:
+		current_time += 1
+		get_node('Header/Delivery').set_text(\"Delivery: \"+math.time_remaining(current_time,total_time))
 	else:
 		active_phase = \"delivery\"
-		time = 0
+		current_time = 0
 
 func delivery():
-	for n in range(abs(game.gaussian(7,3))):
+	for n in range(abs(math.gaussian(7,3))):
 		get_node('Slider/HBoxContainer').add_child(get_node('../New Slave').new(\"kidnappers market\",true),true)
 	active_phase = \"tba\"
-	time = 0
+	current_time = 0
 
 func _input(event):
 	if event.is_action_pressed('ui_back'):
@@ -199,12 +146,12 @@ func _input(event):
 			self.hide()
 "
 
-[sub_resource type="GDScript" id=11]
+[sub_resource type="GDScript" id=10]
 script/source = "extends Control
 
 var active_phase
 var total_time
-var time
+var current_time
 
 func _ready():
 	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'tick')
@@ -215,30 +162,30 @@ func tick():
 	call(active_phase)
 
 func tba():
-	if time == 0:
-		total_time = 3600*abs(game.gaussian(2,2))
-		time += 1
-	elif time < total_time:
-		time += 1
+	if current_time == 0:
+		total_time = 3600*abs(math.gaussian(2,2))
+		current_time += 1
+	elif current_time < total_time:
+		current_time += 1
 	else:
 		active_phase = \"timer\"
-		time = 0
+		current_time = 0
 
 func timer():
-	if time == 0:
-		total_time = 3600*abs(game.gaussian(32,4))
-		time += 1
-	elif time < total_time:
-		time += 1
+	if current_time == 0:
+		total_time = 3600*abs(math.gaussian(32,4))
+		current_time += 1
+	elif current_time < total_time:
+		current_time += 1
 	else:
 		active_phase = \"delivery\"
-		time = 0
+		current_time = 0
 
 func delivery():
-	for n in range(abs(game.gaussian(7,3))):
+	for n in range(abs(math.gaussian(7,3))):
 		get_node('Slider/HBoxContainer').add_child(get_node('../New Slave').new(\"kidnappers market\",true),true)
 	active_phase = \"tba\"
-	time = 0
+	current_time = 0
 
 func _input(event):
 	if event.is_action_pressed('ui_back'):
@@ -254,19 +201,25 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 1
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="New Slave" parent="." instance=ExtResource( 2 )]
 visible = false
 margin_right = -1920.0
 margin_bottom = -1080.0
 
+[node name="Slider" parent="." instance=ExtResource( 6 )]
+
 [node name="Header" type="Control" parent="."]
-editor/display_folded = true
 anchor_right = 1.0
 margin_bottom = 130.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Header"]
-editor/display_folded = true
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -291,31 +244,7 @@ margin_bottom = 60.0
 custom_fonts/font = SubResource( 2 )
 text = "Buy Slaves"
 
-[node name="Slider" type="Container" parent="."]
-editor/display_folded = true
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -850.0
-margin_top = -360.0
-margin_right = 850.0
-margin_bottom = 340.0
-rect_pivot_offset = Vector2( 850, 350 )
-size_flags_horizontal = 2
-size_flags_vertical = 2
-script = SubResource( 3 )
-
-[node name="Tween" type="Tween" parent="Slider"]
-
-[node name="HBoxContainer" type="HBoxContainer" parent="Slider"]
-size_flags_horizontal = 2
-size_flags_vertical = 2
-size_flags_stretch_ratio = 0.0
-custom_constants/separation = 150
-
 [node name="Availability" type="Panel" parent="."]
-editor/display_folded = true
 visible = false
 anchor_left = 0.5
 anchor_top = 0.5
@@ -325,7 +254,10 @@ margin_left = -250.0
 margin_top = -200.0
 margin_right = 250.0
 margin_bottom = 200.0
-script = SubResource( 4 )
+script = SubResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Label" type="Label" parent="Availability"]
 anchor_left = 0.5
@@ -334,11 +266,10 @@ margin_left = -221.0
 margin_top = -39.0
 margin_right = -67.0
 margin_bottom = -2.0
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 4 )
 text = "Availability:"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Availability"]
-editor/display_folded = true
 anchor_left = 0.5
 anchor_right = 0.5
 margin_left = -233.0
@@ -348,17 +279,15 @@ margin_bottom = 269.0
 scroll_horizontal_enabled = false
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Availability/ScrollContainer"]
-editor/display_folded = true
 margin_right = 450.0
 margin_bottom = 94.0
 
 [node name="Kidnappers Market" type="Panel" parent="Availability/ScrollContainer/VBoxContainer"]
-editor/display_folded = true
 self_modulate = Color( 0.667969, 0.667969, 0.667969, 1 )
 margin_right = 450.0
 margin_bottom = 45.0
 rect_min_size = Vector2( 450, 45 )
-script = SubResource( 6 )
+script = SubResource( 5 )
 
 [node name="Title" type="Label" parent="Availability/ScrollContainer/VBoxContainer/Kidnappers Market"]
 anchor_top = 0.5
@@ -367,7 +296,7 @@ margin_left = 10.0
 margin_top = -18.5
 margin_right = 265.0
 margin_bottom = 18.5
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 6 )
 text = "Kidnappers' Market"
 
 [node name="Number" type="Label" parent="Availability/ScrollContainer/VBoxContainer/Kidnappers Market"]
@@ -379,7 +308,7 @@ margin_left = -95.0
 margin_top = -18.5
 margin_right = -6.0
 margin_bottom = 18.5
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 6 )
 text = "x0"
 align = 2
 
@@ -388,13 +317,12 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="Neighboring Arcologies" type="Panel" parent="Availability/ScrollContainer/VBoxContainer"]
-editor/display_folded = true
 self_modulate = Color( 0.667969, 0.667969, 0.667969, 1 )
 margin_top = 49.0
 margin_right = 450.0
 margin_bottom = 94.0
 rect_min_size = Vector2( 450, 45 )
-script = SubResource( 8 )
+script = SubResource( 7 )
 
 [node name="Title" type="Label" parent="Availability/ScrollContainer/VBoxContainer/Neighboring Arcologies"]
 anchor_top = 0.5
@@ -403,7 +331,7 @@ margin_left = 10.0
 margin_top = -18.5
 margin_right = 265.0
 margin_bottom = 18.5
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 6 )
 text = "Neighboring Arcologies"
 
 [node name="Number" type="Label" parent="Availability/ScrollContainer/VBoxContainer/Neighboring Arcologies"]
@@ -415,7 +343,7 @@ margin_left = -95.0
 margin_top = -18.5
 margin_right = -6.0
 margin_bottom = 18.5
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 6 )
 text = "x0"
 align = 2
 
@@ -445,6 +373,7 @@ margin_top = -111.0
 margin_right = 225.0
 margin_bottom = -11.0
 custom_fonts/normal_font = ExtResource( 5 )
+custom_constants/line_separation = 0
 text = "Many organizations are selective about their clientele, and will only sell to you if you are reputable."
 
 [node name="View" type="Button" parent="Availability"]
@@ -457,20 +386,20 @@ margin_left = -50.0
 margin_top = 7.0
 margin_right = 50.0
 margin_bottom = 57.0
-custom_fonts/font = SubResource( 9 )
+custom_fonts/font = SubResource( 8 )
 text = "View"
 
 [node name="Kidnappers Market" type="Control" parent="."]
-editor/display_folded = true
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = SubResource( 10 )
+script = SubResource( 9 )
 
-[node name="Header" type="Container" parent="Kidnappers Market"]
-editor/display_folded = true
+[node name="Slider" parent="Kidnappers Market" instance=ExtResource( 6 )]
+
+[node name="Header" type="Control" parent="Kidnappers Market"]
 anchor_right = 1.0
-margin_bottom = 130.0
+margin_bottom = 95.0
 
 [node name="Title" type="Label" parent="Kidnappers Market/Header"]
 anchor_top = 1.0
@@ -504,40 +433,17 @@ custom_fonts/font = SubResource( 1 )
 text = "XX Available"
 align = 2
 
-[node name="Slider" type="Container" parent="Kidnappers Market"]
-editor/display_folded = true
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -850.0
-margin_top = -360.0
-margin_right = 850.0
-margin_bottom = 340.0
-rect_pivot_offset = Vector2( 850, 350 )
-size_flags_horizontal = 2
-size_flags_vertical = 2
-script = SubResource( 3 )
-
-[node name="Tween" type="Tween" parent="Kidnappers Market/Slider"]
-
-[node name="HBoxContainer" type="HBoxContainer" parent="Kidnappers Market/Slider"]
-size_flags_horizontal = 2
-size_flags_vertical = 2
-size_flags_stretch_ratio = 0.0
-custom_constants/separation = 150
-
 [node name="Neighboring Arcologies" type="Control" parent="."]
-editor/display_folded = true
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = SubResource( 11 )
+script = SubResource( 10 )
 
-[node name="Header" type="Container" parent="Neighboring Arcologies"]
-editor/display_folded = true
+[node name="Slider" parent="Neighboring Arcologies" instance=ExtResource( 6 )]
+
+[node name="Header" type="Control" parent="Neighboring Arcologies"]
 anchor_right = 1.0
-margin_bottom = 130.0
+margin_bottom = 95.0
 
 [node name="Title" type="Label" parent="Neighboring Arcologies/Header"]
 anchor_top = 1.0
@@ -559,33 +465,7 @@ margin_right = -10.0
 custom_fonts/font = SubResource( 1 )
 text = "XX Available"
 align = 2
-
-[node name="Slider" type="Container" parent="Neighboring Arcologies"]
-editor/display_folded = true
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -850.0
-margin_top = -360.0
-margin_right = 850.0
-margin_bottom = 340.0
-rect_pivot_offset = Vector2( 850, 350 )
-size_flags_horizontal = 2
-size_flags_vertical = 2
-script = SubResource( 3 )
-
-[node name="Tween" type="Tween" parent="Neighboring Arcologies/Slider"]
-
-[node name="HBoxContainer" type="HBoxContainer" parent="Neighboring Arcologies/Slider"]
-size_flags_horizontal = 2
-size_flags_vertical = 2
-size_flags_stretch_ratio = 0.0
-custom_constants/separation = 150
 [connection signal="pressed" from="Header/HBoxContainer/Buy Slaves" to="." method="_on_Buy_Slaves_pressed"]
-[connection signal="visibility_changed" from="Slider" to="Slider" method="_on_Slider_visibility_changed"]
 [connection signal="pressed" from="Availability/ScrollContainer/VBoxContainer/Kidnappers Market/Button" to="Availability/ScrollContainer/VBoxContainer/Kidnappers Market" method="_on_Button_pressed"]
 [connection signal="pressed" from="Availability/ScrollContainer/VBoxContainer/Neighboring Arcologies/Button" to="Availability/ScrollContainer/VBoxContainer/Neighboring Arcologies" method="_on_Button_pressed"]
 [connection signal="pressed" from="Availability/View" to="Availability" method="_on_View_pressed"]
-[connection signal="visibility_changed" from="Kidnappers Market/Slider" to="Kidnappers Market/Slider" method="_on_Slider_visibility_changed"]
-[connection signal="visibility_changed" from="Neighboring Arcologies/Slider" to="Neighboring Arcologies/Slider" method="_on_Slider_visibility_changed"]

@@ -2,10 +2,6 @@ extends Control
 
 onready var main = get_tree().get_nodes_in_group('Main')
 
-func _ready():
-	get_tree().get_root().connect('size_changed',self,'resize')
-	resize()
-
 func _on_New_Game_pressed():
 	get_node('New Game').show()
 
@@ -27,6 +23,9 @@ func _input(event):
 		elif get_node('New Game').is_visible_in_tree():
 			get_node('New Game').hide()
 
+func _ready():
+	get_tree().get_root().connect('size_changed',self,'resize')
+
 func resize():
-	get_node('arcghost').set_scale(Vector2(display.scale1,display.scale1))
-	get_node('Buttons').set_scale(Vector2(display.scale2,display.scale2))
+	var adjusted_scale = display.scale*20
+	$Label.get('custom_fonts/font').size = max(16,adjusted_scale)

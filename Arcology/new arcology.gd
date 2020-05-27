@@ -1,7 +1,5 @@
 extends Node
 
-onready var p = get_parent()
-
 func generate(size):
 	var build = [penthouse(),fill_top(),fill_bot(),t2(),t1(),t0()]
 	for i in size - build.size():
@@ -42,7 +40,7 @@ func penthouse():
 	"salon"]
 	var index = 0
 	for sector in terra.get_children():
-		p.swap(sector,get_node('../Library/Sectors/%s'%layout[index]).duplicate())
+		get_parent().swap(sector,get_node('../Library/Sectors/%s'%layout[index]).duplicate())
 		index += 1
 	return terra
 
@@ -54,7 +52,7 @@ func fill_top():
 	var layout_5 = [{"park_a":2}, {"residential_luxury":7}, {"commercial_luxury":1}]
 	var layout_6 = [{"park_a":1}, {"residential_luxury":7}, {"commercial_luxury":3}]
 	var layouts = [layout_1, layout_2, layout_3, layout_4, layout_5, layout_6]
-	var composition = layouts[game.roll(6)]
+	var composition = layouts[dice.roll(6)]
 	var terra = get_node('../Library/Terras/Fill').duplicate()
 	for sector in composition:
 		for amount in sector.values()[0]:
@@ -70,7 +68,7 @@ func fill():
 	var layout_5 = [{"residential_standard":9}, {"commercial_standard":3}]
 	var layout_6 = [{"residential_standard":8}, {"commercial_standard":4}]
 	var layouts = [layout_1, layout_2, layout_3, layout_4, layout_5, layout_6]
-	var composition = layouts[game.roll(6)]
+	var composition = layouts[dice.roll(6)]
 	var terra = get_node('../Library/Terras/Fill').duplicate()
 	for sector in composition:
 		for amount in sector.values()[0]:
@@ -86,7 +84,7 @@ func fill_bot():
 	var layout_5 = [{"park_a":2}, {"residential_standard":1}, {"residential_dense":5}, {"commercial_dense":2}]
 	var layout_6 = [{"park_a":2}, {"residential_dense":6}, {"commercial_dense":2}]
 	var layouts = [layout_1, layout_2, layout_3, layout_4, layout_5, layout_6]
-	var composition = layouts[game.roll(6)]
+	var composition = layouts[dice.roll(6)]
 	var terra = get_node('../Library/Terras/Fill').duplicate()
 	for sector in composition:
 		for amount in sector.values()[0]:
@@ -105,8 +103,8 @@ func t2():
 	var outer_layout_6 = [{"hydroponics_a":1}, {"laboratory":1}, {"residential_standard":7}, {"commercial_standard":1}]
 	var inner_layouts = [inner_layout_1, inner_layout_2]
 	var outer_layouts = [outer_layout_1, outer_layout_2, outer_layout_3, outer_layout_4, outer_layout_5, outer_layout_6]
-	var inner_composition = inner_layouts[game.roll(2)]
-	var outer_composition = outer_layouts[game.roll(6)]
+	var inner_composition = inner_layouts[dice.roll(2)]
+	var outer_composition = outer_layouts[dice.roll(6)]
 	var terra = get_node('../Library/Terras/T2').duplicate()
 	var inner_ring = terra.get_node('Inner')
 	for sector in inner_composition:
@@ -132,8 +130,8 @@ func t1():
 	var outer_layout_3 = [{"hydroponics_a":2}, {"laboratory":2}, {"manufacturing":4}]
 	var inner_layouts = [inner_layout_1, inner_layout_2, inner_layout_3, inner_layout_4, inner_layout_5, inner_layout_6]
 	var outer_layouts = [outer_layout_1, outer_layout_2, outer_layout_3]
-	var inner_composition = inner_layouts[game.roll(6)]
-	var outer_composition = outer_layouts[game.roll(3)]
+	var inner_composition = inner_layouts[dice.roll(6)]
+	var outer_composition = outer_layouts[dice.roll(3)]
 	var terra = get_node('../Library/Terras/T1').duplicate()
 	var inner_ring = terra.get_node('Inner')
 	for sector in inner_composition:
@@ -164,7 +162,7 @@ func t0():
 	"thermal_exchange_condenser_b"]
 	var index = 0
 	for sector in terra.get_children():
-		p.swap(sector,get_node('../Library/Sectors/%s'%layout[index]).duplicate())
+		get_parent().swap(sector,get_node('../Library/Sectors/%s'%layout[index]).duplicate())
 		index += 1
 	return terra
 
@@ -173,30 +171,30 @@ func place(terra, sector_name):
 	var size = 1
 	if sector.get('size') != null:
 		size = sector.get('size')
-	var roll = game.roll(12)
+	var roll = dice.roll(12)
 	if size == 1:
 		while not "nullsec" in terra.get_child(roll).name:
-			roll = game.roll(12)
-		p.swap(terra.get_child(roll),sector)
+			roll = dice.roll(12)
+		get_parent().swap(terra.get_child(roll),sector)
 	elif size == 2:
 		var empty = false
 		while empty == false:
 			if "nullsec" in terra.get_child(roll).name and "nullsec" in terra.get_child(loop(roll+1)).name:
-				p.swap(terra.get_child(roll),sector)
-				p.swap(terra.get_child(loop(roll+1)),get_sector(sector_name.rstrip("_a")+"_b"))
+				get_parent().swap(terra.get_child(roll),sector)
+				get_parent().swap(terra.get_child(loop(roll+1)),get_sector(sector_name.rstrip("_a")+"_b"))
 				empty = true
 			else:
-				roll = game.roll(12)
+				roll = dice.roll(12)
 	elif size == 3:
 		var empty = false
 		while empty == false:
 			if "nullsec" in terra.get_child(roll).name and "nullsec" in terra.get_child(loop(roll+1)).name and "nullsec" in terra.get_child(loop(roll+2)).name:
-				p.swap(terra.get_child(roll),sector)
-				p.swap(terra.get_child(loop(roll+1)),get_sector(sector_name.rstrip("_a")+"_b"))
-				p.swap(terra.get_child(loop(roll+2)),get_sector(sector_name.rstrip("_a")+"_c"))
+				get_parent().swap(terra.get_child(roll),sector)
+				get_parent().swap(terra.get_child(loop(roll+1)),get_sector(sector_name.rstrip("_a")+"_b"))
+				get_parent().swap(terra.get_child(loop(roll+2)),get_sector(sector_name.rstrip("_a")+"_c"))
 				empty = true
 			else:
-				roll = game.roll(12)
+				roll = dice.roll(12)
 	return terra
 
 func assign_ownership(terra):
@@ -206,7 +204,7 @@ func assign_ownership(terra):
 			buildings += 1
 	var half = floor(buildings/2)
 	while half > 0:
-		var roll = game.roll(12)
+		var roll = dice.roll(12)
 		var sector = terra.get_child(roll)
 		if sector.get('owned') != null:
 			if sector.get('owned') == false:

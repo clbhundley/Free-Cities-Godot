@@ -4,16 +4,16 @@ static func presets():
 #		gender = gender(),
 #		ethnicity = ethnicity(),
 		age = randi() %41+18,
-		health = abs(game.gaussian(40,12)),
-		fatigue = abs(game.gaussian(80,15)),
-		happiness = abs(game.gaussian(5,5)),
-		arousal = abs(game.gaussian(15,6)),
-		devotion = game.gaussian(-50,25),
-		trust = game.gaussian(-50,25),
-		intelligence = game.gaussian(100,25),
-		libido = game.gaussian(100,25),
-		face = game.gaussian(5,3),
-		social = game.gaussian(5,10),
+		health = abs(math.gaussian(40,12)),
+		fatigue = abs(math.gaussian(80,15)),
+		happiness = abs(math.gaussian(5,5)),
+		arousal = abs(math.gaussian(15,6)),
+		devotion = math.gaussian(-50,25),
+		trust = math.gaussian(-50,25),
+		intelligence = math.gaussian(100,25),
+		libido = math.gaussian(100,25),
+		face = math.gaussian(5,3),
+		social = math.gaussian(5,10),
 		}
 
 #static func language():
@@ -40,19 +40,19 @@ static func presets():
 #	pass
 #
 #static func height():
-#	return str(game.gaussian(158,8)) + " cm"
+#	return str(math.gaussian(158,8)) + " cm"
 #
 #static func weight():
-#	return str(game.gaussian(52,8)) + " kg"
+#	return str(math.gaussian(52,8)) + " kg"
 #
 #static func chest():
 #	return {
 #	'breast_size':2,
 #	'breast_variation':2,
-#	'chest_size':game.gaussian(28,3)}
+#	'chest_size':math.gaussian(28,3)}
 #
 #static func penis_size():
-#	size = game.gaussian(2,1)
+#	size = math.gaussian(2,1)
 #	if size < 0:
 #		size = 0
 #	return size

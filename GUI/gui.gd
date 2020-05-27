@@ -7,10 +7,11 @@ onready var slider = get_node('Time/HSlider')
 onready var time_bg = get_node('Time/Panel')
 onready var feed = get_node('AI Panel/Feed')
 onready var AI = get_node('AI Panel')
-onready var finance = get_node('../Finance')
+#onready var finance = get_node('../Finance')
 
 func _ready():
 	game.is_ready()
+	game.update_money(game.money)
 	#_on_AI_pressed()
 
 func _on_AI_pressed():

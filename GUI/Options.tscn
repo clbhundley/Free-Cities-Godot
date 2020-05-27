@@ -9,11 +9,11 @@ script/source = "extends Control
 func _ready():
 	var display_mode_select = get_node('TabContainer/Options/VBoxContainer/Display Mode/display_mode_select')
 	var msaa_select = get_node('TabContainer/Options/VBoxContainer/Anti-Aliasing/msaa_select')
-	if game.config.get_value(\"display\", \"mode\") == \"windowed\":
+	if data.config.get_value(\"display\", \"mode\") == \"windowed\":
 		display_mode_select._select_int(0)
-	elif game.config.get_value(\"display\", \"mode\") == \"fullscreen\":
+	elif data.config.get_value(\"display\", \"mode\") == \"fullscreen\":
 		display_mode_select._select_int(1)
-	msaa_select._select_int(game.config.get_value(\"display\", \"msaa\"))
+	msaa_select._select_int(data.config.get_value(\"display\", \"msaa\"))
 
 func _on_open_game_folder():
 	OS.shell_open(OS.get_user_data_dir())
@@ -48,15 +48,14 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="TabContainer" type="TabContainer" parent="."]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -591.0
-margin_top = -292.5
-margin_right = 591.0
-margin_bottom = 292.5
+anchor_left = 0.192188
+anchor_top = 0.229167
+anchor_right = 0.807813
+anchor_bottom = 0.770833
 custom_fonts/font = SubResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Options" type="Tabs" parent="TabContainer"]
 anchor_right = 1.0
@@ -67,14 +66,16 @@ margin_right = -4.0
 margin_bottom = -4.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Options"]
-margin_left = 20.0
-margin_top = 20.0
-margin_right = 332.0
-margin_bottom = 173.0
+anchor_left = 0.0170358
+anchor_top = 0.0380228
+anchor_right = 0.282794
+anchor_bottom = 0.328897
 custom_constants/separation = 30
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Open User Folder" type="HBoxContainer" parent="TabContainer/Options/VBoxContainer"]
-editor/display_folded = true
 margin_right = 312.0
 margin_bottom = 31.0
 custom_constants/separation = 20
@@ -93,7 +94,6 @@ custom_fonts/font = ExtResource( 2 )
 text = "OPEN"
 
 [node name="Display Mode" type="HBoxContainer" parent="TabContainer/Options/VBoxContainer"]
-editor/display_folded = true
 margin_top = 61.0
 margin_right = 312.0
 margin_bottom = 92.0
@@ -107,15 +107,14 @@ text = "Display Mode:"
 
 [node name="display_mode_select" type="OptionButton" parent="TabContainer/Options/VBoxContainer/Display Mode"]
 margin_left = 177.0
-margin_right = 312.0
+margin_right = 300.0
 margin_bottom = 31.0
 custom_fonts/font = ExtResource( 2 )
 text = "Windowed"
-items = [ "Windowed", null, false, -1, null, "Fullscreen", null, false, -1, null ]
+items = [ "Windowed", null, false, 0, null, "Fullscreen", null, false, 1, null ]
 selected = 0
 
 [node name="Anti-Aliasing" type="HBoxContainer" parent="TabContainer/Options/VBoxContainer"]
-editor/display_folded = true
 margin_top = 122.0
 margin_right = 312.0
 margin_bottom = 153.0
@@ -129,11 +128,11 @@ text = "Anti-Aliasing:"
 
 [node name="msaa_select" type="OptionButton" parent="TabContainer/Options/VBoxContainer/Anti-Aliasing"]
 margin_left = 173.0
-margin_right = 293.0
+margin_right = 281.0
 margin_bottom = 31.0
 custom_fonts/font = ExtResource( 2 )
 text = "Disabled"
-items = [ "Disabled", null, false, -1, null, "2x", null, false, -1, null, "4x", null, false, -1, null, "8x", null, false, -1, null, "16x", null, false, -1, null ]
+items = [ "Disabled", null, false, 0, null, "2x", null, false, 1, null, "4x", null, false, 2, null, "8x", null, false, 3, null, "16x", null, false, 4, null ]
 selected = 0
 [connection signal="pressed" from="TabContainer/Options/VBoxContainer/Open User Folder/Button" to="." method="_on_open_game_folder"]
 [connection signal="item_selected" from="TabContainer/Options/VBoxContainer/Display Mode/display_mode_select" to="." method="_on_display_mode_select_item_selected"]

@@ -15,56 +15,69 @@
 [sub_resource type="GDScript" id=1]
 script/source = "extends Control
 
-onready var frames = get_node('Frames').get_children()
-onready var tween = get_node('Tween')
-onready var tween2 = get_node('Tween2')
-var current = 0
-var next
-var direction
+#onready var frames = get_node('Frames').get_children()
+#onready var tween = get_node('Tween')
+#onready var tween2 = get_node('Tween2')
+#var current = 0
+#var next
+#var direction
 
-func _ready():
-	connect('complete',self,'oscillator')
-	oscillator()
+#func _ready():
+#	connect('complete',self,'oscillator')
+#	oscillator()
 
-signal complete
-func oscillator():
-	if current == 0:
-		direction = 1
-		next = 1
-	elif current == 8:
-		direction = -1
-		next = 7
-	fade_in(frames[next])
-	yield(tween,'tween_completed')
-	fade_out(frames[current])
-	yield(tween,'tween_completed')
-	current += direction
-	next += direction
-	emit_signal('complete')
+#signal complete
+#func oscillator():
+#	if current == 0:
+#		direction = 1
+#		next = 1
+#	elif current == 8:
+#		direction = -1
+#		next = 7
+#	fade_in(frames[next])
+#	yield(tween,'tween_completed')
+#	fade_out(frames[current])
+#	yield(tween,'tween_completed')
+#	current += direction
+#	next += direction
+#	emit_signal('complete')
 
 func color_filter(new_color):
-	var filter = get_node('Filter')
-	tween2.interpolate_property(filter,'modulate',Color(filter.get('modulate').to_html()),Color(new_color),2,Tween.TRANS_CUBIC,Tween.EASE_OUT)
-	tween2.start()
+#	var filter = get_node('Filter')
+	$TweenColors.interpolate_property($Filter,'modulate',Color($Filter.get('modulate').to_html()),Color(new_color),2,Tween.TRANS_CUBIC,Tween.EASE_OUT)
+	$TweenColors.start()
 
-func fade_in(frame):
-	tween.interpolate_property(frame,'modulate',Color('00ffffff'),Color('ffffff'),0.1,Tween.TRANS_LINEAR,Tween.EASE_IN_OUT)
-	tween.start()
-
-func fade_out(frame):
-	tween.interpolate_property(frame,'modulate',Color('ffffff'),Color('00ffffff'),0.1,Tween.TRANS_LINEAR,Tween.EASE_IN_OUT)
-	tween.start()"
+#func fade_in(frame):
+#	tween.interpolate_property(frame,'modulate',Color('00ffffff'),Color('ffffff'),0.1,Tween.TRANS_LINEAR,Tween.EASE_IN_OUT)
+#	tween.start()
+#
+#func fade_out(frame):
+#	tween.interpolate_property(frame,'modulate',Color('ffffff'),Color('00ffffff'),0.1,Tween.TRANS_LINEAR,Tween.EASE_IN_OUT)
+#	tween.start()
+"
 
 [node name="Background" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = SubResource( 1 )
 
-[node name="Frames" type="Control" parent="."]
-editor/display_folded = true
+[node name="bg" type="TextureRect" parent="."]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-rect_scale = Vector2( 0.75, 0.75 )
+texture = ExtResource( 1 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Frames" type="Control" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="1" type="Sprite" parent="Frames"]
 modulate = Color( 1, 1, 1, 0 )
@@ -122,6 +135,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 texture = ExtResource( 11 )
 expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="JET 82000000" type="TextureRect" parent="."]
 visible = false
@@ -191,4 +207,4 @@ expand = true
 repeat = true
 playback/repeat = true
 
-[node name="Tween2" type="Tween" parent="."]
+[node name="TweenColors" type="Tween" parent="."]

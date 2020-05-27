@@ -1,6 +1,4 @@
-a list of colors used in this project:
-
-
+colors used in this project:
 
 deep orange - #ff7200
 
