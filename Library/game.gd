@@ -6,10 +6,23 @@ var default_font = preload('res://Fonts/Rubik-Light.tres')
 
 var money = abs(math.gaussian(20000,2000))
 
+const desktop_quit = MainLoop.NOTIFICATION_WM_QUIT_REQUEST
+const android_quit = MainLoop.NOTIFICATION_WM_GO_BACK_REQUEST
+var limiter = false #prevents malfunction due to multiple quit requests from windows
+func _notification(event):
+	if limiter:
+		return
+	if event == desktop_quit or event == android_quit:
+		if get_tree().get_current_scene().get_name() == "Main Menu":
+			return
+		limiter = true
+		data.save_game(data.save_slot)
+
 func _ready():
 	randomize()
 	data.check_dir('user://Data',"Data")
 	data.check_config()
+	data.set_autosave()
 	display.check_display()
 
 func is_ready():

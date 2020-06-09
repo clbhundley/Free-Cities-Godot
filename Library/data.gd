@@ -2,8 +2,42 @@ extends Node
 
 var save_slot # currently active save slot
 var config = ConfigFile.new()
+var autosave_interval
 
 # add proper error handling for these functions!
+
+func set_autosave():
+	if not config.has_section_key("autosave", "interval"):
+		config.set_value("autosave", "interval", 2)
+		config.save('user://config.cfg')
+	var config_value = config.get_value("autosave", "interval")
+	if config_value == 0:
+		autosave_interval = 0
+	elif config_value == 1:
+		autosave_interval = 1
+	elif config_value == 2:
+		autosave_interval = 5
+	elif config_value == 3:
+		autosave_interval = 10
+	elif config_value == 4:
+		autosave_interval = 15
+	elif config_value == 5:
+		autosave_interval = 30
+	elif config_value == 6:
+		autosave_interval = 60
+	if get_tree().get_current_scene().get_name() == "Main Menu":
+		return
+	var timer = get_tree().get_root().get_node('Game/Autosave')
+	if autosave_interval == 0:
+		timer.stop()
+	else:
+		timer.wait_time = autosave_interval * 60
+		timer.start()
+
+func autosave():
+	get_tree().set_pause(true)
+	data.save_game(data.save_slot)
+	get_tree().set_pause(false)
 
 func check_config():
 	var file = config.load('user://config.cfg')
@@ -73,7 +107,8 @@ func quick_save(): # !repurpose this function!
 	file.store_line(to_json(index()))
 	file.close()
 
-func save_game(slot):
+func save_game(slot): #this function is only used on new game creation?? use only distributed saving?
+	print("SAVING GAME")
 	var file = File.new()
 	check_dir('user://Data/Slot %s',"Slot %s"%slot)
 #	check_dir('user://Data/Slot %s/Finance'%slot,"Finance")
@@ -104,7 +139,7 @@ func save_game(slot):
 	var owned_slaves = []
 	if get_tree().get_root().get_node('Game/Slaves/Slider/HBoxContainer'):
 		for _slave in get_tree().get_root().get_node('Game/Slaves/Slider/HBoxContainer').get_children():
-			owned_slaves.append(_slave._save())
+			owned_slaves.append(_slave._data())
 	for i in owned_slaves:
 		file.open('user://Data/Slot %s/Slaves/Owned/'%slot+i['core']['name']+'.json',File.WRITE)
 		file.store_line(to_json(i))
@@ -112,7 +147,7 @@ func save_game(slot):
 	var kidnappers_slaves = []
 	if get_tree().get_root().get_node('Game/Slaves/Kidnappers Market/Slider/HBoxContainer'):
 		for _slave in get_tree().get_root().get_node('Game/Slaves/Kidnappers Market/Slider/HBoxContainer').get_children():
-			kidnappers_slaves.append(_slave._save())
+			kidnappers_slaves.append(_slave._data())
 	for i in kidnappers_slaves:
 		file.open("user://Data/Slot %s/Slaves/Available/Kidnappers' Market/"%slot+i['core']['name']+'.json',File.WRITE)
 		file.store_line(to_json(i))
@@ -120,7 +155,7 @@ func save_game(slot):
 	var neighboring_slaves = []
 	if get_tree().get_root().get_node('Game/Slaves/Neighboring Arcologies/Slider/HBoxContainer'):
 		for _slave in get_tree().get_root().get_node('Game/Slaves/Neighboring Arcologies/Slider/HBoxContainer').get_children():
-			neighboring_slaves.append(_slave._save())
+			neighboring_slaves.append(_slave._data())
 	for i in neighboring_slaves:
 		file.open('user://Data/Slot %s/Slaves/Available/Neighboring Arcologies/'%slot+i['core']['name']+'.json',File.WRITE)
 		file.store_line(to_json(i))

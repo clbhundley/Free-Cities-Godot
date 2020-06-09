@@ -7,7 +7,7 @@ func _ready():
 		get_node('Slider/HBoxContainer').add_child(get_node('New Slave').new(preset),true)
 	tick()
 
-func tick():
+func tick(): #update on change not every tick
 	get_node('Header/HBoxContainer/Number').set_text(str(get_node('Slider/HBoxContainer').get_child_count())+" Slaves Owned")
 
 func _on_Buy_Slaves_pressed():

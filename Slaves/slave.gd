@@ -49,10 +49,17 @@ func _ready():
 	get_tree().get_root().connect('size_changed',self,'resize')
 	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'tick')
 #	connect('pressed',get_tree().get_root().get_node('Game/Slaves'),'buy',[self,get_parent()])
+
 	if not action:
 		action = "Idle"
 	if not assignment:
 		assignment = "Rest"
+	
+	if assignment == "Rest":
+		get_node("Panel/Buttons/Assignment")._select_int(0)
+	elif assignment == "Prostitute":
+		get_node("Panel/Buttons/Assignment")._select_int(1)
+	
 	get_node('Top/Name').set_text(name)
 	get_node('Top/Status').set_text("Resting") # TEMP
 	get_node('Activity/Action').set_text(action)
@@ -108,7 +115,7 @@ func tick():
 			if status.active:
 				status.tick()
 		get_node('Model')._display(self) # do not display every tick, dont pass self into function
-		quick_save()
+		#_save()
 
 func set_level():
 	get_node('Top/Level').set_text(str(get_node('Stats')._level()))
@@ -118,21 +125,22 @@ func _action_ended():
 	get_node('Activity/Time').set_text("Done")
 	get_node('Activity/Action').set_text("")
 
-func quick_save():
-	var path
-	var file = File.new()
-	var location = get_node('../../../').name
-	if location == "Slaves":
-		path = 'user://Data/Slot %s/Slaves/Owned/'%data.save_slot
-	elif location == "Kidnappers Market":
-		path = "user://Data/Slot %s/Slaves/Available/Kidnappers' Market/"%data.save_slot
-	elif location == "Neighboring Arcologies":
-		path = 'user://Data/Slot %s/Slaves/Available/Neighboring Arcologies/'%data.save_slot
-	file.open(path+name+'.json',File.WRITE)
-	file.store_line(to_json(_save()))
-	file.close()
+#func _save(): #obsolete with new save system?
+#	var path
+#	var file = File.new()
+#	var location = get_node('../../../').name #store location as a var?
+#	# set file location without using conditional statements? is that shorter or longer?
+#	if location == "Slaves":
+#		path = 'user://Data/Slot %s/Slaves/Owned/'%data.save_slot
+#	elif location == "Kidnappers Market":
+#		path = "user://Data/Slot %s/Slaves/Available/Kidnappers' Market/"%data.save_slot
+#	elif location == "Neighboring Arcologies":
+#		path = 'user://Data/Slot %s/Slaves/Available/Neighboring Arcologies/'%data.save_slot
+#	file.open(path+name+'.json',File.WRITE)
+#	file.store_line(to_json(_data()))
+#	file.close()
 
-func _save():
+func _data():
 	return {
 		core = {
 			name = name,
@@ -243,6 +251,7 @@ func _on_Assignment_item_selected(ID):
 
 onready var root = get_tree().get_root()
 func _on_Buy_pressed():
+	#remove slave data from user folder
 	var path
 	var dir = Directory.new()
 	var location = get_node('../../../').name
@@ -254,11 +263,14 @@ func _on_Buy_pressed():
 		path = 'user://Data/Slot %s/Slaves/Available/Neighboring Arcologies/'%data.save_slot
 	path += name+'.json'
 	dir.remove(path)
+	#update properties
 	for_sale = false
 	get_node('Panel').hide()
 	get_node('Panel/Buttons').show()
 	get_node('Panel/Selling Buttons').hide()
+	#remove from market
 	get_parent().remove_child(self)
+	#add to owned
 	root.get_node('Game/Slaves/Slider/HBoxContainer').add_child(self,true)
 
 func _on_Top_pressed():

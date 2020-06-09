@@ -1,7 +1,7 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Arcology/Arcology.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Background.tscn" type="PackedScene" id=4]
+[ext_resource path="res://GUI/Background.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Slaves/Slaves.tscn" type="PackedScene" id=5]
 [ext_resource path="res://GUI/GUI.tscn" type="PackedScene" id=6]
 
@@ -10,6 +10,16 @@ script/source = "extends Timer
 
 func _ready():
 	connect('timeout',time,'tick')
+"
+
+[sub_resource type="GDScript" id=2]
+script/source = "extends Timer
+
+func _ready():
+	connect('timeout',data,'autosave')
+	if data.autosave_interval != 0:
+		wait_time = data.autosave_interval * 60
+		start()
 "
 
 [node name="Game" type="Node"]
@@ -27,3 +37,7 @@ visible = false
 [node name="Clock" type="Timer" parent="."]
 autostart = true
 script = SubResource( 1 )
+
+[node name="Autosave" type="Timer" parent="."]
+wait_time = 300.0
+script = SubResource( 2 )

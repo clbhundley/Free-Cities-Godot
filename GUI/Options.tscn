@@ -7,25 +7,32 @@
 script/source = "extends Control
 
 func _ready():
-	var display_mode_select = get_node('TabContainer/Options/VBoxContainer/Display Mode/display_mode_select')
-	var msaa_select = get_node('TabContainer/Options/VBoxContainer/Anti-Aliasing/msaa_select')
+	var autosave_interval = get_node(\"TabContainer/Options/VBoxContainer/Autosave/autosave interval\")
+	var display_mode = get_node(\"TabContainer/Options/VBoxContainer/Display Mode/display mode\")
+	var msaa = get_node(\"TabContainer/Options/VBoxContainer/Anti-Aliasing/msaa\")
 	if data.config.get_value(\"display\", \"mode\") == \"windowed\":
-		display_mode_select._select_int(0)
+		display_mode._select_int(0)
 	elif data.config.get_value(\"display\", \"mode\") == \"fullscreen\":
-		display_mode_select._select_int(1)
-	msaa_select._select_int(data.config.get_value(\"display\", \"msaa\"))
+		display_mode._select_int(1)
+	autosave_interval._select_int(data.config.get_value(\"autosave\", \"interval\"))
+	msaa._select_int(data.config.get_value(\"display\", \"msaa\"))
 
 func _on_open_game_folder():
 	OS.shell_open(OS.get_user_data_dir())
 
-func _on_display_mode_select_item_selected(ID):
-	if ID == 0:
+func _on_autosave_interval_item_selected(id):
+	data.config.set_value(\"autosave\", \"interval\", id)
+	data.config.save('user://config.cfg')
+	data.set_autosave()
+
+func _on_display_mode_item_selected(id):
+	if id == 0:
 		display.set_windowed()
-	elif ID == 1:
+	elif id == 1:
 		display.set_fullscreen()
 
-func _on_msaa_select_item_selected(ID):
-	display.set_msaa(ID)
+func _on_msaa_item_selected(id):
+	display.set_msaa(id)
 "
 
 [sub_resource type="DynamicFont" id=2]
@@ -41,6 +48,9 @@ font_data = ExtResource( 1 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="BG" type="Panel" parent="."]
 modulate = Color( 0, 0, 0, 1 )
@@ -76,7 +86,7 @@ __meta__ = {
 }
 
 [node name="Open User Folder" type="HBoxContainer" parent="TabContainer/Options/VBoxContainer"]
-margin_right = 312.0
+margin_right = 332.0
 margin_bottom = 31.0
 custom_constants/separation = 20
 
@@ -93,10 +103,31 @@ margin_bottom = 31.0
 custom_fonts/font = ExtResource( 2 )
 text = "OPEN"
 
-[node name="Display Mode" type="HBoxContainer" parent="TabContainer/Options/VBoxContainer"]
+[node name="Autosave" type="HBoxContainer" parent="TabContainer/Options/VBoxContainer"]
 margin_top = 61.0
-margin_right = 312.0
+margin_right = 332.0
 margin_bottom = 92.0
+custom_constants/separation = 20
+
+[node name="Label" type="Label" parent="TabContainer/Options/VBoxContainer/Autosave"]
+margin_right = 233.0
+margin_bottom = 31.0
+custom_fonts/font = SubResource( 3 )
+text = "Autosave (real time):"
+
+[node name="autosave interval" type="OptionButton" parent="TabContainer/Options/VBoxContainer/Autosave"]
+margin_left = 253.0
+margin_right = 332.0
+margin_bottom = 31.0
+custom_fonts/font = ExtResource( 2 )
+text = "5 min"
+items = [ "Disabled", null, false, 0, null, "1 min", null, false, 1, null, "5 min", null, false, 2, null, "10 min", null, false, 3, null, "15 min", null, false, 4, null, "30 min", null, false, 5, null, "1 hr", null, false, 6, null ]
+selected = 2
+
+[node name="Display Mode" type="HBoxContainer" parent="TabContainer/Options/VBoxContainer"]
+margin_top = 122.0
+margin_right = 332.0
+margin_bottom = 153.0
 custom_constants/separation = 20
 
 [node name="Label" type="Label" parent="TabContainer/Options/VBoxContainer/Display Mode"]
@@ -105,7 +136,7 @@ margin_bottom = 31.0
 custom_fonts/font = SubResource( 3 )
 text = "Display Mode:"
 
-[node name="display_mode_select" type="OptionButton" parent="TabContainer/Options/VBoxContainer/Display Mode"]
+[node name="display mode" type="OptionButton" parent="TabContainer/Options/VBoxContainer/Display Mode"]
 margin_left = 177.0
 margin_right = 300.0
 margin_bottom = 31.0
@@ -115,9 +146,9 @@ items = [ "Windowed", null, false, 0, null, "Fullscreen", null, false, 1, null ]
 selected = 0
 
 [node name="Anti-Aliasing" type="HBoxContainer" parent="TabContainer/Options/VBoxContainer"]
-margin_top = 122.0
-margin_right = 312.0
-margin_bottom = 153.0
+margin_top = 183.0
+margin_right = 332.0
+margin_bottom = 214.0
 custom_constants/separation = 20
 
 [node name="Label" type="Label" parent="TabContainer/Options/VBoxContainer/Anti-Aliasing"]
@@ -126,14 +157,15 @@ margin_bottom = 31.0
 custom_fonts/font = SubResource( 3 )
 text = "Anti-Aliasing:"
 
-[node name="msaa_select" type="OptionButton" parent="TabContainer/Options/VBoxContainer/Anti-Aliasing"]
+[node name="msaa" type="OptionButton" parent="TabContainer/Options/VBoxContainer/Anti-Aliasing"]
 margin_left = 173.0
-margin_right = 281.0
+margin_right = 224.0
 margin_bottom = 31.0
 custom_fonts/font = ExtResource( 2 )
-text = "Disabled"
+text = "8x"
 items = [ "Disabled", null, false, 0, null, "2x", null, false, 1, null, "4x", null, false, 2, null, "8x", null, false, 3, null, "16x", null, false, 4, null ]
-selected = 0
+selected = 3
 [connection signal="pressed" from="TabContainer/Options/VBoxContainer/Open User Folder/Button" to="." method="_on_open_game_folder"]
-[connection signal="item_selected" from="TabContainer/Options/VBoxContainer/Display Mode/display_mode_select" to="." method="_on_display_mode_select_item_selected"]
-[connection signal="item_selected" from="TabContainer/Options/VBoxContainer/Anti-Aliasing/msaa_select" to="." method="_on_msaa_select_item_selected"]
+[connection signal="item_selected" from="TabContainer/Options/VBoxContainer/Autosave/autosave interval" to="." method="_on_autosave_interval_item_selected"]
+[connection signal="item_selected" from="TabContainer/Options/VBoxContainer/Display Mode/display mode" to="." method="_on_display_mode_item_selected"]
+[connection signal="item_selected" from="TabContainer/Options/VBoxContainer/Anti-Aliasing/msaa" to="." method="_on_msaa_item_selected"]

@@ -26,10 +26,10 @@ func _ready():
 	title.set_text(_name)
 	resize()
 
-var cam_offset = (display.aspect_ratio-1.8)/0.2
+var cam_offset = 0
 func resize():
 	# use camera.h_offset?
-	cam_offset = (display.aspect_ratio-1.8)/0.2
+	cam_offset = (display.aspect_ratio - 1.8) / 0.2
 	
 	#print("camera ", camera.h_offset)
 	#print("cam_offset ", cam_offset)

@@ -3535,8 +3535,8 @@ margin_right = 147.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 120, 40 )
 custom_fonts/font = ExtResource( 3 )
-text = "Resting"
-items = [ "Resting", null, false, 0, null, "Prostitute", null, false, 1, null ]
+text = "Rest"
+items = [ "Rest", null, false, 0, null, "Prostitute", null, false, 1, null ]
 selected = 0
 
 [node name="Examine" type="Button" parent="Panel/Buttons"]

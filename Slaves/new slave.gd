@@ -96,6 +96,7 @@ func new(preset=null,selling=false):
 	if not _slave.combat_skill:
 		_slave.combat_skill = abs(math.gaussian(10,25))
 	
+	#force gauged values to below 100. should not be needed if slave is generated properly
 	var gauges = ['happiness','arousal','fatigue','hunger','bathroom']
 	for value in gauges:
 		if _slave.get(value) > 100:

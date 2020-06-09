@@ -568,6 +568,7 @@ func _on_Options_pressed():
 
 func _on_Main_Menu_pressed():
 	_pause()
+	data.save_game(data.save_slot)
 	get_tree().change_scene('res://Main Menu/Main Menu.tscn')
 
 func _input(event):

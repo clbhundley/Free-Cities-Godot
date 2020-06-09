@@ -31,10 +31,10 @@ func set_windowed():
 	OS.set_window_maximized(true)
 	resize()
 
-func set_msaa(ID):
-	config.set_value("display", "msaa", ID)
+func set_msaa(id):
+	config.set_value("display", "msaa", id)
 	config.save('user://config.cfg')
-	get_viewport().msaa = ID
+	get_viewport().msaa = id
 
 var scale
 var aspect_ratio
