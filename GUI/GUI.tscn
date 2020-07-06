@@ -2914,7 +2914,6 @@ custom_fonts/font = SubResource( 30 )
 text = "Resume"
 
 [node name="Save-Load" type="Button" parent="Pause Menu/Menu"]
-visible = false
 margin_top = 160.0
 margin_right = 425.0
 margin_bottom = 220.0
@@ -2923,17 +2922,17 @@ custom_fonts/font = SubResource( 30 )
 text = "Save/Load"
 
 [node name="Options" type="Button" parent="Pause Menu/Menu"]
-margin_top = 160.0
+margin_top = 230.0
 margin_right = 425.0
-margin_bottom = 220.0
+margin_bottom = 290.0
 rect_min_size = Vector2( 160, 60 )
 custom_fonts/font = SubResource( 30 )
 text = "Options"
 
 [node name="Main Menu" type="Button" parent="Pause Menu/Menu"]
-margin_top = 230.0
+margin_top = 300.0
 margin_right = 425.0
-margin_bottom = 290.0
+margin_bottom = 360.0
 rect_min_size = Vector2( 160, 60 )
 custom_fonts/font = SubResource( 31 )
 text = "Main Menu"

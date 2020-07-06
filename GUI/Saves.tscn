@@ -13,7 +13,7 @@ script/source = "extends Control
 onready var scene = get_tree().get_current_scene().get_name()
 
 func _ready():
-	var save_data = data.load_game(name)
+	var save_data = data.load_game(name) # loading entire savegame to get ArcName and datetime
 	if not save_data:
 		get_node('Save').show()
 		get_node('Load').hide()
@@ -128,6 +128,9 @@ margin_right = 20.0
 margin_bottom = 12.0
 custom_fonts/font = ExtResource( 2 )
 align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Save" type="Button" parent="Panel/Slots/1"]
 visible = false

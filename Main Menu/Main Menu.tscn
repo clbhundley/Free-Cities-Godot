@@ -32,6 +32,12 @@ script/source = "extends Control
 
 var save_data
 
+func _new_game():
+	data.save_slot = name
+	game.queue_save = true
+	game.reset()
+	get_tree().change_scene(\"res://Game.tscn\")
+
 func _ready():
 	save_data = data.load_game(name)
 	if not save_data:
@@ -62,15 +68,11 @@ func _on_pressed():
 			\"Would you like to overwrite this data with a new game?\")
 		$ConfirmationDialog.popup_centered()
 	else:
-		data.save_slot = name
-		game.queue_save = true
-		get_tree().change_scene(\"res://Game.tscn\")
+		_new_game()
 
 func _on_ConfirmationDialog_confirmed():
 	data.delete_game(name)
-	data.save_slot = name
-	game.queue_save = true
-	get_tree().change_scene(\"res://Game.tscn\")
+	_new_game()
 
 func responsive_popup():
 	var screen_size = get_tree().get_root().get_size()
@@ -96,10 +98,6 @@ func _on_ConfirmationDialog_confirmed():
 material = SubResource( 1 )
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -19.5632
-margin_top = -6.42374
-margin_right = -19.5632
-margin_bottom = -6.42371
 mouse_filter = 2
 theme = ExtResource( 20 )
 script = ExtResource( 1 )

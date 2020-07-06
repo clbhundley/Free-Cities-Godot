@@ -40,21 +40,20 @@ var entertainment_skill
 var combat_skill
 var assignment
 var action
-var current_time # needed?
+var current_time
 var for_sale = false
 
-onready var stats = get_node('Stats') # needed?
+onready var stats = get_node('Stats')
 
 func _ready():
 	get_tree().get_root().connect('size_changed',self,'resize')
 	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'tick')
-#	connect('pressed',get_tree().get_root().get_node('Game/Slaves'),'buy',[self,get_parent()])
+	resize()
 
 	if not action:
 		action = "Idle"
 	if not assignment:
 		assignment = "Rest"
-	
 	if assignment == "Rest":
 		get_node("Panel/Buttons/Assignment")._select_int(0)
 	elif assignment == "Prostitute":
@@ -70,7 +69,6 @@ func _ready():
 	if for_sale:
 		get_node('Panel/Buttons').hide()
 		get_node('Panel/Selling Buttons').show()
-	resize()
 
 func resize():
 	#resize on scene switch, resize on market switch
@@ -98,13 +96,9 @@ func resize():
 	#line and level using same custom font, only one resize needed
 	get_node("Top/Level").get('custom_fonts/font').size = max(scale_adjusted*2,24)
 	get_node("Top/Line").get('custom_fonts/font').size = max(scale_adjusted*2,24)
-	
 	get_node("Top/Name").get('custom_fonts/font').size = max(scale_adjusted*1.5,18)
-	
 	get_node("Top/Status").get('custom_fonts/font').size = max(scale_adjusted,12)
-	
 	get_node("Stats Display/Basic").get('custom_fonts/normal_font').size = clamp(scale_adjusted,12,20)
-	
 	get_node("Gauges/Upper/Health/Value").get('custom_fonts/font').size = scale_adjusted*1.2
 
 func tick():
@@ -121,6 +115,7 @@ func set_level():
 	get_node('Top/Level').set_text(str(get_node('Stats')._level()))
 
 func _action_ended():
+	#"if no assignment" fallback based on slave personality?
 	get_node('Assignments/'+assignment).next_action()
 	get_node('Activity/Time').set_text("Done")
 	get_node('Activity/Action').set_text("")
@@ -140,10 +135,9 @@ func _action_ended():
 #	file.store_line(to_json(_data()))
 #	file.close()
 
-func _data():
+func _data(): #save data    change to "get_data"?
 	return {
 		core = {
-			name = name,
 			ethnicity = ethnicity,
 			skin_color = skin_color,
 			tissue_color = tissue_color,

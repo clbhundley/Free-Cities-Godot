@@ -39,7 +39,7 @@ func penthouse():
 	"body_mod_studio",
 	"salon"]
 	var index = 0
-	for sector in terra.get_children():
+	for sector in terra.get_node("Inner").get_children():
 		get_parent().swap(sector,get_node('../Library/Sectors/%s'%layout[index]).duplicate())
 		index += 1
 	return terra
@@ -54,9 +54,10 @@ func fill_top():
 	var layouts = [layout_1, layout_2, layout_3, layout_4, layout_5, layout_6]
 	var composition = layouts[dice.roll(6)]
 	var terra = get_node('../Library/Terras/Fill').duplicate()
+	var ring = terra.get_node("Inner")
 	for sector in composition:
 		for amount in sector.values()[0]:
-			terra = place(terra, sector.keys()[0])
+			ring = place(ring, sector.keys()[0])
 	terra = assign_ownership(terra)
 	return terra
 
@@ -70,9 +71,10 @@ func fill():
 	var layouts = [layout_1, layout_2, layout_3, layout_4, layout_5, layout_6]
 	var composition = layouts[dice.roll(6)]
 	var terra = get_node('../Library/Terras/Fill').duplicate()
+	var ring = terra.get_node("Inner")
 	for sector in composition:
 		for amount in sector.values()[0]:
-			terra = place(terra, sector.keys()[0])
+			ring = place(ring, sector.keys()[0])
 	terra = assign_ownership(terra)
 	return terra
 
@@ -86,9 +88,10 @@ func fill_bot():
 	var layouts = [layout_1, layout_2, layout_3, layout_4, layout_5, layout_6]
 	var composition = layouts[dice.roll(6)]
 	var terra = get_node('../Library/Terras/Fill').duplicate()
+	var ring = terra.get_node("Inner")
 	for sector in composition:
 		for amount in sector.values()[0]:
-			terra = place(terra, sector.keys()[0])
+			ring = place(ring, sector.keys()[0])
 	terra = assign_ownership(terra)
 	return terra
 
@@ -105,7 +108,7 @@ func t2():
 	var outer_layouts = [outer_layout_1, outer_layout_2, outer_layout_3, outer_layout_4, outer_layout_5, outer_layout_6]
 	var inner_composition = inner_layouts[dice.roll(2)]
 	var outer_composition = outer_layouts[dice.roll(6)]
-	var terra = get_node('../Library/Terras/T2').duplicate()
+	var terra = get_node('../Library/Terras/Terra 2').duplicate()
 	var inner_ring = terra.get_node('Inner')
 	for sector in inner_composition:
 		for amount in sector.values()[0]:
@@ -132,7 +135,7 @@ func t1():
 	var outer_layouts = [outer_layout_1, outer_layout_2, outer_layout_3]
 	var inner_composition = inner_layouts[dice.roll(6)]
 	var outer_composition = outer_layouts[dice.roll(3)]
-	var terra = get_node('../Library/Terras/T1').duplicate()
+	var terra = get_node('../Library/Terras/Terra 1').duplicate()
 	var inner_ring = terra.get_node('Inner')
 	for sector in inner_composition:
 		for amount in sector.values()[0]:
@@ -146,7 +149,7 @@ func t1():
 	return terra
 
 func t0():
-	var terra = get_node('../Library/Terras/T0').duplicate()
+	var terra = get_node('../Library/Terras/Terra 0').duplicate()
 	var layout = [
 	"nuclear_reactor_gen_5",
 	"water_purification",
@@ -161,7 +164,7 @@ func t0():
 	"thermal_exchange_condenser_a",
 	"thermal_exchange_condenser_b"]
 	var index = 0
-	for sector in terra.get_children():
+	for sector in terra.get_node("Inner").get_children():
 		get_parent().swap(sector,get_node('../Library/Sectors/%s'%layout[index]).duplicate())
 		index += 1
 	return terra

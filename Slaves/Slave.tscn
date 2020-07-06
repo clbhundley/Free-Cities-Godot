@@ -75,6 +75,8 @@
 [sub_resource type="GDScript" id=1]
 script/source = "extends Node
 
+#change to its own file instead of built in
+
 onready var _slave = get_parent()
 
 func _level():
@@ -644,11 +646,11 @@ func step():
 #			s.fatigue += 0.0001
 
 func tick():
-	if current_time == 0:
+	if current_time == 0:               #change names to...       #start action
 		start()
-	elif current_time < total_time:
+	elif current_time < total_time:                             #process action
 		step()
-	else:
+	else:                                                     #end/reset action
 		current_time = 0
 		_slave.is_awake = true
 		_slave._action_ended()
@@ -1249,6 +1251,9 @@ script/source = "extends Control
 
 onready var _slave = owner
 
+#stat
+#set stat
+
 func _on_mouse_entered():
 	get_node('Title').show()
 	get_node('Value').show()
@@ -1334,6 +1339,9 @@ script/source = "extends Control
 
 onready var _slave = owner
 
+#stat
+#set stat
+
 func _on_mouse_entered():
 	get_node('Title').show()
 	get_node('Value').show()
@@ -1387,6 +1395,9 @@ func _color():
 script/source = "extends Control
 
 onready var _slave = owner
+
+#stat
+#set stat
 
 func _on_mouse_entered():
 	get_node('Title').show()
@@ -1626,6 +1637,8 @@ __meta__ = {
 [node name="Stats" type="Node" parent="."]
 script = SubResource( 1 )
 
+[node name="Manager" type="Node" parent="."]
+
 [node name="Assignments" type="Node" parent="."]
 
 [node name="Rest" type="Node" parent="Assignments"]
@@ -1695,6 +1708,16 @@ script = SubResource( 10 )
 
 [node name="Servicing customer" type="Node" parent="Actions"]
 script = SubResource( 11 )
+
+[node name="Rules" type="Node" parent="."]
+
+[node name="preset rules 1" type="Node" parent="Rules"]
+
+[node name="preset rules 2" type="Node" parent="Rules"]
+
+[node name="preset rules 3" type="Node" parent="Rules"]
+
+[node name="preset rules 4" type="Node" parent="Rules"]
 
 [node name="Effects" type="Node" parent="."]
 

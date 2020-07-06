@@ -10,8 +10,8 @@ onready var AI = get_node('AI Panel')
 #onready var finance = get_node('../Finance')
 
 func _ready():
-	game.is_ready()
-	game.update_money(game.money)
+	game.is_ready() #find a way to get rid of this
+	game.update_money(0)                                                        #refresh money display
 	#_on_AI_pressed()
 
 func _on_AI_pressed():

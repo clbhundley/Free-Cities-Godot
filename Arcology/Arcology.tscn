@@ -112,6 +112,11 @@ func _on_mouse_entered():
 func _on_mouse_exited():
 	if not selected:
 		mesh.set_material_override(null)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ConvexPolygonShape" id=27]
@@ -121,18 +126,24 @@ points = PoolVector3Array( -1.54972e-06, -0.0129663, -1.51604, -2.02656e-06, -0.
 script/source = "extends Area
 
 var size = 2
+var upgrades = [\"something\",\"another\"]
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
+onready var arcology = get_tree().get_root().get_node('Game/Arcology')
 
 func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
+	arcology.input_event(self,event)
 
 func _on_mouse_entered():
-	r.mouse_entered(self)
+	arcology.mouse_entered(self)
 
 func _on_mouse_exited():
-	r.mouse_exited(self)
+	arcology.mouse_exited(self)
+
+func _data():
+	return {
+		upgrades = upgrades
+	}
 "
 
 [sub_resource type="ArrayMesh" id=29]
@@ -159,16 +170,22 @@ points = PoolVector3Array( 8.34465e-07, -0.0129663, -1.51605, 4.76837e-07, -0.02
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
+
+onready var arcology = get_tree().get_root().get_node('Game/Arcology')
 
 func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
+	arcology.input_event(self,event)
 
 func _on_mouse_entered():
-	r.mouse_entered(self)
+	arcology.mouse_entered(self)
 
 func _on_mouse_exited():
-	r.mouse_exited(self)
+	arcology.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ArrayMesh" id=33]
@@ -197,16 +214,21 @@ script/source = "extends Area
 var size = 2
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
+onready var arcology = get_tree().get_root().get_node('Game/Arcology')
 
 func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
+	arcology.input_event(self,event)
 
 func _on_mouse_entered():
-	r.mouse_entered(self)
+	arcology.mouse_entered(self)
 
 func _on_mouse_exited():
-	r.mouse_exited(self)
+	arcology.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ArrayMesh" id=37]
@@ -233,16 +255,21 @@ points = PoolVector3Array( 4.70877e-06, -0.0129663, -1.51604, 7.15256e-06, -0.02
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
+onready var arcology = get_tree().get_root().get_node('Game/Arcology')
 
 func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
+	arcology.input_event(self,event)
 
 func _on_mouse_entered():
-	r.mouse_entered(self)
+	arcology.mouse_entered(self)
 
 func _on_mouse_exited():
-	r.mouse_exited(self)
+	arcology.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ArrayMesh" id=41]
@@ -280,6 +307,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=45]
@@ -302,6 +334,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=48]
@@ -324,6 +361,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ArrayMesh" id=51]
@@ -363,6 +405,10 @@ func _on_mouse_entered():
 func _on_mouse_exited():
 	r.mouse_exited(self)
 
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ArrayMesh" id=55]
@@ -399,6 +445,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ArrayMesh" id=59]
@@ -435,6 +486,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ArrayMesh" id=63]
@@ -471,6 +527,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ArrayMesh" id=67]
@@ -507,6 +568,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=71]
@@ -531,6 +597,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="GDScript" id=74]
@@ -547,6 +618,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="GDScript" id=75]
@@ -563,6 +639,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ArrayMesh" id=76]
@@ -601,6 +682,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="GDScript" id=80]
@@ -617,6 +703,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="GDScript" id=81]
@@ -633,6 +724,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=82]
@@ -655,6 +751,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=85]
@@ -677,6 +778,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ArrayMesh" id=88]
@@ -713,6 +819,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=92]
@@ -727,16 +838,21 @@ script/source = "extends Area
 var owned = false
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
+onready var root = get_tree().get_root().get_node('Game/Arcology')
 
 func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
+	root.input_event(self,event)
 
 func _on_mouse_entered():
-	r.mouse_entered(self)
+	root.mouse_entered(self)
 
 func _on_mouse_exited():
-	r.mouse_exited(self)
+	root.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=95]
@@ -761,6 +877,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=98]
@@ -785,6 +906,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=101]
@@ -802,6 +928,7 @@ var size = 2
 
 var selected
 onready var r = get_tree().get_root().get_node('Game/Arcology')
+var root
 
 func _on_input_event(camera, event, click_position, click_normal, shape_idx):
 	r.input_event(self,event)
@@ -811,6 +938,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=104]
@@ -833,6 +965,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=107]
@@ -859,6 +996,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=110]
@@ -881,6 +1023,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=113]
@@ -903,6 +1050,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=116]
@@ -927,6 +1079,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=119]
@@ -951,6 +1108,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=122]
@@ -975,6 +1137,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=125]
@@ -1001,6 +1168,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="GDScript" id=128]
@@ -1017,6 +1189,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="GDScript" id=129]
@@ -1037,6 +1214,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=130]
@@ -1059,6 +1241,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=133]
@@ -1081,6 +1268,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=136]
@@ -1105,6 +1297,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=139]
@@ -1129,6 +1326,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=142]
@@ -1153,6 +1355,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="SpatialMaterial" id=145]
@@ -1175,6 +1382,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ConvexPolygonShape" id=148]
@@ -1194,6 +1406,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ConvexPolygonShape" id=150]
@@ -1213,6 +1430,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ConvexPolygonShape" id=152]
@@ -1232,6 +1454,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ConvexPolygonShape" id=154]
@@ -1253,6 +1480,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ConvexPolygonShape" id=156]
@@ -1272,6 +1504,11 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	r.mouse_exited(self)
+
+func _data():
+	return {
+		
+	}
 "
 
 [sub_resource type="ConvexPolygonShape" id=158]
@@ -1306,902 +1543,908 @@ visible = false
 [node name="Penthouse" type="Spatial" parent="Library/Terras"]
 transform = Transform( 0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0 )
 
-[node name="nullsec" type="Area" parent="Library/Terras/Penthouse"]
+[node name="Inner" type="Spatial" parent="Library/Terras/Penthouse"]
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/nullsec"]
+[node name="nullsec" type="Area" parent="Library/Terras/Penthouse/Inner"]
+
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/Inner/nullsec"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/nullsec"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/Inner/nullsec"]
 shape = SubResource( 2 )
 
-[node name="nullsec2" type="Area" parent="Library/Terras/Penthouse"]
+[node name="nullsec2" type="Area" parent="Library/Terras/Penthouse/Inner"]
 transform = Transform( 0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/nullsec2"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/Inner/nullsec2"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/nullsec2"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/Inner/nullsec2"]
 shape = SubResource( 3 )
 
-[node name="nullsec3" type="Area" parent="Library/Terras/Penthouse"]
+[node name="nullsec3" type="Area" parent="Library/Terras/Penthouse/Inner"]
 transform = Transform( 0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/nullsec3"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/Inner/nullsec3"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/nullsec3"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/Inner/nullsec3"]
 shape = SubResource( 4 )
 
-[node name="nullsec4" type="Area" parent="Library/Terras/Penthouse"]
+[node name="nullsec4" type="Area" parent="Library/Terras/Penthouse/Inner"]
 transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/nullsec4"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/Inner/nullsec4"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/nullsec4"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/Inner/nullsec4"]
 shape = SubResource( 5 )
 
-[node name="nullsec5" type="Area" parent="Library/Terras/Penthouse"]
+[node name="nullsec5" type="Area" parent="Library/Terras/Penthouse/Inner"]
 transform = Transform( -0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/nullsec5"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/Inner/nullsec5"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/nullsec5"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/Inner/nullsec5"]
 shape = SubResource( 6 )
 
-[node name="nullsec6" type="Area" parent="Library/Terras/Penthouse"]
+[node name="nullsec6" type="Area" parent="Library/Terras/Penthouse/Inner"]
 transform = Transform( -0.866026, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866026, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/nullsec6"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/Inner/nullsec6"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/nullsec6"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/Inner/nullsec6"]
 shape = SubResource( 7 )
 
-[node name="nullsec7" type="Area" parent="Library/Terras/Penthouse"]
+[node name="nullsec7" type="Area" parent="Library/Terras/Penthouse/Inner"]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/nullsec7"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/Inner/nullsec7"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/nullsec7"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/Inner/nullsec7"]
 shape = SubResource( 8 )
 
-[node name="nullsec8" type="Area" parent="Library/Terras/Penthouse"]
+[node name="nullsec8" type="Area" parent="Library/Terras/Penthouse/Inner"]
 transform = Transform( -0.866026, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866026, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/nullsec8"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/Inner/nullsec8"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/nullsec8"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/Inner/nullsec8"]
 shape = SubResource( 9 )
 
-[node name="nullsec9" type="Area" parent="Library/Terras/Penthouse"]
+[node name="nullsec9" type="Area" parent="Library/Terras/Penthouse/Inner"]
 transform = Transform( -0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/nullsec9"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/Inner/nullsec9"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/nullsec9"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/Inner/nullsec9"]
 shape = SubResource( 10 )
 
-[node name="nullsec10" type="Area" parent="Library/Terras/Penthouse"]
+[node name="nullsec10" type="Area" parent="Library/Terras/Penthouse/Inner"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/nullsec10"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/Inner/nullsec10"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/nullsec10"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/Inner/nullsec10"]
 shape = SubResource( 11 )
 
-[node name="nullsec11" type="Area" parent="Library/Terras/Penthouse"]
+[node name="nullsec11" type="Area" parent="Library/Terras/Penthouse/Inner"]
 transform = Transform( 0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/nullsec11"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/Inner/nullsec11"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/nullsec11"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/Inner/nullsec11"]
 shape = SubResource( 12 )
 
-[node name="nullsec12" type="Area" parent="Library/Terras/Penthouse"]
+[node name="nullsec12" type="Area" parent="Library/Terras/Penthouse/Inner"]
 transform = Transform( 0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/nullsec12"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Penthouse/Inner/nullsec12"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/nullsec12"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Penthouse/Inner/nullsec12"]
 shape = SubResource( 13 )
 
 [node name="Fill" type="Spatial" parent="Library/Terras"]
 
-[node name="nullsec" type="Area" parent="Library/Terras/Fill"]
+[node name="Inner" type="Spatial" parent="Library/Terras/Fill"]
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/nullsec"]
+[node name="nullsec" type="Area" parent="Library/Terras/Fill/Inner"]
+
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/Inner/nullsec"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/nullsec"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/Inner/nullsec"]
 shape = SubResource( 2 )
 
-[node name="nullsec2" type="Area" parent="Library/Terras/Fill"]
+[node name="nullsec2" type="Area" parent="Library/Terras/Fill/Inner"]
 transform = Transform( 0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/nullsec2"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/Inner/nullsec2"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/nullsec2"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/Inner/nullsec2"]
 shape = SubResource( 3 )
 
-[node name="nullsec3" type="Area" parent="Library/Terras/Fill"]
+[node name="nullsec3" type="Area" parent="Library/Terras/Fill/Inner"]
 transform = Transform( 0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/nullsec3"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/Inner/nullsec3"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/nullsec3"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/Inner/nullsec3"]
 shape = SubResource( 4 )
 
-[node name="nullsec4" type="Area" parent="Library/Terras/Fill"]
+[node name="nullsec4" type="Area" parent="Library/Terras/Fill/Inner"]
 transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/nullsec4"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/Inner/nullsec4"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/nullsec4"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/Inner/nullsec4"]
 shape = SubResource( 5 )
 
-[node name="nullsec5" type="Area" parent="Library/Terras/Fill"]
+[node name="nullsec5" type="Area" parent="Library/Terras/Fill/Inner"]
 transform = Transform( -0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/nullsec5"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/Inner/nullsec5"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/nullsec5"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/Inner/nullsec5"]
 shape = SubResource( 6 )
 
-[node name="nullsec6" type="Area" parent="Library/Terras/Fill"]
+[node name="nullsec6" type="Area" parent="Library/Terras/Fill/Inner"]
 transform = Transform( -0.866026, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866026, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/nullsec6"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/Inner/nullsec6"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/nullsec6"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/Inner/nullsec6"]
 shape = SubResource( 7 )
 
-[node name="nullsec7" type="Area" parent="Library/Terras/Fill"]
+[node name="nullsec7" type="Area" parent="Library/Terras/Fill/Inner"]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/nullsec7"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/Inner/nullsec7"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/nullsec7"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/Inner/nullsec7"]
 shape = SubResource( 8 )
 
-[node name="nullsec8" type="Area" parent="Library/Terras/Fill"]
+[node name="nullsec8" type="Area" parent="Library/Terras/Fill/Inner"]
 transform = Transform( -0.866026, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866026, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/nullsec8"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/Inner/nullsec8"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/nullsec8"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/Inner/nullsec8"]
 shape = SubResource( 9 )
 
-[node name="nullsec9" type="Area" parent="Library/Terras/Fill"]
+[node name="nullsec9" type="Area" parent="Library/Terras/Fill/Inner"]
 transform = Transform( -0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/nullsec9"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/Inner/nullsec9"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/nullsec9"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/Inner/nullsec9"]
 shape = SubResource( 10 )
 
-[node name="nullsec10" type="Area" parent="Library/Terras/Fill"]
+[node name="nullsec10" type="Area" parent="Library/Terras/Fill/Inner"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/nullsec10"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/Inner/nullsec10"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/nullsec10"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/Inner/nullsec10"]
 shape = SubResource( 11 )
 
-[node name="nullsec11" type="Area" parent="Library/Terras/Fill"]
+[node name="nullsec11" type="Area" parent="Library/Terras/Fill/Inner"]
 transform = Transform( 0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/nullsec11"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/Inner/nullsec11"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/nullsec11"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/Inner/nullsec11"]
 shape = SubResource( 12 )
 
-[node name="nullsec12" type="Area" parent="Library/Terras/Fill"]
+[node name="nullsec12" type="Area" parent="Library/Terras/Fill/Inner"]
 transform = Transform( 0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/nullsec12"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Fill/Inner/nullsec12"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/nullsec12"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Fill/Inner/nullsec12"]
 shape = SubResource( 13 )
 
-[node name="T2" type="Spatial" parent="Library/Terras"]
+[node name="Terra 2" type="Spatial" parent="Library/Terras"]
 
-[node name="Inner" type="Spatial" parent="Library/Terras/T2"]
+[node name="Inner" type="Spatial" parent="Library/Terras/Terra 2"]
 
-[node name="nullsec" type="Area" parent="Library/Terras/T2/Inner"]
+[node name="nullsec" type="Area" parent="Library/Terras/Terra 2/Inner"]
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Inner/nullsec"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Inner/nullsec"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Inner/nullsec"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Inner/nullsec"]
 shape = SubResource( 2 )
 
-[node name="nullsec2" type="Area" parent="Library/Terras/T2/Inner"]
+[node name="nullsec2" type="Area" parent="Library/Terras/Terra 2/Inner"]
 transform = Transform( 0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Inner/nullsec2"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Inner/nullsec2"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Inner/nullsec2"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Inner/nullsec2"]
 shape = SubResource( 3 )
 
-[node name="nullsec3" type="Area" parent="Library/Terras/T2/Inner"]
+[node name="nullsec3" type="Area" parent="Library/Terras/Terra 2/Inner"]
 transform = Transform( 0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Inner/nullsec3"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Inner/nullsec3"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Inner/nullsec3"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Inner/nullsec3"]
 shape = SubResource( 4 )
 
-[node name="nullsec4" type="Area" parent="Library/Terras/T2/Inner"]
+[node name="nullsec4" type="Area" parent="Library/Terras/Terra 2/Inner"]
 transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Inner/nullsec4"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Inner/nullsec4"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Inner/nullsec4"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Inner/nullsec4"]
 shape = SubResource( 5 )
 
-[node name="nullsec5" type="Area" parent="Library/Terras/T2/Inner"]
+[node name="nullsec5" type="Area" parent="Library/Terras/Terra 2/Inner"]
 transform = Transform( -0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Inner/nullsec5"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Inner/nullsec5"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Inner/nullsec5"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Inner/nullsec5"]
 shape = SubResource( 6 )
 
-[node name="nullsec6" type="Area" parent="Library/Terras/T2/Inner"]
+[node name="nullsec6" type="Area" parent="Library/Terras/Terra 2/Inner"]
 transform = Transform( -0.866026, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866026, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Inner/nullsec6"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Inner/nullsec6"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Inner/nullsec6"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Inner/nullsec6"]
 shape = SubResource( 7 )
 
-[node name="nullsec7" type="Area" parent="Library/Terras/T2/Inner"]
+[node name="nullsec7" type="Area" parent="Library/Terras/Terra 2/Inner"]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Inner/nullsec7"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Inner/nullsec7"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Inner/nullsec7"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Inner/nullsec7"]
 shape = SubResource( 8 )
 
-[node name="nullsec8" type="Area" parent="Library/Terras/T2/Inner"]
+[node name="nullsec8" type="Area" parent="Library/Terras/Terra 2/Inner"]
 transform = Transform( -0.866026, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866026, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Inner/nullsec8"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Inner/nullsec8"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Inner/nullsec8"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Inner/nullsec8"]
 shape = SubResource( 9 )
 
-[node name="nullsec9" type="Area" parent="Library/Terras/T2/Inner"]
+[node name="nullsec9" type="Area" parent="Library/Terras/Terra 2/Inner"]
 transform = Transform( -0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Inner/nullsec9"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Inner/nullsec9"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Inner/nullsec9"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Inner/nullsec9"]
 shape = SubResource( 10 )
 
-[node name="nullsec10" type="Area" parent="Library/Terras/T2/Inner"]
+[node name="nullsec10" type="Area" parent="Library/Terras/Terra 2/Inner"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Inner/nullsec10"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Inner/nullsec10"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Inner/nullsec10"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Inner/nullsec10"]
 shape = SubResource( 11 )
 
-[node name="nullsec11" type="Area" parent="Library/Terras/T2/Inner"]
+[node name="nullsec11" type="Area" parent="Library/Terras/Terra 2/Inner"]
 transform = Transform( 0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Inner/nullsec11"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Inner/nullsec11"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Inner/nullsec11"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Inner/nullsec11"]
 shape = SubResource( 12 )
 
-[node name="nullsec12" type="Area" parent="Library/Terras/T2/Inner"]
+[node name="nullsec12" type="Area" parent="Library/Terras/Terra 2/Inner"]
 transform = Transform( 0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Inner/nullsec12"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Inner/nullsec12"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Inner/nullsec12"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Inner/nullsec12"]
 shape = SubResource( 13 )
 
-[node name="Outer" type="Spatial" parent="Library/Terras/T2"]
+[node name="Outer" type="Spatial" parent="Library/Terras/Terra 2"]
 
-[node name="nullsec" type="Area" parent="Library/Terras/T2/Outer"]
+[node name="nullsec" type="Area" parent="Library/Terras/Terra 2/Outer"]
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Outer/nullsec"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Outer/nullsec"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Outer/nullsec"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Outer/nullsec"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 14 )
 
-[node name="nullsec2" type="Area" parent="Library/Terras/T2/Outer"]
+[node name="nullsec2" type="Area" parent="Library/Terras/Terra 2/Outer"]
 transform = Transform( 0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Outer/nullsec2"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Outer/nullsec2"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Outer/nullsec2"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Outer/nullsec2"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 15 )
 
-[node name="nullsec3" type="Area" parent="Library/Terras/T2/Outer"]
+[node name="nullsec3" type="Area" parent="Library/Terras/Terra 2/Outer"]
 transform = Transform( 0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Outer/nullsec3"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Outer/nullsec3"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Outer/nullsec3"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Outer/nullsec3"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 16 )
 
-[node name="nullsec4" type="Area" parent="Library/Terras/T2/Outer"]
+[node name="nullsec4" type="Area" parent="Library/Terras/Terra 2/Outer"]
 transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Outer/nullsec4"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Outer/nullsec4"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Outer/nullsec4"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Outer/nullsec4"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 17 )
 
-[node name="nullsec5" type="Area" parent="Library/Terras/T2/Outer"]
+[node name="nullsec5" type="Area" parent="Library/Terras/Terra 2/Outer"]
 transform = Transform( -0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Outer/nullsec5"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Outer/nullsec5"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Outer/nullsec5"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Outer/nullsec5"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 18 )
 
-[node name="nullsec6" type="Area" parent="Library/Terras/T2/Outer"]
+[node name="nullsec6" type="Area" parent="Library/Terras/Terra 2/Outer"]
 transform = Transform( -0.866026, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866026, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Outer/nullsec6"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Outer/nullsec6"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Outer/nullsec6"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Outer/nullsec6"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 19 )
 
-[node name="nullsec7" type="Area" parent="Library/Terras/T2/Outer"]
+[node name="nullsec7" type="Area" parent="Library/Terras/Terra 2/Outer"]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Outer/nullsec7"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Outer/nullsec7"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Outer/nullsec7"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Outer/nullsec7"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 20 )
 
-[node name="nullsec8" type="Area" parent="Library/Terras/T2/Outer"]
+[node name="nullsec8" type="Area" parent="Library/Terras/Terra 2/Outer"]
 transform = Transform( -0.866026, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866026, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Outer/nullsec8"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Outer/nullsec8"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Outer/nullsec8"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Outer/nullsec8"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 21 )
 
-[node name="nullsec9" type="Area" parent="Library/Terras/T2/Outer"]
+[node name="nullsec9" type="Area" parent="Library/Terras/Terra 2/Outer"]
 transform = Transform( -0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Outer/nullsec9"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Outer/nullsec9"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Outer/nullsec9"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Outer/nullsec9"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 22 )
 
-[node name="nullsec10" type="Area" parent="Library/Terras/T2/Outer"]
+[node name="nullsec10" type="Area" parent="Library/Terras/Terra 2/Outer"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Outer/nullsec10"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Outer/nullsec10"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Outer/nullsec10"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Outer/nullsec10"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 23 )
 
-[node name="nullsec11" type="Area" parent="Library/Terras/T2/Outer"]
+[node name="nullsec11" type="Area" parent="Library/Terras/Terra 2/Outer"]
 transform = Transform( 0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Outer/nullsec11"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Outer/nullsec11"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Outer/nullsec11"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Outer/nullsec11"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 24 )
 
-[node name="nullsec12" type="Area" parent="Library/Terras/T2/Outer"]
+[node name="nullsec12" type="Area" parent="Library/Terras/Terra 2/Outer"]
 transform = Transform( 0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T2/Outer/nullsec12"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 2/Outer/nullsec12"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T2/Outer/nullsec12"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 2/Outer/nullsec12"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 25 )
 
-[node name="T1" type="Spatial" parent="Library/Terras"]
+[node name="Terra 1" type="Spatial" parent="Library/Terras"]
 
-[node name="Inner" type="Spatial" parent="Library/Terras/T1"]
+[node name="Inner" type="Spatial" parent="Library/Terras/Terra 1"]
 
-[node name="nullsec" type="Area" parent="Library/Terras/T1/Inner"]
+[node name="nullsec" type="Area" parent="Library/Terras/Terra 1/Inner"]
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Inner/nullsec"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Inner/nullsec"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Inner/nullsec"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Inner/nullsec"]
 shape = SubResource( 2 )
 
-[node name="nullsec2" type="Area" parent="Library/Terras/T1/Inner"]
+[node name="nullsec2" type="Area" parent="Library/Terras/Terra 1/Inner"]
 transform = Transform( 0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Inner/nullsec2"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Inner/nullsec2"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Inner/nullsec2"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Inner/nullsec2"]
 shape = SubResource( 3 )
 
-[node name="nullsec3" type="Area" parent="Library/Terras/T1/Inner"]
+[node name="nullsec3" type="Area" parent="Library/Terras/Terra 1/Inner"]
 transform = Transform( 0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Inner/nullsec3"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Inner/nullsec3"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Inner/nullsec3"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Inner/nullsec3"]
 shape = SubResource( 4 )
 
-[node name="nullsec4" type="Area" parent="Library/Terras/T1/Inner"]
+[node name="nullsec4" type="Area" parent="Library/Terras/Terra 1/Inner"]
 transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Inner/nullsec4"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Inner/nullsec4"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Inner/nullsec4"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Inner/nullsec4"]
 shape = SubResource( 5 )
 
-[node name="nullsec5" type="Area" parent="Library/Terras/T1/Inner"]
+[node name="nullsec5" type="Area" parent="Library/Terras/Terra 1/Inner"]
 transform = Transform( -0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Inner/nullsec5"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Inner/nullsec5"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Inner/nullsec5"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Inner/nullsec5"]
 shape = SubResource( 6 )
 
-[node name="nullsec6" type="Area" parent="Library/Terras/T1/Inner"]
+[node name="nullsec6" type="Area" parent="Library/Terras/Terra 1/Inner"]
 transform = Transform( -0.866026, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866026, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Inner/nullsec6"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Inner/nullsec6"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Inner/nullsec6"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Inner/nullsec6"]
 shape = SubResource( 7 )
 
-[node name="nullsec7" type="Area" parent="Library/Terras/T1/Inner"]
+[node name="nullsec7" type="Area" parent="Library/Terras/Terra 1/Inner"]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Inner/nullsec7"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Inner/nullsec7"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Inner/nullsec7"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Inner/nullsec7"]
 shape = SubResource( 8 )
 
-[node name="nullsec8" type="Area" parent="Library/Terras/T1/Inner"]
+[node name="nullsec8" type="Area" parent="Library/Terras/Terra 1/Inner"]
 transform = Transform( -0.866026, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866026, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Inner/nullsec8"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Inner/nullsec8"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Inner/nullsec8"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Inner/nullsec8"]
 shape = SubResource( 9 )
 
-[node name="nullsec9" type="Area" parent="Library/Terras/T1/Inner"]
+[node name="nullsec9" type="Area" parent="Library/Terras/Terra 1/Inner"]
 transform = Transform( -0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Inner/nullsec9"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Inner/nullsec9"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Inner/nullsec9"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Inner/nullsec9"]
 shape = SubResource( 10 )
 
-[node name="nullsec10" type="Area" parent="Library/Terras/T1/Inner"]
+[node name="nullsec10" type="Area" parent="Library/Terras/Terra 1/Inner"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Inner/nullsec10"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Inner/nullsec10"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Inner/nullsec10"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Inner/nullsec10"]
 shape = SubResource( 11 )
 
-[node name="nullsec11" type="Area" parent="Library/Terras/T1/Inner"]
+[node name="nullsec11" type="Area" parent="Library/Terras/Terra 1/Inner"]
 transform = Transform( 0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Inner/nullsec11"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Inner/nullsec11"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Inner/nullsec11"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Inner/nullsec11"]
 shape = SubResource( 12 )
 
-[node name="nullsec12" type="Area" parent="Library/Terras/T1/Inner"]
+[node name="nullsec12" type="Area" parent="Library/Terras/Terra 1/Inner"]
 transform = Transform( 0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Inner/nullsec12"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Inner/nullsec12"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Inner/nullsec12"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Inner/nullsec12"]
 shape = SubResource( 13 )
 
-[node name="Outer" type="Spatial" parent="Library/Terras/T1"]
+[node name="Outer" type="Spatial" parent="Library/Terras/Terra 1"]
 
-[node name="nullsec" type="Area" parent="Library/Terras/T1/Outer"]
+[node name="nullsec" type="Area" parent="Library/Terras/Terra 1/Outer"]
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Outer/nullsec"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Outer/nullsec"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Outer/nullsec"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Outer/nullsec"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 14 )
 
-[node name="nullsec2" type="Area" parent="Library/Terras/T1/Outer"]
+[node name="nullsec2" type="Area" parent="Library/Terras/Terra 1/Outer"]
 transform = Transform( 0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Outer/nullsec2"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Outer/nullsec2"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Outer/nullsec2"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Outer/nullsec2"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 15 )
 
-[node name="nullsec3" type="Area" parent="Library/Terras/T1/Outer"]
+[node name="nullsec3" type="Area" parent="Library/Terras/Terra 1/Outer"]
 transform = Transform( 0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Outer/nullsec3"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Outer/nullsec3"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Outer/nullsec3"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Outer/nullsec3"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 16 )
 
-[node name="nullsec4" type="Area" parent="Library/Terras/T1/Outer"]
+[node name="nullsec4" type="Area" parent="Library/Terras/Terra 1/Outer"]
 transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Outer/nullsec4"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Outer/nullsec4"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Outer/nullsec4"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Outer/nullsec4"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 17 )
 
-[node name="nullsec5" type="Area" parent="Library/Terras/T1/Outer"]
+[node name="nullsec5" type="Area" parent="Library/Terras/Terra 1/Outer"]
 transform = Transform( -0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Outer/nullsec5"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Outer/nullsec5"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Outer/nullsec5"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Outer/nullsec5"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 18 )
 
-[node name="nullsec6" type="Area" parent="Library/Terras/T1/Outer"]
+[node name="nullsec6" type="Area" parent="Library/Terras/Terra 1/Outer"]
 transform = Transform( -0.866026, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866026, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Outer/nullsec6"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Outer/nullsec6"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Outer/nullsec6"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Outer/nullsec6"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 19 )
 
-[node name="nullsec7" type="Area" parent="Library/Terras/T1/Outer"]
+[node name="nullsec7" type="Area" parent="Library/Terras/Terra 1/Outer"]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Outer/nullsec7"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Outer/nullsec7"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Outer/nullsec7"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Outer/nullsec7"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 20 )
 
-[node name="nullsec8" type="Area" parent="Library/Terras/T1/Outer"]
+[node name="nullsec8" type="Area" parent="Library/Terras/Terra 1/Outer"]
 transform = Transform( -0.866026, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866026, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Outer/nullsec8"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Outer/nullsec8"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Outer/nullsec8"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Outer/nullsec8"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 21 )
 
-[node name="nullsec9" type="Area" parent="Library/Terras/T1/Outer"]
+[node name="nullsec9" type="Area" parent="Library/Terras/Terra 1/Outer"]
 transform = Transform( -0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Outer/nullsec9"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Outer/nullsec9"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Outer/nullsec9"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Outer/nullsec9"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 22 )
 
-[node name="nullsec10" type="Area" parent="Library/Terras/T1/Outer"]
+[node name="nullsec10" type="Area" parent="Library/Terras/Terra 1/Outer"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Outer/nullsec10"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Outer/nullsec10"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Outer/nullsec10"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Outer/nullsec10"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 23 )
 
-[node name="nullsec11" type="Area" parent="Library/Terras/T1/Outer"]
+[node name="nullsec11" type="Area" parent="Library/Terras/Terra 1/Outer"]
 transform = Transform( 0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Outer/nullsec11"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Outer/nullsec11"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Outer/nullsec11"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Outer/nullsec11"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 24 )
 
-[node name="nullsec12" type="Area" parent="Library/Terras/T1/Outer"]
+[node name="nullsec12" type="Area" parent="Library/Terras/Terra 1/Outer"]
 transform = Transform( 0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T1/Outer/nullsec12"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 1/Outer/nullsec12"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T1/Outer/nullsec12"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 1/Outer/nullsec12"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
 shape = SubResource( 25 )
 
-[node name="T0" type="Spatial" parent="Library/Terras"]
+[node name="Terra 0" type="Spatial" parent="Library/Terras"]
 transform = Transform( 0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0 )
 
-[node name="nullsec" type="Area" parent="Library/Terras/T0"]
+[node name="Inner" type="Spatial" parent="Library/Terras/Terra 0"]
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T0/nullsec"]
+[node name="nullsec" type="Area" parent="Library/Terras/Terra 0/Inner"]
+
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 0/Inner/nullsec"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T0/nullsec"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 0/Inner/nullsec"]
 shape = SubResource( 2 )
 
-[node name="nullsec2" type="Area" parent="Library/Terras/T0"]
+[node name="nullsec2" type="Area" parent="Library/Terras/Terra 0/Inner"]
 transform = Transform( 0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T0/nullsec2"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 0/Inner/nullsec2"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T0/nullsec2"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 0/Inner/nullsec2"]
 shape = SubResource( 3 )
 
-[node name="nullsec3" type="Area" parent="Library/Terras/T0"]
+[node name="nullsec3" type="Area" parent="Library/Terras/Terra 0/Inner"]
 transform = Transform( 0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T0/nullsec3"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 0/Inner/nullsec3"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T0/nullsec3"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 0/Inner/nullsec3"]
 shape = SubResource( 4 )
 
-[node name="nullsec4" type="Area" parent="Library/Terras/T0"]
+[node name="nullsec4" type="Area" parent="Library/Terras/Terra 0/Inner"]
 transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T0/nullsec4"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 0/Inner/nullsec4"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T0/nullsec4"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 0/Inner/nullsec4"]
 shape = SubResource( 5 )
 
-[node name="nullsec5" type="Area" parent="Library/Terras/T0"]
+[node name="nullsec5" type="Area" parent="Library/Terras/Terra 0/Inner"]
 transform = Transform( -0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T0/nullsec5"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 0/Inner/nullsec5"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T0/nullsec5"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 0/Inner/nullsec5"]
 shape = SubResource( 6 )
 
-[node name="nullsec6" type="Area" parent="Library/Terras/T0"]
+[node name="nullsec6" type="Area" parent="Library/Terras/Terra 0/Inner"]
 transform = Transform( -0.866026, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866026, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T0/nullsec6"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 0/Inner/nullsec6"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T0/nullsec6"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 0/Inner/nullsec6"]
 shape = SubResource( 7 )
 
-[node name="nullsec7" type="Area" parent="Library/Terras/T0"]
+[node name="nullsec7" type="Area" parent="Library/Terras/Terra 0/Inner"]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T0/nullsec7"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 0/Inner/nullsec7"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T0/nullsec7"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 0/Inner/nullsec7"]
 shape = SubResource( 8 )
 
-[node name="nullsec8" type="Area" parent="Library/Terras/T0"]
+[node name="nullsec8" type="Area" parent="Library/Terras/Terra 0/Inner"]
 transform = Transform( -0.866026, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866026, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T0/nullsec8"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 0/Inner/nullsec8"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T0/nullsec8"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 0/Inner/nullsec8"]
 shape = SubResource( 9 )
 
-[node name="nullsec9" type="Area" parent="Library/Terras/T0"]
+[node name="nullsec9" type="Area" parent="Library/Terras/Terra 0/Inner"]
 transform = Transform( -0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T0/nullsec9"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 0/Inner/nullsec9"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T0/nullsec9"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 0/Inner/nullsec9"]
 shape = SubResource( 10 )
 
-[node name="nullsec10" type="Area" parent="Library/Terras/T0"]
+[node name="nullsec10" type="Area" parent="Library/Terras/Terra 0/Inner"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T0/nullsec10"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 0/Inner/nullsec10"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T0/nullsec10"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 0/Inner/nullsec10"]
 shape = SubResource( 11 )
 
-[node name="nullsec11" type="Area" parent="Library/Terras/T0"]
+[node name="nullsec11" type="Area" parent="Library/Terras/Terra 0/Inner"]
 transform = Transform( 0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T0/nullsec11"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 0/Inner/nullsec11"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T0/nullsec11"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 0/Inner/nullsec11"]
 shape = SubResource( 12 )
 
-[node name="nullsec12" type="Area" parent="Library/Terras/T0"]
+[node name="nullsec12" type="Area" parent="Library/Terras/Terra 0/Inner"]
 transform = Transform( 0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, 0 )
 
-[node name="Mesh" type="MeshInstance" parent="Library/Terras/T0/nullsec12"]
+[node name="Mesh" type="MeshInstance" parent="Library/Terras/Terra 0/Inner/nullsec12"]
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Collision" type="CollisionShape" parent="Library/Terras/T0/nullsec12"]
+[node name="Collision" type="CollisionShape" parent="Library/Terras/Terra 0/Inner/nullsec12"]
 shape = SubResource( 13 )
 
 [node name="Sectors" type="Spatial" parent="Library"]

@@ -21,12 +21,12 @@ config/icon="res://icon.png"
 
 [autoload]
 
-data="*res://Library/data.gd"
-display="*res://Library/display.gd"
-math="*res://Library/math.gd"
-dice="*res://Library/dice.gd"
-time="*res://Library/time.gd"
-game="*res://Library/game.gd"
+data="*res://Globals/data.gd"
+display="*res://Globals/display.gd"
+math="*res://Globals/math.gd"
+dice="*res://Globals/dice.gd"
+time="*res://Globals/time.gd"
+game="*res://Globals/game.gd"
 
 [display]
 
@@ -90,10 +90,6 @@ speed={
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777237,"unicode":0,"echo":false,"script":null)
  ]
 }
-
-[logging]
-
-file_logging/enable_file_logging=true
 
 [rendering]
 
