@@ -1,0 +1,19 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/male emaciated.obj-7c1ac5364972dc7e9f0fdc8f17c938f7.mesh"
+
+[deps]
+
+files=[ "res://.import/male emaciated.obj-7c1ac5364972dc7e9f0fdc8f17c938f7.mesh" ]
+
+source_file="res://Slaves/Models/Male/male emaciated.obj"
+dest_files=[ "res://.import/male emaciated.obj-7c1ac5364972dc7e9f0fdc8f17c938f7.mesh", "res://.import/male emaciated.obj-7c1ac5364972dc7e9f0fdc8f17c938f7.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+optimize_mesh=true

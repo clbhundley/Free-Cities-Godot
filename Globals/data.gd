@@ -128,11 +128,11 @@ func quick_save(): # !repurpose this function!
 	var file = File.new()
 	var index = 'user://Data/Slot %s/Index.json'%save_slot
 	file.open(index,File.WRITE)
-	file.store_line(to_json(index()))
+	#file.store_line(to_json(index()))
+	file.store_line(JSON.print(index()," "))
 	file.close()
 
 func save_game(slot): #this function is only used on new game creation?? use only distributed saving?
-	print("SAVING GAME")
 	var file = File.new()
 	check_dir('user://Data/Slot %s',"Slot %s"%slot)
 #	check_dir('user://Data/Slot %s/Finance'%slot,"Finance")
@@ -144,19 +144,21 @@ func save_game(slot): #this function is only used on new game creation?? use onl
 	check_dir('user://Data/Slot %s/Slaves/Available/Neighboring Arcologies'%slot,"Neighboring Arcologies")
 	
 	file.open('user://Data/Slot %s/Index.json'%slot,File.WRITE)
-	file.store_line(to_json(index()))
+	#file.store_line(to_json(index()))
+	file.store_line(JSON.print(index()," "))
 	file.close()
 	
 	var player_data = {money = game.money}
 	file.open('user://Data/Slot %s/Player.json'%slot,File.WRITE)
-	file.store_line(to_json(player_data))
+	#file.store_line(to_json(player_data))
+	file.store_line(JSON.print(player_data," "))
 	file.close()
 	
 	var arcology_data
 	if get_tree().get_root().get_node('Game/Arcology'):
 		arcology_data = get_tree().get_root().get_node('Game/Arcology')._data()
 	file.open('user://Data/Slot %s/Arcology.json'%slot,File.WRITE)
-	file.store_line(JSON.print(arcology_data))
+	file.store_line(JSON.print(arcology_data," ")) # change all to be like this?
 	file.close()
 	
 #	var finance_data
@@ -167,10 +169,13 @@ func save_game(slot): #this function is only used on new game creation?? use onl
 #	file.close()
 	
 	#owned_slaves
-	if get_tree().get_root().get_node('Game/Slaves/Slider/HBoxContainer'):
-		for _slave in get_tree().get_root().get_node('Game/Slaves/Slider/HBoxContainer').get_children():
+	var owned_slaves = get_tree().get_root().get_node('Game/Slaves/Owned')
+#	var owned_slaves = get_tree().get_root().get_node('Game/Slaves/Slider/HBoxContainer')
+	if owned_slaves:
+		for _slave in owned_slaves.get_children():
 			file.open('user://Data/Slot %s/Slaves/Owned/%s.json'%[slot,_slave.name],File.WRITE)
-			file.store_line(to_json(_slave._data()))
+			#file.store_line(to_json(_slave._data()))
+			file.store_line(JSON.print(_slave._data()," "))
 			file.close()
 	
 	#kidnappers_slaves
@@ -222,7 +227,7 @@ func load_game(slot,write=false):
 		time.week = _data['index']['week']
 		time.quarter = _data['index']['quarter']
 		time.year = _data['index']['year']
-		get_tree().get_root().get_node('Game/GUI/Time').update_time()
+		get_tree().get_root().get_node('Game/GUI/Navigation/Time').update_time()
 		
 		game.money = _data['player']['money']
 		game.update_money(0)                                                    #refresh money display
@@ -235,7 +240,8 @@ func load_game(slot,write=false):
 #		get_tree().get_root().get_node('Game/Finance').income = _data['finance']['income']
 #		get_tree().get_root().get_node('Game/Finance').expenses = _data['finance']['expenses']
 		
-		var owned_slaves = get_tree().get_root().get_node('Game/Slaves/Slider/HBoxContainer')
+		#var owned_slaves = get_tree().get_root().get_node('Game/Slaves/Slider/HBoxContainer') ### old
+		var owned_slaves = get_tree().get_root().get_node('Game/Slaves/Owned')
 		for child in owned_slaves.get_children():
 			owned_slaves.remove_child(child)
 			child.queue_free()
@@ -245,29 +251,30 @@ func load_game(slot,write=false):
 			_slave.name = file.get_basename()
 			_slave._load(slave_data)
 			owned_slaves.add_child(_slave,true)
+			owned_slaves.update_display()
 		
-		var kidnappers_market = get_tree().get_root().get_node('Game/Slaves/Kidnappers Market/Slider/HBoxContainer')
-		for child in kidnappers_market.get_children():
-			kidnappers_market.remove_child(child)
-			child.queue_free()
-		for file in list_files("user://Data/Slot %s/Slaves/Available/Kidnappers' Market"%slot):
-			var slave_data = json_parse("user://Data/Slot %s/Slaves/Available/Kidnappers' Market/%s"%[slot,file])
-			var _slave = load('res://Slaves/Slave.tscn').instance()
-			_slave.name = file.get_basename()
-			_slave._load(slave_data)
-			kidnappers_market.add_child(_slave,true)
-		
-		var neighboring_arcologies = get_tree().get_root().get_node('Game/Slaves/Neighboring Arcologies/Slider/HBoxContainer')
-		for child in neighboring_arcologies.get_children():
-			neighboring_arcologies.remove_child(child)
-			child.queue_free()
-		for file in list_files('user://Data/Slot %s/Slaves/Available/Neighboring Arcologies'%slot):
-			var slave_data = json_parse('user://Data/Slot %s/Slaves/Available/Neighboring Arcologies/%s'%[slot,file])
-			if slave_data: #why checking for slave data exists here?
-				var _slave = load('res://Slaves/Slave.tscn').instance()
-				_slave.name = file.get_basename()
-				_slave._load(slave_data)
-				neighboring_arcologies.add_child(_slave,true)
+#		var kidnappers_market = get_tree().get_root().get_node('Game/Slaves/Kidnappers Market/Slider/HBoxContainer')
+#		for child in kidnappers_market.get_children():
+#			kidnappers_market.remove_child(child)
+#			child.queue_free()
+#		for file in list_files("user://Data/Slot %s/Slaves/Available/Kidnappers' Market"%slot):
+#			var slave_data = json_parse("user://Data/Slot %s/Slaves/Available/Kidnappers' Market/%s"%[slot,file])
+#			var _slave = load('res://Slaves/Slave.tscn').instance()
+#			_slave.name = file.get_basename()
+#			_slave._load(slave_data)
+#			kidnappers_market.add_child(_slave,true)
+#
+#		var neighboring_arcologies = get_tree().get_root().get_node('Game/Slaves/Neighboring Arcologies/Slider/HBoxContainer')
+#		for child in neighboring_arcologies.get_children():
+#			neighboring_arcologies.remove_child(child)
+#			child.queue_free()
+#		for file in list_files('user://Data/Slot %s/Slaves/Available/Neighboring Arcologies'%slot):
+#			var slave_data = json_parse('user://Data/Slot %s/Slaves/Available/Neighboring Arcologies/%s'%[slot,file])
+#			if slave_data: #why checking for slave data exists here?
+#				var _slave = load('res://Slaves/Slave.tscn').instance()
+#				_slave.name = file.get_basename()
+#				_slave._load(slave_data)
+#				neighboring_arcologies.add_child(_slave,true)
 			
 	return(_data)
 

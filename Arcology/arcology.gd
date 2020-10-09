@@ -63,10 +63,10 @@ func _load(structure):
 			for sector in structure[terra][ring]:
 				var array = structure[terra][ring].keys()
 				var index = $Structure.get_node("%s/%s"%[terra,ring]).get_child(array.find(sector))
-				var new_sector = get_node("Library/Sectors/%s"%_name(sector)).duplicate()
+				var new_sector = get_node("Library/Sectors/%s"%ArcUtils.sector_name(sector)).duplicate()
 				for property in structure[terra][ring][sector]:
 					new_sector.set(property,structure[terra][ring][sector][property])
-				swap(index,new_sector)
+				ArcUtils.swap_sectors(index,new_sector)
 
 var cam_offset = 0
 func resize():
@@ -79,24 +79,6 @@ func resize():
 		camera.translation.x = cam_offset
 	#elif view == "Terra":
 	#	camera.translation.x = clamp(3-cam_offset/vm, 0, 2)
-
-func _name(input):                                                              #get name from node  /  util
-	if "@" in input:
-		var s = input.split("@")
-		return s[1]
-	else:
-		return input
-
-func swap(old,new):                                                             #swap sectors  /  util
-	#print("OLD: ",old.name)
-	#print("NEW: ",new.name)
-	new.get_node('Collision').translation[2] = round(old.get_node('Collision').translation[2])
-	new.get_node('Mesh').translation[2] = round(old.get_node('Mesh').translation[2])
-	new.rotation_degrees[1] = round(old.rotation_degrees[1])
-	for children in old.get_children():
-		children.queue_free()
-	old.queue_free()
-	old.replace_by(new)
 
 func _highlight_terra(terra,material):
 	for ring in terra.get_children():
@@ -119,7 +101,7 @@ func input_event(node,event):                                                   
 					sector.get_node('Mesh').set_material_override(null)
 					sector.selected = false
 			node.get_node('Mesh').set_material_override(highlight_orange)
-			subtitle.set_text(_name(node.name))
+			subtitle.set_text(ArcUtils.sector_name(node.name))
 			node.selected = true
 
 func mouse_entered(node):
@@ -178,7 +160,9 @@ func _input(event):                                                             
 		return
 	if get_tree().get_root().get_node('Game/GUI/AI Panel').is_visible_in_tree(): #if ai panel is visible
 		return
-	
+	var calendar = get_tree().get_root().get_node("Game/GUI//Navigation/Time/Calendar")
+	if calendar.is_visible():
+		return
 	if (event.is_class("InputEventMouseMotion")):
 		if (event.button_mask&(BUTTON_MASK_LEFT)):
 			#print(event.relative.x)

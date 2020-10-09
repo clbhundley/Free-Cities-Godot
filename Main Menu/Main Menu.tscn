@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=2]
+[gd_scene load_steps=26 format=2]
 
 [ext_resource path="res://Main Menu/main menu.gd" type="Script" id=1]
 [ext_resource path="res://Main Menu/arcghost.png" type="Texture" id=2]
@@ -20,6 +20,7 @@
 [ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=18]
 [ext_resource path="res://Textures/line.png" type="Texture" id=19]
 [ext_resource path="res://theme.tres" type="Theme" id=20]
+[ext_resource path="res://Textures/square.png" type="Texture" id=21]
 
 [sub_resource type="CanvasItemMaterial" id=1]
 
@@ -101,6 +102,16 @@ anchor_bottom = 1.0
 mouse_filter = 2
 theme = ExtResource( 20 )
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="background" type="TextureRect" parent="."]
+modulate = Color( 0, 0, 0, 1 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 21 )
+expand = true
 __meta__ = {
 "_edit_use_anchors_": false
 }

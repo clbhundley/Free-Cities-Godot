@@ -1,0 +1,19 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/female fat.obj-636177fc9a64578b06976432e5a59e48.mesh"
+
+[deps]
+
+files=[ "res://.import/female fat.obj-636177fc9a64578b06976432e5a59e48.mesh" ]
+
+source_file="res://Slaves/Models/Female/female fat.obj"
+dest_files=[ "res://.import/female fat.obj-636177fc9a64578b06976432e5a59e48.mesh", "res://.import/female fat.obj-636177fc9a64578b06976432e5a59e48.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+optimize_mesh=true

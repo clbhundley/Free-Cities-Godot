@@ -1,8 +1,11 @@
-extends Control
+extends Spatial
 
 var ethnicity
 var skin_color
 var tissue_color
+var hair_color_natural
+var hair_color
+var hair_style
 var gender
 var genitals
 var penis_size
@@ -40,159 +43,112 @@ var entertainment_skill
 var combat_skill
 var assignment
 var action
+var queued_action
 var current_time
 var for_sale = false
 
-onready var stats = get_node('Stats')
+var quarters = "P5"
+var location
+var destination
+var travel_mode
+
+onready var stats = get_node("Scripts/Stats")
 
 func _ready():
 	get_tree().get_root().connect('size_changed',self,'resize')
 	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'tick')
-	resize()
-
 	if not action:
 		action = "Idle"
 	if not assignment:
-		assignment = "Rest"
-	if assignment == "Rest":
-		get_node("Panel/Buttons/Assignment")._select_int(0)
-	elif assignment == "Prostitute":
-		get_node("Panel/Buttons/Assignment")._select_int(1)
+		assignment = "Resting"
+	tracking()
 	
-	get_node('Top/Name').set_text(name)
-	get_node('Top/Status').set_text("Resting") # TEMP
-	get_node('Activity/Action').set_text(action)
-	get_node('Model')._display(self)
-	set_level()
-	for text in get_node("Stats Display").get_children():
+	for text in get_node("Display/Stats Display").get_children():
 		text.set_stats()
-	if for_sale:
-		get_node('Panel/Buttons').hide()
-		get_node('Panel/Selling Buttons').show()
-
-func resize():
-	#resize on scene switch, resize on market switch
-	
-	#if not is_visible_in_tree():
-		#return
-	
-	#formalize
-	var scale = display.scale
-	var scale_adjusted = display.scale*20
-	
-	game.default_font.size = max(scale_adjusted,12)
-	
-	#adjust line separation in hbox container with scaling?
-	#get_parent().set('custom_constants/separation',scale_adjusted*10)
-	#print(get_parent().get('custom_constants/separation'))
-	
-	var baseline = Vector2(450,700)
-	rect_min_size = Vector2(max(baseline.x*scale,270),max(baseline.y*scale,420))
-	#print("SLAVE CARD SIZE: ",rect_size)
-	
-	#individual scaling on each image instead of scaling entire container?
-	$Model.rect_scale = Vector2(max(scale,0.6),max(scale,0.6))
-	
-	#line and level using same custom font, only one resize needed
-	get_node("Top/Level").get('custom_fonts/font').size = max(scale_adjusted*2,24)
-	get_node("Top/Line").get('custom_fonts/font').size = max(scale_adjusted*2,24)
-	get_node("Top/Name").get('custom_fonts/font').size = max(scale_adjusted*1.5,18)
-	get_node("Top/Status").get('custom_fonts/font').size = max(scale_adjusted,12)
-	get_node("Stats Display/Basic").get('custom_fonts/normal_font').size = clamp(scale_adjusted,12,20)
-	get_node("Gauges/Upper/Health/Value").get('custom_fonts/font').size = scale_adjusted*1.2
 
 func tick():
 	if not for_sale:
-		get_node('Assignments/'+assignment).tick()
-		get_node('Actions/'+action).tick()
-		for status in get_node('Effects').get_children():
-			if status.active:
-				status.tick()
-		get_node('Model')._display(self) # do not display every tick, dont pass self into function
+		#get_node('Assignments/'+assignment).tick() #change to process?
+		get_node('Scripts/Actions/'+action).tick() #change to process?
+		for effect in get_node('Scripts/Effects').get_children():
+			if effect.active:
+				effect.tick() #change to process?
+		#get_node('Model')._display(self) # do not display every tick, dont pass self into function
 		#_save()
 
-func set_level():
-	get_node('Top/Level').set_text(str(get_node('Stats')._level()))
-
 func _action_ended():
-	#"if no assignment" fallback based on slave personality?
-	get_node('Assignments/'+assignment).next_action()
-	get_node('Activity/Time').set_text("Done")
-	get_node('Activity/Action').set_text("")
+	#if no assignment fallback based on slave personality?
+	get_node('Scripts/Assignments/'+assignment).next_action()
+	get_node('Display/Activity/Time').set_text("Done")
+	get_node('Display/Activity/Action').set_text("")
 
-#func _save(): #obsolete with new save system?
-#	var path
-#	var file = File.new()
-#	var location = get_node('../../../').name #store location as a var?
-#	# set file location without using conditional statements? is that shorter or longer?
-#	if location == "Slaves":
-#		path = 'user://Data/Slot %s/Slaves/Owned/'%data.save_slot
-#	elif location == "Kidnappers Market":
-#		path = "user://Data/Slot %s/Slaves/Available/Kidnappers' Market/"%data.save_slot
-#	elif location == "Neighboring Arcologies":
-#		path = 'user://Data/Slot %s/Slaves/Available/Neighboring Arcologies/'%data.save_slot
-#	file.open(path+name+'.json',File.WRITE)
-#	file.store_line(to_json(_data()))
-#	file.close()
 
 func _data(): #save data    change to "get_data"?
 	return {
-		core = {
-			ethnicity = ethnicity,
-			skin_color = skin_color,
-			tissue_color = tissue_color,
-			gender = gender,
-			age = age,
-			height = height,
-			weight = weight,
-			genitals = genitals,
-			penis_size = penis_size,
-			testicles_size = testicles_size,
-			chest = chest,
-			face = face,
-			figure = figure,
-			voice = voice,
-			health = health,
-			fatigue = fatigue,
-			happiness = happiness,
-			hunger = hunger,
-			bathroom = bathroom,
-			arousal = arousal,
-			libido = libido,
-			male_attraction = male_attraction,
-			female_attraction = female_attraction,
-			intelligence = intelligence,
-			devotion = devotion,
-			trust = trust,
-			sexual_skill = sexual_skill,
-			oral_skill = oral_skill,
-			anal_skill = anal_skill,
-			vaginal_skill = vaginal_skill,
-			penis_skill = penis_skill,
-			prostitution_skill = prostitution_skill,
-			entertainment_skill = entertainment_skill,
-			combat_skill = combat_skill,
-			is_awake = is_awake,
-			for_sale = for_sale,
-			assignment = assignment,
-			action = action,
-			current_time = get_node('Actions/'+action).current_time,
-			total_time = get_node('Actions/'+action).total_time},
-		nested = {}}
+		ethnicity = ethnicity,
+		skin_color = skin_color,
+		tissue_color = tissue_color,
+		hair_color_natural = hair_color_natural,
+		hair_color = hair_color,
+		hair_style = hair_style,
+		gender = gender,
+		age = age,
+		height = height,
+		weight = weight,
+		genitals = genitals,
+		penis_size = penis_size,                               #move to genitals
+		testicles_size = testicles_size,                       #move to genitals
+		vagina = vagina,                                       #move to genitals
+		chest = chest,
+		face = face,
+		figure = figure,
+		voice = voice,
+		health = health,
+		fatigue = fatigue,
+		happiness = happiness,
+		hunger = hunger,
+		bathroom = bathroom,
+		arousal = arousal,
+		libido = libido,
+		male_attraction = male_attraction,
+		female_attraction = female_attraction,
+		intelligence = intelligence,
+		devotion = devotion,
+		trust = trust,
+		sexual_skill = sexual_skill,
+		oral_skill = oral_skill,
+		anal_skill = anal_skill,
+		vaginal_skill = vaginal_skill,
+		penis_skill = penis_skill,
+		prostitution_skill = prostitution_skill,
+		entertainment_skill = entertainment_skill,
+		combat_skill = combat_skill,
+		is_awake = is_awake,
+		for_sale = for_sale,
+		assignment = assignment,
+		action = action,
+		current_time = get_node('Scripts/Actions/'+action).current_time,
+		total_time = get_node('Scripts/Actions/'+action).total_time,
+		quarters = quarters,
+		location = location,
+		destination = destination,
+		travel_mode = travel_mode,
+		queued_action = queued_action
+		}
 #			breasts = _get_properties(breasts),
 #			penis = _get_properties(penis)}}
 
 func _load(_data):
-	for setting in _data['core']:
-		set(setting, _data['core'][setting])
-	for _class in _data['nested']:
-		for setting in _data['nested'][_class]:
-			get(_class).set(setting, _data['nested'][_class][setting])
-	get_node('Actions/'+action).current_time = _data['core']['current_time']
-	get_node('Actions/'+action).total_time = _data['core']['total_time']
-	if get_node('Actions/'+action).total_time:
-		get_node('Activity/ProgressBar').max_value = get_node('Actions/'+action).total_time
-		get_node('Activity/ProgressBar').value = get_node('Actions/'+action).current_time
+	for setting in _data:
+		set(setting, _data[setting])
+	#for _class in _data['nested']:
+		#for setting in _data['nested'][_class]:
+			#get(_class).set(setting, _data['nested'][_class][setting])
+	get_node('Scripts/Actions/'+action).current_time = _data['current_time']
+	get_node('Scripts/Actions/'+action).total_time = _data['total_time']
+	if get_node('Scripts/Actions/'+action).total_time:
+		get_node('Display/Activity/ProgressBar').max_value = get_node('Scripts/Actions/'+action).total_time
+		get_node('Display/Activity/ProgressBar').value = get_node('Scripts/Actions/'+action).current_time
 
 func _get_properties(input):
 	var properties = input.get_property_list()
@@ -240,20 +196,21 @@ class Penis:
 	var tattoo
 
 func _on_Assignment_item_selected(ID):
-	var assignments = {0:"Rest",1:"Prostitute"}
+	var assignments = {0:"Resting",1:"Prostitute"}
 	assignment = assignments[ID]
+	$Assignments.get_node(assignment).begin()
 
 onready var root = get_tree().get_root()
 func _on_Buy_pressed():
 	#remove slave data from user folder
 	var path
 	var dir = Directory.new()
-	var location = get_node('../../../').name
-	if location == "Slaves":
+	var _location = get_node('../../../').name
+	if _location == "Slaves":
 		path = 'user://Data/Slot %s/Slaves/Owned/'%data.save_slot
-	elif location == "Kidnappers Market":
+	elif _location == "Kidnappers Market":
 		path = "user://Data/Slot %s/Slaves/Available/Kidnappers' Market/"%data.save_slot
-	elif location == "Neighboring Arcologies":
+	elif _location == "Neighboring Arcologies":
 		path = 'user://Data/Slot %s/Slaves/Available/Neighboring Arcologies/'%data.save_slot
 	path += name+'.json'
 	dir.remove(path)
@@ -267,26 +224,7 @@ func _on_Buy_pressed():
 	#add to owned
 	root.get_node('Game/Slaves/Slider/HBoxContainer').add_child(self,true)
 
-func _on_Top_pressed():
-	$Panel.show()
 
-func _on_Top_mouse_entered():
-	$Top.set_modulate('ff7200')
-
-func _on_Top_mouse_exited():
-	$Top.set_modulate('ffffff')
-
-func _input(event):
-	if event.is_action_pressed('ui_back'):
-		$Panel.hide()
-	if is_visible_in_tree():
-		if event is InputEventMouseButton:
-			var x = get_local_mouse_position().x
-			var y = get_local_mouse_position().y
-			if x < 0 or y < 0:
-				$Panel.hide()
-			if x > rect_size.x or y > rect_size.y:
-				$Panel.hide()
 
 func _on_Examine_pressed():
 	pass # Replace with function body.
@@ -294,5 +232,23 @@ func _on_Examine_pressed():
 func _on_Summon_pressed():
 	pass # Replace with function body.
 
-func _on_Sell_pressed():
-	pass # Replace with function body.
+# use sell func here instead of in Display?
+#func _on_Sell_pressed():
+#	#receive payment based on slave level?
+#	var dir = Directory.new()
+#	dir.remove('user://Data/Slot %s/Slaves/Owned/%s.json'%[data.save_slot,name])
+#	game.update_money(200 * get_node('Stats')._level())
+#	get_parent().remove_child(self)
+#	queue_free()
+
+func tracking():
+	var position = get_translation()
+	var camera = get_tree().get_root().get_camera() #get parent instead?
+	var projection = camera.unproject_position(position)
+	#$Display.set_position(projection-Vector2(1000,400))
+	$Display.set_position(projection)
+	
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+#func _process(delta):
+#	pass

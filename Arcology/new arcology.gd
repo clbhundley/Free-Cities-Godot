@@ -9,20 +9,6 @@ func generate(size):
 		build[0].name = "Penthouse"
 	return build
 
-#	for i in build:
-#		print("----------------- ",i.name," -----------------")
-#		for x in i.get_children():
-#			if x.get('owned') != null:
-#				print(x.name, " - owned: ",x.owned)
-#			elif x.name == "Inner" or x.name == "Outer":
-#				for z in x.get_children():
-#					if z.get('owned') != null:
-#						print(z.name," - owned: ",z.owned)
-#					else:
-#						print(z.name)
-#			else:
-#				print(x.name)
-
 func penthouse():
 	var terra = get_node('../Library/Terras/Penthouse').duplicate()
 	var layout = [
@@ -40,7 +26,7 @@ func penthouse():
 	"salon"]
 	var index = 0
 	for sector in terra.get_node("Inner").get_children():
-		get_parent().swap(sector,get_node('../Library/Sectors/%s'%layout[index]).duplicate())
+		ArcUtils.swap_sectors(sector,get_node('../Library/Sectors/%s'%layout[index]).duplicate())
 		index += 1
 	return terra
 
@@ -165,7 +151,7 @@ func t0():
 	"thermal_exchange_condenser_b"]
 	var index = 0
 	for sector in terra.get_node("Inner").get_children():
-		get_parent().swap(sector,get_node('../Library/Sectors/%s'%layout[index]).duplicate())
+		ArcUtils.swap_sectors(sector,get_node('../Library/Sectors/%s'%layout[index]).duplicate())
 		index += 1
 	return terra
 
@@ -178,13 +164,13 @@ func place(terra, sector_name):
 	if size == 1:
 		while not "nullsec" in terra.get_child(roll).name:
 			roll = dice.roll(12)
-		get_parent().swap(terra.get_child(roll),sector)
+		ArcUtils.swap_sectors(terra.get_child(roll),sector)
 	elif size == 2:
 		var empty = false
 		while empty == false:
 			if "nullsec" in terra.get_child(roll).name and "nullsec" in terra.get_child(loop(roll+1)).name:
-				get_parent().swap(terra.get_child(roll),sector)
-				get_parent().swap(terra.get_child(loop(roll+1)),get_sector(sector_name.rstrip("_a")+"_b"))
+				ArcUtils.swap_sectors(terra.get_child(roll),sector)
+				ArcUtils.swap_sectors(terra.get_child(loop(roll+1)),get_sector(sector_name.rstrip("_a")+"_b"))
 				empty = true
 			else:
 				roll = dice.roll(12)
@@ -192,9 +178,9 @@ func place(terra, sector_name):
 		var empty = false
 		while empty == false:
 			if "nullsec" in terra.get_child(roll).name and "nullsec" in terra.get_child(loop(roll+1)).name and "nullsec" in terra.get_child(loop(roll+2)).name:
-				get_parent().swap(terra.get_child(roll),sector)
-				get_parent().swap(terra.get_child(loop(roll+1)),get_sector(sector_name.rstrip("_a")+"_b"))
-				get_parent().swap(terra.get_child(loop(roll+2)),get_sector(sector_name.rstrip("_a")+"_c"))
+				ArcUtils.swap_sectors(terra.get_child(roll),sector)
+				ArcUtils.swap_sectors(terra.get_child(loop(roll+1)),get_sector(sector_name.rstrip("_a")+"_b"))
+				ArcUtils.swap_sectors(terra.get_child(loop(roll+2)),get_sector(sector_name.rstrip("_a")+"_c"))
 				empty = true
 			else:
 				roll = dice.roll(12)

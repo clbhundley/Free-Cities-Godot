@@ -1,0 +1,19 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/female thicc.obj-66350b5e437b9418c27aeee2dc0becfb.mesh"
+
+[deps]
+
+files=[ "res://.import/female thicc.obj-66350b5e437b9418c27aeee2dc0becfb.mesh" ]
+
+source_file="res://Slaves/Models/Female/female thicc.obj"
+dest_files=[ "res://.import/female thicc.obj-66350b5e437b9418c27aeee2dc0becfb.mesh", "res://.import/female thicc.obj-66350b5e437b9418c27aeee2dc0becfb.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+optimize_mesh=true

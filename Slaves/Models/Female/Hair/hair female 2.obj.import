@@ -1,0 +1,19 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/hair female 2.obj-441dd2d68cdf5eb9f5d448e9b84d9e45.mesh"
+
+[deps]
+
+files=[ "res://.import/hair female 2.obj-441dd2d68cdf5eb9f5d448e9b84d9e45.mesh" ]
+
+source_file="res://Slaves/Models/Female/Hair/hair female 2.obj"
+dest_files=[ "res://.import/hair female 2.obj-441dd2d68cdf5eb9f5d448e9b84d9e45.mesh", "res://.import/hair female 2.obj-441dd2d68cdf5eb9f5d448e9b84d9e45.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+optimize_mesh=true
