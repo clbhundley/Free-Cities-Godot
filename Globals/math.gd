@@ -21,3 +21,13 @@ func time_remaining(current_time,total_time):
 	_hr = int(_min/60)
 	_min = int(_sec/60)
 	return str(_hr, ":", _min-_hr*60, ":", _sec-_min*60)
+
+#var RNG = RandomNumberGenerator.new()
+#func rng():
+#	for i in 300:
+#		RNG.randomize()
+#		var current_seed = RNG.get_seed() 
+#		if sign(current_seed) == -1:
+#			print(" ",current_seed)
+#		else:
+#			print("  ",current_seed)

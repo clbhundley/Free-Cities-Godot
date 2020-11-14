@@ -1,10 +1,10 @@
-[gd_scene load_steps=62 format=2]
+[gd_scene load_steps=64 format=2]
 
 [ext_resource path="res://GUI/gui.gd" type="Script" id=1]
 [ext_resource path="res://Textures/oval_tab.png" type="Texture" id=2]
 [ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://GUI/Textures/AI/caliban large.png" type="Texture" id=4]
-[ext_resource path="res://Audio/deepblip.wav" type="AudioStream" id=5]
+[ext_resource path="res://Audio/tap.wav" type="AudioStream" id=5]
 [ext_resource path="res://GUI/Textures/circle_small.png" type="Texture" id=6]
 [ext_resource path="res://GUI/Textures/menu_small.png" type="Texture" id=7]
 [ext_resource path="res://GUI/Textures/Tabs/tab_left.png" type="Texture" id=8]
@@ -24,18 +24,39 @@
 [ext_resource path="res://GUI/Textures/Tabs/slaves.png" type="Texture" id=22]
 [ext_resource path="res://GUI/Saves.tscn" type="PackedScene" id=23]
 [ext_resource path="res://GUI/Options.tscn" type="PackedScene" id=24]
+[ext_resource path="res://Fonts/Rubik-Light-24.tres" type="DynamicFont" id=25]
+[ext_resource path="res://GUI/Textures/chatbox.svg" type="Texture" id=26]
+[ext_resource path="res://GUI/Textures/arrow_right.svg" type="Texture" id=27]
+[ext_resource path="res://Fonts/Rubik-Light-44.tres" type="DynamicFont" id=28]
+[ext_resource path="res://Fonts/Rubik-Light-30.tres" type="DynamicFont" id=29]
+[ext_resource path="res://Fonts/Rubik-Light-36.tres" type="DynamicFont" id=30]
+[ext_resource path="res://GUI/Dialogue.gd" type="Script" id=31]
+[ext_resource path="res://GUI/SidePanel.gd" type="Script" id=32]
+[ext_resource path="res://GUI/Time.gd" type="Script" id=33]
 
-[sub_resource type="DynamicFont" id=1]
-resource_name = "Rubik-Light"
-size = 32
-font_data = ExtResource( 3 )
+[sub_resource type="GDScript" id=1]
+script/source = "extends VBoxContainer
 
-[sub_resource type="DynamicFont" id=2]
-resource_name = "Rubik-Light"
+onready var dock = owner.get_node(\"Dock\")
+
+func _on_PurchaseSlaves_pressed():
+	dock.set_mode(\"PurchaseSlaves\")
+"
+
+[sub_resource type="GDScript" id=2]
+script/source = "extends Button
+
+func _on_Hide_pressed():
+	var side_panel = get_node(\"../../\")
+	side_panel.close()
+	side_panel.dock.get_node(\"ActionButton\").icon = side_panel.arrow_left_icon
+"
+
+[sub_resource type="DynamicFont" id=3]
 size = 20
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=3]
+[sub_resource type="GDScript" id=4]
 script/source = "extends Container
 
 func _on_button_pressed():
@@ -64,13 +85,13 @@ func _on_mouse_exited():
 	get_node('oval_tab').set_position(Vector2(70.32077,32.146347))
 "
 
-[sub_resource type="DynamicFont" id=4]
+[sub_resource type="DynamicFont" id=5]
 size = 30
 font_data = ExtResource( 3 )
 
-[sub_resource type="ButtonGroup" id=5]
+[sub_resource type="ButtonGroup" id=6]
 
-[sub_resource type="GDScript" id=6]
+[sub_resource type="GDScript" id=7]
 script/source = "extends Container
 
 func _on_button_pressed():
@@ -101,7 +122,7 @@ func _on_mouse_exited():
 	get_node('oval_tab').set_position(Vector2(70.32077,32.146347))
 "
 
-[sub_resource type="GDScript" id=7]
+[sub_resource type="GDScript" id=8]
 script/source = "extends Container
 
 func _on_button_pressed():
@@ -117,25 +138,6 @@ func _on_button_pressed():
 	g.get_node('Finance').reset_scene()
 	g.get_node('GUI').show()
 	get_node('../../..')._on_AI_pressed()
-	_on_mouse_exited()
-
-func _on_button_down():
-	get_node('oval_tab').set_self_modulate('4bff7200')
-
-func _on_button_up():
-	get_node('oval_tab').set_self_modulate('28ebf5ff')
-
-func _on_mouse_entered():
-	get_node('oval_tab').set_position(Vector2(90.32077,32.146347))
-
-func _on_mouse_exited():
-	get_node('oval_tab').set_position(Vector2(70.32077,32.146347))
-"
-
-[sub_resource type="GDScript" id=8]
-script/source = "extends Container
-
-func _on_button_pressed():
 	_on_mouse_exited()
 
 func _on_button_down():
@@ -208,106 +210,158 @@ func _on_mouse_exited():
 	get_node('oval_tab').set_position(Vector2(70.32077,32.146347))
 "
 
-[sub_resource type="DynamicFont" id=12]
+[sub_resource type="GDScript" id=12]
+script/source = "extends Container
+
+func _on_button_pressed():
+	_on_mouse_exited()
+
+func _on_button_down():
+	get_node('oval_tab').set_self_modulate('4bff7200')
+
+func _on_button_up():
+	get_node('oval_tab').set_self_modulate('28ebf5ff')
+
+func _on_mouse_entered():
+	get_node('oval_tab').set_position(Vector2(90.32077,32.146347))
+
+func _on_mouse_exited():
+	get_node('oval_tab').set_position(Vector2(70.32077,32.146347))
+"
+
+[sub_resource type="DynamicFont" id=13]
 size = 30
 font_data = ExtResource( 3 )
-
-[sub_resource type="GDScript" id=13]
-script/source = "extends RichTextLabel
-
-var halted
-var counter = 0
-
-func say(string):
-	halted = false
-	push_align(0)
-	while not string.empty() and not halted:
-		var c = string[0]
-		string.erase(0,1)
-		add_text(c)
-		var timer = get_node('Timer4')
-		if not c == \" \" and counter == 1:
-			get_node('AudioStreamPlayer').play()
-		if c == \",\":
-			timer.wait_time = 0.1
-		elif c == \".\" or c == \"!\" or c == \"?\":
-			timer.wait_time = 0.2
-		else:
-			timer.wait_time = 0.03
-		timer.start()
-		yield(timer,\"timeout\")
-		if counter == 0:
-			counter = 1
-		else:
-			counter = 0
-	newline()
-
-func read(file):
-	var text
-	var f = File.new()
-	f.open(file,File.READ)
-	text = f.get_as_text()
-	f.close()
-	say(text)
-
-func halt():
-	halted = true"
 
 [sub_resource type="GDScript" id=14]
 script/source = "extends Control
 
-func _on_mouse_entered():
-	get_node('circle').set_self_modulate('64bf5500')
+onready var side_panel = get_node(\"../SidePanel\")
+onready var slaves = get_tree().get_root().get_node(\"Game/Slaves\")
 
-func _on_mouse_exited():
-		get_node('circle').set_self_modulate('64333a4b')
-"
-
-[sub_resource type="DynamicFont" id=15]
-size = 20
-font_data = ExtResource( 3 )
-
-[sub_resource type="GDScript" id=16]
-script/source = "extends Control
+var action_button_text
+var mode
 
 func _ready():
 	get_tree().get_root().connect('size_changed',self,'resize')
-	if get_tree().get_root().get_node(\"Game/Slaves\").is_visible_in_tree():
-		slaves_dock()
-	else:
-		default_dock()
+	set_mode(\"ManageSlaves\")
 
-const SIZE_DEFAULT = 110
-const SIZE_SLAVES = 433
-var size
-
-func reset_dock():
-	for node in get_children():
-		if node.name != \"AI\":
+func set_mode(new_mode):
+	mode = new_mode
+	var content = side_panel.get_node(mode)
+	match new_mode:
+		\"ManageSlaves\":
+			action_button_text = \"Manage Slaves\"
+			side_panel.reset_content_position()
+			$ActionButton.icon = side_panel.arrow_right_icon
+		\"PurchaseSlaves\":
+			action_button_text = \"Back\"
+			$ActionButton.set_text(action_button_text)
+			side_panel.change_content(get_content(\"ManageSlaves\"),content)
+			return
+		\"KidnappersMarket\":
+			action_button_text = \"Back\"
+			$ActionButton.set_text(action_button_text)
+			slaves.set_active_collection(\"Kidnappers Market\")
+			side_panel.change_content(get_content(\"PurchaseSlaves\"),content)
+			game.set_bg_color(game.BG_COLOR_PLUMB)
+			return
+		\"NeighboringArcologies\":
+			action_button_text = \"Back\"
+			$ActionButton.set_text(action_button_text)
+			slaves.set_active_collection(\"Neighboring Arcologies\")
+			side_panel.change_content(get_content(\"PurchaseSlaves\"),content)
+			game.set_bg_color(game.BG_COLOR_DEEP)
+			return
+		\"ManageArcology\":
+			action_button_text = \"Manage Arcology\"
+			$ActionButton.icon = side_panel.arrow_right_icon
+		\"ManageTerra\":
+			action_button_text = \"Back\"
+		\"ManageSector\":
+			action_button_text = \"Back\"
+	$ActionButton.set_text(action_button_text)
+	for node in side_panel.get_children():
+		if node is VBoxContainer:
 			node.hide()
+	content.show()
 
-func default_dock():
-	size = SIZE_DEFAULT
-	rect_size.x = size
-	reset_dock()
-	resize()
+func get_content(content):
+	return side_panel.get_node(content)
 
-func slaves_dock():
-	size = SIZE_SLAVES
-	rect_size.x = size
-	reset_dock()
-	$\"Purchase Slaves\".show()
-	resize()
+func _on_ActionButton_pressed():
+	var animation = true
+	if not side_panel.open:
+		animation = false
+	if side_panel.rect_size.x > margin_right+30:
+		side_panel.rect_size.x = margin_right+30
+	if mode == \"PurchaseSlaves\":
+		mode = \"ManageSlaves\"
+		slaves.set_active_collection(\"Owned\")
+		side_panel.change_content(
+			get_content(\"PurchaseSlaves\"),
+			get_content(mode))
+		game.set_bg_color(game.BG_COLOR_DEFAULT)
+		action_button_text = \"Manage Slaves\"
+		$ActionButton.set_text(\"Close\")
+	elif mode == \"KidnappersMarket\":
+		mode = \"PurchaseSlaves\"
+		slaves.set_active_collection(\"Owned\")
+		side_panel.change_content(
+			get_content(\"KidnappersMarket\"),
+			get_content(mode),
+			animation)
+		game.set_bg_color(game.BG_COLOR_DEFAULT)
+		if not side_panel.open:
+			side_panel.open()
+		action_button_text = \"Back\"
+		$ActionButton.set_text(action_button_text)
+	elif mode == \"NeighboringArcologies\":
+		mode = \"PurchaseSlaves\"
+		slaves.set_active_collection(\"Owned\")
+		side_panel.change_content(
+			get_content(\"NeighboringArcologies\"),
+			get_content(mode),
+			animation)
+		game.set_bg_color(game.BG_COLOR_DEFAULT)
+		if not side_panel.open:
+			side_panel.open()
+		action_button_text = \"Back\"
+		$ActionButton.set_text(action_button_text)
+	elif side_panel.open:
+		side_panel.close()
+	else:
+		side_panel.open()
 
+var font_title = preload('res://Fonts/Rubik-Light-44.tres')
+var font_large = preload('res://Fonts/Rubik-Light-36.tres')
+var font_medium = preload('res://Fonts/Rubik-Light-30.tres')
+var font_small = preload('res://Fonts/Rubik-Light-24.tres')
 func resize():
 	var scale_adjusted = display.scale * 1.6
-	$AI.margin_right = min(110,110*scale_adjusted)
-	$AI.margin_top = max(-1*110,-1*110*scale_adjusted)
-	margin_right = min(size,size*scale_adjusted)
-	margin_top = max(-110,-110*scale_adjusted)
+	var scale_font_small = display.scale_x * 33
+	var scale_font_medium = display.scale_x * 35
+	var scale_font_large = display.scale_x * 40
+	var scale_font_title = display.scale_x * 50
+	$AI.margin_right = min(110, 110 * scale_adjusted)
+	$AI.margin_top = max(-1 * 110, -1 * 110 * scale_adjusted)
+	margin_right = min(430, 430 * scale_adjusted)
+	margin_top = max(-110, -110 * scale_adjusted)
+	side_panel.margin_right = margin_right + 30
+	if not side_panel.open:
+		side_panel.hide()
+	$ActionButton.get('custom_fonts/font').size = min(max(scale_font_small,18),24)
+	font_small.size = clamp(scale_font_small, 20, 30)
+	font_medium.size = clamp(scale_font_medium, 28, 35)
+	font_large.size = clamp(scale_font_large, 28, 39)
+	font_title.size = clamp(scale_font_title, 34, 49)
+	for node in side_panel.get_children(): #refreshing nodes by adding 0 to margin
+		if node is VBoxContainer:
+			node.margin_left += 0
+	$ActionButton.margin_left += 0
 "
 
-[sub_resource type="GDScript" id=17]
+[sub_resource type="GDScript" id=15]
 script/source = "extends Control
 
 func _on_button_up():
@@ -324,12 +378,7 @@ func _on_mouse_exited():
 		get_node('tab_left').set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="DynamicFont" id=18]
-resource_name = "Rubik-Light"
-size = 32
-font_data = ExtResource( 3 )
-
-[sub_resource type="GDScript" id=19]
+[sub_resource type="GDScript" id=16]
 script/source = "extends Control
 
 func _ready():
@@ -338,16 +387,15 @@ func _ready():
 
 func resize():
 	var scale_adjusted = display.scale * 1.6
-	margin_left = max(-350,-350*scale_adjusted)
-	margin_top = max(-110,-110*scale_adjusted)
-	
-	var scale_text = display.scale*22
+	var scale_text = display.scale * 22
+	margin_left = max(-350, -350 * scale_adjusted)
+	margin_top = max(-110, -110 * scale_adjusted)
 	#use same custom font for both
 	get_node(\"Time/Label Bot\").get('custom_fonts/font').size = clamp(scale_text,10,16)
 	get_node(\"Time/Label Top\").get('custom_fonts/font').size = clamp(scale_text,10,16)
 "
 
-[sub_resource type="GDScript" id=20]
+[sub_resource type="GDScript" id=17]
 script/source = "extends TextureRect
 
 func _ready():
@@ -357,7 +405,7 @@ func _ready():
 func _on_pressed():
 	var g = get_tree().get_root().get_node('Game')
 	for node in g.get_children():
-		if node.get_class() != \"Node\" and node.get_class() != \"Timer\":
+		if node.get_class() != \"Node\" and not node is Timer:
 			node.hide()
 	g.get_node('Arcology/Display').hide()
 #	g.get_node('Finance').show()
@@ -376,7 +424,7 @@ func _on_mouse_exited():
 		set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="GDScript" id=21]
+[sub_resource type="GDScript" id=18]
 script/source = "extends TextureRect
 
 func _ready():
@@ -384,19 +432,24 @@ func _ready():
 	_on_mouse_exited()
 
 func _on_pressed():
-	var g = get_tree().get_root().get_node('Game')
-	for node in g.get_children():
-		if node.get_class() != \"Node\" and node.get_class() != \"Timer\":
+	var _game = get_tree().get_root().get_node('Game')
+	for node in _game.get_children():
+		if node.get_class() != \"Node\" and not node is Timer:
 			node.hide()
-	get_node(\"../../Dock\").default_dock()
+	game.set_bg_color(game.BG_COLOR_DEFAULT)
+	get_node(\"../../Dock\").set_mode(\"ManageArcology\")
+	var side_panel = get_node(\"../../SidePanel\")
+	if side_panel.open:
+		side_panel.close()
 	get_node(\"../../Header/Slaves\").hide()
 	get_node(\"../../Header/Arcology\").show()
-	g.get_node('Arcology').show()
-	g.get_node('Arcology/Display').show()
-	for nodes in get_tree().get_nodes_in_group(\"Slave Display\"):
-		nodes.hide()
-	g.get_node('Arcology/Cambase/Camera').current = true
-	g.get_node('GUI').show()
+	_game.get_node('Arcology').show()
+	if _game.get_node('Arcology').selected_terra:
+		_game.get_node('Arcology/Button').show()
+	for node in get_tree().get_nodes_in_group(\"Slave UI\"):
+		node.hide()
+	_game.get_node('Arcology/Cambase/Camera').current = true
+	_game.get_node('GUI').show()
 	if get_node('../../AI Panel').is_visible_in_tree():
 		get_node('../..')._on_AI_pressed()
 	for tab in get_parent().get_children():
@@ -410,7 +463,7 @@ func _on_mouse_exited():
 		set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="GDScript" id=22]
+[sub_resource type="GDScript" id=19]
 script/source = "extends TextureRect
 
 func _ready():
@@ -418,20 +471,22 @@ func _ready():
 	_on_mouse_exited()
 
 func _on_pressed():
-	var g = get_tree().get_root().get_node('Game')
-	for node in g.get_children():
-		if node.get_class() != \"Node\" and node.get_class() != \"Timer\":
+	var _game = get_tree().get_root().get_node('Game')
+	for node in _game.get_children():
+		if node.get_class() != \"Node\" and not node is Timer:
 			node.hide()
-	get_node(\"../../Dock\").slaves_dock()
+	game.set_bg_color(game.BG_COLOR_DEFAULT)
+	get_node(\"../../Dock\").set_mode(\"ManageSlaves\")
+	var side_panel = get_node(\"../../SidePanel\")
+	if side_panel.open:
+		side_panel.close()
 	get_node(\"../../Header/Slaves\").show()
 	get_node(\"../../Header/Arcology\").hide()
-	g.get_node('Arcology/Display').hide()
-	g.get_node('Slaves').show()
-	g.get_node('Slaves/Camera').current = true
-	for nodes in get_tree().get_nodes_in_group(\"Slave Display\"):
-		nodes.show()
-		nodes.get_parent().tracking()
-	g.get_node('GUI').show()
+	_game.get_node('Arcology/Button').hide()
+	_game.get_node('Slaves/Camera').current = true
+	_game.get_node('Slaves').show()
+	_game.get_node('GUI').show()
+	_game.get_node('Slaves').set_active_collection(\"Owned\")
 	if get_node('../../AI Panel').is_visible_in_tree():
 		get_node('../..')._on_AI_pressed()
 	for tab in get_parent().get_children():
@@ -445,115 +500,35 @@ func _on_mouse_exited():
 		set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="GDScript" id=23]
-script/source = "extends Control
-
-onready var clock = get_tree().get_root().get_node('Game/Clock')
-
-func _ready():
-	get_tree().get_root().connect('size_changed',self,'resize')
-	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'update_time')
-	update_time()
-	resize()
-
-func resize():
-	return
-	var scale_small = display.scale*1.6
-	var scale_large = display.scale*22
-	margin_left = max(-110,-110*scale_small)
-	margin_top = max(-110,-110*scale_small)
-	#use same custom font for both
-	get_node(\"Label Bot\").get('custom_fonts/font').size = clamp(scale_large,10,16)
-	get_node(\"Label Top\").get('custom_fonts/font').size = clamp(scale_large,10,16)
-	#print(\"LS \",get_node(\"Label Bot\").get('custom_fonts/font').size )
-
-func update_time():
-	get_node('Label Top').set_text(hour()+\":\"+minute()+\"\\n\"+day())
-	get_node('Label Bot').set_text(\"Week \"+week()+\"\\n\"+quarter()+\" \"+str(time.year))
-	
-	get_node('Calendar/Date').set_text(day()+\", \"+quarter()+\" \"+str(time.year))
-	get_node('Calendar/Time').set_text(hour()+\":\"+minute())
-	
-	for nodes in get_tree().get_nodes_in_group('Days'):
-		nodes.set_modulate('28ffffff')
-	
-	for nodes in get_tree().get_nodes_in_group('Weeks'):
-		nodes.set_modulate('ffffff')
-	
-	get_node('Calendar/Week/'+week()+'/Num').set_modulate('ff6600')
-	
-	for days in get_node('Calendar/Week/'+week()).get_children():
-		days.set_modulate('ffffff')
-	get_node('Calendar/Week/'+week()+'/Num').set_modulate('ff6600')
-	get_node('Calendar/Week/'+week()+'/'+day()).set_modulate('ff6600')
-
-func minute():
-	if time.minute < 10:
-		return str(\"0\",time.minute)
-	else:
-		return str(time.minute)
-
-func hour():
-	if time.hour < 10:
-		return str(\"0\",time.hour)
-	else:
-		return str(time.hour)
-
-func day():
-	var days = {
-		0:\"Sunday\",
-		1:\"Monday\",
-		2:\"Tuesday\",
-		3:\"Wednesday\",
-		4:\"Thursday\",
-		5:\"Friday\",
-		6:\"Saturday\"}
-	return days.values()[time.day]
-
-func week():
-	return str(time.week+1)
-
-func quarter():
-	return \"Q\"+str(time.quarter+1)
-
-onready var timer = get_tree().get_root().get_node('Game/Clock')
-func _on_HSlider_value_changed(value):
-	timer.stop()
-	var t = value/100
-	timer.wait_time = 1-t
-	timer.start()
-
-func animate_sml(node):
-	var tween = get_node('Tween')
-	tween.interpolate_property(node,'position',Vector2(30,55),Vector2(-70,55),1,Tween.TRANS_QUAD,Tween.EASE_OUT)
-	tween.interpolate_property(node,'modulate',Color('00ffffff'),Color('ffffff'),1,Tween.TRANS_QUAD,Tween.EASE_OUT,0.2)
-	tween.interpolate_property(node,'position',Vector2(-70,55),Vector2(30,55),1,Tween.TRANS_QUAD,Tween.EASE_IN_OUT,1)
-	tween.interpolate_property(node,'modulate',Color('ffffff'),Color('00ffffff'),1,Tween.TRANS_QUAD,Tween.EASE_IN_OUT,1)
-	tween.start()
-
-func _on_mouse_entered():
-	get_node('tab_right').set_self_modulate('782873c8')
-
-func _on_mouse_exited():
-	if not get_node('HSlider').is_visible_in_tree():
-		get_node('tab_right').set_self_modulate('3c333a4b')
-"
-
-[sub_resource type="DynamicFont" id=24]
+[sub_resource type="DynamicFont" id=20]
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=25]
+[sub_resource type="DynamicFont" id=21]
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=26]
+[sub_resource type="DynamicFont" id=22]
 size = 30
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=27]
+[sub_resource type="DynamicFont" id=23]
 size = 20
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=28]
+[sub_resource type="GDScript" id=24]
+script/source = "extends Control
+
+func _on_mouse_entered():
+	get_node('circle').set_self_modulate('64bf5500')
+
+func _on_mouse_exited():
+		get_node('circle').set_self_modulate('64333a4b')
+"
+
+[sub_resource type="DynamicFont" id=25]
+size = 20
+font_data = ExtResource( 3 )
+
+[sub_resource type="GDScript" id=26]
 script/source = "extends Panel
 
 func _pause():
@@ -590,100 +565,21 @@ func _on_Menu_Button_pressed():
 	_pause()
 "
 
-[sub_resource type="DynamicFont" id=29]
+[sub_resource type="DynamicFont" id=27]
 size = 50
 font_data = ExtResource( 3 )
 
+[sub_resource type="DynamicFont" id=28]
+size = 30
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=29]
+size = 30
+font_data = ExtResource( 3 )
+
 [sub_resource type="DynamicFont" id=30]
-size = 30
-font_data = ExtResource( 3 )
-
-[sub_resource type="DynamicFont" id=31]
-size = 30
-font_data = ExtResource( 3 )
-
-[sub_resource type="DynamicFont" id=32]
 size = 24
 font_data = ExtResource( 3 )
-
-[sub_resource type="GDScript" id=33]
-script/source = "extends Control
-
-func _ready():
-	get_tree().get_root().connect('size_changed',self,'resize')
-	resize()
-
-func resize():
-	var scale_adjusted = display.scale*1.6
-	margin_right = min(110,110*scale_adjusted)
-	margin_top = max(-110,-110*scale_adjusted)
-
-func _on_button_up():
-	get_node('ai_simple').set_scale(Vector2(1,1))
-
-func _on_button_down():
-	get_node('ai_simple').set_scale(Vector2(0.95,0.95))
-
-func _on_mouse_entered():
-	get_node('tab_left').set_self_modulate('782873c8')
-
-func _on_mouse_exited():
-	if not get_node('../AI Panel').is_visible_in_tree():
-		get_node('tab_left').set_self_modulate('3c333a4b')
-#
-"
-
-[sub_resource type="GDScript" id=34]
-script/source = "extends TextureRect
-
-func _on_pressed():
-	pass
-
-func _on_mouse_entered():
-	set_self_modulate('782873c8')
-
-func _on_mouse_exited():
-	set_self_modulate('3c333a4b')
-"
-
-[sub_resource type="GDScript" id=35]
-script/source = "extends TextureRect
-
-func _on_pressed():
-	pass
-
-func _on_mouse_entered():
-	set_self_modulate('782873c8')
-
-func _on_mouse_exited():
-	set_self_modulate('3c333a4b')
-"
-
-[sub_resource type="GDScript" id=36]
-script/source = "extends TextureRect
-
-func _on_pressed():
-	pass
-
-func _on_mouse_entered():
-	set_self_modulate('782873c8')
-
-func _on_mouse_exited():
-	set_self_modulate('3c333a4b')
-"
-
-[sub_resource type="GDScript" id=37]
-script/source = "extends TextureRect
-
-func _on_pressed():
-	pass
-
-func _on_mouse_entered():
-	set_self_modulate('782873c8')
-
-func _on_mouse_exited():
-	set_self_modulate('3c333a4b')
-"
 
 [node name="GUI" type="Control"]
 anchor_right = 1.0
@@ -696,20 +592,518 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="SidePanel" type="Panel" parent="."]
+visible = false
+modulate = Color( 1, 1, 1, 0.901961 )
+anchor_bottom = 1.0
+margin_right = 460.0
+rect_min_size = Vector2( 260, 0 )
+script = ExtResource( 32 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ManageSlaves" type="VBoxContainer" parent="SidePanel"]
+anchor_left = 0.0434783
+anchor_top = 0.12037
+anchor_right = 0.956522
+anchor_bottom = 0.452778
+custom_constants/separation = 18
+script = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="Label" parent="SidePanel/ManageSlaves"]
+margin_right = 420.0
+margin_bottom = 53.0
+custom_fonts/font = ExtResource( 28 )
+text = "Manage Slaves:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Sort" type="VBoxContainer" parent="SidePanel/ManageSlaves"]
+margin_top = 71.0
+margin_right = 420.0
+margin_bottom = 147.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="Label" parent="SidePanel/ManageSlaves/Sort"]
+margin_right = 420.0
+margin_bottom = 37.0
+custom_fonts/font = ExtResource( 29 )
+text = "Sort By:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="HBox" type="HBoxContainer" parent="SidePanel/ManageSlaves/Sort"]
+margin_top = 41.0
+margin_right = 420.0
+margin_bottom = 76.0
+custom_constants/separation = 10
+
+[node name="Mode" type="OptionButton" parent="SidePanel/ManageSlaves/Sort/HBox"]
+margin_right = 125.0
+margin_bottom = 35.0
+custom_fonts/font = ExtResource( 25 )
+disabled = true
+text = "Devotion"
+expand_icon = true
+items = [ "Devotion", null, false, 0, null, "Assignment", null, false, 1, null, "Acquired", null, false, 2, null, "Name", null, false, 3, null, "Age", null, false, 4, null ]
+selected = 0
+
+[node name="Mode2" type="OptionButton" parent="SidePanel/ManageSlaves/Sort/HBox"]
+margin_left = 135.0
+margin_right = 292.0
+margin_bottom = 35.0
+custom_fonts/font = ExtResource( 25 )
+disabled = true
+text = "Descending"
+expand_icon = true
+items = [ "Descending", null, false, 0, null, "Ascending", null, false, 1, null ]
+selected = 0
+
+[node name="PurchaseSlaves" type="Button" parent="SidePanel/ManageSlaves"]
+margin_top = 165.0
+margin_right = 420.0
+margin_bottom = 200.0
+custom_fonts/font = ExtResource( 25 )
+text = "Purchase Slaves"
+align = 0
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="RulesAssistant" type="Button" parent="SidePanel/ManageSlaves"]
+margin_top = 218.0
+margin_right = 420.0
+margin_bottom = 253.0
+custom_fonts/font = ExtResource( 25 )
+disabled = true
+text = "Rules Assistant"
+align = 0
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="HeadGirl" type="Button" parent="SidePanel/ManageSlaves"]
+margin_top = 271.0
+margin_right = 420.0
+margin_bottom = 306.0
+custom_fonts/font = ExtResource( 25 )
+disabled = true
+text = "Head Girl: None"
+align = 0
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Recruiter" type="Button" parent="SidePanel/ManageSlaves"]
+margin_top = 324.0
+margin_right = 420.0
+margin_bottom = 359.0
+custom_fonts/font = ExtResource( 25 )
+disabled = true
+text = "Recruiter: None"
+align = 0
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="PurchaseSlaves" type="VBoxContainer" parent="SidePanel"]
+visible = false
+anchor_left = 0.0434783
+anchor_top = 0.12037
+anchor_right = 0.956522
+anchor_bottom = 0.267593
+custom_constants/separation = 18
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Title" type="Label" parent="SidePanel/PurchaseSlaves"]
+margin_right = 420.0
+margin_bottom = 53.0
+custom_fonts/font = ExtResource( 28 )
+text = "Purchase Slaves:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="KidnappersMarket" type="Button" parent="SidePanel/PurchaseSlaves"]
+margin_top = 71.0
+margin_right = 420.0
+margin_bottom = 106.0
+custom_fonts/font = ExtResource( 25 )
+text = "Kidnappers Market"
+align = 0
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="NeighboringArcologies" type="Button" parent="SidePanel/PurchaseSlaves"]
+margin_top = 124.0
+margin_right = 420.0
+margin_bottom = 159.0
+custom_fonts/font = ExtResource( 25 )
+text = "Neighboring Arcologies"
+align = 0
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Desc" type="Label" parent="SidePanel/PurchaseSlaves"]
+margin_top = 177.0
+margin_right = 420.0
+margin_bottom = 270.0
+custom_fonts/font = ExtResource( 25 )
+text = "Many organizations are selective about their clientele, and will only sell to you if you are reputable."
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="KidnappersMarket" type="VBoxContainer" parent="SidePanel"]
+visible = false
+anchor_left = 0.0434783
+anchor_top = 0.12037
+anchor_right = 0.956522
+anchor_bottom = 0.408333
+margin_bottom = -151.999
+custom_constants/separation = 18
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Title" type="Label" parent="SidePanel/KidnappersMarket"]
+margin_right = 420.0
+margin_bottom = 53.0
+custom_fonts/font = ExtResource( 28 )
+text = "Kidnappers Market:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Sort" type="VBoxContainer" parent="SidePanel/KidnappersMarket"]
+margin_top = 71.0
+margin_right = 420.0
+margin_bottom = 147.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="Label" parent="SidePanel/KidnappersMarket/Sort"]
+margin_right = 420.0
+margin_bottom = 37.0
+custom_fonts/font = ExtResource( 29 )
+text = "Sort By:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="HBox" type="HBoxContainer" parent="SidePanel/KidnappersMarket/Sort"]
+margin_top = 41.0
+margin_right = 420.0
+margin_bottom = 76.0
+custom_constants/separation = 10
+
+[node name="Mode" type="OptionButton" parent="SidePanel/KidnappersMarket/Sort/HBox"]
+margin_right = 125.0
+margin_bottom = 35.0
+custom_fonts/font = ExtResource( 25 )
+disabled = true
+text = "Devotion"
+expand_icon = true
+items = [ "Devotion", null, false, 0, null, "Assignment", null, false, 1, null, "Acquired", null, false, 2, null, "Name", null, false, 3, null, "Age", null, false, 4, null ]
+selected = 0
+
+[node name="Mode2" type="OptionButton" parent="SidePanel/KidnappersMarket/Sort/HBox"]
+margin_left = 135.0
+margin_right = 292.0
+margin_bottom = 35.0
+custom_fonts/font = ExtResource( 25 )
+disabled = true
+text = "Descending"
+expand_icon = true
+items = [ "Descending", null, false, 0, null, "Ascending", null, false, 1, null ]
+selected = 0
+
+[node name="Hide" type="Button" parent="SidePanel/KidnappersMarket"]
+margin_top = 165.0
+margin_right = 420.0
+margin_bottom = 200.0
+custom_fonts/font = ExtResource( 25 )
+text = "Hide"
+align = 0
+expand_icon = true
+script = SubResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Desc" type="Label" parent="SidePanel/KidnappersMarket"]
+margin_top = 218.0
+margin_right = 420.0
+margin_bottom = 311.0
+custom_fonts/font = ExtResource( 25 )
+text = "Slaves aquired from old-world slums will tend to be low-quality and resistant."
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="NeighboringArcologies" type="VBoxContainer" parent="SidePanel"]
+visible = false
+anchor_left = 0.0434783
+anchor_top = 0.12037
+anchor_right = 0.956522
+anchor_bottom = 0.399074
+custom_constants/separation = 18
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Title" type="Label" parent="SidePanel/NeighboringArcologies"]
+margin_right = 420.0
+margin_bottom = 43.0
+custom_fonts/font = ExtResource( 30 )
+text = "Neighboring Arcologies:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Sort" type="VBoxContainer" parent="SidePanel/NeighboringArcologies"]
+margin_top = 61.0
+margin_right = 420.0
+margin_bottom = 137.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="Label" parent="SidePanel/NeighboringArcologies/Sort"]
+margin_right = 420.0
+margin_bottom = 37.0
+custom_fonts/font = ExtResource( 29 )
+text = "Sort By:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="HBox" type="HBoxContainer" parent="SidePanel/NeighboringArcologies/Sort"]
+margin_top = 41.0
+margin_right = 420.0
+margin_bottom = 76.0
+custom_constants/separation = 10
+
+[node name="Mode" type="OptionButton" parent="SidePanel/NeighboringArcologies/Sort/HBox"]
+margin_right = 125.0
+margin_bottom = 35.0
+custom_fonts/font = ExtResource( 25 )
+disabled = true
+text = "Devotion"
+expand_icon = true
+items = [ "Devotion", null, false, 0, null, "Assignment", null, false, 1, null, "Acquired", null, false, 2, null, "Name", null, false, 3, null, "Age", null, false, 4, null ]
+selected = 0
+
+[node name="Mode2" type="OptionButton" parent="SidePanel/NeighboringArcologies/Sort/HBox"]
+margin_left = 135.0
+margin_right = 292.0
+margin_bottom = 35.0
+custom_fonts/font = ExtResource( 25 )
+disabled = true
+text = "Descending"
+expand_icon = true
+items = [ "Descending", null, false, 0, null, "Ascending", null, false, 1, null ]
+selected = 0
+
+[node name="Hide" type="Button" parent="SidePanel/NeighboringArcologies"]
+margin_top = 165.0
+margin_right = 420.0
+margin_bottom = 200.0
+custom_fonts/font = ExtResource( 25 )
+text = "Hide"
+align = 0
+expand_icon = true
+script = SubResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Desc" type="Label" parent="SidePanel/NeighboringArcologies"]
+margin_top = 208.0
+margin_right = 420.0
+margin_bottom = 301.0
+custom_fonts/font = ExtResource( 25 )
+text = "Second-hand slaves will be affected by the prosperity and culture of their previous owner."
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="ManageArcology" type="VBoxContainer" parent="SidePanel"]
+visible = false
+anchor_left = 0.0434783
+anchor_top = 0.12037
+anchor_right = 0.956522
+anchor_bottom = 0.494444
+custom_constants/separation = 18
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Title" type="Label" parent="SidePanel/ManageArcology"]
+margin_right = 420.0
+margin_bottom = 53.0
+custom_fonts/font = ExtResource( 28 )
+text = "Manage Arcology:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Ownership" type="VBoxContainer" parent="SidePanel/ManageArcology"]
+margin_top = 71.0
+margin_right = 420.0
+margin_bottom = 137.0
+custom_constants/separation = 0
+
+[node name="Title" type="Label" parent="SidePanel/ManageArcology/Ownership"]
+margin_right = 420.0
+margin_bottom = 37.0
+custom_fonts/font = ExtResource( 29 )
+text = "Ownership:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="HBox" type="HBoxContainer" parent="SidePanel/ManageArcology/Ownership"]
+margin_top = 37.0
+margin_right = 420.0
+margin_bottom = 66.0
+custom_constants/separation = 10
+
+[node name="Owner" type="Label" parent="SidePanel/ManageArcology/Ownership/HBox"]
+margin_right = 121.0
+margin_bottom = 29.0
+custom_fonts/font = ExtResource( 25 )
+text = "XX% Owner"
+
+[node name="VSeparator" type="VSeparator" parent="SidePanel/ManageArcology/Ownership/HBox"]
+margin_left = 131.0
+margin_right = 135.0
+margin_bottom = 29.0
+
+[node name="Secondary" type="Label" parent="SidePanel/ManageArcology/Ownership/HBox"]
+margin_left = 145.0
+margin_right = 312.0
+margin_bottom = 29.0
+custom_fonts/font = ExtResource( 25 )
+text = "XX% Secondary"
+
+[node name="Upkeep" type="HBoxContainer" parent="SidePanel/ManageArcology"]
+margin_top = 155.0
+margin_right = 420.0
+margin_bottom = 190.0
+custom_constants/separation = 6
+
+[node name="Mode" type="OptionButton" parent="SidePanel/ManageArcology/Upkeep"]
+margin_right = 170.0
+margin_bottom = 35.0
+custom_fonts/font = ExtResource( 25 )
+disabled = true
+text = "Daily Upkeep"
+items = [ "Daily Upkeep", null, false, 0, null, "Weekly Upkeep", null, false, 1, null ]
+selected = 0
+
+[node name="Value" type="Label" parent="SidePanel/ManageArcology/Upkeep"]
+margin_left = 176.0
+margin_top = 3.0
+margin_right = 265.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "¤XXXXX"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Policies" type="Button" parent="SidePanel/ManageArcology"]
+margin_top = 208.0
+margin_right = 420.0
+margin_bottom = 243.0
+custom_fonts/font = ExtResource( 25 )
+disabled = true
+text = "Policies"
+align = 0
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="NeighboringArcologies" type="Button" parent="SidePanel/ManageArcology"]
+margin_top = 261.0
+margin_right = 420.0
+margin_bottom = 296.0
+custom_fonts/font = ExtResource( 25 )
+disabled = true
+text = "Neighboring Arcologies"
+align = 0
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="ArcologyUpgrades" type="Button" parent="SidePanel/ManageArcology"]
+margin_top = 314.0
+margin_right = 420.0
+margin_bottom = 349.0
+custom_fonts/font = ExtResource( 25 )
+disabled = true
+text = "Arcology Upgrades"
+align = 0
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="NaviUpgrades" type="Button" parent="SidePanel/ManageArcology"]
+margin_top = 367.0
+margin_right = 420.0
+margin_bottom = 402.0
+custom_fonts/font = ExtResource( 25 )
+disabled = true
+text = "Navi Upgrades"
+align = 0
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Tween" type="Tween" parent="SidePanel"]
+
 [node name="Header" type="CenterContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 0.037
 margin_bottom = 40.04
+mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
 [node name="Arcology" type="HBoxContainer" parent="Header"]
 visible = false
-margin_left = 865.0
-margin_top = 21.0
-margin_right = 1055.0
-margin_bottom = 59.0
+margin_left = 853.0
+margin_top = 18.0
+margin_right = 1066.0
+margin_bottom = 61.0
 custom_constants/separation = 12
 __meta__ = {
 "_edit_use_anchors_": true
@@ -718,7 +1112,7 @@ __meta__ = {
 [node name="Title" type="Label" parent="Header/Arcology"]
 margin_right = 190.0
 margin_bottom = 38.0
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = ExtResource( 30 )
 text = "Arcology X-4"
 __meta__ = {
 "_edit_use_anchors_": true
@@ -729,42 +1123,43 @@ visible = false
 margin_left = 202.0
 margin_right = 313.0
 margin_bottom = 38.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
 text = "Full View"
 items = [ "Full View", null, false, 0, null, "List View", null, false, 1, null ]
 selected = 0
 
 [node name="Slaves" type="HBoxContainer" parent="Header"]
-margin_left = 778.0
-margin_top = 21.0
-margin_right = 1142.0
-margin_bottom = 59.0
+margin_left = 819.0
+margin_top = 18.0
+margin_right = 1101.0
+margin_bottom = 61.0
 custom_constants/separation = 12
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
 [node name="Title" type="Label" parent="Header/Slaves"]
-margin_right = 241.0
-margin_bottom = 38.0
-custom_fonts/font = SubResource( 1 )
-text = "13 Slaves Owned"
+margin_right = 282.0
+margin_bottom = 43.0
+custom_fonts/font = ExtResource( 30 )
+text = "XX Slaves Owned"
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
 [node name="View" type="OptionButton" parent="Header/Slaves"]
-margin_left = 253.0
-margin_right = 364.0
-margin_bottom = 38.0
-custom_fonts/font = SubResource( 2 )
+visible = false
+margin_left = 294.0
+margin_right = 405.0
+margin_bottom = 43.0
+custom_fonts/font = SubResource( 3 )
 text = "Full View"
 items = [ "Full View", null, false, 0, null, "List View", null, false, 1, null ]
 selected = 0
 
 [node name="AI Panel" type="Panel" parent="."]
 visible = false
-self_modulate = Color( 0.245911, 0.274804, 0.308594, 0.980392 )
+self_modulate = Color( 0.247059, 0.27451, 0.309804, 0 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 __meta__ = {
@@ -791,7 +1186,7 @@ focus_mode = 2
 mouse_filter = 1
 size_flags_horizontal = 0
 size_flags_vertical = 0
-script = SubResource( 3 )
+script = SubResource( 4 )
 
 [node name="oval_tab" type="Sprite" parent="AI Panel/OLD Navigation Tabs/Arcology"]
 self_modulate = Color( 0.921569, 0.960784, 1, 0.156863 )
@@ -807,7 +1202,7 @@ margin_left = -77.0
 margin_top = -19.0
 margin_right = 104.0
 margin_bottom = 18.0
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 5 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Arcology"
 
@@ -818,7 +1213,7 @@ margin_left = -1.0
 margin_top = -6.0
 margin_right = 40.0
 margin_bottom = 5.0
-group = SubResource( 5 )
+group = SubResource( 6 )
 
 [node name="Slaves" type="Container" parent="AI Panel/OLD Navigation Tabs"]
 margin_top = 74.0
@@ -829,7 +1224,7 @@ focus_mode = 2
 mouse_filter = 1
 size_flags_horizontal = 0
 size_flags_vertical = 0
-script = SubResource( 6 )
+script = SubResource( 7 )
 
 [node name="oval_tab" type="Sprite" parent="AI Panel/OLD Navigation Tabs/Slaves"]
 self_modulate = Color( 0.921569, 0.960784, 1, 0.156863 )
@@ -845,7 +1240,7 @@ margin_left = -77.0
 margin_top = -19.0
 margin_right = 104.0
 margin_bottom = 18.0
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 5 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Slaves"
 
@@ -856,7 +1251,7 @@ margin_left = -1.0
 margin_top = -6.0
 margin_right = 40.0
 margin_bottom = 5.0
-group = SubResource( 5 )
+group = SubResource( 6 )
 
 [node name="Finance" type="Container" parent="AI Panel/OLD Navigation Tabs"]
 margin_top = 148.0
@@ -867,7 +1262,7 @@ focus_mode = 2
 mouse_filter = 1
 size_flags_horizontal = 0
 size_flags_vertical = 0
-script = SubResource( 7 )
+script = SubResource( 8 )
 
 [node name="oval_tab" type="Sprite" parent="AI Panel/OLD Navigation Tabs/Finance"]
 self_modulate = Color( 0.921569, 0.960784, 1, 0.156863 )
@@ -883,7 +1278,7 @@ margin_left = -77.0
 margin_top = -19.0
 margin_right = 104.0
 margin_bottom = 18.0
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 5 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Finance"
 
@@ -894,7 +1289,7 @@ margin_left = -1.0
 margin_top = -6.0
 margin_right = 40.0
 margin_bottom = 5.0
-group = SubResource( 5 )
+group = SubResource( 6 )
 
 [node name="Inventory" type="Container" parent="AI Panel/OLD Navigation Tabs"]
 margin_top = 222.0
@@ -905,7 +1300,7 @@ focus_mode = 2
 mouse_filter = 1
 size_flags_horizontal = 0
 size_flags_vertical = 0
-script = SubResource( 8 )
+script = SubResource( 9 )
 
 [node name="oval_tab" type="Sprite" parent="AI Panel/OLD Navigation Tabs/Inventory"]
 self_modulate = Color( 0.921569, 0.960784, 1, 0.156863 )
@@ -921,7 +1316,7 @@ margin_left = -77.0
 margin_top = -19.0
 margin_right = 104.0
 margin_bottom = 18.0
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 5 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Inventory"
 
@@ -932,7 +1327,7 @@ margin_left = -1.0
 margin_top = -6.0
 margin_right = 40.0
 margin_bottom = 5.0
-group = SubResource( 5 )
+group = SubResource( 6 )
 
 [node name="Commerce" type="Container" parent="AI Panel/OLD Navigation Tabs"]
 margin_top = 296.0
@@ -943,7 +1338,7 @@ focus_mode = 2
 mouse_filter = 1
 size_flags_horizontal = 0
 size_flags_vertical = 0
-script = SubResource( 9 )
+script = SubResource( 10 )
 
 [node name="oval_tab" type="Sprite" parent="AI Panel/OLD Navigation Tabs/Commerce"]
 self_modulate = Color( 0.921569, 0.960784, 1, 0.156863 )
@@ -959,7 +1354,7 @@ margin_left = -77.0
 margin_top = -19.0
 margin_right = 104.0
 margin_bottom = 18.0
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 5 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Commerce"
 
@@ -970,7 +1365,7 @@ margin_left = -1.0
 margin_top = -6.0
 margin_right = 40.0
 margin_bottom = 5.0
-group = SubResource( 5 )
+group = SubResource( 6 )
 
 [node name="R&D" type="Container" parent="AI Panel/OLD Navigation Tabs"]
 margin_top = 370.0
@@ -981,7 +1376,7 @@ focus_mode = 2
 mouse_filter = 1
 size_flags_horizontal = 0
 size_flags_vertical = 0
-script = SubResource( 10 )
+script = SubResource( 11 )
 
 [node name="oval_tab" type="Sprite" parent="AI Panel/OLD Navigation Tabs/R&D"]
 self_modulate = Color( 0.921569, 0.960784, 1, 0.156863 )
@@ -997,7 +1392,7 @@ margin_left = -77.0
 margin_top = -19.0
 margin_right = 104.0
 margin_bottom = 18.0
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 5 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "R&D"
 
@@ -1008,7 +1403,7 @@ margin_left = -1.0
 margin_top = -6.0
 margin_right = 40.0
 margin_bottom = 5.0
-group = SubResource( 5 )
+group = SubResource( 6 )
 
 [node name="Policies" type="Container" parent="AI Panel/OLD Navigation Tabs"]
 margin_top = 444.0
@@ -1019,7 +1414,7 @@ focus_mode = 2
 mouse_filter = 1
 size_flags_horizontal = 0
 size_flags_vertical = 0
-script = SubResource( 11 )
+script = SubResource( 12 )
 
 [node name="oval_tab" type="Sprite" parent="AI Panel/OLD Navigation Tabs/Policies"]
 self_modulate = Color( 0.921569, 0.960784, 1, 0.156863 )
@@ -1035,7 +1430,7 @@ margin_left = -77.0
 margin_top = -19.0
 margin_right = 104.0
 margin_bottom = 18.0
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 5 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Policies"
 
@@ -1046,7 +1441,7 @@ margin_left = -1.0
 margin_top = -6.0
 margin_right = 40.0
 margin_bottom = 5.0
-group = SubResource( 5 )
+group = SubResource( 6 )
 
 [node name="Feed" type="VBoxContainer" parent="AI Panel"]
 visible = false
@@ -1065,7 +1460,7 @@ __meta__ = {
 [node name="Label" type="Label" parent="AI Panel/Feed"]
 margin_right = 280.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "News Feed:"
 align = 2
 
@@ -1073,7 +1468,7 @@ align = 2
 margin_top = 47.0
 margin_right = 280.0
 margin_bottom = 84.0
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "Investments:"
 align = 2
 
@@ -1081,7 +1476,7 @@ align = 2
 margin_top = 94.0
 margin_right = 280.0
 margin_bottom = 131.0
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "Weather Report:"
 align = 2
 
@@ -1089,7 +1484,7 @@ align = 2
 margin_top = 141.0
 margin_right = 280.0
 margin_bottom = 178.0
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "Arcology Ownership:"
 align = 2
 
@@ -1097,11 +1492,12 @@ align = 2
 margin_top = 188.0
 margin_right = 280.0
 margin_bottom = 225.0
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "Active Construction:"
 align = 2
 
 [node name="ai_large" type="TextureRect" parent="AI Panel"]
+visible = false
 anchor_left = 0.0760417
 anchor_top = 0.202778
 anchor_right = 0.292708
@@ -1113,115 +1509,163 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Dialogue" type="RichTextLabel" parent="AI Panel"]
-anchor_left = 0.35625
-anchor_top = 0.222222
-anchor_right = 0.772917
-anchor_bottom = 0.777778
-scroll_following = true
-script = SubResource( 13 )
+[node name="Message" type="Control" parent="AI Panel"]
+visible = false
+margin_left = 62.6566
+margin_top = 534.037
+margin_right = 462.657
+margin_bottom = 556.037
+script = ExtResource( 31 )
 __meta__ = {
-"_edit_use_anchors_": true
+"_edit_use_anchors_": false
 }
 
-[node name="Timer4" type="Timer" parent="AI Panel/Dialogue"]
-wait_time = 0.05
-
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="AI Panel/Dialogue"]
+[node name="Audio" type="AudioStreamPlayer" parent="AI Panel/Message"]
 stream = ExtResource( 5 )
 volume_db = -30.0
 
-[node name="Thalia" type="Node" parent="AI Panel/Dialogue"]
+[node name="Timer" type="Timer" parent="AI Panel/Message"]
+wait_time = 0.05
 
-[node name="Menu Button" type="Control" parent="."]
-margin_left = 13.0
-margin_top = 10.0
-margin_right = 43.0
-margin_bottom = 40.0
-script = SubResource( 14 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="circle" type="TextureRect" parent="Menu Button"]
-self_modulate = Color( 0.2, 0.227451, 0.294118, 0.392157 )
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -15.0
-margin_top = -15.0
-margin_right = 15.0
-margin_bottom = 15.0
-texture = ExtResource( 6 )
-
-[node name="menu" type="TextureRect" parent="Menu Button"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -9.0
-margin_top = -8.0
-margin_right = 9.0
-margin_bottom = 8.0
-texture = ExtResource( 7 )
-
-[node name="Button" type="TextureButton" parent="Menu Button"]
+[node name="Panel" type="Panel" parent="AI Panel/Message"]
+self_modulate = Color( 0.247059, 0.27451, 0.309804, 0.980392 )
 anchor_right = 1.0
 anchor_bottom = 1.0
-
-[node name="Money" type="HBoxContainer" parent="."]
-margin_left = 50.0
-margin_top = 13.0
-margin_right = 213.0
-margin_bottom = 37.0
-size_flags_horizontal = 8
-size_flags_vertical = 8
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Capital" type="Label" parent="Money"]
-show_behind_parent = true
-margin_bottom = 24.0
-size_flags_horizontal = 2
-size_flags_vertical = 0
-custom_fonts/font = SubResource( 15 )
-
-[node name="Income" type="Label" parent="Money"]
-self_modulate = Color( 0.218887, 0.589844, 0.242072, 1 )
-margin_left = 55.0
-margin_right = 55.0
-margin_bottom = 24.0
-size_flags_horizontal = 2
-size_flags_vertical = 0
-custom_fonts/font = SubResource( 15 )
-
-[node name="Expenses" type="Label" parent="Money"]
-self_modulate = Color( 0.832031, 0.165756, 0.165756, 1 )
-margin_left = 110.0
-margin_right = 110.0
-margin_bottom = 24.0
-size_flags_horizontal = 2
-size_flags_vertical = 0
-custom_fonts/font = SubResource( 15 )
+[node name="Text" type="RichTextLabel" parent="AI Panel/Message"]
+anchor_left = 0.0125
+anchor_top = 0.227273
+anchor_right = 0.9875
+anchor_bottom = 0.954545
+custom_constants/line_separation = 2
+fit_content_height = true
+scroll_active = false
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Dock" type="Control" parent="."]
 anchor_top = 1.0
 anchor_bottom = 1.0
 margin_top = -110.0
-margin_right = 429.0
-script = SubResource( 16 )
+margin_right = 430.0
+script = SubResource( 14 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Messages" type="VBoxContainer" parent="Dock"]
+visible = false
+anchor_left = 0.0162791
+anchor_top = -0.854545
+anchor_right = 1.00233
+anchor_bottom = -0.418182
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Sent" type="HBoxContainer" parent="Dock/Messages"]
+margin_right = 424.0
+margin_bottom = 22.0
+
+[node name="Control" type="Control" parent="Dock/Messages/Sent"]
+margin_right = 20.0
+margin_bottom = 22.0
+rect_min_size = Vector2( 20, 0 )
+
+[node name="Message" type="Control" parent="Dock/Messages/Sent"]
+margin_left = 24.0
+margin_right = 424.0
+margin_bottom = 22.0
+rect_min_size = Vector2( 400, 22 )
+script = ExtResource( 31 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Audio" type="AudioStreamPlayer" parent="Dock/Messages/Sent/Message"]
+stream = ExtResource( 5 )
+volume_db = -30.0
+
+[node name="Timer" type="Timer" parent="Dock/Messages/Sent/Message"]
+wait_time = 0.05
+
+[node name="Panel" type="Panel" parent="Dock/Messages/Sent/Message"]
+self_modulate = Color( 0.247059, 0.27451, 0.309804, 0.980392 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Text" type="RichTextLabel" parent="Dock/Messages/Sent/Message"]
+anchor_left = 0.0125
+anchor_top = 0.227273
+anchor_right = 0.9875
+anchor_bottom = 0.954545
+custom_constants/line_separation = 2
+fit_content_height = true
+scroll_active = false
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Received" type="HBoxContainer" parent="Dock/Messages"]
+margin_top = 26.0
+margin_right = 424.0
+margin_bottom = 48.0
+
+[node name="Message" type="Control" parent="Dock/Messages/Received"]
+margin_right = 400.0
+margin_bottom = 22.0
+rect_min_size = Vector2( 400, 22 )
+script = ExtResource( 31 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Audio" type="AudioStreamPlayer" parent="Dock/Messages/Received/Message"]
+stream = ExtResource( 5 )
+volume_db = -30.0
+
+[node name="Timer" type="Timer" parent="Dock/Messages/Received/Message"]
+wait_time = 0.05
+
+[node name="Panel" type="Panel" parent="Dock/Messages/Received/Message"]
+self_modulate = Color( 0.247059, 0.27451, 0.309804, 0.980392 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Text" type="RichTextLabel" parent="Dock/Messages/Received/Message"]
+anchor_left = 0.0125
+anchor_top = 0.227273
+anchor_right = 0.9875
+anchor_bottom = 0.954545
+custom_constants/line_separation = 2
+fit_content_height = true
+scroll_active = false
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Control" type="Control" parent="Dock/Messages/Received"]
+margin_left = 404.0
+margin_right = 424.0
+margin_bottom = 22.0
+rect_min_size = Vector2( 20, 0 )
 
 [node name="AI" type="Control" parent="Dock"]
 anchor_top = 1.0
 anchor_bottom = 1.0
 margin_top = -110.0
 margin_right = 110.0
-script = SubResource( 17 )
+script = SubResource( 15 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -1269,14 +1713,14 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Purchase Slaves" type="Button" parent="Dock"]
+[node name="ActionButton" type="Button" parent="Dock"]
 anchor_left = 0.300699
 anchor_top = 0.3
 anchor_right = 1.0
 anchor_bottom = 0.7
-custom_fonts/font = SubResource( 18 )
-text = "Purchase Slaves"
-icon = ExtResource( 21 )
+custom_fonts/font = ExtResource( 25 )
+text = "Manage Slaves"
+icon = ExtResource( 27 )
 align = 2
 expand_icon = true
 __meta__ = {
@@ -1290,7 +1734,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -350.0
 margin_top = -110.0
-script = SubResource( 19 )
+script = SubResource( 16 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -1304,7 +1748,7 @@ anchor_bottom = 1.0
 margin_bottom = -7.62939e-06
 texture = ExtResource( 19 )
 expand = true
-script = SubResource( 20 )
+script = SubResource( 17 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1332,7 +1776,7 @@ anchor_bottom = 1.0
 margin_bottom = -7.62939e-06
 texture = ExtResource( 19 )
 expand = true
-script = SubResource( 21 )
+script = SubResource( 18 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1352,6 +1796,9 @@ __meta__ = {
 [node name="Button" type="TextureButton" parent="Navigation/Arcology"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Slaves" type="TextureRect" parent="Navigation"]
 self_modulate = Color( 0.2, 0.227451, 0.294118, 0.231373 )
@@ -1361,7 +1808,7 @@ anchor_bottom = 1.0
 margin_bottom = -7.62939e-06
 texture = ExtResource( 19 )
 expand = true
-script = SubResource( 22 )
+script = SubResource( 19 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1387,7 +1834,7 @@ anchor_left = 0.685714
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_bottom = -7.62939e-06
-script = SubResource( 23 )
+script = ExtResource( 33 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1464,7 +1911,7 @@ anchor_top = 0.163636
 anchor_right = 0.981818
 anchor_bottom = 0.490909
 margin_left = 1.19209e-07
-custom_fonts/font = SubResource( 24 )
+custom_fonts/font = SubResource( 20 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "24:00
@@ -1480,7 +1927,7 @@ anchor_top = 0.5
 anchor_right = 0.981818
 anchor_bottom = 0.827273
 margin_left = 1.19209e-07
-custom_fonts/font = SubResource( 25 )
+custom_fonts/font = SubResource( 21 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "Week 1
@@ -1522,7 +1969,7 @@ margin_left = 23.0
 margin_top = -36.0
 margin_right = 86.0
 margin_bottom = 1.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "Date"
 valign = 1
 
@@ -1531,7 +1978,7 @@ margin_left = 509.0
 margin_top = -36.0
 margin_right = 575.0
 margin_bottom = 1.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "Time"
 align = 2
 valign = 1
@@ -1546,6 +1993,9 @@ margin_bottom = 380.0
 margin_left = 1.0
 margin_right = 25.0
 margin_bottom = 373.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Sunday" type="Label" parent="Navigation/Time/Calendar/Week/1" groups=[
 "Days",
@@ -1553,7 +2003,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
@@ -1565,7 +2015,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "M"
 align = 1
 valign = 1
@@ -1577,7 +2027,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -1589,7 +2039,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "W"
 align = 1
 valign = 1
@@ -1601,7 +2051,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -1613,7 +2063,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "F"
 align = 1
 valign = 1
@@ -1625,18 +2075,18 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
 
-[node name="Num" type="Label" parent="Navigation/Time/Calendar/Week/1" groups=[
+[node name="Number" type="Label" parent="Navigation/Time/Calendar/Week/1" groups=[
 "Weeks",
 ]]
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "1"
 align = 1
 valign = 1
@@ -1652,7 +2102,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
@@ -1664,7 +2114,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "M"
 align = 1
 valign = 1
@@ -1676,7 +2126,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -1688,7 +2138,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "W"
 align = 1
 valign = 1
@@ -1700,7 +2150,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -1712,7 +2162,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "F"
 align = 1
 valign = 1
@@ -1724,18 +2174,18 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
 
-[node name="Num" type="Label" parent="Navigation/Time/Calendar/Week/2" groups=[
+[node name="Number" type="Label" parent="Navigation/Time/Calendar/Week/2" groups=[
 "Weeks",
 ]]
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "2"
 align = 1
 valign = 1
@@ -1751,7 +2201,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
@@ -1763,7 +2213,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "M"
 align = 1
 valign = 1
@@ -1775,7 +2225,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -1787,7 +2237,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "W"
 align = 1
 valign = 1
@@ -1799,7 +2249,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -1811,7 +2261,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "F"
 align = 1
 valign = 1
@@ -1823,18 +2273,18 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
 
-[node name="Num" type="Label" parent="Navigation/Time/Calendar/Week/3" groups=[
+[node name="Number" type="Label" parent="Navigation/Time/Calendar/Week/3" groups=[
 "Weeks",
 ]]
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "3"
 align = 1
 valign = 1
@@ -1850,7 +2300,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
@@ -1862,7 +2312,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "M"
 align = 1
 valign = 1
@@ -1874,7 +2324,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -1886,7 +2336,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "W"
 align = 1
 valign = 1
@@ -1898,7 +2348,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -1910,7 +2360,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "F"
 align = 1
 valign = 1
@@ -1922,18 +2372,18 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
 
-[node name="Num" type="Label" parent="Navigation/Time/Calendar/Week/4" groups=[
+[node name="Number" type="Label" parent="Navigation/Time/Calendar/Week/4" groups=[
 "Weeks",
 ]]
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "4"
 align = 1
 valign = 1
@@ -1949,7 +2399,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
@@ -1961,7 +2411,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "M"
 align = 1
 valign = 1
@@ -1973,7 +2423,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -1985,7 +2435,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "W"
 align = 1
 valign = 1
@@ -1997,7 +2447,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2009,7 +2459,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "F"
 align = 1
 valign = 1
@@ -2021,18 +2471,18 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
 
-[node name="Num" type="Label" parent="Navigation/Time/Calendar/Week/5" groups=[
+[node name="Number" type="Label" parent="Navigation/Time/Calendar/Week/5" groups=[
 "Weeks",
 ]]
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "5"
 align = 1
 valign = 1
@@ -2048,7 +2498,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
@@ -2060,7 +2510,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "M"
 align = 1
 valign = 1
@@ -2072,7 +2522,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2084,7 +2534,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "W"
 align = 1
 valign = 1
@@ -2096,7 +2546,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2108,7 +2558,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "F"
 align = 1
 valign = 1
@@ -2120,18 +2570,18 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
 
-[node name="Num" type="Label" parent="Navigation/Time/Calendar/Week/6" groups=[
+[node name="Number" type="Label" parent="Navigation/Time/Calendar/Week/6" groups=[
 "Weeks",
 ]]
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "6"
 align = 1
 valign = 1
@@ -2147,7 +2597,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
@@ -2159,7 +2609,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "M"
 align = 1
 valign = 1
@@ -2171,7 +2621,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2183,7 +2633,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "W"
 align = 1
 valign = 1
@@ -2195,7 +2645,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2207,7 +2657,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "F"
 align = 1
 valign = 1
@@ -2219,18 +2669,18 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
 
-[node name="Num" type="Label" parent="Navigation/Time/Calendar/Week/7" groups=[
+[node name="Number" type="Label" parent="Navigation/Time/Calendar/Week/7" groups=[
 "Weeks",
 ]]
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "7"
 align = 1
 valign = 1
@@ -2246,7 +2696,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
@@ -2258,7 +2708,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "M"
 align = 1
 valign = 1
@@ -2270,7 +2720,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2282,7 +2732,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "W"
 align = 1
 valign = 1
@@ -2294,7 +2744,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2306,7 +2756,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "F"
 align = 1
 valign = 1
@@ -2318,18 +2768,18 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
 
-[node name="Num" type="Label" parent="Navigation/Time/Calendar/Week/8" groups=[
+[node name="Number" type="Label" parent="Navigation/Time/Calendar/Week/8" groups=[
 "Weeks",
 ]]
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "8"
 align = 1
 valign = 1
@@ -2345,7 +2795,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
@@ -2357,7 +2807,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "M"
 align = 1
 valign = 1
@@ -2369,7 +2819,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2381,7 +2831,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "W"
 align = 1
 valign = 1
@@ -2393,7 +2843,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2405,7 +2855,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "F"
 align = 1
 valign = 1
@@ -2417,18 +2867,18 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
 
-[node name="Num" type="Label" parent="Navigation/Time/Calendar/Week/9" groups=[
+[node name="Number" type="Label" parent="Navigation/Time/Calendar/Week/9" groups=[
 "Weeks",
 ]]
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "9"
 align = 1
 valign = 1
@@ -2444,7 +2894,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 30.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
@@ -2456,7 +2906,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 30.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "M"
 align = 1
 valign = 1
@@ -2468,7 +2918,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 30.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2480,7 +2930,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 30.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "W"
 align = 1
 valign = 1
@@ -2492,7 +2942,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 30.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2504,7 +2954,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 30.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "F"
 align = 1
 valign = 1
@@ -2516,18 +2966,18 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 30.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
 
-[node name="Num" type="Label" parent="Navigation/Time/Calendar/Week/10" groups=[
+[node name="Number" type="Label" parent="Navigation/Time/Calendar/Week/10" groups=[
 "Weeks",
 ]]
 margin_top = 336.0
 margin_right = 30.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "10"
 align = 1
 valign = 1
@@ -2543,7 +2993,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
@@ -2555,7 +3005,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "M"
 align = 1
 valign = 1
@@ -2567,7 +3017,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2579,7 +3029,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "W"
 align = 1
 valign = 1
@@ -2591,7 +3041,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2603,7 +3053,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "F"
 align = 1
 valign = 1
@@ -2615,18 +3065,18 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
 
-[node name="Num" type="Label" parent="Navigation/Time/Calendar/Week/11" groups=[
+[node name="Number" type="Label" parent="Navigation/Time/Calendar/Week/11" groups=[
 "Weeks",
 ]]
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "11"
 align = 1
 valign = 1
@@ -2642,7 +3092,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 29.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
@@ -2654,7 +3104,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 29.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "M"
 align = 1
 valign = 1
@@ -2666,7 +3116,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 29.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2678,7 +3128,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 29.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "W"
 align = 1
 valign = 1
@@ -2690,7 +3140,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 29.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2702,7 +3152,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 29.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "F"
 align = 1
 valign = 1
@@ -2714,18 +3164,18 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 29.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
 
-[node name="Num" type="Label" parent="Navigation/Time/Calendar/Week/12" groups=[
+[node name="Number" type="Label" parent="Navigation/Time/Calendar/Week/12" groups=[
 "Weeks",
 ]]
 margin_top = 336.0
 margin_right = 29.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "12"
 align = 1
 valign = 1
@@ -2741,7 +3191,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 29.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
@@ -2753,7 +3203,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 29.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "M"
 align = 1
 valign = 1
@@ -2765,7 +3215,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 29.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2777,7 +3227,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 29.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "W"
 align = 1
 valign = 1
@@ -2789,7 +3239,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 29.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "T"
 align = 1
 valign = 1
@@ -2801,7 +3251,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 29.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "F"
 align = 1
 valign = 1
@@ -2813,18 +3263,18 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 29.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "S"
 align = 1
 valign = 1
 
-[node name="Num" type="Label" parent="Navigation/Time/Calendar/Week/13" groups=[
+[node name="Number" type="Label" parent="Navigation/Time/Calendar/Week/13" groups=[
 "Weeks",
 ]]
 margin_top = 336.0
 margin_right = 29.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 22 )
 text = "13"
 align = 1
 valign = 1
@@ -2859,7 +3309,7 @@ margin_left = -59.0
 margin_top = -31.0
 margin_right = 59.0
 margin_bottom = -7.0
-custom_fonts/font = SubResource( 27 )
+custom_fonts/font = SubResource( 23 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "Clock Speed:"
@@ -2867,13 +3317,86 @@ align = 1
 
 [node name="Tween" type="Tween" parent="Navigation/Time"]
 
+[node name="Menu Button" type="Control" parent="."]
+margin_left = 13.0
+margin_top = 10.0
+margin_right = 43.0
+margin_bottom = 40.0
+script = SubResource( 24 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="circle" type="TextureRect" parent="Menu Button"]
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.392157 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -15.0
+margin_top = -15.0
+margin_right = 15.0
+margin_bottom = 15.0
+texture = ExtResource( 6 )
+
+[node name="menu" type="TextureRect" parent="Menu Button"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -9.0
+margin_top = -8.0
+margin_right = 9.0
+margin_bottom = 8.0
+texture = ExtResource( 7 )
+
+[node name="Button" type="TextureButton" parent="Menu Button"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Money" type="HBoxContainer" parent="."]
+margin_left = 50.0
+margin_top = 13.0
+margin_right = 213.0
+margin_bottom = 37.0
+size_flags_horizontal = 8
+size_flags_vertical = 8
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Capital" type="Label" parent="Money"]
+show_behind_parent = true
+margin_bottom = 24.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 25 )
+
+[node name="Income" type="Label" parent="Money"]
+self_modulate = Color( 0.218887, 0.589844, 0.242072, 1 )
+margin_left = 55.0
+margin_right = 55.0
+margin_bottom = 24.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 25 )
+
+[node name="Expenses" type="Label" parent="Money"]
+self_modulate = Color( 0.832031, 0.165756, 0.165756, 1 )
+margin_left = 110.0
+margin_right = 110.0
+margin_bottom = 24.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 25 )
+
 [node name="Pause Menu" type="Panel" parent="."]
 pause_mode = 2
 visible = false
 self_modulate = Color( 1, 1, 1, 0.862745 )
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = SubResource( 28 )
+script = SubResource( 26 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -2893,7 +3416,7 @@ custom_constants/separation = 10
 margin_right = 425.0
 margin_bottom = 80.0
 rect_min_size = Vector2( 0, 80 )
-custom_fonts/font = SubResource( 29 )
+custom_fonts/font = SubResource( 27 )
 text = "PAUSED"
 align = 1
 
@@ -2902,7 +3425,7 @@ margin_top = 90.0
 margin_right = 425.0
 margin_bottom = 150.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 30 )
+custom_fonts/font = SubResource( 28 )
 text = "Resume"
 
 [node name="Save-Load" type="Button" parent="Pause Menu/Menu"]
@@ -2910,7 +3433,7 @@ margin_top = 160.0
 margin_right = 425.0
 margin_bottom = 220.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 30 )
+custom_fonts/font = SubResource( 28 )
 text = "Save/Load"
 
 [node name="Options" type="Button" parent="Pause Menu/Menu"]
@@ -2918,7 +3441,7 @@ margin_top = 230.0
 margin_right = 425.0
 margin_bottom = 290.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 30 )
+custom_fonts/font = SubResource( 28 )
 text = "Options"
 
 [node name="Main Menu" type="Button" parent="Pause Menu/Menu"]
@@ -2926,7 +3449,7 @@ margin_top = 300.0
 margin_right = 425.0
 margin_bottom = 360.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 31 )
+custom_fonts/font = SubResource( 29 )
 text = "Main Menu"
 
 [node name="Saves" parent="Pause Menu" instance=ExtResource( 23 )]
@@ -2940,7 +3463,7 @@ margin_left = 18.0
 margin_top = 11.0
 margin_right = 328.0
 margin_bottom = 136.0
-custom_fonts/font = SubResource( 32 )
+custom_fonts/font = SubResource( 30 )
 text = "Controls:
 BACK: right click
 TOGGLE PAUSE: space
@@ -2949,1691 +3472,30 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="AI ORIG" type="Control" parent="."]
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
 visible = false
-anchor_top = 1.0
-anchor_bottom = 1.0
-margin_top = -110.0
-margin_right = 110.0
-grow_vertical = 0
-script = SubResource( 33 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="tab_left" type="TextureRect" parent="AI ORIG"]
-self_modulate = Color( 0.2, 0.227451, 0.294118, 0.235294 )
-anchor_right = 1.0
-anchor_bottom = 1.0
-texture = ExtResource( 8 )
-expand = true
+anchor_left = 0.00416667
+anchor_top = 0.569444
+anchor_right = 0.171354
+anchor_bottom = 0.888889
+texture = ExtResource( 26 )
+patch_margin_left = 170
+patch_margin_top = 170
+patch_margin_right = 151
+patch_margin_bottom = 138
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="min_left" type="TextureRect" parent="AI ORIG"]
-visible = false
-anchor_left = 0.118182
-anchor_top = 0.118182
-anchor_right = 0.881818
-anchor_bottom = 0.881818
-texture = ExtResource( 9 )
-expand = true
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="ai_simple" type="TextureRect" parent="AI ORIG"]
-anchor_left = 0.209091
-anchor_top = 0.127273
-anchor_right = 0.754545
-anchor_bottom = 0.936364
-rect_pivot_offset = Vector2( 32.3383, 46.4324 )
-texture = ExtResource( 10 )
-expand = true
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Button" type="TextureButton" parent="AI ORIG"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-focus_mode = 0
-enabled_focus_mode = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Navigation Tabs ORIG" type="Control" parent="."]
-visible = false
-anchor_left = 0.877
-anchor_top = 1.0
-anchor_right = 0.877
-anchor_bottom = 1.0
-margin_left = -114.84
-margin_top = -110.0
-margin_right = 115.16
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="1" type="TextureRect" parent="Navigation Tabs ORIG"]
-visible = false
-self_modulate = Color( 0.2, 0.227451, 0.294118, 0.231373 )
-margin_right = 110.0
-margin_bottom = 110.0
-texture = ExtResource( 19 )
-script = SubResource( 34 )
-
-[node name="Button" type="TextureButton" parent="Navigation Tabs ORIG/1"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="2" type="TextureRect" parent="Navigation Tabs ORIG"]
-visible = false
-self_modulate = Color( 0.2, 0.227451, 0.294118, 0.231373 )
-margin_right = 110.0
-margin_bottom = 110.0
-texture = ExtResource( 19 )
-script = SubResource( 35 )
-
-[node name="Button" type="TextureButton" parent="Navigation Tabs ORIG/2"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="Arcology" type="TextureRect" parent="Navigation Tabs ORIG"]
-self_modulate = Color( 0.2, 0.227451, 0.294118, 0.231373 )
-anchor_right = 0.478261
-anchor_bottom = 1.0
-texture = ExtResource( 19 )
-expand = true
-script = SubResource( 21 )
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Icon" type="TextureRect" parent="Navigation Tabs ORIG/Arcology"]
-anchor_left = 0.0818182
-anchor_top = 0.0818182
-anchor_right = 0.918182
-anchor_bottom = 0.918182
-mouse_filter = 2
-texture = ExtResource( 20 )
-expand = true
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Button" type="TextureButton" parent="Navigation Tabs ORIG/Arcology"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="Finance" type="TextureRect" parent="Navigation Tabs ORIG"]
-visible = false
-self_modulate = Color( 0.2, 0.227451, 0.294118, 0.231373 )
-margin_left = 120.0
-margin_right = 230.0
-margin_bottom = 110.0
-texture = ExtResource( 19 )
-script = SubResource( 20 )
-
-[node name="Icon" type="TextureRect" parent="Navigation Tabs ORIG/Finance"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -33.0
-margin_top = -33.0
-margin_right = 33.0
-margin_bottom = 33.0
-mouse_filter = 2
-texture = ExtResource( 21 )
-
-[node name="Button" type="TextureButton" parent="Navigation Tabs ORIG/Finance"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="Slaves" type="TextureRect" parent="Navigation Tabs ORIG"]
-self_modulate = Color( 0.2, 0.227451, 0.294118, 0.231373 )
-anchor_left = 0.521739
-anchor_right = 1.0
-anchor_bottom = 1.0
-texture = ExtResource( 19 )
-expand = true
-script = SubResource( 22 )
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Icon" type="TextureRect" parent="Navigation Tabs ORIG/Slaves"]
-anchor_left = 0.0636364
-anchor_top = 0.163636
-anchor_right = 0.936364
-anchor_bottom = 0.945455
-mouse_filter = 2
-texture = ExtResource( 22 )
-expand = true
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Button" type="TextureButton" parent="Navigation Tabs ORIG/Slaves"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="6" type="TextureRect" parent="Navigation Tabs ORIG"]
-visible = false
-self_modulate = Color( 0.2, 0.227451, 0.294118, 0.231373 )
-margin_left = 240.0
-margin_right = 350.0
-margin_bottom = 110.0
-texture = ExtResource( 19 )
-script = SubResource( 36 )
-
-[node name="Button" type="TextureButton" parent="Navigation Tabs ORIG/6"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="7" type="TextureRect" parent="Navigation Tabs ORIG"]
-visible = false
-self_modulate = Color( 0.2, 0.227451, 0.294118, 0.231373 )
-margin_left = 240.0
-margin_right = 350.0
-margin_bottom = 110.0
-texture = ExtResource( 19 )
-script = SubResource( 37 )
-
-[node name="Button" type="TextureButton" parent="Navigation Tabs ORIG/7"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="Time ORIG" type="Control" parent="."]
-visible = false
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -110.0
-margin_top = -110.0
-script = SubResource( 23 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="play" type="Sprite" parent="Time ORIG"]
-modulate = Color( 1, 1, 1, 0 )
-position = Vector2( 199, -48 )
-texture = ExtResource( 11 )
-
-[node name="pause" type="Sprite" parent="Time ORIG"]
-modulate = Color( 1, 1, 1, 0 )
-position = Vector2( 199, 18 )
-texture = ExtResource( 12 )
-
-[node name="turtle" type="Sprite" parent="Time ORIG"]
-modulate = Color( 1, 1, 1, 0 )
-position = Vector2( 206.302, 141.719 )
-scale = Vector2( 0.75, 0.75 )
-texture = ExtResource( 13 )
-
-[node name="rabbit" type="Sprite" parent="Time ORIG"]
-modulate = Color( 1, 1, 1, 0 )
-position = Vector2( 206.026, 86.4861 )
-texture = ExtResource( 14 )
-
-[node name="Panel" type="Sprite" parent="Time ORIG"]
-visible = false
-modulate = Color( 1, 1, 1, 0.980392 )
-position = Vector2( -203.432, -167.116 )
-texture = ExtResource( 15 )
-
-[node name="tab_right" type="TextureRect" parent="Time ORIG"]
-self_modulate = Color( 0.2, 0.227451, 0.294118, 0.235294 )
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 9
-size_flags_vertical = 9
-texture = ExtResource( 16 )
-expand = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="min_right" type="TextureRect" parent="Time ORIG"]
-visible = false
-anchor_left = 0.118182
-anchor_top = 0.118182
-anchor_right = 0.881818
-anchor_bottom = 0.881818
-rect_pivot_offset = Vector2( 42, 42 )
-texture = ExtResource( 9 )
-expand = true
-flip_h = true
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="brackets" type="TextureRect" parent="Time ORIG"]
-anchor_left = 0.0681818
-anchor_top = 0.159091
-anchor_right = 0.931818
-anchor_bottom = 0.840909
-texture = ExtResource( 17 )
-expand = true
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Label Top" type="Label" parent="Time ORIG"]
-anchor_left = 0.0181818
-anchor_top = 0.163636
-anchor_right = 0.981818
-anchor_bottom = 0.490909
-margin_left = 1.19209e-07
-custom_fonts/font = SubResource( 24 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-custom_constants/line_spacing = -2
-text = "24:00
-Wednesday"
-align = 1
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Label Bot" type="Label" parent="Time ORIG"]
-anchor_left = 0.0181818
-anchor_top = 0.5
-anchor_right = 0.981818
-anchor_bottom = 0.827273
-margin_left = 1.19209e-07
-custom_fonts/font = SubResource( 25 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-custom_constants/line_spacing = -2
-text = "Week 1
-Q1 2119"
-align = 1
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Button" type="TextureButton" parent="Time ORIG"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-focus_mode = 0
-size_flags_horizontal = 2
-size_flags_vertical = 2
-toggle_mode = true
-enabled_focus_mode = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Calendar" type="TextureRect" parent="Time ORIG"]
-visible = false
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -603.0
-margin_top = -507.0
-margin_right = -5.0
-margin_bottom = -167.0
-texture = ExtResource( 18 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Date" type="Label" parent="Time ORIG/Calendar"]
-margin_left = 23.0
-margin_top = -36.0
-margin_right = 86.0
-margin_bottom = 1.0
-custom_fonts/font = SubResource( 26 )
-text = "Date"
-valign = 1
-
-[node name="Time" type="Label" parent="Time ORIG/Calendar"]
-margin_left = 509.0
-margin_top = -36.0
-margin_right = 575.0
-margin_bottom = 1.0
-custom_fonts/font = SubResource( 26 )
-text = "Time"
-align = 2
-valign = 1
-
-[node name="Week" type="Control" parent="Time ORIG/Calendar"]
-margin_left = 11.0
-margin_top = 7.0
-margin_right = 587.0
-margin_bottom = 380.0
-
-[node name="1" type="Control" parent="Time ORIG/Calendar/Week"]
-margin_left = 1.0
-margin_right = 25.0
-margin_bottom = 373.0
-
-[node name="Sunday" type="Label" parent="Time ORIG/Calendar/Week/1" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_right = 24.0
-margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Monday" type="Label" parent="Time ORIG/Calendar/Week/1" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 48.0
-margin_right = 24.0
-margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
-text = "M"
-align = 1
-valign = 1
-
-[node name="Tuesday" type="Label" parent="Time ORIG/Calendar/Week/1" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 96.0
-margin_right = 24.0
-margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Wednesday" type="Label" parent="Time ORIG/Calendar/Week/1" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 144.0
-margin_right = 24.0
-margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
-text = "W"
-align = 1
-valign = 1
-
-[node name="Thursday" type="Label" parent="Time ORIG/Calendar/Week/1" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 192.0
-margin_right = 24.0
-margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Friday" type="Label" parent="Time ORIG/Calendar/Week/1" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 240.0
-margin_right = 24.0
-margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
-text = "F"
-align = 1
-valign = 1
-
-[node name="Saturday" type="Label" parent="Time ORIG/Calendar/Week/1" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 288.0
-margin_right = 24.0
-margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Num" type="Label" parent="Time ORIG/Calendar/Week/1" groups=[
-"Weeks",
-]]
-margin_top = 336.0
-margin_right = 24.0
-margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
-text = "1"
-align = 1
-valign = 1
-
-[node name="2" type="Control" parent="Time ORIG/Calendar/Week"]
-margin_left = 47.0
-margin_right = 71.0
-margin_bottom = 373.0
-
-[node name="Sunday" type="Label" parent="Time ORIG/Calendar/Week/2" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_right = 24.0
-margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Monday" type="Label" parent="Time ORIG/Calendar/Week/2" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 48.0
-margin_right = 24.0
-margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
-text = "M"
-align = 1
-valign = 1
-
-[node name="Tuesday" type="Label" parent="Time ORIG/Calendar/Week/2" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 96.0
-margin_right = 24.0
-margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Wednesday" type="Label" parent="Time ORIG/Calendar/Week/2" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 144.0
-margin_right = 24.0
-margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
-text = "W"
-align = 1
-valign = 1
-
-[node name="Thursday" type="Label" parent="Time ORIG/Calendar/Week/2" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 192.0
-margin_right = 24.0
-margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Friday" type="Label" parent="Time ORIG/Calendar/Week/2" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 240.0
-margin_right = 24.0
-margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
-text = "F"
-align = 1
-valign = 1
-
-[node name="Saturday" type="Label" parent="Time ORIG/Calendar/Week/2" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 288.0
-margin_right = 24.0
-margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Num" type="Label" parent="Time ORIG/Calendar/Week/2" groups=[
-"Weeks",
-]]
-margin_top = 336.0
-margin_right = 24.0
-margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
-text = "2"
-align = 1
-valign = 1
-
-[node name="3" type="Control" parent="Time ORIG/Calendar/Week"]
-margin_left = 93.0
-margin_right = 117.0
-margin_bottom = 373.0
-
-[node name="Sunday" type="Label" parent="Time ORIG/Calendar/Week/3" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_right = 24.0
-margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Monday" type="Label" parent="Time ORIG/Calendar/Week/3" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 48.0
-margin_right = 24.0
-margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
-text = "M"
-align = 1
-valign = 1
-
-[node name="Tuesday" type="Label" parent="Time ORIG/Calendar/Week/3" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 96.0
-margin_right = 24.0
-margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Wednesday" type="Label" parent="Time ORIG/Calendar/Week/3" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 144.0
-margin_right = 24.0
-margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
-text = "W"
-align = 1
-valign = 1
-
-[node name="Thursday" type="Label" parent="Time ORIG/Calendar/Week/3" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 192.0
-margin_right = 24.0
-margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Friday" type="Label" parent="Time ORIG/Calendar/Week/3" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 240.0
-margin_right = 24.0
-margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
-text = "F"
-align = 1
-valign = 1
-
-[node name="Saturday" type="Label" parent="Time ORIG/Calendar/Week/3" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 288.0
-margin_right = 24.0
-margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Num" type="Label" parent="Time ORIG/Calendar/Week/3" groups=[
-"Weeks",
-]]
-margin_top = 336.0
-margin_right = 24.0
-margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
-text = "3"
-align = 1
-valign = 1
-
-[node name="4" type="Control" parent="Time ORIG/Calendar/Week"]
-margin_left = 139.0
-margin_right = 163.0
-margin_bottom = 373.0
-
-[node name="Sunday" type="Label" parent="Time ORIG/Calendar/Week/4" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_right = 24.0
-margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Monday" type="Label" parent="Time ORIG/Calendar/Week/4" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 48.0
-margin_right = 24.0
-margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
-text = "M"
-align = 1
-valign = 1
-
-[node name="Tuesday" type="Label" parent="Time ORIG/Calendar/Week/4" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 96.0
-margin_right = 24.0
-margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Wednesday" type="Label" parent="Time ORIG/Calendar/Week/4" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 144.0
-margin_right = 24.0
-margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
-text = "W"
-align = 1
-valign = 1
-
-[node name="Thursday" type="Label" parent="Time ORIG/Calendar/Week/4" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 192.0
-margin_right = 24.0
-margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Friday" type="Label" parent="Time ORIG/Calendar/Week/4" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 240.0
-margin_right = 24.0
-margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
-text = "F"
-align = 1
-valign = 1
-
-[node name="Saturday" type="Label" parent="Time ORIG/Calendar/Week/4" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 288.0
-margin_right = 24.0
-margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Num" type="Label" parent="Time ORIG/Calendar/Week/4" groups=[
-"Weeks",
-]]
-margin_top = 336.0
-margin_right = 24.0
-margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
-text = "4"
-align = 1
-valign = 1
-
-[node name="5" type="Control" parent="Time ORIG/Calendar/Week"]
-margin_left = 185.0
-margin_right = 209.0
-margin_bottom = 373.0
-
-[node name="Sunday" type="Label" parent="Time ORIG/Calendar/Week/5" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_right = 24.0
-margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Monday" type="Label" parent="Time ORIG/Calendar/Week/5" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 48.0
-margin_right = 24.0
-margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
-text = "M"
-align = 1
-valign = 1
-
-[node name="Tuesday" type="Label" parent="Time ORIG/Calendar/Week/5" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 96.0
-margin_right = 24.0
-margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Wednesday" type="Label" parent="Time ORIG/Calendar/Week/5" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 144.0
-margin_right = 24.0
-margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
-text = "W"
-align = 1
-valign = 1
-
-[node name="Thursday" type="Label" parent="Time ORIG/Calendar/Week/5" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 192.0
-margin_right = 24.0
-margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Friday" type="Label" parent="Time ORIG/Calendar/Week/5" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 240.0
-margin_right = 24.0
-margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
-text = "F"
-align = 1
-valign = 1
-
-[node name="Saturday" type="Label" parent="Time ORIG/Calendar/Week/5" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 288.0
-margin_right = 24.0
-margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Num" type="Label" parent="Time ORIG/Calendar/Week/5" groups=[
-"Weeks",
-]]
-margin_top = 336.0
-margin_right = 24.0
-margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
-text = "5"
-align = 1
-valign = 1
-
-[node name="6" type="Control" parent="Time ORIG/Calendar/Week"]
-margin_left = 231.0
-margin_right = 255.0
-margin_bottom = 373.0
-
-[node name="Sunday" type="Label" parent="Time ORIG/Calendar/Week/6" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_right = 24.0
-margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Monday" type="Label" parent="Time ORIG/Calendar/Week/6" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 48.0
-margin_right = 24.0
-margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
-text = "M"
-align = 1
-valign = 1
-
-[node name="Tuesday" type="Label" parent="Time ORIG/Calendar/Week/6" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 96.0
-margin_right = 24.0
-margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Wednesday" type="Label" parent="Time ORIG/Calendar/Week/6" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 144.0
-margin_right = 24.0
-margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
-text = "W"
-align = 1
-valign = 1
-
-[node name="Thursday" type="Label" parent="Time ORIG/Calendar/Week/6" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 192.0
-margin_right = 24.0
-margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Friday" type="Label" parent="Time ORIG/Calendar/Week/6" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 240.0
-margin_right = 24.0
-margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
-text = "F"
-align = 1
-valign = 1
-
-[node name="Saturday" type="Label" parent="Time ORIG/Calendar/Week/6" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 288.0
-margin_right = 24.0
-margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Num" type="Label" parent="Time ORIG/Calendar/Week/6" groups=[
-"Weeks",
-]]
-margin_top = 336.0
-margin_right = 24.0
-margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
-text = "6"
-align = 1
-valign = 1
-
-[node name="7" type="Control" parent="Time ORIG/Calendar/Week"]
-margin_left = 277.0
-margin_right = 301.0
-margin_bottom = 373.0
-
-[node name="Sunday" type="Label" parent="Time ORIG/Calendar/Week/7" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_right = 24.0
-margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Monday" type="Label" parent="Time ORIG/Calendar/Week/7" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 48.0
-margin_right = 24.0
-margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
-text = "M"
-align = 1
-valign = 1
-
-[node name="Tuesday" type="Label" parent="Time ORIG/Calendar/Week/7" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 96.0
-margin_right = 24.0
-margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Wednesday" type="Label" parent="Time ORIG/Calendar/Week/7" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 144.0
-margin_right = 24.0
-margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
-text = "W"
-align = 1
-valign = 1
-
-[node name="Thursday" type="Label" parent="Time ORIG/Calendar/Week/7" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 192.0
-margin_right = 24.0
-margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Friday" type="Label" parent="Time ORIG/Calendar/Week/7" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 240.0
-margin_right = 24.0
-margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
-text = "F"
-align = 1
-valign = 1
-
-[node name="Saturday" type="Label" parent="Time ORIG/Calendar/Week/7" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 288.0
-margin_right = 24.0
-margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Num" type="Label" parent="Time ORIG/Calendar/Week/7" groups=[
-"Weeks",
-]]
-margin_top = 336.0
-margin_right = 24.0
-margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
-text = "7"
-align = 1
-valign = 1
-
-[node name="8" type="Control" parent="Time ORIG/Calendar/Week"]
-margin_left = 323.0
-margin_right = 347.0
-margin_bottom = 373.0
-
-[node name="Sunday" type="Label" parent="Time ORIG/Calendar/Week/8" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_right = 24.0
-margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Monday" type="Label" parent="Time ORIG/Calendar/Week/8" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 48.0
-margin_right = 24.0
-margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
-text = "M"
-align = 1
-valign = 1
-
-[node name="Tuesday" type="Label" parent="Time ORIG/Calendar/Week/8" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 96.0
-margin_right = 24.0
-margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Wednesday" type="Label" parent="Time ORIG/Calendar/Week/8" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 144.0
-margin_right = 24.0
-margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
-text = "W"
-align = 1
-valign = 1
-
-[node name="Thursday" type="Label" parent="Time ORIG/Calendar/Week/8" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 192.0
-margin_right = 24.0
-margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Friday" type="Label" parent="Time ORIG/Calendar/Week/8" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 240.0
-margin_right = 24.0
-margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
-text = "F"
-align = 1
-valign = 1
-
-[node name="Saturday" type="Label" parent="Time ORIG/Calendar/Week/8" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 288.0
-margin_right = 24.0
-margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Num" type="Label" parent="Time ORIG/Calendar/Week/8" groups=[
-"Weeks",
-]]
-margin_top = 336.0
-margin_right = 24.0
-margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
-text = "8"
-align = 1
-valign = 1
-
-[node name="9" type="Control" parent="Time ORIG/Calendar/Week"]
-margin_left = 368.0
-margin_right = 392.0
-margin_bottom = 373.0
-
-[node name="Sunday" type="Label" parent="Time ORIG/Calendar/Week/9" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_right = 24.0
-margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Monday" type="Label" parent="Time ORIG/Calendar/Week/9" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 48.0
-margin_right = 24.0
-margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
-text = "M"
-align = 1
-valign = 1
-
-[node name="Tuesday" type="Label" parent="Time ORIG/Calendar/Week/9" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 96.0
-margin_right = 24.0
-margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Wednesday" type="Label" parent="Time ORIG/Calendar/Week/9" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 144.0
-margin_right = 24.0
-margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
-text = "W"
-align = 1
-valign = 1
-
-[node name="Thursday" type="Label" parent="Time ORIG/Calendar/Week/9" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 192.0
-margin_right = 24.0
-margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Friday" type="Label" parent="Time ORIG/Calendar/Week/9" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 240.0
-margin_right = 24.0
-margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
-text = "F"
-align = 1
-valign = 1
-
-[node name="Saturday" type="Label" parent="Time ORIG/Calendar/Week/9" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 288.0
-margin_right = 24.0
-margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Num" type="Label" parent="Time ORIG/Calendar/Week/9" groups=[
-"Weeks",
-]]
-margin_top = 336.0
-margin_right = 24.0
-margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
-text = "9"
-align = 1
-valign = 1
-
-[node name="10" type="Control" parent="Time ORIG/Calendar/Week"]
-margin_left = 411.0
-margin_right = 441.0
-margin_bottom = 373.0
-
-[node name="Sunday" type="Label" parent="Time ORIG/Calendar/Week/10" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_right = 30.0
-margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Monday" type="Label" parent="Time ORIG/Calendar/Week/10" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 48.0
-margin_right = 30.0
-margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
-text = "M"
-align = 1
-valign = 1
-
-[node name="Tuesday" type="Label" parent="Time ORIG/Calendar/Week/10" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 96.0
-margin_right = 30.0
-margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Wednesday" type="Label" parent="Time ORIG/Calendar/Week/10" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 144.0
-margin_right = 30.0
-margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
-text = "W"
-align = 1
-valign = 1
-
-[node name="Thursday" type="Label" parent="Time ORIG/Calendar/Week/10" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 192.0
-margin_right = 30.0
-margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Friday" type="Label" parent="Time ORIG/Calendar/Week/10" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 240.0
-margin_right = 30.0
-margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
-text = "F"
-align = 1
-valign = 1
-
-[node name="Saturday" type="Label" parent="Time ORIG/Calendar/Week/10" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 288.0
-margin_right = 30.0
-margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Num" type="Label" parent="Time ORIG/Calendar/Week/10" groups=[
-"Weeks",
-]]
-margin_top = 336.0
-margin_right = 30.0
-margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
-text = "10"
-align = 1
-valign = 1
-
-[node name="11" type="Control" parent="Time ORIG/Calendar/Week"]
-margin_left = 460.0
-margin_right = 484.0
-margin_bottom = 373.0
-
-[node name="Sunday" type="Label" parent="Time ORIG/Calendar/Week/11" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_right = 24.0
-margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Monday" type="Label" parent="Time ORIG/Calendar/Week/11" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 48.0
-margin_right = 24.0
-margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
-text = "M"
-align = 1
-valign = 1
-
-[node name="Tuesday" type="Label" parent="Time ORIG/Calendar/Week/11" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 96.0
-margin_right = 24.0
-margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Wednesday" type="Label" parent="Time ORIG/Calendar/Week/11" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 144.0
-margin_right = 24.0
-margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
-text = "W"
-align = 1
-valign = 1
-
-[node name="Thursday" type="Label" parent="Time ORIG/Calendar/Week/11" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 192.0
-margin_right = 24.0
-margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Friday" type="Label" parent="Time ORIG/Calendar/Week/11" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 240.0
-margin_right = 24.0
-margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
-text = "F"
-align = 1
-valign = 1
-
-[node name="Saturday" type="Label" parent="Time ORIG/Calendar/Week/11" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 288.0
-margin_right = 24.0
-margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Num" type="Label" parent="Time ORIG/Calendar/Week/11" groups=[
-"Weeks",
-]]
-margin_top = 336.0
-margin_right = 24.0
-margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
-text = "11"
-align = 1
-valign = 1
-
-[node name="12" type="Control" parent="Time ORIG/Calendar/Week"]
-margin_left = 504.0
-margin_right = 533.0
-margin_bottom = 373.0
-
-[node name="Sunday" type="Label" parent="Time ORIG/Calendar/Week/12" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_right = 29.0
-margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Monday" type="Label" parent="Time ORIG/Calendar/Week/12" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 48.0
-margin_right = 29.0
-margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
-text = "M"
-align = 1
-valign = 1
-
-[node name="Tuesday" type="Label" parent="Time ORIG/Calendar/Week/12" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 96.0
-margin_right = 29.0
-margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Wednesday" type="Label" parent="Time ORIG/Calendar/Week/12" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 144.0
-margin_right = 29.0
-margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
-text = "W"
-align = 1
-valign = 1
-
-[node name="Thursday" type="Label" parent="Time ORIG/Calendar/Week/12" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 192.0
-margin_right = 29.0
-margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Friday" type="Label" parent="Time ORIG/Calendar/Week/12" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 240.0
-margin_right = 29.0
-margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
-text = "F"
-align = 1
-valign = 1
-
-[node name="Saturday" type="Label" parent="Time ORIG/Calendar/Week/12" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 288.0
-margin_right = 29.0
-margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Num" type="Label" parent="Time ORIG/Calendar/Week/12" groups=[
-"Weeks",
-]]
-margin_top = 336.0
-margin_right = 29.0
-margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
-text = "12"
-align = 1
-valign = 1
-
-[node name="13" type="Control" parent="Time ORIG/Calendar/Week"]
-margin_left = 550.0
-margin_right = 579.0
-margin_bottom = 373.0
-
-[node name="Sunday" type="Label" parent="Time ORIG/Calendar/Week/13" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_right = 29.0
-margin_bottom = 37.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Monday" type="Label" parent="Time ORIG/Calendar/Week/13" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 48.0
-margin_right = 29.0
-margin_bottom = 85.0
-custom_fonts/font = SubResource( 26 )
-text = "M"
-align = 1
-valign = 1
-
-[node name="Tuesday" type="Label" parent="Time ORIG/Calendar/Week/13" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 96.0
-margin_right = 29.0
-margin_bottom = 133.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Wednesday" type="Label" parent="Time ORIG/Calendar/Week/13" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 144.0
-margin_right = 29.0
-margin_bottom = 181.0
-custom_fonts/font = SubResource( 26 )
-text = "W"
-align = 1
-valign = 1
-
-[node name="Thursday" type="Label" parent="Time ORIG/Calendar/Week/13" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 192.0
-margin_right = 29.0
-margin_bottom = 229.0
-custom_fonts/font = SubResource( 26 )
-text = "T"
-align = 1
-valign = 1
-
-[node name="Friday" type="Label" parent="Time ORIG/Calendar/Week/13" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 240.0
-margin_right = 29.0
-margin_bottom = 277.0
-custom_fonts/font = SubResource( 26 )
-text = "F"
-align = 1
-valign = 1
-
-[node name="Saturday" type="Label" parent="Time ORIG/Calendar/Week/13" groups=[
-"Days",
-]]
-modulate = Color( 1, 1, 1, 0.156863 )
-margin_top = 288.0
-margin_right = 29.0
-margin_bottom = 325.0
-custom_fonts/font = SubResource( 26 )
-text = "S"
-align = 1
-valign = 1
-
-[node name="Num" type="Label" parent="Time ORIG/Calendar/Week/13" groups=[
-"Weeks",
-]]
-margin_top = 336.0
-margin_right = 29.0
-margin_bottom = 373.0
-custom_fonts/font = SubResource( 26 )
-text = "13"
-align = 1
-valign = 1
-
-[node name="HSlider" type="HSlider" parent="Time ORIG"]
-visible = false
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -461.0
-margin_top = -64.0
-margin_right = -213.0
-margin_bottom = -48.0
-max_value = 99.0
-
-[node name="turtle" type="Sprite" parent="Time ORIG/HSlider"]
-position = Vector2( -49.6748, 7.86133 )
-scale = Vector2( 0.75, 0.75 )
-texture = ExtResource( 13 )
-
-[node name="rabbit" type="Sprite" parent="Time ORIG/HSlider"]
-position = Vector2( 290.267, 7.64471 )
-texture = ExtResource( 14 )
-
-[node name="Label" type="Label" parent="Time ORIG/HSlider"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -59.0
-margin_top = -31.0
-margin_right = 59.0
-margin_bottom = -7.0
-custom_fonts/font = SubResource( 27 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-custom_constants/line_spacing = -2
-text = "Clock Speed:"
-align = 1
-
-[node name="Tween" type="Tween" parent="Time ORIG"]
+[node name="Tween" type="Tween" parent="."]
+[connection signal="pressed" from="SidePanel/ManageSlaves/PurchaseSlaves" to="SidePanel/ManageSlaves" method="_on_PurchaseSlaves_pressed"]
+[connection signal="pressed" from="SidePanel/PurchaseSlaves/KidnappersMarket" to="Dock" method="set_mode" binds= [ "KidnappersMarket" ]]
+[connection signal="pressed" from="SidePanel/PurchaseSlaves/NeighboringArcologies" to="Dock" method="set_mode" binds= [ "NeighboringArcologies" ]]
+[connection signal="pressed" from="SidePanel/KidnappersMarket/Hide" to="SidePanel" method="close"]
+[connection signal="pressed" from="SidePanel/KidnappersMarket/Hide" to="SidePanel/KidnappersMarket/Hide" method="_on_Hide_pressed"]
+[connection signal="pressed" from="SidePanel/NeighboringArcologies/Hide" to="SidePanel/NeighboringArcologies/Hide" method="_on_Hide_pressed"]
 [connection signal="button_down" from="AI Panel/OLD Navigation Tabs/Arcology/Button" to="AI Panel/OLD Navigation Tabs/Arcology" method="_on_button_down"]
 [connection signal="button_up" from="AI Panel/OLD Navigation Tabs/Arcology/Button" to="AI Panel/OLD Navigation Tabs/Arcology" method="_on_button_up"]
 [connection signal="mouse_entered" from="AI Panel/OLD Navigation Tabs/Arcology/Button" to="AI Panel/OLD Navigation Tabs/Arcology" method="_on_mouse_entered"]
@@ -4669,14 +3531,12 @@ align = 1
 [connection signal="mouse_entered" from="AI Panel/OLD Navigation Tabs/Policies/Button" to="AI Panel/OLD Navigation Tabs/Policies" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="AI Panel/OLD Navigation Tabs/Policies/Button" to="AI Panel/OLD Navigation Tabs/Policies" method="_on_mouse_exited"]
 [connection signal="pressed" from="AI Panel/OLD Navigation Tabs/Policies/Button" to="AI Panel/OLD Navigation Tabs/Policies" method="_on_button_pressed"]
-[connection signal="mouse_entered" from="Menu Button/Button" to="Menu Button" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Menu Button/Button" to="Menu Button" method="_on_mouse_exited"]
-[connection signal="pressed" from="Menu Button/Button" to="Pause Menu" method="_on_Menu_Button_pressed"]
 [connection signal="button_down" from="Dock/AI/Button" to="Dock/AI" method="_on_button_down"]
 [connection signal="button_up" from="Dock/AI/Button" to="Dock/AI" method="_on_button_up"]
 [connection signal="mouse_entered" from="Dock/AI/Button" to="Dock/AI" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="Dock/AI/Button" to="Dock/AI" method="_on_mouse_exited"]
 [connection signal="pressed" from="Dock/AI/Button" to="." method="_on_AI_pressed"]
+[connection signal="pressed" from="Dock/ActionButton" to="Dock" method="_on_ActionButton_pressed"]
 [connection signal="mouse_entered" from="Navigation/Finance/Button" to="Navigation/Finance" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="Navigation/Finance/Button" to="Navigation/Finance" method="_on_mouse_exited"]
 [connection signal="pressed" from="Navigation/Finance/Button" to="Navigation/Finance" method="_on_pressed"]
@@ -4690,37 +3550,10 @@ align = 1
 [connection signal="mouse_exited" from="Navigation/Time/Button" to="Navigation/Time" method="_on_mouse_exited"]
 [connection signal="toggled" from="Navigation/Time/Button" to="." method="_on_Time_toggled"]
 [connection signal="value_changed" from="Navigation/Time/HSlider" to="Navigation/Time" method="_on_HSlider_value_changed"]
+[connection signal="mouse_entered" from="Menu Button/Button" to="Menu Button" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Menu Button/Button" to="Menu Button" method="_on_mouse_exited"]
+[connection signal="pressed" from="Menu Button/Button" to="Pause Menu" method="_on_Menu_Button_pressed"]
 [connection signal="pressed" from="Pause Menu/Menu/Resume" to="Pause Menu" method="_pause"]
 [connection signal="pressed" from="Pause Menu/Menu/Save-Load" to="Pause Menu" method="_on_SaveLoad_pressed"]
 [connection signal="pressed" from="Pause Menu/Menu/Options" to="Pause Menu" method="_on_Options_pressed"]
 [connection signal="pressed" from="Pause Menu/Menu/Main Menu" to="Pause Menu" method="_on_Main_Menu_pressed"]
-[connection signal="button_down" from="AI ORIG/Button" to="AI ORIG" method="_on_button_down"]
-[connection signal="button_up" from="AI ORIG/Button" to="AI ORIG" method="_on_button_up"]
-[connection signal="mouse_entered" from="AI ORIG/Button" to="AI ORIG" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="AI ORIG/Button" to="AI ORIG" method="_on_mouse_exited"]
-[connection signal="pressed" from="AI ORIG/Button" to="." method="_on_AI_pressed"]
-[connection signal="mouse_entered" from="Navigation Tabs ORIG/1/Button" to="Navigation Tabs ORIG/1" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Navigation Tabs ORIG/1/Button" to="Navigation Tabs ORIG/1" method="_on_mouse_exited"]
-[connection signal="pressed" from="Navigation Tabs ORIG/1/Button" to="Navigation Tabs ORIG/1" method="_on_pressed"]
-[connection signal="mouse_entered" from="Navigation Tabs ORIG/2/Button" to="Navigation Tabs ORIG/2" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Navigation Tabs ORIG/2/Button" to="Navigation Tabs ORIG/2" method="_on_mouse_exited"]
-[connection signal="pressed" from="Navigation Tabs ORIG/2/Button" to="Navigation Tabs ORIG/2" method="_on_pressed"]
-[connection signal="mouse_entered" from="Navigation Tabs ORIG/Arcology/Button" to="Navigation Tabs ORIG/Arcology" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Navigation Tabs ORIG/Arcology/Button" to="Navigation Tabs ORIG/Arcology" method="_on_mouse_exited"]
-[connection signal="pressed" from="Navigation Tabs ORIG/Arcology/Button" to="Navigation Tabs ORIG/Arcology" method="_on_pressed"]
-[connection signal="mouse_entered" from="Navigation Tabs ORIG/Finance/Button" to="Navigation Tabs ORIG/Finance" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Navigation Tabs ORIG/Finance/Button" to="Navigation Tabs ORIG/Finance" method="_on_mouse_exited"]
-[connection signal="pressed" from="Navigation Tabs ORIG/Finance/Button" to="Navigation Tabs ORIG/Finance" method="_on_pressed"]
-[connection signal="mouse_entered" from="Navigation Tabs ORIG/Slaves/Button" to="Navigation Tabs ORIG/Slaves" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Navigation Tabs ORIG/Slaves/Button" to="Navigation Tabs ORIG/Slaves" method="_on_mouse_exited"]
-[connection signal="pressed" from="Navigation Tabs ORIG/Slaves/Button" to="Navigation Tabs ORIG/Slaves" method="_on_pressed"]
-[connection signal="mouse_entered" from="Navigation Tabs ORIG/6/Button" to="Navigation Tabs ORIG/6" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Navigation Tabs ORIG/6/Button" to="Navigation Tabs ORIG/6" method="_on_mouse_exited"]
-[connection signal="pressed" from="Navigation Tabs ORIG/6/Button" to="Navigation Tabs ORIG/6" method="_on_pressed"]
-[connection signal="mouse_entered" from="Navigation Tabs ORIG/7/Button" to="Navigation Tabs ORIG/7" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Navigation Tabs ORIG/7/Button" to="Navigation Tabs ORIG/7" method="_on_mouse_exited"]
-[connection signal="pressed" from="Navigation Tabs ORIG/7/Button" to="Navigation Tabs ORIG/7" method="_on_pressed"]
-[connection signal="mouse_entered" from="Time ORIG/Button" to="Time ORIG" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Time ORIG/Button" to="Time ORIG" method="_on_mouse_exited"]
-[connection signal="toggled" from="Time ORIG/Button" to="." method="_on_Time_toggled"]
-[connection signal="value_changed" from="Time ORIG/HSlider" to="Time ORIG" method="_on_HSlider_value_changed"]

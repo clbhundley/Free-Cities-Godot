@@ -1,9 +1,9 @@
-[gd_scene load_steps=167 format=2]
+[gd_scene load_steps=163 format=2]
 
 [ext_resource path="res://Arcology/arcology.gd" type="Script" id=1]
 [ext_resource path="res://Arcology/new arcology.gd" type="Script" id=2]
 [ext_resource path="res://Arcology/orange.material" type="Material" id=3]
-[ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://Fonts/Rubik-Light-36.tres" type="DynamicFont" id=4]
 
 [sub_resource type="ArrayMesh" id=1]
 surfaces/0 = {
@@ -95,27 +95,11 @@ points = PoolVector3Array( -1.54972e-06, -0.0129663, -1.51604, -2.02656e-06, -0.
 script/source = "extends Area
 
 var selected
-onready var mesh = get_node('Mesh')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	if event.is_pressed() and event.button_index == 1:
-		for sectors in get_parent().get_children():
-			sectors.mesh.set_material_override(null)
-			sectors.selected = false
-		mesh.set_material_override(load('res://Arcology/orange.material'))
-		selected = true
 
-func _on_mouse_entered():
-	if not selected:
-		mesh.set_material_override(load('res://Arcology/blue.material'))
-
-func _on_mouse_exited():
-	if not selected:
-		mesh.set_material_override(null)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -125,20 +109,16 @@ points = PoolVector3Array( -1.54972e-06, -0.0129663, -1.51604, -2.02656e-06, -0.
 [sub_resource type="GDScript" id=28]
 script/source = "extends Area
 
+var selected
 var size = 2
+
 var upgrades = [\"something\",\"another\"]
 
-var selected
-onready var arcology = get_tree().get_root().get_node('Game/Arcology')
+func tick():
+	pass
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	arcology.input_event(self,event)
-
-func _on_mouse_entered():
-	arcology.mouse_entered(self)
-
-func _on_mouse_exited():
-	arcology.mouse_exited(self)
+func minute():
+	pass
 
 func _data():
 	return {
@@ -171,20 +151,10 @@ script/source = "extends Area
 
 var selected
 
-onready var arcology = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	arcology.input_event(self,event)
-
-func _on_mouse_entered():
-	arcology.mouse_entered(self)
-
-func _on_mouse_exited():
-	arcology.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -211,23 +181,13 @@ points = PoolVector3Array( -1.78814e-07, -0.0129663, -1.51605, -2.38419e-07, -0.
 [sub_resource type="GDScript" id=36]
 script/source = "extends Area
 
+var selected
 var size = 2
 
-var selected
-onready var arcology = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	arcology.input_event(self,event)
-
-func _on_mouse_entered():
-	arcology.mouse_entered(self)
-
-func _on_mouse_exited():
-	arcology.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -255,20 +215,11 @@ points = PoolVector3Array( 4.70877e-06, -0.0129663, -1.51604, 7.15256e-06, -0.02
 script/source = "extends Area
 
 var selected
-onready var arcology = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	arcology.input_event(self,event)
 
-func _on_mouse_entered():
-	arcology.mouse_entered(self)
-
-func _on_mouse_exited():
-	arcology.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -295,22 +246,13 @@ points = PoolVector3Array( 0.230668, 0.0179524, -1.96887, 0.231204, 0.233519, -1
 [sub_resource type="GDScript" id=44]
 script/source = "extends Area
 
+var selected
 var size = 2
 
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -324,20 +266,11 @@ points = PoolVector3Array( 4.70877e-06, -0.0129663, -1.51604, 7.15256e-06, -0.02
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -351,20 +284,11 @@ points = PoolVector3Array( 0.230668, 0.0179524, -1.96887, 0.231204, 0.233519, -1
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -391,23 +315,13 @@ points = PoolVector3Array( -1.54972e-06, -0.0129663, -1.51605, -1.3113e-06, -0.0
 [sub_resource type="GDScript" id=54]
 script/source = "extends Area
 
+var selected
 var size = 2
 
-var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -435,20 +349,11 @@ points = PoolVector3Array( 1.47197e-06, -0.0129663, -1.51604, 1.92578e-06, -0.02
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -476,20 +381,11 @@ points = PoolVector3Array( 4.05312e-06, 0.0200893, -2.19408, -0.166587, 0.508911
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -517,20 +413,11 @@ points = PoolVector3Array( -0.169247, 0.0129663, -1.50495, -2.03849e-06, 0.01296
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -558,20 +445,11 @@ points = PoolVector3Array( -1.05643e-06, 0.0222491, -2.41234, -1.05532e-06, 0.02
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -584,23 +462,13 @@ points = PoolVector3Array( -1.54972e-06, -0.0129663, -1.51605, -1.3113e-06, -0.0
 [sub_resource type="GDScript" id=73]
 script/source = "extends Area
 
+var selected
 var size = 2
 
-var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -608,20 +476,11 @@ func _data():
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -629,20 +488,11 @@ func _data():
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -669,23 +519,13 @@ points = PoolVector3Array( -1.66893e-06, -0.0129663, -1.51604, -1.3113e-06, -0.0
 [sub_resource type="GDScript" id=79]
 script/source = "extends Area
 
+var selected
 var size = 2
 
-var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -693,20 +533,11 @@ func _data():
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -714,20 +545,11 @@ func _data():
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -741,20 +563,11 @@ points = PoolVector3Array( -1.54972e-06, -0.0129663, -1.51605, -1.3113e-06, -0.0
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -768,20 +581,11 @@ points = PoolVector3Array( -0.169247, 0.0129663, -1.50495, -2.03849e-06, 0.01296
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -809,20 +613,11 @@ points = PoolVector3Array( -4.76837e-07, -0.0129663, -1.51604, -1.19209e-06, -0.
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -835,23 +630,13 @@ points = PoolVector3Array( -4.76837e-07, -0.0129663, -1.51604, -1.19209e-06, -0.
 [sub_resource type="GDScript" id=94]
 script/source = "extends Area
 
+var selected
 var owned = false
 
-var selected
-onready var root = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	root.input_event(self,event)
-
-func _on_mouse_entered():
-	root.mouse_entered(self)
-
-func _on_mouse_exited():
-	root.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -864,23 +649,13 @@ points = PoolVector3Array( 8.34465e-07, -0.0129663, -1.51605, 4.76837e-07, -0.02
 [sub_resource type="GDScript" id=97]
 script/source = "extends Area
 
+var selected
 var owned = false
 
-var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -893,23 +668,13 @@ points = PoolVector3Array( 4.70877e-06, -0.0129663, -1.51604, 7.15256e-06, -0.02
 [sub_resource type="GDScript" id=100]
 script/source = "extends Area
 
+var selected
 var owned = false
 
-var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -922,26 +687,14 @@ points = PoolVector3Array( 1.47197e-06, -0.0129663, -1.51604, 1.92578e-06, -0.02
 [sub_resource type="GDScript" id=103]
 script/source = "extends Area
 
+var selected
 var owned = false
-
 var size = 2
 
-var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
-var root
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -955,20 +708,11 @@ points = PoolVector3Array( -4.76837e-07, -0.0129663, -1.51604, -1.19209e-06, -0.
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -981,25 +725,14 @@ points = PoolVector3Array( -4.76837e-07, -0.0129663, -1.51604, -1.19209e-06, -0.
 [sub_resource type="GDScript" id=109]
 script/source = "extends Area
 
+var selected
 var owned = false
-
 var size = 3
 
-var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1013,20 +746,11 @@ points = PoolVector3Array( -1.05643e-06, 0.0222491, -2.41234, -1.05532e-06, 0.02
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1040,20 +764,11 @@ points = PoolVector3Array( -1.05643e-06, 0.0222491, -2.41234, -1.05532e-06, 0.02
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1066,23 +781,13 @@ points = PoolVector3Array( -1.05643e-06, 0.0222491, -2.41234, -1.05532e-06, 0.02
 [sub_resource type="GDScript" id=118]
 script/source = "extends Area
 
+var selected
 var owned = false
 
-var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1095,23 +800,13 @@ points = PoolVector3Array( -1.78814e-07, -0.0129663, -1.51605, -2.38419e-07, -0.
 [sub_resource type="GDScript" id=121]
 script/source = "extends Area
 
+var selected
 var owned = false
 
-var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1124,23 +819,13 @@ points = PoolVector3Array( 0.230668, 0.0179524, -1.96887, 0.231204, 0.233519, -1
 [sub_resource type="GDScript" id=124]
 script/source = "extends Area
 
+var selected
 var owned = false
 
-var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1153,25 +838,14 @@ points = PoolVector3Array( 4.05312e-06, 0.0200893, -2.19408, -0.166587, 0.508911
 [sub_resource type="GDScript" id=127]
 script/source = "extends Area
 
+var selected
 var owned = false
-
 var size = 2
 
-var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1179,45 +853,25 @@ func _data():
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
 [sub_resource type="GDScript" id=129]
 script/source = "extends Area
 
+var selected
 var owned = false
-
 var size = 3
 
-var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1231,20 +885,11 @@ points = PoolVector3Array( -0.169247, 0.0129663, -1.50495, -2.03849e-06, 0.01296
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1258,20 +903,11 @@ points = PoolVector3Array( -0.169247, 0.0129663, -1.50495, -2.03849e-06, 0.01296
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1284,23 +920,13 @@ points = PoolVector3Array( -0.169247, 0.0129663, -1.50495, -2.03849e-06, 0.01296
 [sub_resource type="GDScript" id=138]
 script/source = "extends Area
 
+var selected
 var owned = false
 
-var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1313,23 +939,13 @@ points = PoolVector3Array( -1.66893e-06, -0.0129663, -1.51604, -1.3113e-06, -0.0
 [sub_resource type="GDScript" id=141]
 script/source = "extends Area
 
+var selected
 var owned = false
 
-var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1342,23 +958,13 @@ points = PoolVector3Array( -1.66893e-06, -0.0129663, -1.51604, -1.3113e-06, -0.0
 [sub_resource type="GDScript" id=144]
 script/source = "extends Area
 
+var selected
 var owned = false
 
-var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1372,20 +978,11 @@ points = PoolVector3Array( -1.54972e-06, -0.0129663, -1.51605, -1.3113e-06, -0.0
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1396,20 +993,11 @@ points = PoolVector3Array( -1.54972e-06, -0.0129663, -1.51604, -2.02656e-06, -0.
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1420,20 +1008,11 @@ points = PoolVector3Array( -1.54972e-06, -0.0129663, -1.51604, -2.02656e-06, -0.
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1444,20 +1023,11 @@ points = PoolVector3Array( -1.54972e-06, -0.0129663, -1.51604, -2.02656e-06, -0.
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1467,23 +1037,13 @@ points = PoolVector3Array( -1.54972e-06, -0.0129663, -1.51604, -2.02656e-06, -0.
 [sub_resource type="GDScript" id=155]
 script/source = "extends Area
 
+var selected
 var size = 2
 
-var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
-
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
@@ -1494,40 +1054,16 @@ points = PoolVector3Array( -1.54972e-06, -0.0129663, -1.51604, -2.02656e-06, -0.
 script/source = "extends Area
 
 var selected
-onready var r = get_tree().get_root().get_node('Game/Arcology')
 
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	r.input_event(self,event)
 
-func _on_mouse_entered():
-	r.mouse_entered(self)
-
-func _on_mouse_exited():
-	r.mouse_exited(self)
 
 func _data():
 	return {
-		
 	}
 "
 
 [sub_resource type="ConvexPolygonShape" id=158]
 points = PoolVector3Array( -1.54972e-06, -0.0129663, -1.51604, -2.02656e-06, -0.0272122, -2.94063, -0.355192, -0.0272122, -2.91735, -1.54972e-06, 0.0156157, -1.51633, -1.90735e-06, 0.00136989, -2.94091, 0.355188, 0.00136989, -2.91763, 0.355188, -0.0272122, -2.91735, 0.704302, 0.00136989, -2.84819, 0.355188, 0.00136989, -2.91763, -0.355192, -0.0272122, -2.91735, -0.704306, 0.00136989, -2.84819, -0.704306, -0.0272122, -2.8479, 0.169243, -0.0129663, -1.50495, 0.335593, 0.0156157, -1.47215, 0.335593, -0.0129663, -1.47186, -0.169246, -0.0129663, -1.50495, -0.335596, 0.0156157, -1.47214, -0.169246, 0.0156157, -1.50523, -2.02656e-06, -0.0272122, -2.94063, -0.355192, 0.00136989, -2.91763, -0.355192, -0.0272122, -2.91735, -0.335596, -0.0129663, -1.47186, -0.704306, 0.00136989, -2.84819, -0.335596, 0.0156157, -1.47214, -1.54972e-06, -0.0129663, -1.51604, -0.169246, 0.0156157, -1.50523, -1.54972e-06, 0.0156157, -1.51633, -2.02656e-06, -0.0272122, -2.94063, 0.355188, 0.00136989, -2.91763, -1.90735e-06, 0.00136989, -2.94091, 0.335593, -0.0129663, -1.47186, 0.704302, 0.00136989, -2.84819, 0.704302, -0.0272122, -2.8479, -1.54972e-06, -0.0129663, -1.51604, 0.169243, 0.0156157, -1.50523, 0.169243, -0.0129663, -1.50495, -2.02656e-06, -0.0272122, -2.94063, -1.54972e-06, -0.0129663, -1.51604, 0.169243, -0.0129663, -1.50495, -0.704306, -0.0272122, -2.8479, -0.335596, -0.0129663, -1.47186, -0.169246, -0.0129663, -1.50495, -0.704306, -0.0272122, -2.8479, -0.169246, -0.0129663, -1.50495, -0.355192, -0.0272122, -2.91735, 0.355188, -0.0272122, -2.91735, -2.02656e-06, -0.0272122, -2.94063, 0.169243, -0.0129663, -1.50495, 0.335593, -0.0129663, -1.47186, 0.704302, -0.0272122, -2.8479, 0.169243, -0.0129663, -1.50495, -0.169246, -0.0129663, -1.50495, -1.54972e-06, -0.0129663, -1.51604, -0.355192, -0.0272122, -2.91735, 0.355188, -0.0272122, -2.91735, -0.704306, 0.00136989, -2.84819, -0.355192, 0.00136989, -2.91763, -0.169246, 0.0156157, -1.50523, -1.90735e-06, 0.00136989, -2.94091, -1.54972e-06, 0.0156157, -1.51633, -0.169246, 0.0156157, -1.50523, 0.704302, 0.00136989, -2.84819, 0.335593, 0.0156157, -1.47215, 0.169243, 0.0156157, -1.50523, 0.704302, 0.00136989, -2.84819, 0.169243, 0.0156157, -1.50523, 0.355188, 0.00136989, -2.91763, -0.355192, 0.00136989, -2.91763, -1.90735e-06, 0.00136989, -2.94091, -0.169246, 0.0156157, -1.50523, -0.335596, 0.0156157, -1.47214, 0.169243, 0.0156157, -1.50523, -1.54972e-06, 0.0156157, -1.51633, 0.355188, 0.00136989, -2.91763, 0.355188, -0.0272122, -2.91735, 0.704302, -0.0272122, -2.8479, 0.704302, 0.00136989, -2.84819, -0.355192, -0.0272122, -2.91735, -0.355192, 0.00136989, -2.91763, -0.704306, 0.00136989, -2.84819, 0.169243, -0.0129663, -1.50495, 0.169243, 0.0156157, -1.50523, 0.335593, 0.0156157, -1.47215, -0.169246, -0.0129663, -1.50495, -0.335596, -0.0129663, -1.47186, -0.335596, 0.0156157, -1.47214, -2.02656e-06, -0.0272122, -2.94063, -1.90735e-06, 0.00136989, -2.94091, -0.355192, 0.00136989, -2.91763, -0.335596, -0.0129663, -1.47186, -0.704306, -0.0272122, -2.8479, -0.704306, 0.00136989, -2.84819, -1.54972e-06, -0.0129663, -1.51604, -0.169246, -0.0129663, -1.50495, -0.169246, 0.0156157, -1.50523, -2.02656e-06, -0.0272122, -2.94063, 0.355188, -0.0272122, -2.91735, 0.355188, 0.00136989, -2.91763, 0.335593, -0.0129663, -1.47186, 0.335593, 0.0156157, -1.47215, 0.704302, 0.00136989, -2.84819, -1.54972e-06, -0.0129663, -1.51604, -1.54972e-06, 0.0156157, -1.51633, 0.169243, 0.0156157, -1.50523 )
-
-[sub_resource type="DynamicFontData" id=159]
-font_path = "res://Fonts/rubik/Rubik-Regular.ttf"
-
-[sub_resource type="DynamicFont" id=160]
-size = 72
-font_data = SubResource( 159 )
-
-[sub_resource type="DynamicFont" id=161]
-size = 64
-font_data = ExtResource( 4 )
-
-[sub_resource type="DynamicFont" id=162]
-size = 48
-font_data = ExtResource( 4 )
 
 [node name="Arcology" type="Spatial"]
 script = ExtResource( 1 )
@@ -2889,44 +2425,19 @@ material/0 = null
 [node name="Collision" type="CollisionShape" parent="Library/Sectors/thermal_exchange_condenser_b"]
 shape = SubResource( 158 )
 
-[node name="Display" type="VBoxContainer" parent="."]
+[node name="Button" type="Button" parent="."]
 visible = false
-anchor_left = 1.0
-anchor_right = 1.0
-margin_left = -50.0
-margin_top = 10.0
-margin_right = -10.0
-margin_bottom = 182.0
-grow_horizontal = 0
-custom_constants/separation = 10
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Title" type="Label" parent="Display"]
-visible = false
-margin_right = 40.0
-margin_bottom = 86.0
-grow_horizontal = 0
-custom_fonts/font = SubResource( 160 )
-align = 2
-
-[node name="Subtitle" type="Label" parent="Display"]
-margin_top = 96.0
-margin_right = 40.0
-margin_bottom = 172.0
-grow_horizontal = 0
-custom_fonts/font = SubResource( 161 )
-align = 2
-
-[node name="Button" type="Button" parent="Display"]
-visible = false
-margin_top = 182.0
-margin_right = 243.0
-margin_bottom = 258.0
-rect_min_size = Vector2( 0, 76 )
-custom_fonts/font = SubResource( 162 )
+anchor_left = 0.451823
+anchor_top = 0.981481
+anchor_right = 0.548
+anchor_bottom = 0.981481
+margin_top = -49.0
+margin_right = 0.339966
+custom_fonts/font = ExtResource( 4 )
 text = "View Terra"
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 1, 0, 0, 0, -0.111864, 0.993724, 0, -0.993724, -0.111864, 0, 22.1038, -2.21351 )
@@ -2941,136 +2452,13 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 0 )
 
 [node name="Camera" type="Camera" parent="Cambase"]
 _import_path = NodePath("Camera")
-transform = Transform( 0.939692, 0.0238581, -0.341188, 0, 0.997564, 0.0697561, 0.342021, -0.0655493, 0.937403, 0, -8.5, 16 )
+transform = Transform( 0.996514, -0.00641056, 0.0831742, 0.00303436, 0.999169, 0.040655, -0.0833657, -0.0402609, 0.995705, 0, -8.5, 15.216 )
 current = true
 fov = 49.1343
 near = 0.1
-far = 20.0
+far = 40.1
 
 [node name="Structure" type="Spatial" parent="."]
 
 [node name="Tween" type="Tween" parent="."]
-[connection signal="input_event" from="Library/Sectors/nullsec" to="Library/Sectors/nullsec" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/nullsec" to="Library/Sectors/nullsec" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/nullsec" to="Library/Sectors/nullsec" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/master_suite_a" to="Library/Sectors/master_suite_a" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/master_suite_a" to="Library/Sectors/master_suite_a" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/master_suite_a" to="Library/Sectors/master_suite_a" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/master_suite_b" to="Library/Sectors/master_suite_b" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/master_suite_b" to="Library/Sectors/master_suite_b" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/master_suite_b" to="Library/Sectors/master_suite_b" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/head_girl_suite_a" to="Library/Sectors/head_girl_suite_a" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/head_girl_suite_a" to="Library/Sectors/head_girl_suite_a" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/head_girl_suite_a" to="Library/Sectors/head_girl_suite_a" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/head_girl_suite_b" to="Library/Sectors/head_girl_suite_b" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/head_girl_suite_b" to="Library/Sectors/head_girl_suite_b" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/head_girl_suite_b" to="Library/Sectors/head_girl_suite_b" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/slave_suite_a" to="Library/Sectors/slave_suite_a" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/slave_suite_a" to="Library/Sectors/slave_suite_a" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/slave_suite_a" to="Library/Sectors/slave_suite_a" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/slave_suite_b" to="Library/Sectors/slave_suite_b" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/slave_suite_b" to="Library/Sectors/slave_suite_b" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/slave_suite_b" to="Library/Sectors/slave_suite_b" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/slave_bedroom" to="Library/Sectors/slave_bedroom" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/slave_bedroom" to="Library/Sectors/slave_bedroom" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/slave_bedroom" to="Library/Sectors/slave_bedroom" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/slave_dormitory_a" to="Library/Sectors/slave_dormitory_a" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/slave_dormitory_a" to="Library/Sectors/slave_dormitory_a" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/slave_dormitory_a" to="Library/Sectors/slave_dormitory_a" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/slave_dormitory_b" to="Library/Sectors/slave_dormitory_b" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/slave_dormitory_b" to="Library/Sectors/slave_dormitory_b" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/slave_dormitory_b" to="Library/Sectors/slave_dormitory_b" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/confinement_cells" to="Library/Sectors/confinement_cells" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/confinement_cells" to="Library/Sectors/confinement_cells" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/confinement_cells" to="Library/Sectors/confinement_cells" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/nutrition_system" to="Library/Sectors/nutrition_system" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/nutrition_system" to="Library/Sectors/nutrition_system" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/nutrition_system" to="Library/Sectors/nutrition_system" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/milking_system" to="Library/Sectors/milking_system" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/milking_system" to="Library/Sectors/milking_system" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/milking_system" to="Library/Sectors/milking_system" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/remote_surgery" to="Library/Sectors/remote_surgery" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/remote_surgery" to="Library/Sectors/remote_surgery" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/remote_surgery" to="Library/Sectors/remote_surgery" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/body_mod_studio" to="Library/Sectors/body_mod_studio" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/body_mod_studio" to="Library/Sectors/body_mod_studio" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/body_mod_studio" to="Library/Sectors/body_mod_studio" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/salon" to="Library/Sectors/salon" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/salon" to="Library/Sectors/salon" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/salon" to="Library/Sectors/salon" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/spa" to="Library/Sectors/spa" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/spa" to="Library/Sectors/spa" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/spa" to="Library/Sectors/spa" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/fighting_pit" to="Library/Sectors/fighting_pit" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/fighting_pit" to="Library/Sectors/fighting_pit" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/fighting_pit" to="Library/Sectors/fighting_pit" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/residential_luxury" to="Library/Sectors/residential_luxury" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/residential_luxury" to="Library/Sectors/residential_luxury" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/residential_luxury" to="Library/Sectors/residential_luxury" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/residential_standard" to="Library/Sectors/residential_standard" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/residential_standard" to="Library/Sectors/residential_standard" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/residential_standard" to="Library/Sectors/residential_standard" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/residential_dense" to="Library/Sectors/residential_dense" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/residential_dense" to="Library/Sectors/residential_dense" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/residential_dense" to="Library/Sectors/residential_dense" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/park_a" to="Library/Sectors/park_a" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/park_a" to="Library/Sectors/park_a" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/park_a" to="Library/Sectors/park_a" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/park_b" to="Library/Sectors/park_b" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/park_b" to="Library/Sectors/park_b" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/park_b" to="Library/Sectors/park_b" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/park_large_a" to="Library/Sectors/park_large_a" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/park_large_a" to="Library/Sectors/park_large_a" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/park_large_a" to="Library/Sectors/park_large_a" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/park_large_b" to="Library/Sectors/park_large_b" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/park_large_b" to="Library/Sectors/park_large_b" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/park_large_b" to="Library/Sectors/park_large_b" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/park_large_c" to="Library/Sectors/park_large_c" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/park_large_c" to="Library/Sectors/park_large_c" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/park_large_c" to="Library/Sectors/park_large_c" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/commercial_luxury" to="Library/Sectors/commercial_luxury" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/commercial_luxury" to="Library/Sectors/commercial_luxury" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/commercial_luxury" to="Library/Sectors/commercial_luxury" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/commercial_standard" to="Library/Sectors/commercial_standard" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/commercial_standard" to="Library/Sectors/commercial_standard" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/commercial_standard" to="Library/Sectors/commercial_standard" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/commercial_dense" to="Library/Sectors/commercial_dense" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/commercial_dense" to="Library/Sectors/commercial_dense" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/commercial_dense" to="Library/Sectors/commercial_dense" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/hydroponics_a" to="Library/Sectors/hydroponics_a" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/hydroponics_a" to="Library/Sectors/hydroponics_a" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/hydroponics_a" to="Library/Sectors/hydroponics_a" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/hydroponics_b" to="Library/Sectors/hydroponics_b" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/hydroponics_b" to="Library/Sectors/hydroponics_b" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/hydroponics_b" to="Library/Sectors/hydroponics_b" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/hydroponics_c" to="Library/Sectors/hydroponics_c" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/hydroponics_c" to="Library/Sectors/hydroponics_c" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/hydroponics_c" to="Library/Sectors/hydroponics_c" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/laboratory" to="Library/Sectors/laboratory" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/laboratory" to="Library/Sectors/laboratory" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/laboratory" to="Library/Sectors/laboratory" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/manufacturing" to="Library/Sectors/manufacturing" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/manufacturing" to="Library/Sectors/manufacturing" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/manufacturing" to="Library/Sectors/manufacturing" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/warehouse" to="Library/Sectors/warehouse" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/warehouse" to="Library/Sectors/warehouse" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/warehouse" to="Library/Sectors/warehouse" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/nuclear_reactor_gen_5" to="Library/Sectors/nuclear_reactor_gen_5" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/nuclear_reactor_gen_5" to="Library/Sectors/nuclear_reactor_gen_5" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/nuclear_reactor_gen_5" to="Library/Sectors/nuclear_reactor_gen_5" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/water_purification" to="Library/Sectors/water_purification" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/water_purification" to="Library/Sectors/water_purification" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/water_purification" to="Library/Sectors/water_purification" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/secure_storage" to="Library/Sectors/secure_storage" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/secure_storage" to="Library/Sectors/secure_storage" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/secure_storage" to="Library/Sectors/secure_storage" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/drone_manufacturing" to="Library/Sectors/drone_manufacturing" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/drone_manufacturing" to="Library/Sectors/drone_manufacturing" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/drone_manufacturing" to="Library/Sectors/drone_manufacturing" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/thermal_exchange_condenser_a" to="Library/Sectors/thermal_exchange_condenser_a" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/thermal_exchange_condenser_a" to="Library/Sectors/thermal_exchange_condenser_a" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/thermal_exchange_condenser_a" to="Library/Sectors/thermal_exchange_condenser_a" method="_on_mouse_exited"]
-[connection signal="input_event" from="Library/Sectors/thermal_exchange_condenser_b" to="Library/Sectors/thermal_exchange_condenser_b" method="_on_input_event"]
-[connection signal="mouse_entered" from="Library/Sectors/thermal_exchange_condenser_b" to="Library/Sectors/thermal_exchange_condenser_b" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Library/Sectors/thermal_exchange_condenser_b" to="Library/Sectors/thermal_exchange_condenser_b" method="_on_mouse_exited"]
-[connection signal="pressed" from="Display/Button" to="." method="_on_Button_pressed"]
+[connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]

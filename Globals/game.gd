@@ -1,11 +1,7 @@
 extends Node
 
 var queue_save
-
 var default_font = preload('res://Fonts/Rubik-Light.tres')
-
-# is not being saved until exit!
-var money = 0                                                                   #move to player scene?
 
 func reset():
 	randomize()
@@ -20,7 +16,7 @@ func reset():
 
 func _ready():
 	randomize()
-	#money = abs(math.gaussian(20000,2000))
+	bg_color = ProjectSettings.get('rendering/environment/default_clear_color')
 	data.check_dir('user://Data',"Data")
 	data.check_config()
 	data.set_autosave()
@@ -33,10 +29,28 @@ func is_ready(): # called from GUI scene - needs refinement
 		for nodes in get_tree().get_root().get_node('Game/GUI/Pause Menu/Saves/Panel/Slots').get_children():
 			nodes._ready()
 
+var money = 0 # is not being saved until exit!
 func update_money(value):
 	var label = get_tree().get_root().get_node('Game/GUI/Money/Capital')
 	money += value
 	label.set_text("¤" + str(money))
+
+var bg_color
+const BG_COLOR_DEFAULT = "314650"
+const BG_COLOR_DEEP = "323150"
+const BG_COLOR_PLUMB = "403150"
+func set_bg_color(new_color):
+	var tween = get_tree().get_root().get_node("Game/GUI/Tween")
+	tween.interpolate_method(
+	VisualServer,
+	'set_default_clear_color',
+	bg_color,
+	Color(new_color),
+	0.3,
+	Tween.TRANS_QUART,
+	Tween.EASE_OUT)
+	tween.start()
+	bg_color = Color(new_color)
 
 const DESKTOP_QUIT = MainLoop.NOTIFICATION_WM_QUIT_REQUEST
 const ANDROID_QUIT = MainLoop.NOTIFICATION_WM_GO_BACK_REQUEST

@@ -7,28 +7,28 @@ var structure #not being used properly
 var selected_terra
 const ARCOLOGY_VIEW = 0
 const TERRA_VIEW = 1
-var view = "Arcology"               #change to matching const instead of string
+var view = "arcology"
 onready var title = get_node('Display/Title')
 onready var subtitle = get_node('Display/Subtitle')
-onready var button = get_node('Display/Button')
 onready var camera = get_node('Cambase/Camera')
 onready var highlight_blue = load('res://Arcology/blue.material')
 onready var highlight_orange = load('res://Arcology/orange.material')
 
 func _ready():
-	#get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'quick_save')
 	get_tree().get_root().connect('size_changed',self,'resize')
 	var position = 0
-	
 	#new arc is being generated anyway
-	if not structure:                                                           #new arc being generated anyway
+	if not structure:
 		for terra in get_node('New Arcology').generate(size):
 			terra.translation[1] = position
 			$Structure.add_child(terra)
 			position -= 1.5
-	
-	title.set_text(_name)
+	update_header(_name)
 	resize()
+
+func update_header(text):
+	var header = get_tree().get_root().get_node("Game/GUI/Header/Arcology/Title")
+	header.set_text(text)
 
 func _data():
 	var structure = {}
@@ -68,152 +68,132 @@ func _load(structure):
 					new_sector.set(property,structure[terra][ring][sector][property])
 				ArcUtils.swap_sectors(index,new_sector)
 
+export var offset_strength = 16
 var cam_offset = 0
 func resize():
-	# use camera.h_offset?
-	cam_offset = (display.aspect_ratio - 1.8) / 0.2                             #cam offset for arcology model
-	#print("camera ", camera.h_offset)
-	#print("cam_offset ", cam_offset)
-	if view == "Arcology":
-		#camera.h_offset = cam_offset
-		camera.translation.x = cam_offset
-	#elif view == "Terra":
-	#	camera.translation.x = clamp(3-cam_offset/vm, 0, 2)
+	if view == "arcology":
+		cam_offset = clamp(offset_strength/display.scale_x-offset_strength,0,10.5)
+		camera.rotation_degrees.y = cam_offset
 
 func _highlight_terra(terra,material):
 	for ring in terra.get_children():
 		for sector in ring.get_children():
 			sector.get_node('Mesh').set_material_override(material)
 
-func input_event(node,event):                                                   #two separate input handlers?
-	if event.is_pressed() and event.button_index == 1:
-		if view == "Arcology":
-			for terra in $Structure.get_children():                             #remove highlight from structure
-				_highlight_terra(terra,null)
-			var terra = node.get_node('../../')
-			_highlight_terra(terra,highlight_orange)
-			selected_terra = terra.name
-			subtitle.set_text(terra.name)
-			button.show()
-		elif view == "Terra":
-			for ring in node.get_node('../../').get_children():
-				for sector in ring.get_children():
-					sector.get_node('Mesh').set_material_override(null)
-					sector.selected = false
-			node.get_node('Mesh').set_material_override(highlight_orange)
-			subtitle.set_text(ArcUtils.sector_name(node.name))
-			node.selected = true
+func connect_sector_signals(sector):
+	sector.connect('input_event',self,'sector_input_event',[sector])
+	sector.connect('mouse_entered',self,'sector_mouse_entered',[sector])
+	sector.connect('mouse_exited',self,'sector_mouse_exited',[sector])
+	var methods = ["tick","minute","hour","day","week","quarter","year"]
+	for method in methods:
+		if sector.has_method(method):
+			time.connect(method,sector,method)
 
-func mouse_entered(node):
+func sector_input_event(camera, event, click_position, click_normal, shape_idx, sector):  #two separate input handlers?
+	if not event.is_pressed():
+		return
+	if not event.is_class("InputEventScreenTouch"):
+		if event.button_index:
+			if event.button_index != 1:
+				return
+	if view == "arcology":
+		for terra in $Structure.get_children():
+			_highlight_terra(terra,null)
+		var terra = sector.get_node('../../')
+		_highlight_terra(terra,highlight_orange)
+		selected_terra = terra.name
+		#subtitle.set_text(terra.name)
+		update_header(terra.name)
+		$Button.show()
+	elif view == "terra":
+		for ring in sector.get_node('../../').get_children():
+			for sector in ring.get_children():
+				sector.get_node('Mesh').set_material_override(null)
+				sector.selected = false
+		sector.get_node('Mesh').set_material_override(highlight_orange)
+		#subtitle.set_text(ArcUtils.sector_name(sector.name))
+		update_header(ArcUtils.sector_name(sector.name))
+		sector.selected = true
+
+func sector_mouse_entered(node):
 	if view == "Arcology":
 		var terra = node.get_node('../../')
 		if terra.name != selected_terra:
 			_highlight_terra(terra,highlight_blue)
-	elif view == "Terra":
+	elif view == "terra":
 		if not node.selected:
 			node.get_node('Mesh').set_material_override(highlight_blue)
 
-func mouse_exited(node):
-	if view == "Arcology":
+func sector_mouse_exited(node):
+	if view == "arcology":
 		var terra = node.get_node('../../')
 		if terra.name != selected_terra:
 			_highlight_terra(terra,null)
-	elif view == "Terra":
+	elif view == "terra":
 		if not node.selected:
 			node.get_node('Mesh').set_material_override(null)
 
 func _on_Button_pressed():
 	var t_start = camera.translation
 	var t_modify = $Structure.get_node(selected_terra).translation[1]
-	#var t_end = Vector3(2, t_modify+2, 9) ## original position
 	var t_end = Vector3(0, t_modify+2, 9)
 	var r_start = camera.rotation_degrees
 	var r_end = Vector3(-40, 0, 0)
-	
-	title.set_text(selected_terra)
-	subtitle.set_text("")
-	button.hide()
-	view = "Terra"
-	
-	for terra in $Structure.get_children():                                     #remove highlight from structure
+	update_header(selected_terra)
+	$Button.hide()
+	view = "terra"
+	for terra in $Structure.get_children():
 		_highlight_terra(terra,null)
 		if terra.name != selected_terra:
 			terra.hide()
-	
 	$Tween.interpolate_property(camera,'translation',t_start,t_end,1,Tween.TRANS_SINE,Tween.EASE_IN_OUT)
 	$Tween.interpolate_property(camera,'rotation_degrees',r_start,r_end,1,Tween.TRANS_SINE,Tween.EASE_IN_OUT)
 	$Tween.start()
 
-#	if event.is_action_pressed('ui_page_up'):
-#		test_offset += 1
-#		print(test_offset)
-#		camera.translation.x = test_offset
-#	if event.is_action_pressed('ui_page_down'):
-#		test_offset -= 1
-#		print(test_offset)
-#		camera.translation.x = test_offset
-
-#var test_offset = 0
 var camrot = 0.0
-func _input(event):                                                             #two separate input handlers?
+func _input(event):
 	if not self.visible:
 		return
-	if get_tree().get_root().get_node('Game/GUI/AI Panel').is_visible_in_tree(): #if ai panel is visible
+	if get_tree().get_root().get_node('Game/GUI/AI Panel').is_visible_in_tree():
 		return
 	var calendar = get_tree().get_root().get_node("Game/GUI//Navigation/Time/Calendar")
 	if calendar.is_visible():
 		return
 	if (event.is_class("InputEventMouseMotion")):
 		if (event.button_mask&(BUTTON_MASK_LEFT)):
-			#print(event.relative.x)
 			camrot += event.relative.x * 0.005
 			get_node("Cambase").set_rotation(Vector3(0, -1*camrot, 0))
-	
 	elif event.is_action_pressed('ui_back'):
-		if view == "Arcology":
+		if view == "arcology":
 			if selected_terra:
 				selected_terra = null
-				subtitle.set_text("")
-				button.hide()
-				for terra in $Structure.get_children():                         #remove highlight from structure
+				update_header("")
+				$Button.hide()
+				for terra in $Structure.get_children():
 					_highlight_terra(terra,null)
-		
-		elif view == "Terra":
-			#if any sectors are selected:
+		elif view == "terra":
 			for ring in $Structure.get_node(selected_terra).get_children():
 				for sector in ring.get_children():
 					if sector.selected:
 						sector.get_node('Mesh').set_material_override(null)
 						sector.selected = false
-						subtitle.set_text("")
+						update_header(selected_terra)
 						return
-			
 			var t_start = camera.translation
 			var t_modify = $Structure.get_node(selected_terra).translation[1]
-			var t_end = Vector3(cam_offset, -8.5, 16)
+			var t_end = Vector3(0, -8.5, 16)
 			var r_start = camera.rotation_degrees
-			var r_end = Vector3(-4, -20, 0)
-			
-			title.set_text(_name)
-			subtitle.set_text(selected_terra)
-			button.show()
-			view = "Arcology"
-			
+			var r_end = Vector3(-4, cam_offset, 0)
+			update_header(selected_terra)
+			$Button.show()
+			view = "arcology"
 			for terra in $Structure.get_children():                             #show arcology
 				terra.show()
 				if terra.name == selected_terra:
 					_highlight_terra(terra,highlight_orange)
-			
 			$Tween.interpolate_property(camera,'translation',t_start,t_end,1,Tween.TRANS_SINE,Tween.EASE_IN_OUT)
 			$Tween.interpolate_property(camera,'rotation_degrees',r_start,r_end,1,Tween.TRANS_SINE,Tween.EASE_IN_OUT)
 			$Tween.start()
-
-#func quick_save():
-#	var file = File.new()
-#	var path = 'user://Data/Slot %s/Arcology.json'%data.data_slot
-#	file.open(path,File.WRITE)
-#	file.store_line(to_json(_save()))
-#	file.close()
 
 #func sector_ownership(): #needs reworked before being used
 #	for terra in $Structure.get_children():

@@ -1,72 +1,71 @@
 extends Spatial
 
 var cam_pos
+var active_collection
 
-#func _ready():
-#	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'tick')
-#	for i in range(abs(math.gaussian(3,1))):
-#		var preset = "kidnappers market"
-#		get_node('Slider/HBoxContainer').add_child(get_node('New Slave').new(preset),true)
-#	tick()
-
-# Called when the node enters the scene tree for the first time.
 func _ready():
-	get_tree().get_root().connect('size_changed',self,'resize')
-	$Camera.current = true
 	cam_pos = 7.0
-	#$SpotLight2.set_translation(Vector3(cam_pos, 1.6, 8))
-	#$SpotLight3.set_translation(Vector3(cam_pos, 16, -10))
+	$Camera.current = true
 	$Camera.set_translation(Vector3(cam_pos, 3.2, 5))
-	#$OmniLight.set_translation(Vector3(-1*cam_pos, 4, 6))
-	#$Owned.set_translation(Vector3(3, -4, 0))
-	
-	#get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'tick')
 	for i in range(abs(math.gaussian(6,1))):
 		var preset = "kidnappers market"
-		get_node('Owned').add_child(get_node('New Slave').new(preset),true)
-	get_node('Owned').update_display()
-	#tick()
-	resize()
+		get_node("Collections/Owned").add_child(get_node('New Slave').new(preset),true)
+	set_active_collection("Owned")
+	print("setting owned")
+	update_collection(active_collection)
+	update_slaves_owned_display()
+	update_header()
 
-func resize():
-	for node in $Owned.get_children():
-		node.tracking()
+func slave_count(collection):
+	return get_node("Collections/"+collection).get_child_count()
 
-var tweening = false
+func update_header():
+	var header = get_tree().get_root().get_node("Game/GUI/Header/Slaves/Title")
+	if active_collection.name == "Owned":
+		var count = str(slave_count("Owned"))
+		if slave_count("Owned") == 1:
+			header.set_text(count+" slave owned")
+		else:
+			header.set_text(count+" Slaves Owned")
+	elif active_collection.name == "Kidnappers Market":
+		var count = str(slave_count("Kidnappers Market"))
+		if slave_count("Kidnappers Market") > 1:
+			header.set_text("%s slaves available"%count)
+		else:
+			header.set_text("%s slave available"%count)
+	elif active_collection.name == "Neighboring Arcologies":
+		var count = str(slave_count("Neighboring Arcologies"))
+		if slave_count("Neighboring Arcologies") > 1:
+			header.set_text("%s slaves available"%count)
+		else:
+			header.set_text("%s slave available"%count)
+
+func update_slaves_owned_display():
+	var header = get_tree().get_root().get_node("Game/GUI/Header/Slaves/Title")
+
 func _input(event):
 	if not is_visible_in_tree():
 		return
 	var calendar = get_tree().get_root().get_node("Game/GUI//Navigation/Time/Calendar")
 	if calendar.is_visible():
 		return
-	
-	var count = $Owned.get_child_count()
-	
 	var min_camera_pos = 7
-	var max_camera_pos = count * 5.4
-	if count == 1:
+	var max_camera_pos = slave_count(active_collection.name) * 5.4
+	if slave_count(active_collection.name) == 1:
 		max_camera_pos *= 1.3
-	
 	if event.is_class("InputEventMouseMotion"): # add android swipe here?
 		if event.button_mask&(BUTTON_MASK_LEFT):
 			cam_pos -= event.relative.x * 0.015
 	elif event.is_action_pressed('ui_page_up'):
-		#if cam_pos < min_length:
 			cam_pos -= 2
 	elif event.is_action_pressed('ui_page_down'):
-		#if cam_pos > max_length:
 			cam_pos += 2
 	else:
 		return
-	
-	#var siblings = 
 	if cam_pos < min_camera_pos:
 		cam_pos = min_camera_pos
 	elif cam_pos > max_camera_pos:
 		cam_pos = max_camera_pos
-	
-	#print("CAMERA POSITION: ",cam_pos)
-	
 	$Tween.interpolate_method(
 		$Camera,'set_translation',
 		$Camera.get_translation(),
@@ -75,8 +74,36 @@ func _input(event):
 		Tween.TRANS_CUBIC,
 		Tween.EASE_OUT)
 	$Tween.start()
-	
+
+func set_active_collection(collection):
+	active_collection = $Collections.get_node(collection)
+	for _collection in $Collections.get_children():
+		_collection.hide()
+		for _slave in _collection.get_children():
+			_slave.ui.hide()
+	for _slave in active_collection.get_children():
+		_slave.ui.show()
+		_slave.ui.resize()
+		_slave.ui.tracking()
+	update_collection(active_collection)
+	active_collection.show()
+	update_header()
+	cam_pos = 7.0
+
+const offset_x = 2.37
+const offset_y = -4.62
+const vertical_pos = 5.9
+const horizontal_spacing = 5
+func update_collection(collection):
+	var horizontal_pos = 0
+	collection.translation.x = offset_x
+	collection.translation.y = offset_y
+	for _slave in collection.get_children():
+		horizontal_pos += horizontal_spacing
+		_slave.translation.x = horizontal_pos
+		_slave.translation.y = vertical_pos
+		_slave.ui.tracking()
 
 func _on_Tween_tween_step(object, key, elapsed, value):
-	for node in $Owned.get_children():
-		node.tracking()
+	for _slave in active_collection.get_children():
+		_slave.ui.tracking()

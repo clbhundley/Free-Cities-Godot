@@ -17,6 +17,7 @@ func swap_sectors(old,new):
 	new.get_node('Collision').translation[2] = round(old.get_node('Collision').translation[2])
 	new.get_node('Mesh').translation[2] = round(old.get_node('Mesh').translation[2])
 	new.rotation_degrees[1] = round(old.rotation_degrees[1])
+	get_arcology().connect_sector_signals(new)
 	for children in old.get_children():
 		children.queue_free()
 	old.queue_free()

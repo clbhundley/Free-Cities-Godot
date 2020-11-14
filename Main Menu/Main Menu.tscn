@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=2]
+[gd_scene load_steps=27 format=2]
 
 [ext_resource path="res://Main Menu/main menu.gd" type="Script" id=1]
 [ext_resource path="res://Main Menu/arcghost.png" type="Texture" id=2]
@@ -21,6 +21,7 @@
 [ext_resource path="res://Textures/line.png" type="Texture" id=19]
 [ext_resource path="res://theme.tres" type="Theme" id=20]
 [ext_resource path="res://Textures/square.png" type="Texture" id=21]
+[ext_resource path="res://GUI/SwipeDetector.tscn" type="PackedScene" id=22]
 
 [sub_resource type="CanvasItemMaterial" id=1]
 
@@ -896,6 +897,8 @@ This is a work of fiction; any resemblance to actual persons, places, or events 
 
 Press \"OK\" only if you are 18 years of age or older."
 script = SubResource( 4 )
+
+[node name="SwipeDetector" parent="." instance=ExtResource( 22 )]
 [connection signal="pressed" from="Buttons/New Game" to="." method="_on_New_Game_pressed"]
 [connection signal="pressed" from="Buttons/Load Game" to="." method="_on_Load_Game_pressed"]
 [connection signal="pressed" from="Buttons/Options" to="." method="_on_Options_pressed"]

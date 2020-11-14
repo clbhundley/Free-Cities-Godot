@@ -10,7 +10,6 @@ func new(preset=null,selling=false):
 	
 	if not _slave.ethnicity:
 		_slave.ethnicity = _ethnicity(region)
-	var traits = load('res://Slaves/New Slave/Ethnicities/%s/%s.gd'%[region,_slave.ethnicity.to_lower()]).traits()
 	var presets = load('res://Slaves/New Slave/Presets/%s.gd'%preset).presets()
 	
 	_slave.for_sale = selling
@@ -19,6 +18,12 @@ func new(preset=null,selling=false):
 		for setting in presets.keys():
 			_slave.set(setting, presets[setting])
 	
+	if not _slave.gender:
+		_slave.gender = _gender()
+	
+	var path = 'res://Slaves/New Slave/Ethnicities/%s/%s.gd'
+	var ethnicity = _slave.ethnicity.to_lower()
+	var traits = load(path%[region,ethnicity]).traits(_slave.gender)
 	for trait in traits.keys():
 		_slave.set(trait, traits[trait])
 	
@@ -28,21 +33,20 @@ func new(preset=null,selling=false):
 	
 	if not _slave.age:
 		_slave.age = randi() %41+18
-	if not _slave.gender:
-		_slave.gender = _gender()
+
 	if _slave.gender == "Male" or _slave.gender == "Trans female":
 		_slave.vagina = false
-		_slave.penis = true
+		#_slave.penis = true
 		_slave.penis_size = traits['penis_size']
 		_slave.testicles_size = 1
 	elif _slave.gender == "Female" or _slave.gender == "Trans male":
 		_slave.vagina = true
-		_slave.penis = false
+		#_slave.penis = false
 		_slave.penis_size = 0
 		_slave.testicles_size = 0
 	elif _slave.gender == "Intersex":
 		_slave.vagina = true
-		_slave.penis = true
+		#_slave.penis = true
 		_slave.penis_size = traits['penis_size']
 		_slave.testicles_size = 1
 	

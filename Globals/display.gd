@@ -36,17 +36,16 @@ func set_msaa(id):
 	config.save('user://config.cfg')
 	get_viewport().msaa = id
 
-var scale
-var scale_w
+var scale = 1
+var scale_x = 1
+var scale_y = 1
 var aspect_ratio
 func resize():
 	var view = get_tree().get_root().get_size()
 	var width = view.x
 	var height = view.y
 	var area = width*height
-	#var area = height
 	var display_scale = area/(1920*1080)
-	#var display_scale = area/(1080)
 	aspect_ratio = width/height
 	if area < 1803000:
 		scale = max(display_scale*1.15,0.4)
@@ -55,9 +54,16 @@ func resize():
 	print("aspect ratio: ",aspect_ratio)
 	print("window size: ",view)
 	
-	var area_w = height
-	var display_scale_w = area_w/1080
-	if area_w < 1803000:
-		scale_w = max(display_scale_w,0.4)
+	var area_x = width
+	var display_scale_x = area_x/1920
+	if area_x < 1803000:
+		scale_x = max(display_scale_x,0.4)
 	else:
-		scale_w = 1
+		scale_x = 1
+	
+	var area_y = height
+	var display_scale_y = area_y/1080
+	if area_y < 1803000:
+		scale_y = max(display_scale_y,0.4)
+	else:
+		scale_y = 1
