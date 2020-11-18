@@ -6,6 +6,44 @@ func get_arcology():
 func get_structure():
 	return get_tree().get_root().get_node("Game/Arcology/Structure")
 
+func get_neighbors(sector):
+	var parent = sector.get_parent()
+	var index = sector.get_index()
+	var sector_size = 1
+	var neighbors = []
+	var _name = sector_name(parent.get_child(index).name)
+	if _name.ends_with("_b"):
+		index = (index+11)%12
+	elif _name.ends_with("_c"):
+		index = (index+10)%12
+	if parent.get_child(index).get("size"):
+		sector_size = parent.get_child(index).size
+	var left = parent.get_child((index+sector_size)%12)
+	var left_name = sector_name(left.name)
+	if left_name.ends_with("_b"):
+		left = parent.get_child((left.get_index()+11)%12)
+	elif left_name.ends_with("_c"):
+		left = parent.get_child((left.get_index()+10)%12)
+	var right = parent.get_child((index+11)%12)
+	var right_name = sector_name(right.name)
+	if right_name.ends_with("_b"):
+		right = parent.get_child((right.get_index()+11)%12)
+	elif right_name.ends_with("_c"):
+		right = parent.get_child((right.get_index()+10)%12)
+	neighbors.append(left)
+	if parent.get_parent().get_children().size() > 1:
+		var ring = parent.get_parent().get_child(abs(parent.get_index()-1))
+		for i in sector_size:
+			var middle = ring.get_child((index+i+12)%12)
+			var middle_name = sector_name(middle.name)
+			if middle_name.ends_with("_b"):
+				middle = ring.get_child((index+i+11)%12)
+			elif middle_name.ends_with("_c"):
+				middle = ring.get_child((index+i+10)%12)
+			neighbors.append(middle)
+	neighbors.append(right)
+	return neighbors
+
 func sector_name(input):
 	if "@" in input:
 		var s = input.split("@")

@@ -8,8 +8,6 @@ var selected_terra
 const ARCOLOGY_VIEW = 0
 const TERRA_VIEW = 1
 var view = "arcology"
-onready var title = get_node('Display/Title')
-onready var subtitle = get_node('Display/Subtitle')
 onready var camera = get_node('Cambase/Camera')
 onready var highlight_blue = load('res://Arcology/blue.material')
 onready var highlight_orange = load('res://Arcology/orange.material')
@@ -81,7 +79,7 @@ func _highlight_terra(terra,material):
 			sector.get_node('Mesh').set_material_override(material)
 
 func connect_sector_signals(sector):
-	sector.connect('input_event',self,'sector_input_event',[sector])
+	sector.connect('input_event',self,'arc_input_event',[sector])
 	sector.connect('mouse_entered',self,'sector_mouse_entered',[sector])
 	sector.connect('mouse_exited',self,'sector_mouse_exited',[sector])
 	var methods = ["tick","minute","hour","day","week","quarter","year"]
@@ -89,7 +87,7 @@ func connect_sector_signals(sector):
 		if sector.has_method(method):
 			time.connect(method,sector,method)
 
-func sector_input_event(camera, event, click_position, click_normal, shape_idx, sector):  #two separate input handlers?
+func arc_input_event(camera, event, click_position, click_normal, shape_idx, sector):
 	if not event.is_pressed():
 		return
 	if not event.is_class("InputEventScreenTouch"):
@@ -102,16 +100,16 @@ func sector_input_event(camera, event, click_position, click_normal, shape_idx, 
 		var terra = sector.get_node('../../')
 		_highlight_terra(terra,highlight_orange)
 		selected_terra = terra.name
-		#subtitle.set_text(terra.name)
 		update_header(terra.name)
 		$Button.show()
+		if event.doubleclick:
+			_on_Button_pressed()
 	elif view == "terra":
 		for ring in sector.get_node('../../').get_children():
 			for sector in ring.get_children():
 				sector.get_node('Mesh').set_material_override(null)
 				sector.selected = false
 		sector.get_node('Mesh').set_material_override(highlight_orange)
-		#subtitle.set_text(ArcUtils.sector_name(sector.name))
 		update_header(ArcUtils.sector_name(sector.name))
 		sector.selected = true
 

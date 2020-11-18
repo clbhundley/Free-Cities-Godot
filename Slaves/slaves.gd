@@ -11,9 +11,7 @@ func _ready():
 		var preset = "kidnappers market"
 		get_node("Collections/Owned").add_child(get_node('New Slave').new(preset),true)
 	set_active_collection("Owned")
-	print("setting owned")
 	update_collection(active_collection)
-	update_slaves_owned_display()
 	update_header()
 
 func slave_count(collection):
@@ -24,24 +22,21 @@ func update_header():
 	if active_collection.name == "Owned":
 		var count = str(slave_count("Owned"))
 		if slave_count("Owned") == 1:
-			header.set_text(count+" slave owned")
+			header.set_text(count+" Slave Owned")
 		else:
 			header.set_text(count+" Slaves Owned")
 	elif active_collection.name == "Kidnappers Market":
 		var count = str(slave_count("Kidnappers Market"))
-		if slave_count("Kidnappers Market") > 1:
-			header.set_text("%s slaves available"%count)
+		if slave_count("Kidnappers Market") == 1:
+			header.set_text("%s Slave available"%count)
 		else:
-			header.set_text("%s slave available"%count)
+			header.set_text("%s Slaves available"%count)
 	elif active_collection.name == "Neighboring Arcologies":
 		var count = str(slave_count("Neighboring Arcologies"))
-		if slave_count("Neighboring Arcologies") > 1:
-			header.set_text("%s slaves available"%count)
+		if slave_count("Neighboring Arcologies") == 1:
+			header.set_text("%s Slave available"%count)
 		else:
-			header.set_text("%s slave available"%count)
-
-func update_slaves_owned_display():
-	var header = get_tree().get_root().get_node("Game/GUI/Header/Slaves/Title")
+			header.set_text("%s Slaves available"%count)
 
 func _input(event):
 	if not is_visible_in_tree():

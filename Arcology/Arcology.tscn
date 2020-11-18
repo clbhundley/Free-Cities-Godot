@@ -118,7 +118,9 @@ func tick():
 	pass
 
 func minute():
-	pass
+	return
+	for i in ArcUtils.get_neighbors(self):
+		print (i.name)
 
 func _data():
 	return {
