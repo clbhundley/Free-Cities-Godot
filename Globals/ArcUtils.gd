@@ -6,43 +6,73 @@ func get_arcology():
 func get_structure():
 	return get_tree().get_root().get_node("Game/Arcology/Structure")
 
+func get_neighbors2(sector):
+	var primary = get_neighbors(sector)
+	var secondary = []
+	for adjacent in primary:
+		for neighbor in get_neighbors(adjacent):
+			if not primary.has(neighbor):
+				secondary.append(neighbor)
+	var tertiary = []
+	for adjacent in secondary:
+		for neighbor in get_neighbors(adjacent):
+			if not primary.has(neighbor) and not secondary.has(neighbor):
+				tertiary.append(neighbor)
+	return {primary=primary, secondary=secondary, tertiary=tertiary}
+
 func get_neighbors(sector):
 	var parent = sector.get_parent()
-	var index = sector.get_index()
-	var sector_size = 1
-	var neighbors = []
-	var _name = sector_name(parent.get_child(index).name)
-	if _name.ends_with("_b"):
-		index = (index+11)%12
-	elif _name.ends_with("_c"):
-		index = (index+10)%12
+	var building_size = 1
+	var primary = []
+	var secondary = []
+	var tertiary = []
+	var index = get_building(sector).get_index()
 	if parent.get_child(index).get("size"):
-		sector_size = parent.get_child(index).size
-	var left = parent.get_child((index+sector_size)%12)
-	var left_name = sector_name(left.name)
-	if left_name.ends_with("_b"):
-		left = parent.get_child((left.get_index()+11)%12)
-	elif left_name.ends_with("_c"):
-		left = parent.get_child((left.get_index()+10)%12)
-	var right = parent.get_child((index+11)%12)
-	var right_name = sector_name(right.name)
-	if right_name.ends_with("_b"):
-		right = parent.get_child((right.get_index()+11)%12)
-	elif right_name.ends_with("_c"):
-		right = parent.get_child((right.get_index()+10)%12)
-	neighbors.append(left)
+		building_size = parent.get_child(index).size
+	var left_primary = get_building(parent.get_child((index+building_size)%12))
+	var left_secondary = get_building(parent.get_child((index+building_size+1)%12))
+	var left_tertiary = get_building(parent.get_child((index+building_size+2)%12))
+	var right_primary = get_building(parent.get_child((index+11)%12))
+	var right_secondary = get_building(parent.get_child((index+10)%12))
+	var right_tertiary = get_building(parent.get_child((index+9)%12))
+	if not primary.has(left_primary):
+		primary.append(left_primary)
+	if not primary.has(left_secondary):
+		secondary.append(left_secondary)
+	if not primary.has(left_tertiary) and not secondary.has(left_tertiary):
+		tertiary.append(left_tertiary)
 	if parent.get_parent().get_children().size() > 1:
-		var ring = parent.get_parent().get_child(abs(parent.get_index()-1))
-		for i in sector_size:
-			var middle = ring.get_child((index+i+12)%12)
-			var middle_name = sector_name(middle.name)
-			if middle_name.ends_with("_b"):
-				middle = ring.get_child((index+i+11)%12)
-			elif middle_name.ends_with("_c"):
-				middle = ring.get_child((index+i+10)%12)
-			neighbors.append(middle)
-	neighbors.append(right)
-	return neighbors
+		var opposite_ring = parent.get_parent().get_child(abs(parent.get_index()-1))
+		for section in building_size:
+			var middle = get_building(opposite_ring.get_child((index+section+12)%12))
+			if not primary.has(middle):
+				primary.append(middle)
+		var middle_left_secondary = get_building(opposite_ring.get_child((index+building_size)%12))
+		var middle_left_tertiary = get_building(opposite_ring.get_child((index+building_size+1)%12))
+		var middle_right_secondary = get_building(opposite_ring.get_child((index+11)%12))
+		var middle_right_tertiary = get_building(opposite_ring.get_child((index+10)%12))
+		if not primary.has(middle_left_secondary):
+			secondary.append(middle_left_secondary)
+		if not primary.has(middle_left_tertiary) and not secondary.has(middle_left_tertiary):
+			tertiary.append(middle_left_tertiary)
+		if not primary.has(middle_right_secondary):
+			secondary.append(middle_right_secondary)
+		if not primary.has(middle_right_tertiary) and not secondary.has(middle_right_tertiary):
+			tertiary.append(middle_right_tertiary)
+	if not primary.has(right_primary):
+		primary.append(right_primary)
+	if not primary.has(right_secondary):
+		secondary.append(right_secondary)
+	if not primary.has(right_tertiary) and not secondary.has(right_tertiary):
+		tertiary.append(right_tertiary)
+	return {primary=primary, secondary=secondary, tertiary=tertiary}
+
+func get_building(sector):
+	if sector_name(sector.name).ends_with("_b"):
+		return sector.get_parent().get_child((sector.get_index()+11)%12)
+	elif sector_name(sector.name).ends_with("_c"):
+		return sector.get_parent().get_child((sector.get_index()+10)%12)
+	return sector
 
 func sector_name(input):
 	if "@" in input:

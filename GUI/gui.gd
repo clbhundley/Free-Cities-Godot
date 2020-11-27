@@ -12,8 +12,8 @@ onready var AI_panel = get_node('AI Panel')
 
 func _ready():
 	game.is_ready() #find a way to get rid of this
-	game.update_money(0)                                                        #refresh money display
-	#_on_AI_pressed()
+	game.update_money(0)
+	game.set_bg_color(game.BG_COLOR_DEFAULT)
 
 #func message_resize():
 	#$Panel.rect_size.y = $Text.rect_size.y + 7

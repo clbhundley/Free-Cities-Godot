@@ -11,6 +11,9 @@ var view = "arcology"
 onready var camera = get_node('Cambase/Camera')
 onready var highlight_blue = load('res://Arcology/blue.material')
 onready var highlight_orange = load('res://Arcology/orange.material')
+onready var highlight_cyan = load('res://Arcology/cyan.material')
+onready var highlight_lime = load('res://Arcology/lime.material')
+onready var highlight_violet = load('res://Arcology/violet.material')
 
 func _ready():
 	get_tree().get_root().connect('size_changed',self,'resize')
@@ -66,17 +69,39 @@ func _load(structure):
 					new_sector.set(property,structure[terra][ring][sector][property])
 				ArcUtils.swap_sectors(index,new_sector)
 
-export var offset_strength = 16
+export var offset_str = 16
 var cam_offset = 0
 func resize():
 	if view == "arcology":
-		cam_offset = clamp(offset_strength/display.scale_x-offset_strength,0,10.5)
+		cam_offset = clamp(offset_str/display.scale_x-offset_str,0,10.5)
 		camera.rotation_degrees.y = cam_offset
 
 func _highlight_terra(terra,material):
 	for ring in terra.get_children():
 		for sector in ring.get_children():
 			sector.get_node('Mesh').set_material_override(material)
+
+func _highlight_building(sector,material):
+	sector = ArcUtils.get_building(sector)
+	#clear_highlight_terra(sector)
+	var building_size = 1
+	var sectors = []
+	if sector.get("size"):
+		building_size = sector.size
+	for section in building_size:
+		sectors.append(sector.get_parent().get_child((sector.get_index()+section+12)%12))
+	for section in sectors:
+		section.get_node('Mesh').set_material_override(material)
+
+func clear_highlight_terra(sector):
+	for ring in sector.get_node('../../').get_children():
+		for sector in ring.get_children():
+			sector.get_node('Mesh').set_material_override(null)
+			sector.selected = false
+
+func clear_highlight_arcology():
+	for terra in $Structure.get_children():
+		_highlight_terra(terra,null)
 
 func connect_sector_signals(sector):
 	sector.connect('input_event',self,'arc_input_event',[sector])
@@ -87,7 +112,7 @@ func connect_sector_signals(sector):
 		if sector.has_method(method):
 			time.connect(method,sector,method)
 
-func arc_input_event(camera, event, click_position, click_normal, shape_idx, sector):
+func arc_input_event(camera,event,click_position,click_normal,shape_idx,sector):
 	if not event.is_pressed():
 		return
 	if not event.is_class("InputEventScreenTouch"):
@@ -105,31 +130,65 @@ func arc_input_event(camera, event, click_position, click_normal, shape_idx, sec
 		if event.doubleclick:
 			_on_Button_pressed()
 	elif view == "terra":
+		var primary = ArcUtils.get_neighbors(sector)["primary"]
+		var secondary = ArcUtils.get_neighbors(sector)["secondary"]
+		var tertiary = ArcUtils.get_neighbors(sector)["tertiary"]
+		print("")
+		print("")
+		print("--- PRIMARY ---")
+		for i in primary:
+			print (i.name)
+		print("-----")
+
+		print("--- SECONDARY ---")
+		for i in secondary:
+			print (i.name)
+		print("-----")
+
+		print("--- TERTIARY ---")
+		for i in tertiary:
+			print (i.name)
+		print("-----")
+		print("")
+		print("")
+		
 		for ring in sector.get_node('../../').get_children():
 			for sector in ring.get_children():
 				sector.get_node('Mesh').set_material_override(null)
 				sector.selected = false
-		sector.get_node('Mesh').set_material_override(highlight_orange)
-		update_header(ArcUtils.sector_name(sector.name))
+		
+		for building in primary:
+			_highlight_building(building,highlight_cyan)
+		for building in secondary:
+			_highlight_building(building,highlight_lime)
+		for building in tertiary:
+			_highlight_building(building,highlight_violet)
+			
+		#sector.get_node('Mesh').set_material_override(highlight_orange)
+		_highlight_building(sector,highlight_orange)
+		
+		#update_header(ArcUtils.sector_name(sector.name))
+		update_header(sector.name)
 		sector.selected = true
 
-func sector_mouse_entered(node):
+func sector_mouse_entered(sector):
 	if view == "Arcology":
-		var terra = node.get_node('../../')
+		var terra = sector.get_node('../../')
 		if terra.name != selected_terra:
 			_highlight_terra(terra,highlight_blue)
 	elif view == "terra":
-		if not node.selected:
-			node.get_node('Mesh').set_material_override(highlight_blue)
+		if not sector.selected:
+			#node.get_node('Mesh').set_material_override(highlight_blue)
+			_highlight_building(sector,highlight_blue)
 
-func sector_mouse_exited(node):
+func sector_mouse_exited(sector):
 	if view == "arcology":
-		var terra = node.get_node('../../')
+		var terra = sector.get_node('../../')
 		if terra.name != selected_terra:
 			_highlight_terra(terra,null)
 	elif view == "terra":
-		if not node.selected:
-			node.get_node('Mesh').set_material_override(null)
+		if not sector.selected:
+			sector.get_node('Mesh').set_material_override(null)
 
 func _on_Button_pressed():
 	var t_start = camera.translation
@@ -144,8 +203,22 @@ func _on_Button_pressed():
 		_highlight_terra(terra,null)
 		if terra.name != selected_terra:
 			terra.hide()
-	$Tween.interpolate_property(camera,'translation',t_start,t_end,1,Tween.TRANS_SINE,Tween.EASE_IN_OUT)
-	$Tween.interpolate_property(camera,'rotation_degrees',r_start,r_end,1,Tween.TRANS_SINE,Tween.EASE_IN_OUT)
+	$Tween.interpolate_property(
+		camera,
+		'translation',
+		t_start,
+		t_end,
+		1,
+		Tween.TRANS_SINE,
+		Tween.EASE_IN_OUT)
+	$Tween.interpolate_property(
+		camera,
+		'rotation_degrees',
+		r_start,
+		r_end,
+		1,
+		Tween.TRANS_SINE,
+		Tween.EASE_IN_OUT)
 	$Tween.start()
 
 var camrot = 0.0
@@ -189,8 +262,22 @@ func _input(event):
 				terra.show()
 				if terra.name == selected_terra:
 					_highlight_terra(terra,highlight_orange)
-			$Tween.interpolate_property(camera,'translation',t_start,t_end,1,Tween.TRANS_SINE,Tween.EASE_IN_OUT)
-			$Tween.interpolate_property(camera,'rotation_degrees',r_start,r_end,1,Tween.TRANS_SINE,Tween.EASE_IN_OUT)
+			$Tween.interpolate_property(
+				camera,
+				'translation',
+				t_start,
+				t_end,
+				1,
+				Tween.TRANS_SINE,
+				Tween.EASE_IN_OUT)
+			$Tween.interpolate_property(
+				camera,
+				'rotation_degrees',
+				r_start,
+				r_end,
+				1,
+				Tween.TRANS_SINE,
+				Tween.EASE_IN_OUT)
 			$Tween.start()
 
 #func sector_ownership(): #needs reworked before being used

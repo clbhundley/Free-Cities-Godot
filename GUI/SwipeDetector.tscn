@@ -24,9 +24,6 @@ func _start_detection(position):
 
 func _end_detection(position):
 	$Timer.stop()
-	
-	return
-	
 	var direction = -1 * (position - swipe_start_position).normalized()
 	if abs(direction.x) + abs(direction.y) >= MAX_DIAGONAL_SLOPE:
 		return
