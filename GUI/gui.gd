@@ -11,6 +11,17 @@ onready var AI_panel = get_node('AI Panel')
 #onready var finance = get_node('../Finance')
 
 func _ready():
+	var gui_intercept_mouse = []
+	for node in get_tree().get_nodes_in_group("Intercept Mouse"):
+		gui_intercept_mouse.append(node)
+		for child in node.get_children():
+			gui_intercept_mouse.append(child)
+			for grandchild in child.get_children():
+				gui_intercept_mouse.append(grandchild)
+	for node in gui_intercept_mouse:
+		if node.is_class("Control"):
+			node.connect('mouse_entered',self,'mouse_entered_gui')
+			node.connect('mouse_exited',self,'mouse_exited_gui')
 	game.is_ready() #find a way to get rid of this
 	game.update_money(0)
 	game.set_bg_color(game.BG_COLOR_DEFAULT)
@@ -102,3 +113,10 @@ func _input(event):
 		elif calendar.is_visible_in_tree():
 			_on_Time_toggled(false)
 			get_node('Navigation/Time/Button').set_pressed(false)
+
+var mouse_over_gui = false
+func mouse_entered_gui():
+	mouse_over_gui = true
+
+func mouse_exited_gui():
+	mouse_over_gui = false

@@ -5,13 +5,7 @@ onready var action_button = dock.get_node("ActionButton")
 var arrow_left_icon = load("res://GUI/Textures/arrow_left.svg")
 var arrow_right_icon = load("res://GUI/Textures/arrow_right.svg")
 
-var open
-
-func reset_content_position():
-	for node in get_children():
-		if node is VBoxContainer:
-			node.margin_left = 0
-			node.margin_right = 0
+var open = false
 
 func open():
 	self.show()

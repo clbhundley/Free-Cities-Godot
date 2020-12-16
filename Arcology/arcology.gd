@@ -5,9 +5,11 @@ var _name = "Arcology X-4"
 var size = 7
 var structure #not being used properly
 var selected_terra
+var selected_building
 const ARCOLOGY_VIEW = 0
 const TERRA_VIEW = 1
 var view = "arcology"
+onready var GUI = get_tree().get_root().get_node("Game/GUI")
 onready var camera = get_node('Cambase/Camera')
 onready var highlight_blue = load('res://Arcology/blue.material')
 onready var highlight_orange = load('res://Arcology/orange.material')
@@ -28,7 +30,7 @@ func _ready():
 	resize()
 
 func update_header(text):
-	var header = get_tree().get_root().get_node("Game/GUI/Header/Arcology/Title")
+	var header = GUI.get_node("Header/Arcology/Title")
 	header.set_text(text)
 
 func _data():
@@ -125,63 +127,45 @@ func arc_input_event(camera,event,click_position,click_normal,shape_idx,sector):
 		var terra = sector.get_node('../../')
 		_highlight_terra(terra,highlight_orange)
 		selected_terra = terra.name
-		update_header(terra.name)
-		$Button.show()
+		update_header(_name + "  -  " + selected_terra)
+		if GUI.get_node("Dock").mode != "ManageTerra":
+			GUI.get_node("Dock").set_mode("ManageTerra")
+		$ChangeView.show()
 		if event.doubleclick:
-			_on_Button_pressed()
+			_on_ChangeView_pressed()
 	elif view == "terra":
 		var primary = ArcUtils.get_neighbors(sector)["primary"]
 		var secondary = ArcUtils.get_neighbors(sector)["secondary"]
 		var tertiary = ArcUtils.get_neighbors(sector)["tertiary"]
-		print("")
-		print("")
-		print("--- PRIMARY ---")
-		for i in primary:
-			print (i.name)
-		print("-----")
-
-		print("--- SECONDARY ---")
-		for i in secondary:
-			print (i.name)
-		print("-----")
-
-		print("--- TERTIARY ---")
-		for i in tertiary:
-			print (i.name)
-		print("-----")
-		print("")
-		print("")
-		
 		for ring in sector.get_node('../../').get_children():
 			for sector in ring.get_children():
 				sector.get_node('Mesh').set_material_override(null)
 				sector.selected = false
-		
 		for building in primary:
 			_highlight_building(building,highlight_cyan)
 		for building in secondary:
 			_highlight_building(building,highlight_lime)
 		for building in tertiary:
 			_highlight_building(building,highlight_violet)
-			
-		#sector.get_node('Mesh').set_material_override(highlight_orange)
 		_highlight_building(sector,highlight_orange)
-		
-		#update_header(ArcUtils.sector_name(sector.name))
-		update_header(sector.name)
+		update_header(selected_terra + "  -  " + ArcUtils.sector_name(sector.name))
+		GUI.get_node("Dock").set_mode("ManageBuilding")
+		selected_building = ArcUtils.get_building(sector)
 		sector.selected = true
 
+var mouse_over_sector = false
 func sector_mouse_entered(sector):
+	mouse_over_sector = true
 	if view == "Arcology":
 		var terra = sector.get_node('../../')
 		if terra.name != selected_terra:
 			_highlight_terra(terra,highlight_blue)
 	elif view == "terra":
 		if not sector.selected:
-			#node.get_node('Mesh').set_material_override(highlight_blue)
 			_highlight_building(sector,highlight_blue)
 
 func sector_mouse_exited(sector):
+	mouse_over_sector = false
 	if view == "arcology":
 		var terra = sector.get_node('../../')
 		if terra.name != selected_terra:
@@ -190,25 +174,53 @@ func sector_mouse_exited(sector):
 		if not sector.selected:
 			sector.get_node('Mesh').set_material_override(null)
 
-func _on_Button_pressed():
+func _on_ChangeView_pressed():
+	if view == "arcology":
+		view_terra()
+	elif view == "terra":
+		view_arcology()
+
+func view_terra():
 	var t_start = camera.translation
 	var t_modify = $Structure.get_node(selected_terra).translation[1]
 	var t_end = Vector3(0, t_modify+2, 9)
 	var r_start = camera.rotation_degrees
 	var r_end = Vector3(-40, 0, 0)
-	update_header(selected_terra)
-	$Button.hide()
-	view = "terra"
 	for terra in $Structure.get_children():
 		_highlight_terra(terra,null)
 		if terra.name != selected_terra:
 			terra.hide()
+	view = "terra"
+	$ChangeView.set_text("View Arcology")
+	$ChangeView.margin_left = 0 #refresh size
+	update_header(selected_terra)
+	animate_camera(t_start,t_end,r_start,r_end)
+
+func view_arcology():
+	var t_start = camera.translation
+	var t_modify = $Structure.get_node(selected_terra).translation[1]
+	var t_end = Vector3(0, -8.5, 16)
+	var r_start = camera.rotation_degrees
+	var r_end = Vector3(-4, cam_offset, 0)
+	for terra in $Structure.get_children():
+		terra.show()
+		if terra.name == selected_terra:
+			_highlight_terra(terra,highlight_orange)
+	view = "arcology"
+	$ChangeView.show()
+	$ChangeView.set_text("View Terra")
+	$ChangeView.margin_left = 0 #refresh size
+	update_header(_name + "  -  " + selected_terra)
+	animate_camera(t_start,t_end,r_start,r_end)
+	GUI.get_node("Dock").set_mode("ManageArcology")
+
+func animate_camera(t_start,t_end,r_start,r_end):
 	$Tween.interpolate_property(
 		camera,
 		'translation',
 		t_start,
 		t_end,
-		1,
+		0.8,
 		Tween.TRANS_SINE,
 		Tween.EASE_IN_OUT)
 	$Tween.interpolate_property(
@@ -216,106 +228,50 @@ func _on_Button_pressed():
 		'rotation_degrees',
 		r_start,
 		r_end,
-		1,
+		0.8,
 		Tween.TRANS_SINE,
 		Tween.EASE_IN_OUT)
 	$Tween.start()
+
+func click_in_place():
+	pass
+	#if selected:
+		#press back
 
 var camrot = 0.0
 func _input(event):
 	if not self.visible:
 		return
-	if get_tree().get_root().get_node('Game/GUI/AI Panel').is_visible_in_tree():
-		return
-	var calendar = get_tree().get_root().get_node("Game/GUI//Navigation/Time/Calendar")
+	var calendar = GUI.get_node("Navigation/Time/Calendar")
 	if calendar.is_visible():
 		return
-	if (event.is_class("InputEventMouseMotion")):
-		if (event.button_mask&(BUTTON_MASK_LEFT)):
+	
+	if event.is_class("InputEventMouseMotion"):
+		if event.button_mask&(BUTTON_MASK_LEFT):
 			camrot += event.relative.x * 0.005
 			get_node("Cambase").set_rotation(Vector3(0, -1*camrot, 0))
-	elif event.is_action_pressed('ui_back'):
+	elif event.is_action_pressed('ui_back') or event.is_action_pressed("stationary_select") and not mouse_over_sector:
 		if view == "arcology":
 			if selected_terra:
+				get_tree().set_input_as_handled()
 				selected_terra = null
-				update_header("")
-				$Button.hide()
+				update_header(_name)
+				if GUI.get_node("Dock").mode != "ManageArcology":
+					GUI.get_node("Dock").set_mode("ManageArcology")
+				$ChangeView.hide()
 				for terra in $Structure.get_children():
 					_highlight_terra(terra,null)
 		elif view == "terra":
+			get_tree().set_input_as_handled()
+			selected_building = null
 			for ring in $Structure.get_node(selected_terra).get_children():
 				for sector in ring.get_children():
 					if sector.selected:
 						sector.get_node('Mesh').set_material_override(null)
 						sector.selected = false
 						update_header(selected_terra)
+						GUI.get_node("Dock").set_mode("ManageTerra")
 						return
-			var t_start = camera.translation
-			var t_modify = $Structure.get_node(selected_terra).translation[1]
-			var t_end = Vector3(0, -8.5, 16)
-			var r_start = camera.rotation_degrees
-			var r_end = Vector3(-4, cam_offset, 0)
-			update_header(selected_terra)
-			$Button.show()
-			view = "arcology"
-			for terra in $Structure.get_children():                             #show arcology
-				terra.show()
-				if terra.name == selected_terra:
-					_highlight_terra(terra,highlight_orange)
-			$Tween.interpolate_property(
-				camera,
-				'translation',
-				t_start,
-				t_end,
-				1,
-				Tween.TRANS_SINE,
-				Tween.EASE_IN_OUT)
-			$Tween.interpolate_property(
-				camera,
-				'rotation_degrees',
-				r_start,
-				r_end,
-				1,
-				Tween.TRANS_SINE,
-				Tween.EASE_IN_OUT)
-			$Tween.start()
-
-#func sector_ownership(): #needs reworked before being used
-#	for terra in $Structure.get_children():
-#		for sector in terra.get_children().size():
-#			if terra.get_child(sector).get('owned') != null:
-#				if terra.get_child(sector).owned:
-#					terra.get_child(sector).set_modulate('d42a2a')
-#				else:
-#					terra.get_child(sector).set_modulate('36953d')
-#			elif _name(terra.get_child(sector).name).ends_with("_b"):
-#				if terra.get_children()[sector-1].get('owned') != null:
-#					if terra.get_children()[sector-1].owned:
-#						terra.get_child(sector).set_modulate('d42a2a')
-#					else:
-#						terra.get_child(sector).set_modulate('36953d')
-#			elif _name(terra.get_child(sector).name).ends_with("_c"):
-#				if terra.get_children()[sector-2].get('owned') != null:
-#					if terra.get_children()[sector-2].owned:
-#						terra.get_child(sector).set_modulate('d42a2a')
-#					else:
-#						terra.get_child(sector).set_modulate('36953d')
-#			elif terra.get_child(sector).name == "Inner" or terra.get_child(sector).name == "Outer":
-#				for _sec in terra.get_child(sector).get_children().size():
-#					if terra.get_child(sector).get_child(_sec).get('owned') != null:
-#						if terra.get_child(sector).get_child(_sec).owned:
-#							terra.get_child(sector).get_child(_sec).set_modulate('d42a2a')
-#						else:
-#							terra.get_child(sector).get_child(_sec).set_modulate('36953d')
-#					elif _name(terra.get_child(sector).get_child(_sec).name).ends_with("_b"):
-#						if terra.get_child(sector).get_children()[_sec-1].get('owned') != null:
-#							if terra.get_child(sector).get_children()[_sec-1].owned:
-#								terra.get_child(sector).get_child(_sec).set_modulate('d42a2a')
-#							else:
-#								terra.get_child(sector).get_child(_sec).set_modulate('36953d')
-#					elif _name(terra.get_child(sector).get_child(_sec).name).ends_with("_c"):
-#						if terra.get_child(sector).get_children()[_sec-2].get('owned') != null:
-#							if terra.get_child(sector).get_children()[_sec-2].owned:
-#								terra.get_child(sector).get_child(_sec).set_modulate('d42a2a')
-#							else:
-#								terra.get_child(sector).get_child(_sec).set_modulate('36953d')
+			if event.is_action_pressed("stationary_select") and not mouse_over_sector:
+				return
+			view_arcology()

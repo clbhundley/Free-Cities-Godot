@@ -337,7 +337,7 @@ var current_time = 0
 var total_time
 
 func display_action():
-	_slave.get_node('Display/Activity/Action').set_text(\"Waiting for Customer\")
+	_slave.get_node('UI/Activity/Action').set_text(\"Waiting for Customer\")
 
 func start():
 	#time to acquire customer based on...?
@@ -345,7 +345,7 @@ func start():
 	if arousal == 0:
 		arousal = 1
 	total_time = abs(math.gaussian(230,21))*arousal
-	_slave.get_node('Display/Activity/ProgressBar').max_value = total_time
+	_slave.get_node('UI/Activity/ProgressBar').max_value = total_time
 	display_action()
 	step()
 
@@ -353,8 +353,8 @@ func step():
 	current_time += 1
 	if _slave.arousal <= 90:  #anticipation
 		_slave.arousal += 0.1
-	_slave.get_node('Display/Activity/ProgressBar').set(\"value\",current_time)
-	_slave.get_node('Display/Activity/Time').set_text(math.time_remaining(current_time,total_time))
+	_slave.get_node('UI/Activity/ProgressBar').set(\"value\",current_time)
+	_slave.get_node('UI/Activity/Time').set_text(math.time_remaining(current_time,total_time))
 
 func tick():
 	if current_time == 0:

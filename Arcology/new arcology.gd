@@ -1,12 +1,14 @@
 extends Node
 
 func generate(size):
+	var enumerate = ["X","A","B","C","D","E","F","G","H","I","J","K","L"]
 	var build = [penthouse(),fill_top(),fill_bot(),t2(),t1(),t0()]
 	for i in size - build.size():
 		build.insert(i+2,fill())
 	for terra in build.size():
-		build[terra].name = "Terra "+str(build.size()-1-terra)
+		build[terra].name = "Terra " + enumerate[build.size()-1-terra]
 		build[0].name = "Penthouse"
+		build[-1].name = "Basement"
 	return build
 
 func penthouse():

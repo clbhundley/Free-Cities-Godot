@@ -1,6 +1,7 @@
 extends Spatial
 
 var cam_pos
+
 var active_collection
 
 func _ready():
@@ -83,7 +84,12 @@ func set_active_collection(collection):
 	update_collection(active_collection)
 	active_collection.show()
 	update_header()
-	cam_pos = 7.0
+	var min_camera_pos = 7
+	var max_camera_pos = slave_count(active_collection.name) * 5.4
+	if cam_pos < min_camera_pos:
+		cam_pos = min_camera_pos
+	elif cam_pos > max_camera_pos:
+		cam_pos = max_camera_pos
 
 const offset_x = 2.37
 const offset_y = -4.62

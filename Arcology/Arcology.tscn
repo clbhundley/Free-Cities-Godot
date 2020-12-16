@@ -2427,16 +2427,19 @@ material/0 = null
 [node name="Collision" type="CollisionShape" parent="Library/Sectors/thermal_exchange_condenser_b"]
 shape = SubResource( 158 )
 
-[node name="Button" type="Button" parent="."]
+[node name="ChangeView" type="Button" parent="." groups=[
+"Intercept Mouse",
+]]
 visible = false
 anchor_left = 0.451823
-anchor_top = 0.981481
-anchor_right = 0.548
-anchor_bottom = 0.981481
-margin_top = -49.0
-margin_right = 0.339966
+anchor_top = 0.931481
+anchor_right = 0.548177
+anchor_bottom = 0.976852
+grow_horizontal = 2
+grow_vertical = 2
 custom_fonts/font = ExtResource( 4 )
 text = "View Terra"
+align = 2
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2463,4 +2466,4 @@ far = 40.1
 [node name="Structure" type="Spatial" parent="."]
 
 [node name="Tween" type="Tween" parent="."]
-[connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]
+[connection signal="pressed" from="ChangeView" to="." method="_on_ChangeView_pressed"]

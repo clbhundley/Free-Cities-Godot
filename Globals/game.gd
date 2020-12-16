@@ -29,6 +29,9 @@ func is_ready(): # called from GUI scene - needs refinement
 		for nodes in get_tree().get_root().get_node('Game/GUI/Pause Menu/Saves/Panel/Slots').get_children():
 			nodes._ready()
 
+func get_gui():
+	return get_tree().get_root().get_node("Game/GUI")
+
 var money = 0 # is not being saved until exit!
 func update_money(value):
 	var label = get_tree().get_root().get_node('Game/GUI/Money/Capital')
