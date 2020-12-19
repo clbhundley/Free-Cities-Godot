@@ -39,7 +39,7 @@ func update_money(value):
 	label.set_text("¤" + str(money))
 
 var bg_color
-const BG_COLOR_DEFAULT = "314650"
+const BG_COLOR_DEFAULT = "204659"
 const BG_COLOR_DEEP = "323150"
 const BG_COLOR_PLUMB = "403150"
 func set_bg_color(new_color):

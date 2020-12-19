@@ -2,14 +2,59 @@ extends Node
 
 func generate(size):
 	var enumerate = ["X","A","B","C","D","E","F","G","H","I","J","K","L"]
-	var build = [penthouse(),fill_top(),fill_bot(),t2(),t1(),t0()]
-	for i in size - build.size():
-		build.insert(i+2,fill())
-	for terra in build.size():
-		build[terra].name = "Terra " + enumerate[build.size()-1-terra]
-		build[0].name = "Penthouse"
-		build[-1].name = "Basement"
-	return build
+	var arcology = [penthouse(),fill_top(),fill_bot(),t2(),t1(),t0()]
+	for i in size - arcology.size():
+		arcology.insert(i+2,fill())
+	for terra in arcology.size():
+		arcology[terra].name = "Terra " + enumerate[arcology.size()-1-terra]
+		arcology[0].name = "Penthouse"
+		arcology[-1].name = "Basement"
+	set_building_ownership(arcology)
+	return arcology
+
+func set_building_ownership(arcology):
+	var parks = []
+	var sectors = []
+	var buildings = []
+	var owned_buildings = []
+	for terra in arcology:
+		if terra.name != "Penthouse" and terra.name != "Basement":
+			for ring in terra.get_children():
+				for sector in ring.get_children():
+					sectors.append(sector)
+					var building = ArcUtils.get_building(sector)
+					if "park" in sector.name:
+						if not parks.has(building):
+							building.owned = true
+							parks.append(building)
+							owned_buildings.append(building)
+					else:
+						if not buildings.has(building):
+							buildings.append(building)
+	var parks_total_area = 0
+	for i in parks:
+		if i.get("size"):
+			parks_total_area += i.size
+		else:
+			parks_total_area += 1
+	var owned_total_area = parks_total_area
+	while owned_total_area <= sectors.size()/2:
+		randomize()
+		buildings.shuffle()
+		var rand_building = buildings.pop_front()
+		rand_building.owned = true
+		owned_buildings.append(rand_building)
+		if rand_building.get("size"):
+			owned_total_area += rand_building.size
+		else:
+			owned_total_area += 1
+	var buildings_total_area = 0
+	for i in buildings:
+		if i.get("size"):
+			buildings_total_area += i.size
+		else:
+			buildings_total_area += 1
+	var percent = stepify(float(owned_total_area)/float(sectors.size())*100,0.1)
 
 func penthouse():
 	var terra = get_node('../Library/Terras/Penthouse').duplicate()
@@ -46,7 +91,6 @@ func fill_top():
 	for sector in composition:
 		for amount in sector.values()[0]:
 			ring = place(ring, sector.keys()[0])
-	terra = assign_ownership(terra)
 	return terra
 
 func fill():
@@ -63,7 +107,6 @@ func fill():
 	for sector in composition:
 		for amount in sector.values()[0]:
 			ring = place(ring, sector.keys()[0])
-	terra = assign_ownership(terra)
 	return terra
 
 func fill_bot():
@@ -80,7 +123,6 @@ func fill_bot():
 	for sector in composition:
 		for amount in sector.values()[0]:
 			ring = place(ring, sector.keys()[0])
-	terra = assign_ownership(terra)
 	return terra
 
 func t2():
@@ -96,17 +138,15 @@ func t2():
 	var outer_layouts = [outer_layout_1, outer_layout_2, outer_layout_3, outer_layout_4, outer_layout_5, outer_layout_6]
 	var inner_composition = inner_layouts[dice.roll(2)]
 	var outer_composition = outer_layouts[dice.roll(6)]
-	var terra = get_node('../Library/Terras/Terra 2').duplicate()
+	var terra = get_node('../Library/Terras/Terra B').duplicate()
 	var inner_ring = terra.get_node('Inner')
 	for sector in inner_composition:
 		for amount in sector.values()[0]:
 			inner_ring = place(inner_ring, sector.keys()[0])
-	inner_ring = assign_ownership(inner_ring)
 	var outer_ring = terra.get_node('Outer')
 	for sector in outer_composition:
 		for amount in sector.values()[0]:
 			outer_ring = place(outer_ring, sector.keys()[0])
-	outer_ring = assign_ownership(outer_ring)
 	return terra
 
 func t1():
@@ -123,21 +163,19 @@ func t1():
 	var outer_layouts = [outer_layout_1, outer_layout_2, outer_layout_3]
 	var inner_composition = inner_layouts[dice.roll(6)]
 	var outer_composition = outer_layouts[dice.roll(3)]
-	var terra = get_node('../Library/Terras/Terra 1').duplicate()
+	var terra = get_node('../Library/Terras/Terra A').duplicate()
 	var inner_ring = terra.get_node('Inner')
 	for sector in inner_composition:
 		for amount in sector.values()[0]:
 			inner_ring = place(inner_ring, sector.keys()[0])
-	inner_ring = assign_ownership(inner_ring)
 	var outer_ring = terra.get_node('Outer')
 	for sector in outer_composition:
 		for amount in sector.values()[0]:
 			outer_ring = place(outer_ring, sector.keys()[0])
-	outer_ring = assign_ownership(outer_ring)
 	return terra
 
 func t0():
-	var terra = get_node('../Library/Terras/Terra 0').duplicate()
+	var terra = get_node('../Library/Terras/Basement').duplicate()
 	var layout = [
 	"nuclear_reactor_gen_5",
 	"water_purification",
@@ -186,21 +224,6 @@ func place(terra, sector_name):
 				empty = true
 			else:
 				roll = dice.roll(12)
-	return terra
-
-func assign_ownership(terra):
-	var buildings = 0
-	for sector in terra.get_children():
-		if sector.get('owned') != null:
-			buildings += 1
-	var half = floor(buildings/2)
-	while half > 0:
-		var roll = dice.roll(12)
-		var sector = terra.get_child(roll)
-		if sector.get('owned') != null:
-			if sector.get('owned') == false:
-				terra.get_child(roll).owned = true
-				half -= 1
 	return terra
 
 func get_sector(name):

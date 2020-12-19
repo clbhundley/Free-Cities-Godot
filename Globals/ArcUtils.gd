@@ -1,22 +1,5 @@
 extends Node
 
-func sector_name(input):
-	if "@" in input:
-		var s = input.split("@")
-		return s[1]
-	else:
-		return input
-
-func swap_sectors(old,new):
-	new.get_node('Collision').translation[2] = round(old.get_node('Collision').translation[2])
-	new.get_node('Mesh').translation[2] = round(old.get_node('Mesh').translation[2])
-	new.rotation_degrees[1] = round(old.rotation_degrees[1])
-	get_arcology().connect_sector_signals(new)
-	for children in old.get_children():
-		children.queue_free()
-	old.queue_free()
-	old.replace_by(new)
-
 func get_arcology():
 	return get_tree().get_root().get_node("Game/Arcology")
 
@@ -29,6 +12,44 @@ func get_building(sector):
 	elif sector_name(sector.name).ends_with("_c"):
 		return sector.get_parent().get_child((sector.get_index()+10)%12)
 	return sector
+
+func sector_name(input):
+	if "@" in input:
+		var s = input.split("@")
+		return s[1]
+	else:
+		return input
+
+func get_arcology_ownership_percent(structure):
+	var sectors = []
+	var owned_buildings = []
+	for terra in structure.get_children():
+		if terra.name != "Penthouse" and terra.name != "Basement":
+			for ring in terra.get_children():
+				for sector in ring.get_children():
+					sectors.append(sector)
+					var building = ArcUtils.get_building(sector)
+					if building.owned:
+						if not owned_buildings.has(building):
+							owned_buildings.append(building)
+	var owned_buildings_total_area = 0
+	for i in owned_buildings:
+		if i.get("size"):
+			owned_buildings_total_area += i.size
+		else:
+			owned_buildings_total_area += 1
+	var percent = stepify(float(owned_buildings_total_area)/float(sectors.size())*100,0.1)
+	return percent
+
+func swap_sectors(old,new):
+	new.get_node('Collision').translation[2] = round(old.get_node('Collision').translation[2])
+	new.get_node('Mesh').translation[2] = round(old.get_node('Mesh').translation[2])
+	new.rotation_degrees[1] = round(old.rotation_degrees[1])
+	get_arcology().connect_sector_signals(new)
+	for children in old.get_children():
+		children.queue_free()
+	old.queue_free()
+	old.replace_by(new)
 
 func get_building_display_name(building):
 	if "park_large" in building.name:
@@ -120,17 +141,17 @@ func parse_address(address):
 		"sector":sector,
 		"ring":ring}
 
-func to_address(terra,ring,sector):
+func to_address(terra_index,ring_index,sector_index):
 	var enumerate = ["X","A","B","C","D","E","F","G","H","I","J","K","L"]
-	if terra == 0:
-		terra = "P"
+	if terra_index == 0:
+		terra_index = "P"
 	else:
-		terra = enumerate[get_arcology().size - terra - 1]
-	if ring == 1:
-		sector += 13
+		terra_index = enumerate[get_arcology().size - terra_index - 1]
+	if ring_index == 1:
+		sector_index += 13
 	else:
-		sector += 1
-	return terra + str(sector)
+		sector_index += 1
+	return terra_index + str(sector_index)
 
 func get_nutrition_system(): # arcology globals file?
 	var penthouse = get_structure().get_child(0).get_child(0).get_children()
