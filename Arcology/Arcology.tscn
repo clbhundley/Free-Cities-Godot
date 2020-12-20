@@ -3854,7 +3854,7 @@ transform = Transform( 1, 0, 0, 0, 0.867721, 0.497052, 0, -0.497052, 0.867721, 0
 light_color = Color( 0.933333, 0.933333, 0.933333, 1 )
 
 [node name="Cambase" type="Spatial" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.6, 0 )
 
 [node name="Camera" type="Camera" parent="Cambase"]
 _import_path = NodePath("Camera")

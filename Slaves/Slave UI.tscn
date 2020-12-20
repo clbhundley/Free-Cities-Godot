@@ -493,6 +493,7 @@ size = 20
 font_data = ExtResource( 1 )
 
 [node name="Slave UI" type="Control" groups=[
+"Intercept Mouse",
 "Slave UI",
 ]]
 margin_right = 666.0

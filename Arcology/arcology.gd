@@ -27,7 +27,6 @@ func _ready():
 	show_ownership_outlines()
 	update_header(_name)
 	resize()
-	print(ArcUtils.get_arcology_ownership_percent($Structure))
 
 func update_header(text):
 	var header = GUI.get_node("Header/Arcology/Title")
@@ -181,7 +180,48 @@ func sector_mouse_exited(sector):
 		if not ArcUtils.get_building(sector) == selected_building:
 			outline_building(sector,null)
 
+var motion_detected
 func arc_input_event(camera,event,click_position,click_normal,shape_idx,sector):
+	
+	if event.is_action_released("ui_accept"):
+		if not game.get_gui().mouse_over_gui:
+			if not motion_detected:
+				if view == "arcology":
+					for terra in $Structure.get_children():
+						outline_terra(terra,null)
+					var terra = sector.get_node('../../')
+					outline_terra(terra,highlight_white)
+					if selected_terra != terra.name:
+						selected_terra = terra.name
+						GUI.get_node("SidePanel/ManageTerra").update()
+						dock.set_mode("ManageTerra")
+						update_header(_name + "  -  " + selected_terra)
+						$ChangeView.show()
+				elif view == "terra":
+					for ring in sector.get_node('../../').get_children():
+						for sector in ring.get_children():
+							outline_sector(sector,null)
+							sector.selected = false
+					outline_building(sector,highlight_white)
+					var terra_index = sector.get_node("../../").get_index()
+					var ring_index = sector.get_parent().get_index()
+					var sector_index = sector.get_index()
+					var address = ArcUtils.to_address(terra_index,ring_index,sector_index)
+					var sector_name = ArcUtils.sector_name(sector.name).capitalize()
+					if selected_building != ArcUtils.get_building(sector):
+						update_header(address + "  -  " + sector_name)
+						selected_building = ArcUtils.get_building(sector)
+						sector.selected = true
+						GUI.get_node("SidePanel/ManageBuilding").update()
+						if not dock.side_panel.open:
+							dock.set_mode("ManageBuilding",false)
+						else:
+							dock.set_mode("ManageBuilding")
+	if event.is_class("InputEventMouseMotion"):
+		motion_detected = true
+	else:
+		motion_detected = false
+	
 	if not event.is_pressed():
 		return
 	if not event.is_class("InputEventScreenTouch"):
@@ -189,42 +229,41 @@ func arc_input_event(camera,event,click_position,click_normal,shape_idx,sector):
 			if event.button_index != 1:
 				return
 	if view == "arcology":
-		for terra in $Structure.get_children():
-			outline_terra(terra,null)
-		var terra = sector.get_node('../../')
-		outline_terra(terra,highlight_white)
-		selected_terra = terra.name
-		update_header(_name + "  -  " + selected_terra)
-		if dock.mode != "ManageTerra":
-			dock.set_mode("ManageTerra")
-		GUI.get_node("SidePanel/ManageTerra").update()
-		$ChangeView.show()
+#		for terra in $Structure.get_children():
+#			outline_terra(terra,null)
+#		var terra = sector.get_node('../../')
+#		outline_terra(terra,highlight_white)
+#		selected_terra = terra.name
+#		update_header(_name + "  -  " + selected_terra)
+#		GUI.get_node("SidePanel/ManageTerra").update()
+#		dock.set_mode("ManageTerra")
+#		$ChangeView.show()
 		if event.doubleclick:
 			_on_ChangeView_pressed()
 	elif view == "terra":
-		for ring in sector.get_node('../../').get_children():
-			for sector in ring.get_children():
-				outline_sector(sector,null)
-				sector.selected = false
-		outline_building(sector,highlight_white)
-		var terra_index = sector.get_node("../../").get_index()
-		var ring_index = sector.get_parent().get_index()
-		var sector_index = sector.get_index()
-		var address = ArcUtils.to_address(terra_index,ring_index,sector_index)
-		var sector_name = ArcUtils.sector_name(sector.name).capitalize()
-		update_header(address + "  -  " + sector_name)
-		selected_building = ArcUtils.get_building(sector)
-		sector.selected = true
-		GUI.get_node("SidePanel/ManageBuilding").update()
+#		for ring in sector.get_node('../../').get_children():
+#			for sector in ring.get_children():
+#				outline_sector(sector,null)
+#				sector.selected = false
+#		outline_building(sector,highlight_white)
+#		var terra_index = sector.get_node("../../").get_index()
+#		var ring_index = sector.get_parent().get_index()
+#		var sector_index = sector.get_index()
+#		var address = ArcUtils.to_address(terra_index,ring_index,sector_index)
+#		var sector_name = ArcUtils.sector_name(sector.name).capitalize()
+#		update_header(address + "  -  " + sector_name)
+#		selected_building = ArcUtils.get_building(sector)
+#		sector.selected = true
+#		GUI.get_node("SidePanel/ManageBuilding").update()
 		if event.doubleclick:
 			if not dock.side_panel.open:
 				dock.set_mode("ManageBuilding",false)
 				dock._on_ActionButton_pressed()
-		else:
-			if not dock.side_panel.open:
-				dock.set_mode("ManageBuilding",false)
-			else:
-				dock.set_mode("ManageBuilding")
+#		else:
+#			if not dock.side_panel.open:
+#				dock.set_mode("ManageBuilding",false)
+#			else:
+#				dock.set_mode("ManageBuilding")
 
 var camera_rotation = 0.0
 func _input(event):
@@ -248,6 +287,9 @@ func _input(event):
 				$ChangeView.hide()
 				for terra in $Structure.get_children():
 					outline_terra(terra,null)
+			elif event.is_action_pressed('ui_back'):
+				if GUI.get_node("SidePanel").open:
+					dock._on_ActionButton_pressed()
 		elif view == "terra":
 			get_tree().set_input_as_handled()
 			selected_building = null

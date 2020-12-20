@@ -120,11 +120,12 @@ func update():
 	if selected_building_name[-2] == \"_\":
 		selected_building_name = selected_building_name.rstrip(\" a\")
 	get_node(\"Title\").set_text(selected_building_name.capitalize()+\":\")
-	if selected_building.owned:
-		#daily upkeep
-		get_node(\"Buy\").hide()
-		get_node(\"Sell\").show()
-		get_node(\"Construction\").show()
+	if \"owned\" in selected_building:
+		if selected_building.owned:
+			#daily upkeep
+			get_node(\"Buy\").hide()
+			get_node(\"Sell\").show()
+			get_node(\"Construction\").show()
 	else:
 		get_node(\"Buy\").show()
 		get_node(\"Sell\").hide()
@@ -416,10 +417,10 @@ func _on_ActionButton_pressed():
 	else:
 		side_panel.open()
 
-func _unhandled_input(event):
-	if event.is_action_pressed('ui_back'):
-		if side_panel.open or mode == \"KidnappersMarket\" or mode == \"NeighboringArcologies\":
-			_on_ActionButton_pressed()
+#func _unhandled_input(event):
+#	if event.is_action_pressed('ui_back'):
+#		if side_panel.open:
+#			_on_ActionButton_pressed()
 
 var rubik_44 = preload('res://Fonts/Rubik-Light-44.tres')
 var rubik_40 = preload('res://Fonts/Rubik-Light-40.tres')
@@ -573,6 +574,7 @@ func _ready():
 
 func _on_pressed():
 	var _game = get_tree().get_root().get_node('Game')
+	var slaves = _game.get_node('Slaves')
 	for node in _game.get_children():
 		if node.get_class() != \"Node\" and not node is Timer:
 			node.hide()
@@ -582,10 +584,10 @@ func _on_pressed():
 	get_node(\"../../Header/Slaves\").show()
 	get_node(\"../../Header/Arcology\").hide()
 	_game.get_node('Arcology/ChangeView').hide()
-	_game.get_node('Slaves/Camera').current = true
-	_game.get_node('Slaves').show()
+	slaves.get_node('Camera').current = true
+	slaves.show()
 	_game.get_node('GUI').show()
-	_game.get_node('Slaves').set_active_collection(\"Owned\")
+	slaves.set_active_collection(\"Owned\",false)
 	if get_node('../../AI Panel').is_visible_in_tree():
 		get_node('../..')._on_AI_pressed()
 	for tab in get_parent().get_children():
@@ -3875,8 +3877,8 @@ __meta__ = {
 [connection signal="pressed" from="SidePanel/ManageSlaves/PurchaseSlaves" to="SidePanel/ManageSlaves" method="_on_PurchaseSlaves_pressed"]
 [connection signal="pressed" from="SidePanel/PurchaseSlaves/KidnappersMarket" to="Dock" method="set_mode" binds= [ "KidnappersMarket" ]]
 [connection signal="pressed" from="SidePanel/PurchaseSlaves/NeighboringArcologies" to="Dock" method="set_mode" binds= [ "NeighboringArcologies" ]]
-[connection signal="pressed" from="SidePanel/KidnappersMarket/Hide" to="SidePanel/KidnappersMarket/Hide" method="_on_Hide_pressed"]
 [connection signal="pressed" from="SidePanel/KidnappersMarket/Hide" to="SidePanel" method="close"]
+[connection signal="pressed" from="SidePanel/KidnappersMarket/Hide" to="SidePanel/KidnappersMarket/Hide" method="_on_Hide_pressed"]
 [connection signal="pressed" from="SidePanel/NeighboringArcologies/Hide" to="SidePanel/NeighboringArcologies/Hide" method="_on_Hide_pressed"]
 [connection signal="button_down" from="AI Panel/OLD Navigation Tabs/Arcology/Button" to="AI Panel/OLD Navigation Tabs/Arcology" method="_on_button_down"]
 [connection signal="button_up" from="AI Panel/OLD Navigation Tabs/Arcology/Button" to="AI Panel/OLD Navigation Tabs/Arcology" method="_on_button_up"]

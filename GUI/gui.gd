@@ -11,6 +11,12 @@ onready var AI_panel = get_node('AI Panel')
 #onready var finance = get_node('../Finance')
 
 func _ready():
+	gui_mouse_collision()
+	game.is_ready() #find a way to get rid of this
+	game.update_money(0)
+	game.set_bg_color(game.BG_COLOR_DEFAULT)
+
+func gui_mouse_collision():
 	var gui_intercept_mouse = []
 	for node in get_tree().get_nodes_in_group("Intercept Mouse"):
 		gui_intercept_mouse.append(node)
@@ -22,9 +28,6 @@ func _ready():
 		if node.is_class("Control"):
 			node.connect('mouse_entered',self,'mouse_entered_gui')
 			node.connect('mouse_exited',self,'mouse_exited_gui')
-	game.is_ready() #find a way to get rid of this
-	game.update_money(0)
-	game.set_bg_color(game.BG_COLOR_DEFAULT)
 
 #func message_resize():
 	#$Panel.rect_size.y = $Text.rect_size.y + 7

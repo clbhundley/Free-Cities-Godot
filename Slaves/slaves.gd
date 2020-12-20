@@ -56,6 +56,10 @@ func _input(event):
 			cam_pos -= 2
 	elif event.is_action_pressed('ui_page_down'):
 			cam_pos += 2
+	elif event.is_action_pressed('ui_back'):
+		var GUI = game.get_gui()
+		if GUI.get_node("SidePanel").open:
+				GUI.get_node("Dock")._on_ActionButton_pressed()
 	else:
 		return
 	if cam_pos < min_camera_pos:
@@ -71,7 +75,7 @@ func _input(event):
 		Tween.EASE_OUT)
 	$Tween.start()
 
-func set_active_collection(collection):
+func set_active_collection(collection,reset_cam_pos=true):
 	active_collection = $Collections.get_node(collection)
 	for _collection in $Collections.get_children():
 		_collection.hide()
@@ -90,6 +94,8 @@ func set_active_collection(collection):
 		cam_pos = min_camera_pos
 	elif cam_pos > max_camera_pos:
 		cam_pos = max_camera_pos
+	if reset_cam_pos:
+		cam_pos = min_camera_pos
 
 const offset_x = 2.37
 const offset_y = -4.62
