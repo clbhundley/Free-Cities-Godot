@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Fonts/Rubik-Light.tres" type="DynamicFont" id=2]
+[ext_resource path="res://Fonts/Rubik-Light-36.tres" type="DynamicFont" id=3]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends Control
@@ -33,6 +34,9 @@ func _on_display_mode_item_selected(id):
 
 func _on_msaa_item_selected(id):
 	display.set_msaa(id)
+
+func _on_Back_pressed():
+	hide()
 "
 
 [sub_resource type="DynamicFont" id=2]
@@ -58,10 +62,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="TabContainer" type="TabContainer" parent="."]
-anchor_left = 0.192188
-anchor_top = 0.229167
-anchor_right = 0.807813
-anchor_bottom = 0.770833
+anchor_left = 0.197917
+anchor_top = 0.203704
+anchor_right = 0.802083
+anchor_bottom = 0.740741
+rect_min_size = Vector2( 0, 300 )
 custom_fonts/font = SubResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": true
@@ -165,7 +170,36 @@ custom_fonts/font = ExtResource( 2 )
 text = "8x"
 items = [ "Disabled", null, false, 0, null, "2x", null, false, 1, null, "4x", null, false, 2, null, "8x", null, false, 3, null, "16x", null, false, 4, null ]
 selected = 3
+
+[node name="Backcc" type="Button" parent="."]
+visible = false
+anchor_left = 0.460938
+anchor_top = 0.791667
+anchor_right = 0.539063
+anchor_bottom = 0.841667
+custom_fonts/font = ExtResource( 3 )
+text = "Back"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Back" type="Button" parent="."]
+anchor_left = 0.460938
+anchor_top = 0.680481
+anchor_right = 0.539
+anchor_bottom = 0.724481
+margin_top = 100.08
+margin_right = 0.12085
+margin_bottom = 106.56
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = ExtResource( 3 )
+text = "Back"
+__meta__ = {
+"_edit_use_anchors_": true
+}
 [connection signal="pressed" from="TabContainer/Options/VBoxContainer/Open User Folder/Button" to="." method="_on_open_game_folder"]
 [connection signal="item_selected" from="TabContainer/Options/VBoxContainer/Autosave/autosave interval" to="." method="_on_autosave_interval_item_selected"]
 [connection signal="item_selected" from="TabContainer/Options/VBoxContainer/Display Mode/display mode" to="." method="_on_display_mode_item_selected"]
 [connection signal="item_selected" from="TabContainer/Options/VBoxContainer/Anti-Aliasing/msaa" to="." method="_on_msaa_item_selected"]
+[connection signal="pressed" from="Back" to="." method="_on_Back_pressed"]

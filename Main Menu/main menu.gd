@@ -17,11 +17,20 @@ func _on_Exit_pressed():
 func _input(event):
 	if event.is_action_pressed('ui_back') or event.is_action_pressed('ui_cancel'):
 		if get_node('Saves').is_visible_in_tree():
-			get_node('Saves').hide()
+			hide_saves()
 		elif get_node('Options').is_visible_in_tree():
-			get_node('Options').hide()
+			hide_options()
 		elif get_node('New Game').is_visible_in_tree():
-			get_node('New Game').hide()
+			hide_new_game()
+
+func hide_saves():
+	get_node('Saves').hide()
+
+func hide_options():
+	get_node('Options').hide()
+
+func hide_new_game():
+	get_node('New Game').hide()
 
 func _ready():
 	get_tree().get_root().connect('size_changed',self,'resize')

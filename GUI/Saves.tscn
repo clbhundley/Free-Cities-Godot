@@ -1,7 +1,15 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Fonts/Rubik-Light.tres" type="DynamicFont" id=2]
+[ext_resource path="res://Fonts/Rubik-Light-36.tres" type="DynamicFont" id=3]
+
+[sub_resource type="GDScript" id=3]
+script/source = "extends Control
+
+func _on_Back_pressed():
+	hide()
+"
 
 [sub_resource type="DynamicFont" id=1]
 size = 30
@@ -50,6 +58,7 @@ func _on_Delete_pressed():
 self_modulate = Color( 0.286377, 0.569544, 0.796875, 1 )
 anchor_right = 1.0
 anchor_bottom = 1.0
+script = SubResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -626,6 +635,22 @@ margin_top = -15.0
 margin_bottom = 15.0
 custom_fonts/font = ExtResource( 2 )
 text = "Delete"
+
+[node name="Back" type="Button" parent="."]
+anchor_left = 0.460938
+anchor_top = 0.699
+anchor_right = 0.539
+anchor_bottom = 0.743
+margin_top = 100.08
+margin_right = 0.12085
+margin_bottom = 106.56
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = ExtResource( 3 )
+text = "Back"
+__meta__ = {
+"_edit_use_anchors_": true
+}
 [connection signal="pressed" from="Panel/Slots/1/Save" to="Panel/Slots/1" method="_on_Save_pressed"]
 [connection signal="pressed" from="Panel/Slots/1/Load" to="Panel/Slots/1" method="_on_Load_pressed"]
 [connection signal="pressed" from="Panel/Slots/1/Delete" to="Panel/Slots/1" method="_on_Delete_pressed"]
@@ -650,3 +675,4 @@ text = "Delete"
 [connection signal="pressed" from="Panel/Slots/8/Save" to="Panel/Slots/8" method="_on_Save_pressed"]
 [connection signal="pressed" from="Panel/Slots/8/Load" to="Panel/Slots/8" method="_on_Load_pressed"]
 [connection signal="pressed" from="Panel/Slots/8/Delete" to="Panel/Slots/8" method="_on_Delete_pressed"]
+[connection signal="pressed" from="Back" to="." method="_on_Back_pressed"]

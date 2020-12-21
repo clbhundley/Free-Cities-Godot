@@ -109,10 +109,6 @@ stationary_select={
 "events": [  ]
 }
 
-[memory]
-
-limits/message_queue/max_size_kb=4096
-
 [rendering]
 
 quality/driver/fallback_to_gles2=true
