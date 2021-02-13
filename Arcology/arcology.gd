@@ -6,8 +6,6 @@ var size = 7
 var structure #not being used properly
 var selected_terra
 var selected_building
-const ARCOLOGY_VIEW = 0
-const TERRA_VIEW = 1
 var view = "arcology"
 onready var GUI = get_tree().get_root().get_node("Game/GUI")
 onready var dock = GUI.get_node("Dock")
@@ -145,165 +143,13 @@ func _load(structure):
 	show_ownership_outlines()
 
 func connect_sector_signals(sector):
-	sector.connect('input_event',self,'arc_input_event',[sector])
-	sector.connect('mouse_entered',self,'sector_mouse_entered',[sector])
-	sector.connect('mouse_exited',self,'sector_mouse_exited',[sector])
+	sector.connect('input_event',$Input,'arc_input_event',[sector])
+	sector.connect('mouse_entered',$Input,'sector_mouse_entered',[sector])
+	sector.connect('mouse_exited',$Input,'sector_mouse_exited',[sector])
 	var methods = ["tick","minute","hour","day","week","quarter","year"]
 	for method in methods:
 		if sector.has_method(method):
 			time.connect(method,sector,method)
-
-func _on_ChangeView_pressed():
-	if view == "arcology":
-		view_terra()
-	elif view == "terra":
-		view_arcology()
-
-var mouse_over_sector = false
-func sector_mouse_entered(sector):
-	mouse_over_sector = true
-	if view == "arcology":
-		var terra = sector.get_node('../../')
-		if terra.name != selected_terra:
-			outline_terra(terra,highlight_cyan)
-	elif view == "terra":
-		if not ArcUtils.get_building(sector) == selected_building:
-			outline_building(sector,highlight_cyan)
-
-func sector_mouse_exited(sector):
-	mouse_over_sector = false
-	if view == "arcology":
-		var terra = sector.get_node('../../')
-		if terra.name != selected_terra:
-			outline_terra(terra,null)
-	elif view == "terra":
-		if not ArcUtils.get_building(sector) == selected_building:
-			outline_building(sector,null)
-
-var motion_detected
-func arc_input_event(camera,event,click_position,click_normal,shape_idx,sector):
-	
-	if event.is_action_released("ui_accept"):
-		if not game.get_gui().mouse_over_gui:
-			if not motion_detected:
-				if view == "arcology":
-					for terra in $Structure.get_children():
-						outline_terra(terra,null)
-					var terra = sector.get_node('../../')
-					outline_terra(terra,highlight_white)
-					if selected_terra != terra.name:
-						selected_terra = terra.name
-						GUI.get_node("SidePanel/ManageTerra").update()
-						dock.set_mode("ManageTerra")
-						update_header(_name + "  -  " + selected_terra)
-						$ChangeView.show()
-				elif view == "terra":
-					for ring in sector.get_node('../../').get_children():
-						for sector in ring.get_children():
-							outline_sector(sector,null)
-							sector.selected = false
-					outline_building(sector,highlight_white)
-					var terra_index = sector.get_node("../../").get_index()
-					var ring_index = sector.get_parent().get_index()
-					var sector_index = sector.get_index()
-					var address = ArcUtils.to_address(terra_index,ring_index,sector_index)
-					var sector_name = ArcUtils.sector_name(sector.name).capitalize()
-					if selected_building != ArcUtils.get_building(sector):
-						update_header(address + "  -  " + sector_name)
-						selected_building = ArcUtils.get_building(sector)
-						sector.selected = true
-						GUI.get_node("SidePanel/ManageBuilding").update()
-						if not dock.side_panel.open:
-							dock.set_mode("ManageBuilding",false)
-						else:
-							dock.set_mode("ManageBuilding")
-	if event.is_class("InputEventMouseMotion"):
-		motion_detected = true
-	else:
-		motion_detected = false
-	
-	if not event.is_pressed():
-		return
-	if not event.is_class("InputEventScreenTouch"):
-		if event.button_index:
-			if event.button_index != 1:
-				return
-	if view == "arcology":
-#		for terra in $Structure.get_children():
-#			outline_terra(terra,null)
-#		var terra = sector.get_node('../../')
-#		outline_terra(terra,highlight_white)
-#		selected_terra = terra.name
-#		update_header(_name + "  -  " + selected_terra)
-#		GUI.get_node("SidePanel/ManageTerra").update()
-#		dock.set_mode("ManageTerra")
-#		$ChangeView.show()
-		if event.doubleclick:
-			_on_ChangeView_pressed()
-	elif view == "terra":
-#		for ring in sector.get_node('../../').get_children():
-#			for sector in ring.get_children():
-#				outline_sector(sector,null)
-#				sector.selected = false
-#		outline_building(sector,highlight_white)
-#		var terra_index = sector.get_node("../../").get_index()
-#		var ring_index = sector.get_parent().get_index()
-#		var sector_index = sector.get_index()
-#		var address = ArcUtils.to_address(terra_index,ring_index,sector_index)
-#		var sector_name = ArcUtils.sector_name(sector.name).capitalize()
-#		update_header(address + "  -  " + sector_name)
-#		selected_building = ArcUtils.get_building(sector)
-#		sector.selected = true
-#		GUI.get_node("SidePanel/ManageBuilding").update()
-		if event.doubleclick:
-			if not dock.side_panel.open:
-				dock.set_mode("ManageBuilding",false)
-				dock._on_ActionButton_pressed()
-#		else:
-#			if not dock.side_panel.open:
-#				dock.set_mode("ManageBuilding",false)
-#			else:
-#				dock.set_mode("ManageBuilding")
-
-var camera_rotation = 0.0
-func _input(event):
-	if not self.visible:
-		return
-	var calendar = GUI.get_node("Navigation/Time/Calendar")
-	if calendar.is_visible():
-		return
-	if event.is_class("InputEventMouseMotion"):
-		if event.button_mask&(BUTTON_MASK_LEFT):
-			camera_rotation += event.relative.x * 0.005
-			get_node("Cambase").set_rotation(Vector3(0, -1*camera_rotation, 0))
-	elif event.is_action_pressed('ui_back') or event.is_action_pressed("stationary_select") and not mouse_over_sector:
-		if view == "arcology":
-			if selected_terra:
-				get_tree().set_input_as_handled()
-				selected_terra = null
-				update_header(_name)
-				if dock.mode != "ManageArcology":
-					dock.set_mode("ManageArcology")
-				$ChangeView.hide()
-				for terra in $Structure.get_children():
-					outline_terra(terra,null)
-			elif event.is_action_pressed('ui_back'):
-				if GUI.get_node("SidePanel").open:
-					dock._on_ActionButton_pressed()
-		elif view == "terra":
-			get_tree().set_input_as_handled()
-			selected_building = null
-			for ring in $Structure.get_node(selected_terra).get_children():
-				for sector in ring.get_children():
-					if sector.selected:
-						outline_building(sector,null)
-						sector.selected = false
-						update_header(selected_terra)
-						dock.set_mode("ManageTerra")
-						return
-			if event.is_action_pressed("stationary_select") and not mouse_over_sector:
-				return
-			view_arcology()
 
 func animate_camera(translation_start,translation_end,rotation_start,rotation_end):
 	$Tween.interpolate_property(

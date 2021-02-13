@@ -1,4 +1,4 @@
-[gd_scene load_steps=70 format=2]
+[gd_scene load_steps=72 format=2]
 
 [ext_resource path="res://GUI/gui.gd" type="Script" id=1]
 [ext_resource path="res://Textures/oval_tab.png" type="Texture" id=2]
@@ -30,9 +30,10 @@
 [ext_resource path="res://Fonts/Rubik-Light-40.tres" type="DynamicFont" id=28]
 [ext_resource path="res://Fonts/Rubik-Light-30.tres" type="DynamicFont" id=29]
 [ext_resource path="res://Fonts/Rubik-Light-36.tres" type="DynamicFont" id=30]
-[ext_resource path="res://GUI/Dialogue.gd" type="Script" id=31]
+[ext_resource path="res://GUI/Message.gd" type="Script" id=31]
 [ext_resource path="res://GUI/SidePanel.gd" type="Script" id=32]
 [ext_resource path="res://GUI/Time.gd" type="Script" id=33]
+[ext_resource path="res://GUI/GUI Input.gd" type="Script" id=34]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends VBoxContainer
@@ -461,6 +462,51 @@ func resize():
 [sub_resource type="GDScript" id=21]
 script/source = "extends Control
 
+#RPG style dialogue
+#not currently in use
+
+var halted
+var counter = 0
+
+func say(string):
+	halted = false
+	$Text.push_align(0)
+	while not string.empty() and not halted:
+		var c = string[0]
+		string.erase(0,1)
+		$Text.add_text(c)
+		if not c == \" \" and counter == 1:
+			$Audio.play()
+		if c == \",\":
+			$Timer.wait_time = 0.1
+		elif c == \".\" or c == \"!\" or c == \"?\":
+			$Timer.wait_time = 0.2
+		else:
+			$Timer.wait_time = 0.03
+		$Timer.start()
+		yield($Timer,\"timeout\")
+		if counter == 0:
+			counter = 1
+		else:
+			counter = 0
+	$Text.newline()
+
+func read(file):
+	var text
+	var f = File.new()
+	f.open(file,File.READ)
+	text = f.get_as_text()
+	f.close()
+	$Text.add_text(text)
+	say(text)
+
+func halt():
+	halted = true
+"
+
+[sub_resource type="GDScript" id=22]
+script/source = "extends Control
+
 func _on_button_up():
 	get_node('ai_simple').set_scale(Vector2(1,1))
 
@@ -475,7 +521,7 @@ func _on_mouse_exited():
 		get_node('tab_left').set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="GDScript" id=22]
+[sub_resource type="GDScript" id=23]
 script/source = "extends Control
 
 func _ready():
@@ -492,7 +538,7 @@ func resize():
 	get_node(\"Time/Label Top\").get('custom_fonts/font').size = clamp(scale_text,10,16)
 "
 
-[sub_resource type="GDScript" id=23]
+[sub_resource type="GDScript" id=24]
 script/source = "extends TextureRect
 
 func _ready():
@@ -521,7 +567,7 @@ func _on_mouse_exited():
 		set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="GDScript" id=24]
+[sub_resource type="GDScript" id=25]
 script/source = "extends TextureRect
 
 func _ready():
@@ -565,7 +611,7 @@ func _on_mouse_exited():
 		set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="GDScript" id=25]
+[sub_resource type="GDScript" id=26]
 script/source = "extends TextureRect
 
 func _ready():
@@ -601,21 +647,21 @@ func _on_mouse_exited():
 		set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="DynamicFont" id=26]
-font_data = ExtResource( 3 )
-
 [sub_resource type="DynamicFont" id=27]
 font_data = ExtResource( 3 )
 
 [sub_resource type="DynamicFont" id=28]
-size = 30
 font_data = ExtResource( 3 )
 
 [sub_resource type="DynamicFont" id=29]
+size = 30
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=30]
 size = 20
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=30]
+[sub_resource type="GDScript" id=31]
 script/source = "extends Control
 
 func _on_mouse_entered():
@@ -625,11 +671,11 @@ func _on_mouse_exited():
 		get_node('circle').set_self_modulate('64333a4b')
 "
 
-[sub_resource type="DynamicFont" id=31]
+[sub_resource type="DynamicFont" id=32]
 size = 20
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=32]
+[sub_resource type="GDScript" id=33]
 script/source = "extends Panel
 
 func _pause():
@@ -666,12 +712,8 @@ func _on_Menu_Button_pressed():
 	_pause()
 "
 
-[sub_resource type="DynamicFont" id=33]
-size = 50
-font_data = ExtResource( 3 )
-
 [sub_resource type="DynamicFont" id=34]
-size = 30
+size = 50
 font_data = ExtResource( 3 )
 
 [sub_resource type="DynamicFont" id=35]
@@ -679,6 +721,10 @@ size = 30
 font_data = ExtResource( 3 )
 
 [sub_resource type="DynamicFont" id=36]
+size = 30
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=37]
 size = 24
 font_data = ExtResource( 3 )
 
@@ -692,6 +738,9 @@ script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Input" type="Node" parent="."]
+script = ExtResource( 34 )
 
 [node name="SidePanel" type="Panel" parent="." groups=[
 "Intercept Mouse",
@@ -1888,7 +1937,6 @@ margin_left = 62.6566
 margin_top = 534.037
 margin_right = 462.657
 margin_bottom = 556.037
-script = ExtResource( 31 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -1916,6 +1964,7 @@ anchor_bottom = 0.954545
 custom_constants/line_separation = 2
 fit_content_height = true
 scroll_active = false
+script = ExtResource( 31 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1956,7 +2005,7 @@ margin_left = 24.0
 margin_right = 424.0
 margin_bottom = 22.0
 rect_min_size = Vector2( 400, 22 )
-script = ExtResource( 31 )
+script = SubResource( 21 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1997,7 +2046,7 @@ margin_bottom = 48.0
 margin_right = 400.0
 margin_bottom = 22.0
 rect_min_size = Vector2( 400, 22 )
-script = ExtResource( 31 )
+script = SubResource( 21 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2040,7 +2089,7 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 margin_top = -110.0
 margin_right = 110.0
-script = SubResource( 21 )
+script = SubResource( 22 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -2111,7 +2160,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -350.0
 margin_top = -110.0
-script = SubResource( 22 )
+script = SubResource( 23 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -2125,7 +2174,7 @@ anchor_bottom = 1.0
 margin_bottom = -7.62939e-06
 texture = ExtResource( 19 )
 expand = true
-script = SubResource( 23 )
+script = SubResource( 24 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2153,7 +2202,7 @@ anchor_bottom = 1.0
 margin_bottom = -7.62939e-06
 texture = ExtResource( 19 )
 expand = true
-script = SubResource( 24 )
+script = SubResource( 25 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2185,7 +2234,7 @@ anchor_bottom = 1.0
 margin_bottom = -7.62939e-06
 texture = ExtResource( 19 )
 expand = true
-script = SubResource( 25 )
+script = SubResource( 26 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2291,7 +2340,7 @@ anchor_top = 0.163636
 anchor_right = 0.981818
 anchor_bottom = 0.490909
 margin_left = 1.19209e-07
-custom_fonts/font = SubResource( 26 )
+custom_fonts/font = SubResource( 27 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "24:00
@@ -2307,7 +2356,7 @@ anchor_top = 0.5
 anchor_right = 0.981818
 anchor_bottom = 0.827273
 margin_left = 1.19209e-07
-custom_fonts/font = SubResource( 27 )
+custom_fonts/font = SubResource( 28 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "Week 1
@@ -2349,7 +2398,7 @@ margin_left = 23.0
 margin_top = -36.0
 margin_right = 86.0
 margin_bottom = 1.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "Date"
 valign = 1
 
@@ -2358,7 +2407,7 @@ margin_left = 509.0
 margin_top = -36.0
 margin_right = 575.0
 margin_bottom = 1.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "Time"
 align = 2
 valign = 1
@@ -2383,7 +2432,7 @@ __meta__ = {
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -2395,7 +2444,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "M"
 align = 1
 valign = 1
@@ -2407,7 +2456,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -2419,7 +2468,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "W"
 align = 1
 valign = 1
@@ -2431,7 +2480,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -2443,7 +2492,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "F"
 align = 1
 valign = 1
@@ -2455,7 +2504,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -2466,7 +2515,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "1"
 align = 1
 valign = 1
@@ -2482,7 +2531,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -2494,7 +2543,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "M"
 align = 1
 valign = 1
@@ -2506,7 +2555,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -2518,7 +2567,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "W"
 align = 1
 valign = 1
@@ -2530,7 +2579,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -2542,7 +2591,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "F"
 align = 1
 valign = 1
@@ -2554,7 +2603,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -2565,7 +2614,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "2"
 align = 1
 valign = 1
@@ -2581,7 +2630,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -2593,7 +2642,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "M"
 align = 1
 valign = 1
@@ -2605,7 +2654,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -2617,7 +2666,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "W"
 align = 1
 valign = 1
@@ -2629,7 +2678,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -2641,7 +2690,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "F"
 align = 1
 valign = 1
@@ -2653,7 +2702,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -2664,7 +2713,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "3"
 align = 1
 valign = 1
@@ -2680,7 +2729,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -2692,7 +2741,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "M"
 align = 1
 valign = 1
@@ -2704,7 +2753,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -2716,7 +2765,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "W"
 align = 1
 valign = 1
@@ -2728,7 +2777,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -2740,7 +2789,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "F"
 align = 1
 valign = 1
@@ -2752,7 +2801,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -2763,7 +2812,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "4"
 align = 1
 valign = 1
@@ -2779,7 +2828,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -2791,7 +2840,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "M"
 align = 1
 valign = 1
@@ -2803,7 +2852,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -2815,7 +2864,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "W"
 align = 1
 valign = 1
@@ -2827,7 +2876,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -2839,7 +2888,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "F"
 align = 1
 valign = 1
@@ -2851,7 +2900,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -2862,7 +2911,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "5"
 align = 1
 valign = 1
@@ -2878,7 +2927,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -2890,7 +2939,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "M"
 align = 1
 valign = 1
@@ -2902,7 +2951,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -2914,7 +2963,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "W"
 align = 1
 valign = 1
@@ -2926,7 +2975,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -2938,7 +2987,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "F"
 align = 1
 valign = 1
@@ -2950,7 +2999,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -2961,7 +3010,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "6"
 align = 1
 valign = 1
@@ -2977,7 +3026,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -2989,7 +3038,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "M"
 align = 1
 valign = 1
@@ -3001,7 +3050,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -3013,7 +3062,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "W"
 align = 1
 valign = 1
@@ -3025,7 +3074,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -3037,7 +3086,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "F"
 align = 1
 valign = 1
@@ -3049,7 +3098,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -3060,7 +3109,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "7"
 align = 1
 valign = 1
@@ -3076,7 +3125,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -3088,7 +3137,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "M"
 align = 1
 valign = 1
@@ -3100,7 +3149,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -3112,7 +3161,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "W"
 align = 1
 valign = 1
@@ -3124,7 +3173,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -3136,7 +3185,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "F"
 align = 1
 valign = 1
@@ -3148,7 +3197,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -3159,7 +3208,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "8"
 align = 1
 valign = 1
@@ -3175,7 +3224,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -3187,7 +3236,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "M"
 align = 1
 valign = 1
@@ -3199,7 +3248,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -3211,7 +3260,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "W"
 align = 1
 valign = 1
@@ -3223,7 +3272,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -3235,7 +3284,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "F"
 align = 1
 valign = 1
@@ -3247,7 +3296,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -3258,7 +3307,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "9"
 align = 1
 valign = 1
@@ -3274,7 +3323,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 30.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -3286,7 +3335,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 30.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "M"
 align = 1
 valign = 1
@@ -3298,7 +3347,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 30.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -3310,7 +3359,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 30.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "W"
 align = 1
 valign = 1
@@ -3322,7 +3371,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 30.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -3334,7 +3383,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 30.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "F"
 align = 1
 valign = 1
@@ -3346,7 +3395,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 30.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -3357,7 +3406,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 30.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "10"
 align = 1
 valign = 1
@@ -3373,7 +3422,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -3385,7 +3434,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "M"
 align = 1
 valign = 1
@@ -3397,7 +3446,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -3409,7 +3458,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "W"
 align = 1
 valign = 1
@@ -3421,7 +3470,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -3433,7 +3482,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "F"
 align = 1
 valign = 1
@@ -3445,7 +3494,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -3456,7 +3505,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "11"
 align = 1
 valign = 1
@@ -3472,7 +3521,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 29.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -3484,7 +3533,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 29.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "M"
 align = 1
 valign = 1
@@ -3496,7 +3545,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 29.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -3508,7 +3557,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 29.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "W"
 align = 1
 valign = 1
@@ -3520,7 +3569,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 29.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -3532,7 +3581,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 29.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "F"
 align = 1
 valign = 1
@@ -3544,7 +3593,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 29.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -3555,7 +3604,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 29.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "12"
 align = 1
 valign = 1
@@ -3571,7 +3620,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 29.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -3583,7 +3632,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 29.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "M"
 align = 1
 valign = 1
@@ -3595,7 +3644,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 29.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -3607,7 +3656,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 29.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "W"
 align = 1
 valign = 1
@@ -3619,7 +3668,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 29.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "T"
 align = 1
 valign = 1
@@ -3631,7 +3680,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 29.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "F"
 align = 1
 valign = 1
@@ -3643,7 +3692,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 29.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "S"
 align = 1
 valign = 1
@@ -3654,7 +3703,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 29.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 28 )
+custom_fonts/font = SubResource( 29 )
 text = "13"
 align = 1
 valign = 1
@@ -3689,7 +3738,7 @@ margin_left = -59.0
 margin_top = -31.0
 margin_right = 59.0
 margin_bottom = -7.0
-custom_fonts/font = SubResource( 29 )
+custom_fonts/font = SubResource( 30 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "Clock Speed:"
@@ -3704,7 +3753,7 @@ margin_left = 13.0
 margin_top = 10.0
 margin_right = 43.0
 margin_bottom = 40.0
-script = SubResource( 30 )
+script = SubResource( 31 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -3754,7 +3803,7 @@ show_behind_parent = true
 margin_bottom = 24.0
 size_flags_horizontal = 2
 size_flags_vertical = 0
-custom_fonts/font = SubResource( 31 )
+custom_fonts/font = SubResource( 32 )
 
 [node name="Income" type="Label" parent="Money"]
 self_modulate = Color( 0.218887, 0.589844, 0.242072, 1 )
@@ -3763,16 +3812,16 @@ margin_right = 55.0
 margin_bottom = 24.0
 size_flags_horizontal = 2
 size_flags_vertical = 0
-custom_fonts/font = SubResource( 31 )
+custom_fonts/font = SubResource( 32 )
 
 [node name="Expenses" type="Label" parent="Money"]
 self_modulate = Color( 0.832031, 0.165756, 0.165756, 1 )
-margin_left = 110.0
-margin_right = 110.0
+margin_left = 111.0
+margin_right = 111.0
 margin_bottom = 24.0
 size_flags_horizontal = 2
 size_flags_vertical = 0
-custom_fonts/font = SubResource( 31 )
+custom_fonts/font = SubResource( 32 )
 
 [node name="Pause Menu" type="Panel" parent="."]
 pause_mode = 2
@@ -3780,7 +3829,7 @@ visible = false
 self_modulate = Color( 1, 1, 1, 0.862745 )
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = SubResource( 32 )
+script = SubResource( 33 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -3800,7 +3849,7 @@ custom_constants/separation = 10
 margin_right = 425.0
 margin_bottom = 80.0
 rect_min_size = Vector2( 0, 80 )
-custom_fonts/font = SubResource( 33 )
+custom_fonts/font = SubResource( 34 )
 text = "PAUSED"
 align = 1
 
@@ -3809,7 +3858,7 @@ margin_top = 90.0
 margin_right = 425.0
 margin_bottom = 150.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "Resume"
 
 [node name="Save-Load" type="Button" parent="Pause Menu/Menu"]
@@ -3817,7 +3866,7 @@ margin_top = 160.0
 margin_right = 425.0
 margin_bottom = 220.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "Save/Load"
 
 [node name="Options" type="Button" parent="Pause Menu/Menu"]
@@ -3825,7 +3874,7 @@ margin_top = 230.0
 margin_right = 425.0
 margin_bottom = 290.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "Options"
 
 [node name="Main Menu" type="Button" parent="Pause Menu/Menu"]
@@ -3833,7 +3882,7 @@ margin_top = 300.0
 margin_right = 425.0
 margin_bottom = 360.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 36 )
 text = "Main Menu"
 
 [node name="Saves" parent="Pause Menu" instance=ExtResource( 23 )]
@@ -3847,7 +3896,7 @@ margin_left = 18.0
 margin_top = 11.0
 margin_right = 328.0
 margin_bottom = 136.0
-custom_fonts/font = SubResource( 36 )
+custom_fonts/font = SubResource( 37 )
 text = "Controls:
 BACK: right click
 TOGGLE PAUSE: space

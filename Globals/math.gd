@@ -14,6 +14,22 @@ func gaussian(mean,deviation):
 	w = sqrt(-2 * log(w) / w)
 	return floor(mean + deviation * x1 * w)
 
+func random_split_2(value):
+	var theta_1 = clamp(gaussian(180,55),0,360)
+	var theta_2 = 360 - theta_1
+	var arc_1 = theta_1/360
+	var arc_2 = theta_2/360
+	return [value*arc_1,value*arc_2]
+	
+func random_split_3(value):
+	var theta_1 = clamp(gaussian(120,45),0,360)
+	var theta_2 = clamp(gaussian(240,45),theta_1,360) - theta_1
+	var theta_3 = 360 - theta_2 - theta_1
+	var arc_1 = theta_1/360
+	var arc_2 = theta_2/360
+	var arc_3 = theta_3/360
+	return [value*arc_1,value*arc_2,value*arc_3]
+
 func time_remaining(current_time,total_time):
 	var _sec = total_time - current_time
 	var _min = int(_sec/60)

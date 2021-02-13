@@ -1,6 +1,6 @@
-[gd_scene load_steps=27 format=2]
+[gd_scene load_steps=28 format=2]
 
-[ext_resource path="res://Main Menu/main menu.gd" type="Script" id=1]
+[ext_resource path="res://Main Menu/Main Menu Input.gd" type="Script" id=1]
 [ext_resource path="res://Main Menu/arcghost.png" type="Texture" id=2]
 [ext_resource path="res://Main Menu/Buttons/new normal.png" type="Texture" id=3]
 [ext_resource path="res://Main Menu/Buttons/new pressed.png" type="Texture" id=4]
@@ -22,6 +22,7 @@
 [ext_resource path="res://theme.tres" type="Theme" id=20]
 [ext_resource path="res://Textures/square.png" type="Texture" id=21]
 [ext_resource path="res://Fonts/Rubik-Light-36.tres" type="DynamicFont" id=22]
+[ext_resource path="res://Main Menu/Main Menu.gd" type="Script" id=23]
 
 [sub_resource type="CanvasItemMaterial" id=1]
 
@@ -102,10 +103,13 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 theme = ExtResource( 20 )
-script = ExtResource( 1 )
+script = ExtResource( 23 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Input" type="Node" parent="."]
+script = ExtResource( 1 )
 
 [node name="background" type="TextureRect" parent="."]
 modulate = Color( 0, 0, 0, 1 )
@@ -916,10 +920,10 @@ This is a work of fiction; any resemblance to actual persons, places, or events 
 
 Press \"OK\" only if you are 18 years of age or older."
 script = SubResource( 4 )
-[connection signal="pressed" from="Buttons/New Game" to="." method="_on_New_Game_pressed"]
-[connection signal="pressed" from="Buttons/Load Game" to="." method="_on_Load_Game_pressed"]
-[connection signal="pressed" from="Buttons/Options" to="." method="_on_Options_pressed"]
-[connection signal="pressed" from="Buttons/Exit" to="." method="_on_Exit_pressed"]
+[connection signal="pressed" from="Buttons/New Game" to="Input" method="_on_New_Game_pressed"]
+[connection signal="pressed" from="Buttons/Load Game" to="Input" method="_on_Load_Game_pressed"]
+[connection signal="pressed" from="Buttons/Options" to="Input" method="_on_Options_pressed"]
+[connection signal="pressed" from="Buttons/Exit" to="Input" method="_on_Exit_pressed"]
 [connection signal="mouse_entered" from="New Game/Saves/Data/Slots/1/Button" to="New Game/Saves/Data/Slots/1" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="New Game/Saves/Data/Slots/1/Button" to="New Game/Saves/Data/Slots/1" method="_on_mouse_exited"]
 [connection signal="pressed" from="New Game/Saves/Data/Slots/1/Button" to="New Game/Saves/Data/Slots/1" method="_on_pressed"]
@@ -952,4 +956,4 @@ script = SubResource( 4 )
 [connection signal="mouse_exited" from="New Game/Saves/Data/Slots/8/Button" to="New Game/Saves/Data/Slots/8" method="_on_mouse_exited"]
 [connection signal="pressed" from="New Game/Saves/Data/Slots/8/Button" to="New Game/Saves/Data/Slots/8" method="_on_pressed"]
 [connection signal="confirmed" from="New Game/Saves/Data/Slots/8/ConfirmationDialog" to="New Game/Saves/Data/Slots/8" method="_on_ConfirmationDialog_confirmed"]
-[connection signal="pressed" from="New Game/Saves/Back" to="." method="hide_new_game"]
+[connection signal="pressed" from="New Game/Saves/Back" to="Input" method="_on_New_Game_Back_pressed"]

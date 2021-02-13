@@ -1,14 +1,15 @@
 extends Spatial
 
-var cam_pos
+var cam_pos = 7.0
+var min_camera_pos = 7
+var max_camera_pos = 0.0
 
 var active_collection
 
 func _ready():
-	cam_pos = 7.0
 	$Camera.current = true
 	$Camera.set_translation(Vector3(cam_pos, 3.2, 5))
-	for i in range(abs(math.gaussian(6,1))):
+	for i in range(abs(math.gaussian(7,2))):
 		var preset = "kidnappers market"
 		get_node("Collections/Owned").add_child(get_node('New Slave').new(preset),true)
 	set_active_collection("Owned")
@@ -39,42 +40,6 @@ func update_header():
 		else:
 			header.set_text("%s Slaves available"%count)
 
-func _input(event):
-	if not is_visible_in_tree():
-		return
-	var calendar = get_tree().get_root().get_node("Game/GUI//Navigation/Time/Calendar")
-	if calendar.is_visible():
-		return
-	var min_camera_pos = 7
-	var max_camera_pos = slave_count(active_collection.name) * 5.4
-	if slave_count(active_collection.name) == 1:
-		max_camera_pos *= 1.3
-	if event.is_class("InputEventMouseMotion"): # add android swipe here?
-		if event.button_mask&(BUTTON_MASK_LEFT):
-			cam_pos -= event.relative.x * 0.015
-	elif event.is_action_pressed('ui_page_up'):
-			cam_pos -= 2
-	elif event.is_action_pressed('ui_page_down'):
-			cam_pos += 2
-	elif event.is_action_pressed('ui_back'):
-		var GUI = game.get_gui()
-		if GUI.get_node("SidePanel").open:
-				GUI.get_node("Dock")._on_ActionButton_pressed()
-	else:
-		return
-	if cam_pos < min_camera_pos:
-		cam_pos = min_camera_pos
-	elif cam_pos > max_camera_pos:
-		cam_pos = max_camera_pos
-	$Tween.interpolate_method(
-		$Camera,'set_translation',
-		$Camera.get_translation(),
-		Vector3(cam_pos, 3.2, 5),
-		0.8,
-		Tween.TRANS_CUBIC,
-		Tween.EASE_OUT)
-	$Tween.start()
-
 func set_active_collection(collection,reset_cam_pos=true):
 	active_collection = $Collections.get_node(collection)
 	for _collection in $Collections.get_children():
@@ -88,12 +53,8 @@ func set_active_collection(collection,reset_cam_pos=true):
 	update_collection(active_collection)
 	active_collection.show()
 	update_header()
-	var min_camera_pos = 7
-	var max_camera_pos = slave_count(active_collection.name) * 5.4
-	if cam_pos < min_camera_pos:
-		cam_pos = min_camera_pos
-	elif cam_pos > max_camera_pos:
-		cam_pos = max_camera_pos
+	max_camera_pos = slave_count(active_collection.name) * 5.4
+	clamp_camera_position()
 	if reset_cam_pos:
 		cam_pos = min_camera_pos
 
@@ -111,6 +72,22 @@ func update_collection(collection):
 		_slave.translation.y = vertical_pos
 		_slave.ui.tracking()
 
+func clamp_camera_position():
+	if cam_pos < min_camera_pos:
+		cam_pos = min_camera_pos
+	elif cam_pos > max_camera_pos:
+		cam_pos = max_camera_pos
+
 func _on_Tween_tween_step(object, key, elapsed, value):
 	for _slave in active_collection.get_children():
 		_slave.ui.tracking()
+
+func slide_camera():
+	$Tween.interpolate_method(
+		$Camera,'set_translation',
+		$Camera.get_translation(),
+		Vector3(cam_pos, 3.2, 5),
+		0.8,
+		Tween.TRANS_CUBIC,
+		Tween.EASE_OUT)
+	$Tween.start()

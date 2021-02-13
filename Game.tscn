@@ -1,7 +1,6 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Arcology/Arcology.tscn" type="PackedScene" id=1]
-[ext_resource path="res://GUI/InputListener.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Slaves/Slaves.tscn" type="PackedScene" id=5]
 [ext_resource path="res://GUI/GUI.tscn" type="PackedScene" id=6]
 
@@ -38,5 +37,3 @@ script = SubResource( 1 )
 [node name="Autosave" type="Timer" parent="."]
 wait_time = 300.0
 script = SubResource( 2 )
-
-[node name="InputListener" parent="." instance=ExtResource( 2 )]

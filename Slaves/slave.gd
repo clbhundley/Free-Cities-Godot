@@ -9,7 +9,7 @@ var hair_style
 var gender
 var genitals
 var penis_size
-var testicles_size = 0
+var testicles_size
 var vagina
 var chest
 var age
@@ -47,6 +47,8 @@ var queued_action
 var current_time
 var for_sale = false
 
+var flags = {}
+
 var quarters = "P5"
 var location
 var destination
@@ -76,61 +78,86 @@ func _action_ended():
 
 func _data():
 	return {
-		ethnicity = ethnicity,
-		skin_color = skin_color,
-		tissue_color = tissue_color,
-		hair_color_natural = hair_color_natural,
-		hair_color = hair_color,
-		hair_style = hair_style,
-		gender = gender,
-		age = age,
-		height = height,
-		weight = weight,
-		genitals = genitals,
-		penis_size = penis_size,
-		testicles_size = testicles_size,
-		vagina = vagina,
-		chest = chest,
-		face = face,
-		figure = figure,
-		voice = voice,
-		health = health,
-		fatigue = fatigue,
-		happiness = happiness,
-		hunger = hunger,
-		bathroom = bathroom,
-		arousal = arousal,
-		libido = libido,
-		male_attraction = male_attraction,
-		female_attraction = female_attraction,
-		intelligence = intelligence,
-		devotion = devotion,
-		trust = trust,
-		sexual_skill = sexual_skill,
-		oral_skill = oral_skill,
-		anal_skill = anal_skill,
-		vaginal_skill = vaginal_skill,
-		penis_skill = penis_skill,
-		prostitution_skill = prostitution_skill,
-		entertainment_skill = entertainment_skill,
-		combat_skill = combat_skill,
-		is_awake = is_awake,
-		for_sale = for_sale,
-		assignment = assignment,
-		action = action,
-		current_time = get_node('Scripts/Actions/'+action).current_time,
-		total_time = get_node('Scripts/Actions/'+action).total_time,
-		quarters = quarters,
-		location = location,
-		destination = destination,
-		travel_mode = travel_mode,
-		queued_action = queued_action}
+		slave_data = {
+			ethnicity = ethnicity,
+			skin_color = skin_color,
+			tissue_color = tissue_color,
+			hair_color_natural = hair_color_natural,
+			hair_color = hair_color,
+			hair_style = hair_style,
+			gender = gender,
+			age = age,
+			height = height,
+			weight = weight,
+			genitals = genitals,
+			penis_size = penis_size,
+			testicles_size = testicles_size,
+			vagina = vagina,
+			chest = chest,
+			face = face,
+			figure = figure,
+			voice = voice,
+			health = health,
+			fatigue = fatigue,
+			happiness = happiness,
+			hunger = hunger,
+			bathroom = bathroom,
+			arousal = arousal,
+			libido = libido,
+			male_attraction = male_attraction,
+			female_attraction = female_attraction,
+			intelligence = intelligence,
+			devotion = devotion,
+			trust = trust,
+			sexual_skill = sexual_skill,
+			oral_skill = oral_skill,
+			anal_skill = anal_skill,
+			vaginal_skill = vaginal_skill,
+			penis_skill = penis_skill,
+			prostitution_skill = prostitution_skill,
+			entertainment_skill = entertainment_skill,
+			combat_skill = combat_skill,
+			is_awake = is_awake,
+			for_sale = for_sale,
+			assignment = assignment,
+			action = action,
+			current_time = get_node('Scripts/Actions/'+action).current_time,
+			total_time = get_node('Scripts/Actions/'+action).total_time,
+			quarters = quarters,
+			location = location,
+			destination = destination,
+			travel_mode = travel_mode,
+			queued_action = queued_action},
+		model_data = {
+			masculinity = $Model.masculinity,
+			genitals_male_adjustment = $Model.genitals_male_adjustment,
+			weight = $Model.weight,
+			weight_round = $Model.weight_round,
+			weight_pear = $Model.weight_pear,
+			weight_fat = $Model.weight_fat,
+			waist_size = $Model.waist_size,
+			butt_size = $Model.butt_size,
+			body_size = $Model.body_size,
+			bodybuilder = $Model.bodybuilder,
+			voluptuous = $Model.voluptuous,
+			pregnant = $Model.pregnant,
+			breasts_growth = $Model.breasts_growth,
+			breasts_implants = $Model.breasts_implants,
+			breasts_small = $Model.breasts_small,
+			breasts_gone = $Model.breasts_gone,
+			testicles_size = $Model.testicles_size,
+			penis_length = $Model.penis_length,
+			penis_thickness = $Model.penis_thickness,
+			penis_micro = $Model.penis_micro}}
 
 func _load(_data):
-	for setting in _data:
-		set(setting, _data[setting])
-	get_node('Scripts/Actions/'+action).current_time = _data['current_time']
-	get_node('Scripts/Actions/'+action).total_time = _data['total_time']
+	for setting in _data["slave_data"]:
+		set(setting, _data["slave_data"][setting])
+	$Model.model_data = _data["model_data"]
+#	for setting in _data["model_data"]:
+#		$Model.set(setting, _data["model_data"][setting])
+	get_node('Scripts/Actions/'+action).current_time = _data["slave_data"]['current_time']
+	get_node('Scripts/Actions/'+action).total_time = _data["slave_data"]['total_time']
 	if get_node('Scripts/Actions/'+action).total_time:
 		get_node('UI/Activity/ProgressBar').max_value = get_node('Scripts/Actions/'+action).total_time
 		get_node('UI/Activity/ProgressBar').value = get_node('Scripts/Actions/'+action).current_time

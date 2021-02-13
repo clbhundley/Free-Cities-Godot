@@ -1,11 +1,12 @@
-[gd_scene load_steps=232 format=2]
+[gd_scene load_steps=233 format=2]
 
-[ext_resource path="res://Arcology/arcology.gd" type="Script" id=1]
+[ext_resource path="res://Arcology/Arcology.gd" type="Script" id=1]
 [ext_resource path="res://Arcology/new arcology.gd" type="Script" id=2]
 [ext_resource path="res://Arcology/Materials/white.material" type="Material" id=3]
 [ext_resource path="res://Fonts/Rubik-Light-36.tres" type="DynamicFont" id=4]
 [ext_resource path="res://Arcology/Materials/red.tres" type="Material" id=5]
 [ext_resource path="res://Arcology/Meshes/park.mesh" type="ArrayMesh" id=6]
+[ext_resource path="res://Arcology/Arcology Input.gd" type="Script" id=7]
 
 [sub_resource type="ArrayMesh" id=1]
 surfaces/0 = {
@@ -2024,6 +2025,9 @@ points = PoolVector3Array( -1.54972e-06, -0.0129663, -1.51604, -2.02656e-06, -0.
 [node name="Arcology" type="Spatial"]
 script = ExtResource( 1 )
 
+[node name="Input" type="Node" parent="."]
+script = ExtResource( 7 )
+
 [node name="New Arcology" type="Node" parent="."]
 script = ExtResource( 2 )
 
@@ -3867,4 +3871,4 @@ far = 40.1
 [node name="Structure" type="Spatial" parent="."]
 
 [node name="Tween" type="Tween" parent="."]
-[connection signal="pressed" from="ChangeView" to="." method="_on_ChangeView_pressed"]
+[connection signal="pressed" from="ChangeView" to="Input" method="_on_ChangeView_pressed"]

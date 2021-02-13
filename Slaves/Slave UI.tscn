@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=2]
+[gd_scene load_steps=38 format=2]
 
 [ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Fonts/Rubik-Light.tres" type="DynamicFont" id=2]
@@ -19,6 +19,7 @@
 [ext_resource path="res://Slaves/Textures/Gague/Icons/happiness.svg" type="Texture" id=17]
 [ext_resource path="res://Slaves/Textures/Gague/Icons/hunger.svg" type="Texture" id=18]
 [ext_resource path="res://Slaves/Textures/Gague/Icons/bathroom.svg" type="Texture" id=19]
+[ext_resource path="res://Slaves/Slave UI Input.gd" type="Script" id=20]
 
 [sub_resource type="DynamicFont" id=1]
 size = 50
@@ -416,13 +417,30 @@ font_data = ExtResource( 1 )
 [sub_resource type="GDScript" id=12]
 script/source = "extends RichTextLabel
 
+func remove_lines(amount):
+	var lower_text = [
+		get_node(\"../Appearance\"),
+		get_node(\"../Sexuality\"),
+		get_node(\"../Skills\"),
+		get_node(\"../Traits\")]
+	for node in lower_text:
+		var pos_x = node.rect_position.x
+		var pos_y = node.rect_position.y
+		node.set_position(Vector2(pos_x,pos_y-(30*amount)),true)
+
 func set_stats():
 	var _slave = owner.owner
-	var stats =_slave.stats
-	parse_bbcode(
-	str(_slave.age)+\", \"+_slave.ethnicity+\", \"+_slave.gender+\"\\n\"+
-	stats._intelligence()+\"\\n\"+
-	stats._devotion()+\", \"+stats._trust())
+	var intelligence = _slave.stats._intelligence()
+	if intelligence != \"\":
+		parse_bbcode(
+		str(_slave.age)+\", \"+_slave.ethnicity+\", \"+_slave.gender+\"\\n\"+
+		_slave.stats._intelligence()+\"\\n\"+
+		_slave.stats._devotion()+\", \"+_slave.stats._trust())
+	else:
+		parse_bbcode(
+		str(_slave.age)+\", \"+_slave.ethnicity+\", \"+_slave.gender+\"\\n\"+
+		_slave.stats._devotion()+\", \"+_slave.stats._trust())
+		remove_lines(1)
 "
 
 [sub_resource type="GDScript" id=13]
@@ -430,14 +448,39 @@ script/source = "extends RichTextLabel
 
 onready var _slave = owner.owner
 
-#func _ready():
-#	set_stats()
+func remove_lines(amount):
+	var lower_text = [
+		get_node(\"../Sexuality\"),
+		get_node(\"../Skills\"),
+		get_node(\"../Traits\")]
+	for node in lower_text:
+		var pos_x = node.rect_position.x
+		var pos_y = node.rect_position.y
+		node.set_position(Vector2(pos_x,pos_y-(30*amount)),true)
 
 func set_stats():
-	parse_bbcode(
-	_slave.get_node(\"Scripts/Stats\")._face()+\"\\n\"+
-	_slave.get_node(\"Scripts/Stats\")._figure()+\"\\n\"+
-	_slave.voice)
+	var string = \"\"
+	var face = _slave.get_node(\"Scripts/Stats\")._face()
+	if face != \"\":
+		string += face+\"\\n\"
+	else:
+		remove_lines(1)
+	if _slave.flags.has(\"weight\"):
+		string += _slave.flags[\"weight\"]+\"\\n\"
+	else:
+		remove_lines(1)
+	if _slave.voice != \"\":
+		var voice_string = _slave.voice
+		voice_string[0] = voice_string[0].capitalize()
+		if voice_string != \"Mute\":
+			voice_string += \"voice\"
+		string += voice_string
+	else:
+		remove_lines(1)
+	if string == \"\":
+		remove_lines(0.6)
+	parse_bbcode(string)
+	
 "
 
 [sub_resource type="GDScript" id=14]
@@ -502,6 +545,9 @@ script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Input" type="Node" parent="."]
+script = ExtResource( 20 )
 
 [node name="Activity" type="Control" parent="."]
 anchor_left = 0.0230769
@@ -2017,9 +2063,9 @@ mouse_filter = 1
 custom_fonts/font = ExtResource( 2 )
 disabled = true
 text = "Examine"
-[connection signal="mouse_entered" from="Top" to="." method="_on_Top_mouse_entered"]
-[connection signal="mouse_exited" from="Top" to="." method="_on_Top_mouse_exited"]
-[connection signal="pressed" from="Top" to="." method="_on_Top_pressed"]
+[connection signal="mouse_entered" from="Top" to="Input" method="_on_Top_mouse_entered"]
+[connection signal="mouse_exited" from="Top" to="Input" method="_on_Top_mouse_exited"]
+[connection signal="pressed" from="Top" to="Input" method="_on_Top_pressed"]
 [connection signal="mouse_entered" from="Gauges/Upper/Health/Button" to="Gauges/Upper/Health" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="Gauges/Upper/Health/Button" to="Gauges/Upper/Health" method="_on_mouse_exited"]
 [connection signal="mouse_entered" from="Gauges/Upper/Happiness/Button" to="Gauges/Upper/Happiness" method="_on_mouse_entered"]
@@ -2032,6 +2078,6 @@ text = "Examine"
 [connection signal="mouse_exited" from="Gauges/Lower/Hunger/Button" to="Gauges/Lower/Hunger" method="_on_mouse_exited"]
 [connection signal="mouse_entered" from="Gauges/Lower/Bathroom/Button" to="Gauges/Lower/Bathroom" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="Gauges/Lower/Bathroom/Button" to="Gauges/Lower/Bathroom" method="_on_mouse_exited"]
-[connection signal="item_selected" from="Panel/Buttons/Assignment" to="." method="_on_Assignment_item_selected"]
-[connection signal="pressed" from="Panel/Buttons/Sell" to="." method="_on_Sell_pressed"]
-[connection signal="pressed" from="Panel/Selling Buttons/Buy" to="." method="_on_Buy_pressed"]
+[connection signal="item_selected" from="Panel/Buttons/Assignment" to="Input" method="_on_Assignment_item_selected"]
+[connection signal="pressed" from="Panel/Buttons/Sell" to="Input" method="_on_Sell_pressed"]
+[connection signal="pressed" from="Panel/Selling Buttons/Buy" to="Input" method="_on_Buy_pressed"]

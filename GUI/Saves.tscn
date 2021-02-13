@@ -4,18 +4,18 @@
 [ext_resource path="res://Fonts/Rubik-Light.tres" type="DynamicFont" id=2]
 [ext_resource path="res://Fonts/Rubik-Light-36.tres" type="DynamicFont" id=3]
 
-[sub_resource type="GDScript" id=3]
+[sub_resource type="GDScript" id=1]
 script/source = "extends Control
 
 func _on_Back_pressed():
 	hide()
 "
 
-[sub_resource type="DynamicFont" id=1]
+[sub_resource type="DynamicFont" id=2]
 size = 30
 font_data = ExtResource( 1 )
 
-[sub_resource type="GDScript" id=2]
+[sub_resource type="GDScript" id=3]
 script/source = "extends Control
 
 onready var scene = get_tree().get_current_scene().get_name()
@@ -58,7 +58,7 @@ func _on_Delete_pressed():
 self_modulate = Color( 0.286377, 0.569544, 0.796875, 1 )
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = SubResource( 3 )
+script = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -90,7 +90,7 @@ anchor_top = 0.0221402
 anchor_right = 0.617295
 anchor_bottom = 0.0904059
 margin_right = -3.05176e-05
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = "Save Data"
 __meta__ = {
 "_edit_use_anchors_": true
@@ -110,7 +110,7 @@ anchor_right = 1.0
 anchor_bottom = 0.0825243
 rect_min_size = Vector2( 0, 34 )
 size_flags_vertical = 0
-script = SubResource( 2 )
+script = SubResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -179,7 +179,7 @@ anchor_right = 1.0
 anchor_bottom = 0.213592
 rect_min_size = Vector2( 0, 34 )
 size_flags_vertical = 0
-script = SubResource( 2 )
+script = SubResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -245,7 +245,7 @@ anchor_right = 1.0
 anchor_bottom = 0.34466
 rect_min_size = Vector2( 0, 34 )
 size_flags_vertical = 0
-script = SubResource( 2 )
+script = SubResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -311,7 +311,7 @@ anchor_right = 1.0
 anchor_bottom = 0.475728
 rect_min_size = Vector2( 0, 34 )
 size_flags_vertical = 0
-script = SubResource( 2 )
+script = SubResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -378,7 +378,7 @@ anchor_bottom = 0.606796
 margin_bottom = -1.52588e-05
 rect_min_size = Vector2( 0, 34 )
 size_flags_vertical = 0
-script = SubResource( 2 )
+script = SubResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -444,7 +444,7 @@ anchor_right = 1.0
 anchor_bottom = 0.737864
 rect_min_size = Vector2( 0, 34 )
 size_flags_vertical = 0
-script = SubResource( 2 )
+script = SubResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -510,7 +510,7 @@ anchor_right = 1.0
 anchor_bottom = 0.868932
 rect_min_size = Vector2( 0, 34 )
 size_flags_vertical = 0
-script = SubResource( 2 )
+script = SubResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -576,7 +576,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 rect_min_size = Vector2( 0, 34 )
 size_flags_vertical = 0
-script = SubResource( 2 )
+script = SubResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": true
 }

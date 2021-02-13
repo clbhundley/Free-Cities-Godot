@@ -10,11 +10,19 @@ onready var feed = get_node('AI Panel/Feed')
 onready var AI_panel = get_node('AI Panel')
 #onready var finance = get_node('../Finance')
 
+var mouse_over_gui = false
+
 func _ready():
 	gui_mouse_collision()
 	game.is_ready() #find a way to get rid of this
 	game.update_money(0)
 	game.set_bg_color(game.BG_COLOR_DEFAULT)
+
+func mouse_entered_gui():
+	mouse_over_gui = true
+
+func mouse_exited_gui():
+	mouse_over_gui = false
 
 func gui_mouse_collision():
 	var gui_intercept_mouse = []
@@ -28,38 +36,6 @@ func gui_mouse_collision():
 		if node.is_class("Control"):
 			node.connect('mouse_entered',self,'mouse_entered_gui')
 			node.connect('mouse_exited',self,'mouse_exited_gui')
-
-#func message_resize():
-	#$Panel.rect_size.y = $Text.rect_size.y + 7
-	#print($Text.rect_size)
-
-func _on_AI_pressed():
-	return
-	if AI_panel.is_visible_in_tree():
-		AI_panel.hide()
-		get_node("Dock/ActionButton").show()
-		get_node('Dock/AI/min_left').hide()
-		get_node('Dock/AI/ai_simple').show()
-		dialogue.halt()
-		get_node('Dock/AI/tab_left').set_self_modulate('3c333a4b')
-#		if calendar.is_visible_in_tree():
-#			feed.show()
-#			if not time_bg.is_visible_in_tree():
-#				time_bg.show()
-	else:
-		AI_panel.show()
-		get_node("Dock/ActionButton").hide()
-		get_node('Dock/AI/min_left').show()
-		get_node('Dock/AI/ai_simple').hide()
-		get_node('Dock/AI/tab_left').set_self_modulate('782873c8')
-		if dialogue_text.get_total_character_count() < 45:
-			dialogue_text.clear()
-			dialogue.read('res://intro.txt')
-		#if calendar.is_visible_in_tree():
-			#feed.hide()
-			
-#			if time_bg.is_visible_in_tree():
-#				time_bg.hide()
 
 func _on_Time_toggled(button_pressed):
 	if button_pressed:
@@ -87,39 +63,30 @@ func _on_Time_toggled(button_pressed):
 			if not feed.is_visible_in_tree():
 				feed.show()
 
-func _input(event):
-	if event.is_action_pressed('speed'):
-		if slider.value < 99:
-			slider.value = 99
-			if not calendar.is_visible_in_tree():
-				get_node('Navigation/Time').animate_sml(get_node('Navigation/Time/rabbit'))
-		else:
-			slider.value = 0
-			if not calendar.is_visible_in_tree():
-				get_node('Navigation/Time').animate_sml(get_node('Navigation/Time/turtle'))
-	elif event.is_action_pressed('pause'):
-		if timer.is_paused():
-			timer.set_paused(false)
-			if not calendar.is_visible_in_tree():
-				get_node('Navigation/Time').animate_sml(get_node('Navigation/Time/play'))
-		else:
-			timer.set_paused(true)
-			if not calendar.is_visible_in_tree():
-				get_node('Navigation/Time').animate_sml(get_node('Navigation/Time/pause'))
-	elif event.is_action_pressed('ui_back'):
-		if AI_panel.is_visible_in_tree():
-			if get_node('Navigation/Time/Button').is_pressed():
-				_on_Time_toggled(false)
-				get_node('Navigation/Time/Button').set_pressed(false)
-			else:
-				_on_AI_pressed()
-		elif calendar.is_visible_in_tree():
-			_on_Time_toggled(false)
-			get_node('Navigation/Time/Button').set_pressed(false)
-
-var mouse_over_gui = false
-func mouse_entered_gui():
-	mouse_over_gui = true
-
-func mouse_exited_gui():
-	mouse_over_gui = false
+func _on_AI_pressed(): #inactive
+	return
+	if AI_panel.is_visible_in_tree():
+		AI_panel.hide()
+		get_node("Dock/ActionButton").show()
+		get_node('Dock/AI/min_left').hide()
+		get_node('Dock/AI/ai_simple').show()
+		dialogue.halt()
+		get_node('Dock/AI/tab_left').set_self_modulate('3c333a4b')
+#		if calendar.is_visible_in_tree():
+#			feed.show()
+#			if not time_bg.is_visible_in_tree():
+#				time_bg.show()
+	else:
+		AI_panel.show()
+		get_node("Dock/ActionButton").hide()
+		get_node('Dock/AI/min_left').show()
+		get_node('Dock/AI/ai_simple').hide()
+		get_node('Dock/AI/tab_left').set_self_modulate('782873c8')
+		if dialogue_text.get_total_character_count() < 45:
+			dialogue_text.clear()
+			dialogue.read('res://intro.txt')
+		#if calendar.is_visible_in_tree():
+			#feed.hide()
+			
+#			if time_bg.is_visible_in_tree():
+#				time_bg.hide()

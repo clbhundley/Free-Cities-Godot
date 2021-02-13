@@ -58,7 +58,7 @@ func new(preset=null,selling=false):
 	if not _slave.hair_style:
 		_slave.hair_style = hair_style()
 	if not _slave.chest:
-		_slave.chest = chest(traits,_slave)
+		_slave.chest = null
 	if not _slave.voice:
 		_slave.voice = _voice(_slave.gender)
 	if not _slave.health:
@@ -88,7 +88,7 @@ func new(preset=null,selling=false):
 	if not _slave.face:
 		_slave.face = math.gaussian(5,3)
 	if not _slave.figure:
-		_slave.figure = figure()
+		_slave.figure = null
 	if not _slave.arousal:
 		_slave.arousal = abs(math.gaussian(10,5))
 	if not _slave.sexual_skill:
@@ -125,73 +125,6 @@ func _ethnicity(region):
 			"North America": ["British", "French", "German", "Italian", "Spanish", "Korean", "Japanese", "Chinese", "Indian", "Mexican"],
 			"South America": ["Brazilian", "Colombian", "Mexican", "Latina"]}
 	return ethnicities[region][randi()%ethnicities[region].size()]
-
-func figure():
-	var roll = math.gaussian(0,62)
-	if roll < -95:
-		return "Emaciated"
-	elif roll < -50:
-		return "Skinny"
-	elif roll < -20:
-		return "Average weight"
-	elif roll < 20:
-		return "Muscular"
-	elif roll < 50:
-		return "Plush"
-	elif roll < 95:
-		return "Fat"
-	else:
-		return "Overweight"
-
-func chest(traits,_slave): # http://www.averageheight.co/breast-cup-size-by-country
-	var cup_sizes = ["AA","A","B","C","D","DD","E","F","FF","G","GG","H","HH","J","JJ","K"]
-	var band_size = int(traits.breast_size['chest_size'])
-	var bust_size = math.gaussian(band_size+traits.breast_size['breast_size'],traits.breast_size['breast_variation'])
-	if bust_size < band_size:
-		bust_size = band_size
-	var cup = bust_size - band_size
-	if cup > 10:
-		cup = 10
-	if band_size % 2 == 0:
-		band_size += 4
-	else:
-		band_size += 5
-	if _slave.gender == "male" or _slave.gender == "trans male":
-		return {'band':band_size,'cup':"flat"}
-	return {'band':band_size,'cup':cup_sizes[cup]}
-
-#func genitals(traits,_slave):
-#	if _slave.gender == "male" or _slave.gender == "trans female":
-#		_slave.vagina = false
-#		_slave.penis = true
-#		_slave.penis_size = traits.penis_size()
-#		_slave.testicles = true
-#	elif _slave.gender == "female" or _slave.gender == "trans male":
-#		_slave.vagina = true
-#		_slave.penis = false
-#		_slave.penis_size = 0
-#		_slave.testicles = false
-#	elif _slave.gender == "intersex":
-#		_slave.vagina = true
-#		_slave.penis = true
-#		_slave.penis_size = traits.penis_size()
-#		_slave.testicles = true
-
-func torso(_slave):
-	var types = ["normal", "hourglass"] # "unnatural" not in use
-	if _slave.gender == "male" or _slave.gender == "trans man":
-		return "normal"
-	return types[randi()%types.size()+0]
-
-func hips(_slave):
-	var types = ["normal", "thin", "wide"]
-	if _slave.gender == "male" or _slave.gender == "trans man":
-		return "thin"
-	return types[randi()%types.size()+0]
-
-func butt():
-	var types = ["small", "normal", "large", "very large"]
-	return types[randi()%types.size()+0]
 
 func skin_color(traits):
 	var colors = {
@@ -248,27 +181,129 @@ func _gender():
 			return "Intersex"
 
 func _voice(gender):
-	var voice = ["Deep voice", "Male voice", "Female voice", "High voice", "Mute"]
-	var accent = ["Ugly", "Cute", "Pretty", "Exotic"]
+	var accents = ["Ugly", "Cute", "Pretty", "Exotic"]
+	var voice = ""
 	var roll
-	roll = randi()%100+0
+	roll = randi()%100
 	if roll == 51:
-		return "Mute"
-	if gender == "Male":
-		roll = randi()%2+0
-		return voice[roll]
-	if gender == "Female":
-		roll = randi()%3+2
-		return voice[roll]
+		return "mute"
+	elif gender == "Male":
+		roll = dice.roll(12)
+		if roll <= 3:
+			voice += "deep "
+		elif roll >= 9:
+			voice += "high "
+		if dice.roll(12) == 11:
+			voice += "feminine "
+	elif gender == "Female":
+		roll = dice.roll(12)
+		if roll <= 2:
+			voice += "deep "
+		elif roll >= 8:
+			voice += "high "
+		if dice.roll(12) == 0:
+			voice += "masculine "
 	if gender == "Trans male":
-		roll = randi()%3+1
-		return voice[roll]
-	if gender == "Trans female":
-		roll = randi()%3+0
-		return voice[roll]
-	if gender == "Intersex":
-		roll = randi()%4+0
-		return voice[roll]
+		roll = dice.roll(12)
+		if roll <= 2:
+			voice += "deep "
+		elif roll >= 8:
+			voice += "high "
+		roll = dice.roll(12)
+		if roll <= 2:
+			voice += "masculine "
+		elif roll >= 7:
+			voice += "feminine "
+	elif gender == "Trans female":
+		roll = dice.roll(12)
+		if roll <= 3:
+			voice += "deep "
+		elif roll >= 9:
+			voice += "high "
+		roll = dice.roll(12)
+		if roll <= 4:
+			voice += "masculine "
+		elif roll >= 9:
+			voice += "feminine "
+	elif gender == "Intersex":
+		roll = dice.roll(12)
+		if roll <= 3:
+			voice += "deep "
+		elif roll >= 8:
+			voice += "high "
+		roll = dice.roll(12)
+		if roll <= 3:
+			voice += "masculine "
+		elif roll >= 8:
+			voice += "feminine "
+	return voice
+
+#func figure():
+#	var roll = math.gaussian(0,62)
+#	if roll < -95:
+#		return "Emaciated"
+#	elif roll < -50:
+#		return "Skinny"
+#	elif roll < -20:
+#		return "Average weight"
+#	elif roll < 20:
+#		return "Muscular"
+#	elif roll < 50:
+#		return "Plush"
+#	elif roll < 95:
+#		return "Fat"
+#	else:
+#		return "Overweight"
+
+#func chest(traits,_slave): # http://www.averageheight.co/breast-cup-size-by-country
+#	var cup_sizes = ["AA","A","B","C","D","DD","E","F","FF","G","GG","H","HH","J","JJ","K"]
+#	var band_size = int(traits.breast_size['chest_size'])
+#	var bust_size = math.gaussian(band_size+traits.breast_size['breast_size'],traits.breast_size['breast_variation'])
+#	if bust_size < band_size:
+#		bust_size = band_size
+#	var cup = bust_size - band_size
+#	if cup > 10:
+#		cup = 10
+#	if band_size % 2 == 0:
+#		band_size += 4
+#	else:
+#		band_size += 5
+#	if _slave.gender == "male" or _slave.gender == "trans male":
+#		return {'band':band_size,'cup':"flat"}
+#	return {'band':band_size,'cup':cup_sizes[cup]}
+
+#func genitals(traits,_slave):
+#	if _slave.gender == "male" or _slave.gender == "trans female":
+#		_slave.vagina = false
+#		_slave.penis = true
+#		_slave.penis_size = traits.penis_size()
+#		_slave.testicles = true
+#	elif _slave.gender == "female" or _slave.gender == "trans male":
+#		_slave.vagina = true
+#		_slave.penis = false
+#		_slave.penis_size = 0
+#		_slave.testicles = false
+#	elif _slave.gender == "intersex":
+#		_slave.vagina = true
+#		_slave.penis = true
+#		_slave.penis_size = traits.penis_size()
+#		_slave.testicles = true
+
+#func torso(_slave):
+#	var types = ["normal", "hourglass"] # "unnatural" not in use
+#	if _slave.gender == "male" or _slave.gender == "trans man":
+#		return "normal"
+#	return types[randi()%types.size()+0]
+#
+#func hips(_slave):
+#	var types = ["normal", "thin", "wide"]
+#	if _slave.gender == "male" or _slave.gender == "trans man":
+#		return "thin"
+#	return types[randi()%types.size()+0]
+#
+#func butt():
+#	var types = ["small", "normal", "large", "very large"]
+#	return types[randi()%types.size()+0]
 
 #func genitals():
 #	var vagina

@@ -1,7 +1,8 @@
 extends Node
 
+onready var _slave = owner
+
 func _level():
-	var _slave = get_parent().get_parent()
 	var level = 0
 	level += _slave.health
 	level += _slave.intelligence
@@ -77,83 +78,66 @@ func _level():
 #	return(text)
 
 func _intelligence():
-	var _slave = get_parent().get_parent()
-	
-	var text
 	if _slave.intelligence < 25:
-		text = "[color=#d70000]Vegetable[/color]"
+		return "[color=#d70000]Vegetable[/color]"
 	elif _slave.intelligence < 50:
-		text = "[color=#d74b00]Handicapped[/color]"
+		return "[color=#d74b00]Handicapped[/color]"
 	elif _slave.intelligence < 75:
-		text = "[color=#c89600]Slow[/color]"
+		return "[color=#c89600]Slow[/color]"
 	elif _slave.intelligence < 125:
-		text = "[color=#ffffff]Average intelligence[/color]"
+		return ""
 	elif _slave.intelligence < 150:
-		text = "[color=#00aa0a]Sharp[/color]"
+		return "[color=#00aa0a]Sharp[/color]"
 	elif _slave.intelligence < 175:
-		text = "[color=#00afb4]Superior intelligence[/color]"
+		return "[color=#00afb4]Superior intelligence[/color]"
 	elif _slave.intelligence >= 175:
-		text = "[color=aqua]Exceptional intelligence[/color]"
-	return(text)
+		return "[color=aqua]Exceptional intelligence[/color]"
 
 func _devotion():
-	var _slave = get_parent().get_parent()
-	
-	var text
 	if _slave.devotion < -95:
-		text = "[color=#9400d3]Utterly hateful[/color]"
+		return "[color=#9400d3]Utterly hateful[/color]"
 	elif _slave.devotion < -50:
-		text = "[color=#9400d3]Hateful[/color]"
+		return "[color=#9400d3]Hateful[/color]"
 	elif _slave.devotion < -20:
-		text = "[color=#ba55d3]Resistant[/color]"
+		return "[color=#ba55d3]Resistant[/color]"
 	elif _slave.devotion < 20:
-		text = "[color=#c8c800]Ambivalent[/color]"
+		return "[color=#c8c800]Ambivalent[/color]"
 	elif _slave.devotion < 50:
-		text = "[color=#ff69b4]Accepting[/color]"
+		return "[color=#ff69b4]Accepting[/color]"
 	elif _slave.devotion < 95:
-		text = "[color=#ff1493]Devoted[/color]"
+		return "[color=#ff1493]Devoted[/color]"
 	elif _slave.devotion >= 95:
-		text = "[color=fuchsia]Worshipful[/color]"
-	return(text)
+		return "[color=fuchsia]Worshipful[/color]"
 
 func _trust():
-	var _slave = get_parent().get_parent()
-	
-	var text
 	if _slave.trust < -95:
-		text = "[color=#daa520]Abjectly terrified[/color]"
+		return "[color=#daa520]Abjectly terrified[/color]"
 	elif _slave.trust < -50:
-		text = "[color=#daa520]Terrified[/color]"
+		return "[color=#daa520]Terrified[/color]"
 	elif _slave.trust < -20:
-		text = "[color=#dab700]Frightened[/color]"
+		return "[color=#dab700]Frightened[/color]"
 	elif _slave.trust < 20:
-		text = "[color=#c8c800]Fearful[/color]"
+		return "[color=#c8c800]Fearful[/color]"
 	elif _slave.trust < 50:
-		text = "[color=#66cdaa]Careful[/color]"
+		return "[color=#66cdaa]Careful[/color]"
 	elif _slave.trust < 95:
-		text = "[color=#3cb371]Trusting[/color]"
+		return "[color=#3cb371]Trusting[/color]"
 	elif _slave.trust >= 95:
-		text = "[color=#2e8b57]Absolute trust[/color]"
-	return(text)
+		return "[color=#2e8b57]Absolute trust[/color]"
 
 func _face():
-	var _slave = get_parent().get_parent()
-	
-	var text
 	if _slave.face <= 0:
-		text = "[color=#c80000]Hideous[/color]"
+		return "[color=#c80000]Hideous[/color]"
 	elif _slave.face < 2:
-		text = "[color=#c88c00]Ugly[/color]"
+		return "[color=#c88c00]Ugly[/color]"
 	elif _slave.face < 6:
-		text = "[color=#ffffff]Average face[/color]"
+		return ""
 	elif _slave.face <= 8:
-		text = "[color=#3c8c00]Pretty[/color]"
+		return "[color=#3c8c00]Pretty[/color]"
 	elif _slave.face > 8:
-		text = "[color=#008c28]Beautiful[/color]"
-	return (text)
+		return "[color=#008c28]Beautiful[/color]"
 
 func _figure():
-	var _slave = get_parent().get_parent()
 	if _slave.figure == "Emaciated":
 		return "[color=#c80000]Emaciated[/color]"
 	elif _slave.figure == "Skinny":
@@ -170,200 +154,156 @@ func _figure():
 		return "[color=#c80000]Overweight[/color]"
 
 func _libido():
-	var _slave = get_parent().get_parent()
-	
-	var text
 	if _slave.libido < 25:
-		text = "[color=#ff4500]Frigid[/color]"
+		return "[color=#ff4500]Frigid[/color]"
 	elif _slave.libido < 50:
-		text = "[color=#ffa500]Repressed[/color]"
+		return "[color=#ffa500]Repressed[/color]"
 	elif _slave.libido < 75:
-		text = "[color=#ffd100]Chaste[/color]"
+		return "[color=#ffd100]Chaste[/color]"
 	elif _slave.libido < 125:
-		text = "[color=#ffbbdd]Average libido[/color]"
+		return "[color=#ffbbdd]Average libido[/color]"
 	elif _slave.libido < 150:
-		text = "[color=#ff69b4]Lustful[/color]"
+		return "[color=#ff69b4]Lustful[/color]"
 	elif _slave.libido < 175:
-		text = "[color=#ff1493]Sex addict[/color]"
+		return "[color=#ff1493]Sex addict[/color]"
 	elif _slave.libido >= 175:
-		text = "[color=fuchsia]Nympho[/color]"
-	return(text)
+		return "[color=fuchsia]Nympho[/color]"
 
 func _male_attraction():
-	var _slave = get_parent().get_parent()
-	
-	var text
 	if _slave.male_attraction <= -100:
-		text = "[color=#ff0000]Hates men[/color]"
+		return "[color=#ff0000]Hates men[/color]"
 	elif _slave.male_attraction < -75:
-		text = "[color=#ff4500]Disgusted by men[/color]"
+		return "[color=#ff4500]Disgusted by men[/color]"
 	elif _slave.male_attraction < -50:
-		text = "[color=#ffa500]Dislikes men[/color]"
+		return "[color=#ffa500]Dislikes men[/color]"
 	elif _slave.male_attraction < -25:
-		text = "[color=#ffd100]Turned off by men[/color]"
+		return "[color=#ffd100]Turned off by men[/color]"
 	elif _slave.male_attraction <= 0:
-		text = "[color=#ffffff]No feelings towards men[/color]"
+		return "[color=#ffffff]No feelings towards men[/color]"
 	elif _slave.male_attraction < 25:
-		text = "[color=#ffbbdd]Likes men[/color]"
+		return "[color=#ffbbdd]Likes men[/color]"
 	elif _slave.male_attraction < 50:
-		text = "[color=#ff69b4]Attracted to men[/color]"
+		return "[color=#ff69b4]Attracted to men[/color]"
 	elif _slave.male_attraction < 75:
-		text = "[color=#ff1493]Aroused by men[/color]"
+		return "[color=#ff1493]Aroused by men[/color]"
 	elif _slave.male_attraction >= 75:
-		text = "[color=fuchsia]Passionate about men[/color]"
-	return(text)
+		return "[color=fuchsia]Passionate about men[/color]"
 
 func _female_attraction():
-	var _slave = get_parent().get_parent()
-	
-	var text
 	if _slave.female_attraction <= -100:
-		text = "[color=#ff0000]Hates women[/color]"
+		return "[color=#ff0000]Hates women[/color]"
 	elif _slave.female_attraction < -75:
-		text = "[color=#ff4500]Disgusted by women[/color]"
+		return "[color=#ff4500]Disgusted by women[/color]"
 	elif _slave.female_attraction < -50:
-		text = "[color=#ffa500]Dislikes women[/color]"
+		return "[color=#ffa500]Dislikes women[/color]"
 	elif _slave.female_attraction < -25:
-		text = "[color=#ffd100]Turned off by women[/color]"
+		return "[color=#ffd100]Turned off by women[/color]"
 	elif _slave.female_attraction <= 0:
-		text = "[color=#ffffff]No feelings towards women[/color]"
+		return "[color=#ffffff]No feelings towards women[/color]"
 	elif _slave.female_attraction < 25:
-		text = "[color=#ffbbdd]Likes women[/color]"
+		return "[color=#ffbbdd]Likes women[/color]"
 	elif _slave.female_attraction < 50:
-		text = "[color=ff69b4]Attracted to women[/color]"
+		return "[color=ff69b4]Attracted to women[/color]"
 	elif _slave.female_attraction < 75:
-		text = "[color=ff1493]Aroused by women[/color]"
+		return "[color=ff1493]Aroused by women[/color]"
 	elif _slave.female_attraction >= 75:
-		text = "[color=fuchsia]Passionate about women[/color]"
-	return(text)
+		return "[color=fuchsia]Passionate about women[/color]"
 
 func _sexual_skill():
-	var _slave = get_parent().get_parent()
-	
-	var text
 	if _slave.sexual_skill < 25:
-		text = "[color=#c89600]Unskilled at sex[/color]"
+		return "[color=#c89600]Unskilled at sex[/color]"
 	elif _slave.sexual_skill < 50:
-		text = "[color=#ffffff]Basic sexual skills[/color]"
+		return "[color=#ffffff]Basic sexual skills[/color]"
 	elif _slave.sexual_skill < 150:
-		text = "[color=#00aa0a]Skilled at sex[/color]"
+		return "[color=#00aa0a]Skilled at sex[/color]"
 	elif _slave.sexual_skill < 200:
-		text = "[color=#00afb4]Sexual expert[/color]"
+		return "[color=#00afb4]Sexual expert[/color]"
 	elif _slave.sexual_skill >= 200:
-		text = "[color=aqua]Sexual master[/color]"
-	return(text)
+		return "[color=aqua]Sexual master[/color]"
 
 func _oral_skill():
-	var _slave = get_parent().get_parent()
-	
-	var text
 	if _slave.oral_skill < 25:
-		text = "[color=#c89600]Unskilled at oral[/color]"
+		return "[color=#c89600]Unskilled at oral[/color]"
 	elif _slave.oral_skill < 50:
-		text = "[color=#ffffff]Basic oral skills[/color]"
+		return "[color=#ffffff]Basic oral skills[/color]"
 	elif _slave.oral_skill < 150:
-		text = "[color=#00aa0a]Skilled at oral[/color]"
+		return "[color=#00aa0a]Skilled at oral[/color]"
 	elif _slave.oral_skill < 200:
-		text = "[color=#00afb4]Oral expert[/color]"
+		return "[color=#00afb4]Oral expert[/color]"
 	elif _slave.oral_skill >= 200:
-		text = "[color=aqua]Oral master[/color]"
-	return(text)
+		return "[color=aqua]Oral master[/color]"
 
 func _anal_skill():
-	var _slave = get_parent().get_parent()
-	
-	var text
 	if _slave.anal_skill < 25:
-		text = "[color=#c89600]Unskilled at anal[/color]"
+		return "[color=#c89600]Unskilled at anal[/color]"
 	elif _slave.anal_skill < 50:
-		text = "[color=#ffffff]Basic anal skills[/color]"
+		return "[color=#ffffff]Basic anal skills[/color]"
 	elif _slave.anal_skill < 150:
-		text = "[color=#00aa0a]Skilled at anal sex[/color]"
+		return "[color=#00aa0a]Skilled at anal sex[/color]"
 	elif _slave.anal_skill < 200:
-		text = "[color=#00afb4]Anal expert[/color]"
+		return "[color=#00afb4]Anal expert[/color]"
 	elif _slave.anal_skill >= 200:
-		text = "[color=aqua]Anal master[/color]"
-	return(text)
+		return "[color=aqua]Anal master[/color]"
 
 func _vaginal_skill():
-	var _slave = get_parent().get_parent()
-	
-	var text
 	if _slave.vaginal_skill < 25:
-		text = "[color=#c89600]Unskilled at vaginal[/color]"
+		return "[color=#c89600]Unskilled at vaginal[/color]"
 	elif _slave.vaginal_skill < 50:
-		text = "[color=#ffffff]Basic vaginal skills[/color]"
+		return "[color=#ffffff]Basic vaginal skills[/color]"
 	elif _slave.vaginal_skill < 150:
-		text = "[color=#00aa0a]Skilled at vaginal sex[/color]"
+		return "[color=#00aa0a]Skilled at vaginal sex[/color]"
 	elif _slave.vaginal_skill < 200:
-		text = "[color=#00afb4]Vaginal expert[/color]"
+		return "[color=#00afb4]Vaginal expert[/color]"
 	elif _slave.vaginal_skill >= 200:
-		text = "[color=aqua]Vaginal master[/color]"
-	return(text)
+		return "[color=aqua]Vaginal master[/color]"
 
 func _penis_skill():
-	var _slave = get_parent().get_parent()
-	
-	var text
 	if _slave.penis_skill < 25:
-		text = "[color=#c89600]Unskilled stud[/color]"
+		return "[color=#c89600]Unskilled stud[/color]"
 	elif _slave.penis_skill < 50:
-		text = "[color=#ffffff]Basic stud[/color]"
+		return "[color=#ffffff]Basic stud[/color]"
 	elif _slave.penis_skill < 150:
-		text = "[color=#00aa0a]Skilled stud[/color]"
+		return "[color=#00aa0a]Skilled stud[/color]"
 	elif _slave.penis_skill < 200:
-		text = "[color=#00afb4]Expert stud[/color]"
+		return "[color=#00afb4]Expert stud[/color]"
 	elif _slave.penis_skill >= 200:
-		text = "[color=aqua]Master stud[/color]"
-	return(text)
+		return "[color=aqua]Master stud[/color]"
 
 func _prostitution_skill():
-	var _slave = get_parent().get_parent()
-	
-	var text
 	if _slave.prostitution_skill < 25:
-		text = "[color=#c89600]Unskilled at prostitution[/color]"
+		return "[color=#c89600]Unskilled at prostitution[/color]"
 	elif _slave.prostitution_skill < 50:
-		text = "[color=#ffffff]Basic prostitution skills[/color]"
+		return "[color=#ffffff]Basic prostitution skills[/color]"
 	elif _slave.prostitution_skill < 150:
-		text = "[color=#00aa0a]Skilled prostitute[/color]"
+		return "[color=#00aa0a]Skilled prostitute[/color]"
 	elif _slave.prostitution_skill < 200:
-		text = "[color=#00afb4]Expert prostitute[/color]"
+		return "[color=#00afb4]Expert prostitute[/color]"
 	elif _slave.prostitution_skill >= 200:
-		text = "[color=aqua]Masterful prostitute[/color]"
-	return(text)
+		return "[color=aqua]Masterful prostitute[/color]"
 
 func _entertainment_skill():
-	var _slave = get_parent().get_parent()
-	
-	var text
 	if _slave.entertainment_skill < 25:
-		text = "[color=#c89600]Unskilled at entertainment[/color]"
+		return "[color=#c89600]Unskilled at entertainment[/color]"
 	elif _slave.entertainment_skill < 50:
-		text = "[color=#ffffff]Basic entertainment skills[/color]"
+		return "[color=#ffffff]Basic entertainment skills[/color]"
 	elif _slave.entertainment_skill < 150:
-		text = "[color=#00aa0a]Skilled entertainer[/color]"
+		return "[color=#00aa0a]Skilled entertainer[/color]"
 	elif _slave.entertainment_skill < 200:
-		text = "[color=#00afb4]Expert entertainer[/color]"
+		return "[color=#00afb4]Expert entertainer[/color]"
 	elif _slave.entertainment_skill >= 200:
-		text = "[color=aqua]Masterful entertainer[/color]"
-	return(text)
+		return "[color=aqua]Masterful entertainer[/color]"
 
 func _combat_skill():
-	var _slave = get_parent().get_parent()
-	
-	var text
 	if _slave.combat_skill < 25:
-		text = "[color=#c89600]Unskilled at combat[/color]"
+		return "[color=#c89600]Unskilled at combat[/color]"
 	elif _slave.combat_skill < 50:
-		text = "[color=#ffffff]Basic combat skills[/color]"
+		return "[color=#ffffff]Basic combat skills[/color]"
 	elif _slave.combat_skill < 150:
-		text = "[color=#00aa0a]Skilled fighter[/color]"
+		return "[color=#00aa0a]Skilled fighter[/color]"
 	elif _slave.combat_skill < 200:
-		text = "[color=#00afb4]Expert fighter[/color]"
+		return "[color=#00afb4]Expert fighter[/color]"
 	elif _slave.combat_skill >= 200:
-		text = "[color=aqua]Masterful fighter[/color]"
-	return(text)
+		return "[color=aqua]Masterful fighter[/color]"
 
 
 #Devotion: Ambivalent. Utterly hateful | Hateful | Resistant | Ambivalent | Accepting | Devoted | Worshipful 
