@@ -11,31 +11,30 @@ func _ready():
 	$Camera.set_translation(Vector3(cam_pos, 3.2, 5))
 	for i in range(abs(math.gaussian(7,2))):
 		var preset = "kidnappers market"
-		get_node("Collections/Owned").add_child(get_node('New Slave').new(preset),true)
+		var new_slave = get_node('New Slave').new(preset)
+		new_slave.acquired =  time.get_timestamp()
+		get_node("Collections/Owned").add_child(new_slave,true)
 	set_active_collection("Owned")
 	update_collection(active_collection)
 	update_header()
 
-func slave_count(collection):
-	return get_node("Collections/"+collection).get_child_count()
-
 func update_header():
 	var header = get_tree().get_root().get_node("Game/GUI/Header/Slaves/Title")
 	if active_collection.name == "Owned":
-		var count = str(slave_count("Owned"))
-		if slave_count("Owned") == 1:
+		var count = str(SlaveUtils.slave_count("Owned"))
+		if SlaveUtils.slave_count("Owned") == 1:
 			header.set_text(count+" Slave Owned")
 		else:
 			header.set_text(count+" Slaves Owned")
 	elif active_collection.name == "Kidnappers Market":
-		var count = str(slave_count("Kidnappers Market"))
-		if slave_count("Kidnappers Market") == 1:
+		var count = str(SlaveUtils.slave_count("Kidnappers Market"))
+		if SlaveUtils.slave_count("Kidnappers Market") == 1:
 			header.set_text("%s Slave available"%count)
 		else:
 			header.set_text("%s Slaves available"%count)
 	elif active_collection.name == "Neighboring Arcologies":
-		var count = str(slave_count("Neighboring Arcologies"))
-		if slave_count("Neighboring Arcologies") == 1:
+		var count = str(SlaveUtils.slave_count("Neighboring Arcologies"))
+		if SlaveUtils.slave_count("Neighboring Arcologies") == 1:
 			header.set_text("%s Slave available"%count)
 		else:
 			header.set_text("%s Slaves available"%count)
@@ -53,7 +52,7 @@ func set_active_collection(collection,reset_cam_pos=true):
 	update_collection(active_collection)
 	active_collection.show()
 	update_header()
-	max_camera_pos = slave_count(active_collection.name) * 5.4
+	max_camera_pos = SlaveUtils.slave_count(active_collection.name) * 5.4
 	clamp_camera_position()
 	if reset_cam_pos:
 		cam_pos = min_camera_pos

@@ -44,7 +44,31 @@ func _on_PurchaseSlaves_pressed():
 	dock.set_mode(\"PurchaseSlaves\")
 
 func update():
-	pass
+	SlaveUtils.sort_slaves(\"Owned\",sort_mode,sort_order)
+
+var sort_mode = \"Devotion\"
+func _on_SortMode_item_selected(index):
+	if index == 0:
+		sort_mode = \"Devotion\"
+	elif index == 1:
+		sort_mode = \"Level\"
+	elif index == 2:
+		sort_mode = \"Assignment\"
+	elif index == 3:
+		sort_mode = \"Acquired\"
+	elif index == 4:
+		sort_mode = \"Name\"
+	elif index == 5:
+		sort_mode = \"Age\"
+	SlaveUtils.sort_slaves(\"Owned\",sort_mode,sort_order)
+
+var sort_order = \"Descending\"
+func _on_SortOrder_item_selected(index):
+	if index == 0:
+		sort_order = \"Descending\"
+	elif index == 1:
+		sort_order = \"Ascending\"
+	SlaveUtils.sort_slaves(\"Owned\",sort_mode,sort_order)
 "
 
 [sub_resource type="GDScript" id=2]
@@ -60,11 +84,32 @@ func update():
 [sub_resource type="GDScript" id=3]
 script/source = "extends VBoxContainer
 
-func _ready():
-	pass # Replace with function body.
-
 func update():
-	pass
+	SlaveUtils.sort_slaves(\"Kidnappers Market\",sort_mode,sort_order)
+
+var sort_mode = \"Level\"
+func _on_SortMode_item_selected(index):
+	if index == 0:
+		sort_mode = \"Devotion\"
+	elif index == 1:
+		sort_mode = \"Level\"
+	elif index == 2:
+		sort_mode = \"Assignment\"
+	elif index == 3:
+		sort_mode = \"Acquired\"
+	elif index == 4:
+		sort_mode = \"Name\"
+	elif index == 5:
+		sort_mode = \"Age\"
+	SlaveUtils.sort_slaves(\"Kidnappers Market\",sort_mode,sort_order)
+
+var sort_order = \"Descending\"
+func _on_SortOrder_item_selected(index):
+	if index == 0:
+		sort_order = \"Descending\"
+	elif index == 1:
+		sort_order = \"Ascending\"
+	SlaveUtils.sort_slaves(\"Kidnappers Market\",sort_mode,sort_order)
 "
 
 [sub_resource type="GDScript" id=4]
@@ -79,11 +124,32 @@ func _on_Hide_pressed():
 [sub_resource type="GDScript" id=5]
 script/source = "extends VBoxContainer
 
-func _ready():
-	pass # Replace with function body.
-
 func update():
-	pass
+	SlaveUtils.sort_slaves(\"Neighboring Arcologies\",sort_mode,sort_order)
+
+var sort_mode = \"Level\"
+func _on_SortMode_item_selected(index):
+	if index == 0:
+		sort_mode = \"Devotion\"
+	elif index == 1:
+		sort_mode = \"Level\"
+	elif index == 2:
+		sort_mode = \"Assignment\"
+	elif index == 3:
+		sort_mode = \"Acquired\"
+	elif index == 4:
+		sort_mode = \"Name\"
+	elif index == 5:
+		sort_mode = \"Age\"
+	SlaveUtils.sort_slaves(\"Neighboring Arcologies\",sort_mode,sort_order)
+
+var sort_order = \"Descending\"
+func _on_SortOrder_item_selected(index):
+	if index == 0:
+		sort_order = \"Descending\"
+	elif index == 1:
+		sort_order = \"Ascending\"
+	SlaveUtils.sort_slaves(\"Neighboring Arcologies\",sort_mode,sort_order)
 "
 
 [sub_resource type="GDScript" id=6]
@@ -382,7 +448,7 @@ func _on_ActionButton_pressed():
 		side_panel.rect_size.x = margin_right+30
 	if mode == \"PurchaseSlaves\":
 		mode = \"ManageSlaves\"
-		slaves.set_active_collection(\"Owned\")
+		slaves.set_active_collection(\"Owned\",false)
 		side_panel.change_content(
 			get_content(\"PurchaseSlaves\"),
 			get_content(mode))
@@ -798,22 +864,20 @@ margin_right = 420.0
 margin_bottom = 76.0
 custom_constants/separation = 10
 
-[node name="Mode" type="OptionButton" parent="SidePanel/ManageSlaves/Sort/HBox"]
+[node name="SortMode" type="OptionButton" parent="SidePanel/ManageSlaves/Sort/HBox"]
 margin_right = 125.0
 margin_bottom = 35.0
 custom_fonts/font = ExtResource( 25 )
-disabled = true
 text = "Devotion"
 expand_icon = true
-items = [ "Devotion", null, false, 0, null, "Assignment", null, false, 1, null, "Acquired", null, false, 2, null, "Name", null, false, 3, null, "Age", null, false, 4, null ]
+items = [ "Devotion", null, false, 0, null, "Level", null, false, 1, null, "Assignment", null, false, 2, null, "Acquired", null, false, 3, null, "Name", null, false, 4, null, "Age", null, false, 5, null ]
 selected = 0
 
-[node name="Mode2" type="OptionButton" parent="SidePanel/ManageSlaves/Sort/HBox"]
+[node name="SortOrder" type="OptionButton" parent="SidePanel/ManageSlaves/Sort/HBox"]
 margin_left = 135.0
 margin_right = 292.0
 margin_bottom = 35.0
 custom_fonts/font = ExtResource( 25 )
-disabled = true
 text = "Descending"
 expand_icon = true
 items = [ "Descending", null, false, 0, null, "Ascending", null, false, 1, null ]
@@ -941,7 +1005,7 @@ __meta__ = {
 
 [node name="Title" type="Label" parent="SidePanel/KidnappersMarket"]
 margin_right = 420.0
-margin_bottom = 53.0
+margin_bottom = 48.0
 custom_fonts/font = ExtResource( 28 )
 text = "Kidnappers Market:"
 __meta__ = {
@@ -949,9 +1013,9 @@ __meta__ = {
 }
 
 [node name="Sort" type="VBoxContainer" parent="SidePanel/KidnappersMarket"]
-margin_top = 71.0
+margin_top = 66.0
 margin_right = 420.0
-margin_bottom = 147.0
+margin_bottom = 142.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -971,31 +1035,29 @@ margin_right = 420.0
 margin_bottom = 76.0
 custom_constants/separation = 10
 
-[node name="Mode" type="OptionButton" parent="SidePanel/KidnappersMarket/Sort/HBox"]
-margin_right = 125.0
+[node name="SortMode" type="OptionButton" parent="SidePanel/KidnappersMarket/Sort/HBox"]
+margin_right = 86.0
 margin_bottom = 35.0
 custom_fonts/font = ExtResource( 25 )
-disabled = true
-text = "Devotion"
+text = "Level"
 expand_icon = true
-items = [ "Devotion", null, false, 0, null, "Assignment", null, false, 1, null, "Acquired", null, false, 2, null, "Name", null, false, 3, null, "Age", null, false, 4, null ]
-selected = 0
+items = [ "Devotion", null, false, 0, null, "Level", null, false, 1, null, "Assignment", null, false, 2, null, "Acquired", null, false, 3, null, "Name", null, false, 4, null, "Age", null, false, 5, null ]
+selected = 1
 
-[node name="Mode2" type="OptionButton" parent="SidePanel/KidnappersMarket/Sort/HBox"]
-margin_left = 135.0
-margin_right = 292.0
+[node name="SortOrder" type="OptionButton" parent="SidePanel/KidnappersMarket/Sort/HBox"]
+margin_left = 96.0
+margin_right = 253.0
 margin_bottom = 35.0
 custom_fonts/font = ExtResource( 25 )
-disabled = true
 text = "Descending"
 expand_icon = true
 items = [ "Descending", null, false, 0, null, "Ascending", null, false, 1, null ]
 selected = 0
 
 [node name="Hide" type="Button" parent="SidePanel/KidnappersMarket"]
-margin_top = 165.0
+margin_top = 160.0
 margin_right = 420.0
-margin_bottom = 200.0
+margin_bottom = 195.0
 custom_fonts/font = ExtResource( 25 )
 text = "Hide"
 align = 0
@@ -1006,9 +1068,9 @@ __meta__ = {
 }
 
 [node name="Desc" type="Label" parent="SidePanel/KidnappersMarket"]
-margin_top = 218.0
+margin_top = 213.0
 margin_right = 420.0
-margin_bottom = 311.0
+margin_bottom = 306.0
 custom_fonts/font = ExtResource( 25 )
 text = "Slaves aquired from old-world slums will tend to be low-quality and resistant."
 autowrap = true
@@ -1060,31 +1122,29 @@ margin_right = 420.0
 margin_bottom = 76.0
 custom_constants/separation = 10
 
-[node name="Mode" type="OptionButton" parent="SidePanel/NeighboringArcologies/Sort/HBox"]
-margin_right = 125.0
+[node name="SortMode" type="OptionButton" parent="SidePanel/NeighboringArcologies/Sort/HBox"]
+margin_right = 86.0
 margin_bottom = 35.0
 custom_fonts/font = ExtResource( 25 )
-disabled = true
-text = "Devotion"
+text = "Level"
 expand_icon = true
-items = [ "Devotion", null, false, 0, null, "Assignment", null, false, 1, null, "Acquired", null, false, 2, null, "Name", null, false, 3, null, "Age", null, false, 4, null ]
-selected = 0
+items = [ "Devotion", null, false, 0, null, "Level", null, false, 1, null, "Assignment", null, false, 2, null, "Acquired", null, false, 3, null, "Name", null, false, 4, null, "Age", null, false, 5, null ]
+selected = 1
 
-[node name="Mode2" type="OptionButton" parent="SidePanel/NeighboringArcologies/Sort/HBox"]
-margin_left = 135.0
-margin_right = 292.0
+[node name="SortOrder" type="OptionButton" parent="SidePanel/NeighboringArcologies/Sort/HBox"]
+margin_left = 96.0
+margin_right = 253.0
 margin_bottom = 35.0
 custom_fonts/font = ExtResource( 25 )
-disabled = true
 text = "Descending"
 expand_icon = true
 items = [ "Descending", null, false, 0, null, "Ascending", null, false, 1, null ]
 selected = 0
 
 [node name="Hide" type="Button" parent="SidePanel/NeighboringArcologies"]
-margin_top = 165.0
+margin_top = 155.0
 margin_right = 420.0
-margin_bottom = 200.0
+margin_bottom = 190.0
 custom_fonts/font = ExtResource( 25 )
 text = "Hide"
 align = 0
@@ -3923,11 +3983,17 @@ __meta__ = {
 }
 
 [node name="Tween" type="Tween" parent="."]
+[connection signal="item_selected" from="SidePanel/ManageSlaves/Sort/HBox/SortMode" to="SidePanel/ManageSlaves" method="_on_SortMode_item_selected"]
+[connection signal="item_selected" from="SidePanel/ManageSlaves/Sort/HBox/SortOrder" to="SidePanel/ManageSlaves" method="_on_SortOrder_item_selected"]
 [connection signal="pressed" from="SidePanel/ManageSlaves/PurchaseSlaves" to="SidePanel/ManageSlaves" method="_on_PurchaseSlaves_pressed"]
 [connection signal="pressed" from="SidePanel/PurchaseSlaves/KidnappersMarket" to="Dock" method="set_mode" binds= [ "KidnappersMarket" ]]
 [connection signal="pressed" from="SidePanel/PurchaseSlaves/NeighboringArcologies" to="Dock" method="set_mode" binds= [ "NeighboringArcologies" ]]
+[connection signal="item_selected" from="SidePanel/KidnappersMarket/Sort/HBox/SortMode" to="SidePanel/KidnappersMarket" method="_on_SortMode_item_selected"]
+[connection signal="item_selected" from="SidePanel/KidnappersMarket/Sort/HBox/SortOrder" to="SidePanel/KidnappersMarket" method="_on_SortOrder_item_selected"]
 [connection signal="pressed" from="SidePanel/KidnappersMarket/Hide" to="SidePanel/KidnappersMarket/Hide" method="_on_Hide_pressed"]
 [connection signal="pressed" from="SidePanel/KidnappersMarket/Hide" to="SidePanel" method="close"]
+[connection signal="item_selected" from="SidePanel/NeighboringArcologies/Sort/HBox/SortMode" to="SidePanel/NeighboringArcologies" method="_on_SortMode_item_selected"]
+[connection signal="item_selected" from="SidePanel/NeighboringArcologies/Sort/HBox/SortOrder" to="SidePanel/NeighboringArcologies" method="_on_SortOrder_item_selected"]
 [connection signal="pressed" from="SidePanel/NeighboringArcologies/Hide" to="SidePanel/NeighboringArcologies/Hide" method="_on_Hide_pressed"]
 [connection signal="button_down" from="AI Panel/OLD Navigation Tabs/Arcology/Button" to="AI Panel/OLD Navigation Tabs/Arcology" method="_on_button_down"]
 [connection signal="button_up" from="AI Panel/OLD Navigation Tabs/Arcology/Button" to="AI Panel/OLD Navigation Tabs/Arcology" method="_on_button_up"]

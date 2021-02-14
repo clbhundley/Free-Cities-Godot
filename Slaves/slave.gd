@@ -41,6 +41,7 @@ var penis_skill
 var prostitution_skill
 var entertainment_skill
 var combat_skill
+var acquired
 var assignment
 var action
 var queued_action
@@ -63,6 +64,9 @@ func _ready():
 		action = "Idle"
 	if not assignment:
 		assignment = "Resting"
+
+func get_level():
+	return get_node('Scripts/Stats')._level()
 
 func tick():
 	if not for_sale:
@@ -119,6 +123,7 @@ func _data():
 			combat_skill = combat_skill,
 			is_awake = is_awake,
 			for_sale = for_sale,
+			acquired = acquired,
 			assignment = assignment,
 			action = action,
 			current_time = get_node('Scripts/Actions/'+action).current_time,
@@ -154,8 +159,6 @@ func _load(_data):
 	for setting in _data["slave_data"]:
 		set(setting, _data["slave_data"][setting])
 	$Model.model_data = _data["model_data"]
-#	for setting in _data["model_data"]:
-#		$Model.set(setting, _data["model_data"][setting])
 	get_node('Scripts/Actions/'+action).current_time = _data["slave_data"]['current_time']
 	get_node('Scripts/Actions/'+action).total_time = _data["slave_data"]['total_time']
 	if get_node('Scripts/Actions/'+action).total_time:

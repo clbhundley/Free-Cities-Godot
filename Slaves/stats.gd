@@ -9,6 +9,7 @@ func _level():
 	level += _slave.devotion
 	level += _slave.trust
 	level += _slave.face*10
+	level -= _slave.age
 #	if _slave.figure < -50 or _slave.figure > 50:
 #		level -= 10
 #	elif _slave.figure < -95 or _slave.figure > 95:
@@ -127,31 +128,31 @@ func _trust():
 
 func _face():
 	if _slave.face <= 0:
-		return "[color=#c80000]Hideous[/color]"
+		return "[color=#c80000]Hideous face[/color]"
 	elif _slave.face < 2:
-		return "[color=#c88c00]Ugly[/color]"
+		return "[color=#c88c00]Ugly face[/color]"
 	elif _slave.face < 6:
 		return ""
 	elif _slave.face <= 8:
-		return "[color=#3c8c00]Pretty[/color]"
+		return "[color=#3c8c00]Pretty face[/color]"
 	elif _slave.face > 8:
-		return "[color=#008c28]Beautiful[/color]"
+		return "[color=#008c28]Beautiful face[/color]"
 
-func _figure():
-	if _slave.figure == "Emaciated":
-		return "[color=#c80000]Emaciated[/color]"
-	elif _slave.figure == "Skinny":
-		return "[color=#c8a500]Skinny[/color]"
-	elif _slave.figure == "Muscular":
-		return "[color=#3c8c00]Muscular[/color]"
-	elif _slave.figure == "Average weight":
-		return "[color=#ffffff]Average weight[/color]"
-	elif _slave.figure == "Plush":
-		return "[color=#3c8c00]Plush[/color]"
-	elif _slave.figure == "Fat":
-		return "[color=#c8a500]Fat[/color]"
-	elif _slave.figure == "Overweight":
-		return "[color=#c80000]Overweight[/color]"
+#func _figure():
+#	if _slave.figure == "Emaciated":
+#		return "[color=#c80000]Emaciated[/color]"
+#	elif _slave.figure == "Skinny":
+#		return "[color=#c8a500]Skinny[/color]"
+#	elif _slave.figure == "Muscular":
+#		return "[color=#3c8c00]Muscular[/color]"
+#	elif _slave.figure == "Average weight":
+#		return "[color=#ffffff]Average weight[/color]"
+#	elif _slave.figure == "Plush":
+#		return "[color=#3c8c00]Plush[/color]"
+#	elif _slave.figure == "Fat":
+#		return "[color=#c8a500]Fat[/color]"
+#	elif _slave.figure == "Overweight":
+#		return "[color=#c80000]Overweight[/color]"
 
 func _libido():
 	if _slave.libido < 25:

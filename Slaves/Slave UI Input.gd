@@ -1,8 +1,7 @@
 extends Node
 
 onready var slave_ui = get_parent()
-onready var root = get_tree().get_root()
-onready var slaves = root.get_node("Game/Slaves")
+onready var slaves = SlaveUtils.get_slave_scene()
 onready var panel = get_node("../Panel")
 onready var _slave = owner.owner
 
@@ -50,14 +49,15 @@ func _on_Buy_pressed():
 	get_node('../Panel/Buttons').show()
 	get_node('../Panel/Selling Buttons').hide()
 	parent_container.remove_child(_slave)
-	root.get_node('Game/Slaves/Collections/Owned').add_child(_slave,true)
+	_slave.acquired = time.get_timestamp()
+	SlaveUtils.get_owned_slaves().add_child(_slave,true)
 	slaves.update_collection(slaves.active_collection)
 	slaves.update_header()
 	slave_ui.hide()
 
 func _on_Sell_pressed():
 	var dir = Directory.new()
-	if slaves.slave_count("Owned") <= 1:
+	if SlaveUtils.slave_count("Owned") <= 1:
 		return
 	dir.remove('user://Data/Slot %s/Slaves/Owned/%s.json'%[data.save_slot,_slave.name])
 	game.update_money(200 * _slave.get_node('Scripts/Stats')._level())

@@ -30,6 +30,7 @@ dice="*res://Globals/dice.gd"
 time="*res://Globals/time.gd"
 game="*res://Globals/game.gd"
 ArcUtils="*res://Globals/ArcUtils.gd"
+SlaveUtils="*res://Globals/SlaveUtils.gd"
 
 [display]
 

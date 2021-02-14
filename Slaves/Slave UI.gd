@@ -24,16 +24,8 @@ func _ready():
 	tracking()
 	resize()
 
-func tracking():
-	if not is_visible_in_tree():
-		return
-	var position = _slave.get_translation()
-	var camera = root.get_camera()
-	var projection = camera.unproject_position(position)
-	set_position(projection)
-
 func set_level():
-	get_node('Top/Level').set_text(str(get_node('../Scripts/Stats')._level()))
+	get_node('Top/Level').set_text(str(_slave.get_level()))
 
 func display_location():
 	var loc = get_parent().location
@@ -68,6 +60,14 @@ func get_display_name(sector,full=false):
 		return("Commercial")
 	else:
 		return _name.capitalize()
+
+func tracking():
+	if not is_visible_in_tree():
+		return
+	var position = _slave.get_translation()
+	var camera = root.get_camera()
+	var projection = camera.unproject_position(position)
+	set_position(projection)
 
 func resize():
 	if not is_visible_in_tree():

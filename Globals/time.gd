@@ -26,6 +26,18 @@ func _ready():
 	quarter = 0
 	year = 2119
 
+#"%s Q%s Week %s Day %s %s:%s:%s"%[year,quarter,week,day,hour,minute,second]
+func get_timestamp():
+	var dict = {
+		year = year,
+		quarter = quarter+1,
+		week = week+1,
+		day = day+1,
+		hour = hour,
+		minute = minute,
+		second = second}
+	return dict
+
 func tick():
 	emit_signal("tick")
 	second += 1

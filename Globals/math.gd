@@ -20,7 +20,7 @@ func random_split_2(value):
 	var arc_1 = theta_1/360
 	var arc_2 = theta_2/360
 	return [value*arc_1,value*arc_2]
-	
+
 func random_split_3(value):
 	var theta_1 = clamp(gaussian(120,45),0,360)
 	var theta_2 = clamp(gaussian(240,45),theta_1,360) - theta_1

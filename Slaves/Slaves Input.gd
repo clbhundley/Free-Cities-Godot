@@ -9,8 +9,8 @@ func _input(event):
 	var calendar = GUI.get_node("Navigation/Time/Calendar")
 	if calendar.is_visible():
 		return
-	p.max_camera_pos = p.slave_count(p.active_collection.name) * 5.4
-	if p.slave_count(p.active_collection.name) == 1:
+	p.max_camera_pos = SlaveUtils.slave_count(p.active_collection.name) * 5.4
+	if SlaveUtils.slave_count(p.active_collection.name) == 1:
 		p.max_camera_pos *= 1.3
 	if event.is_class("InputEventMouseMotion"): # add android swipe here?
 		if event.button_mask&(BUTTON_MASK_LEFT):
