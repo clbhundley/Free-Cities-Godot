@@ -34,9 +34,9 @@ func activate(selected_slave):
 	show()
 
 func deactivate():
-	root.get_node('Game/Clock').disconnect('timeout',self,'uptate_display')
 	#game.get_gui().get_node("Dock").set_mode("ManageSlaves")
 	if _slave:
+		root.get_node('Game/Clock').disconnect('timeout',self,'uptate_display')
 		_slave.get_node("Model").set_rotation(Vector3(0,0,0))
 	model_rotation = 0.0
 	game.get_gui().get_node("Header").show()

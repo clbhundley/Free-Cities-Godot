@@ -54,6 +54,11 @@ func _on_Buy_pressed():
 	slaves.update_collection(slaves.active_collection)
 	game.get_gui().get_node("SidePanel/ManageSlaves").update()
 	slaves.update_header()
+	slaves.max_camera_pos = SlaveUtils.slave_count(slaves.active_collection.name)*5+0.7
+	if SlaveUtils.slave_count(slaves.active_collection.name) == 1:
+		slaves.max_camera_pos *= 1.3
+	slaves.clamp_camera_position()
+	slaves.slide_camera()
 	slave_ui.hide()
 
 func _on_Sell_pressed():
@@ -66,6 +71,11 @@ func _on_Sell_pressed():
 	_slave.queue_free()
 	slaves.update_collection(slaves.active_collection)
 	slaves.update_header()
+	slaves.max_camera_pos = SlaveUtils.slave_count(slaves.active_collection.name)*5+0.7
+	if SlaveUtils.slave_count(slaves.active_collection.name) == 1:
+		slaves.max_camera_pos *= 1.3
+	slaves.clamp_camera_position()
+	slaves.slide_camera()
 
 func _on_Examine_pressed():
 	for node in get_tree().get_nodes_in_group("Slave UI"):

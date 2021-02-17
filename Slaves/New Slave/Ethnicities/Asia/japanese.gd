@@ -100,7 +100,7 @@ const first_names_male = [
 	"Itsuo",
 	"Izumi",
 	"Katsumi",
-	"kazue",
+	"Kazue",
 	"Kazumi",
 	"Kenzou",
 	"Kyoshi",

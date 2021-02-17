@@ -797,6 +797,8 @@ func _on_pressed():
 	slaves.show()
 	_game.get_node('GUI').show()
 	slaves.set_active_collection(\"Owned\",false)
+	#slaves.clamp_camera_position()
+	slaves.slide_camera()
 	if get_node('../../AI Panel').is_visible_in_tree():
 		get_node('../..')._on_AI_pressed()
 	for tab in get_parent().get_children():

@@ -52,10 +52,11 @@ func set_active_collection(collection,reset_cam_pos=true):
 	update_collection(active_collection)
 	active_collection.show()
 	update_header()
-	max_camera_pos = SlaveUtils.slave_count(active_collection.name) * 5.4
+	max_camera_pos = SlaveUtils.slave_count(active_collection.name)*5+0.7
 	clamp_camera_position()
 	if reset_cam_pos:
 		cam_pos = min_camera_pos
+		slide_camera()
 
 const offset_x = 2.37
 const offset_y = -4.62
