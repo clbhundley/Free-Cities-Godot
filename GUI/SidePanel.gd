@@ -6,10 +6,12 @@ var arrow_left_icon = load("res://GUI/Textures/arrow_left.svg")
 var arrow_right_icon = load("res://GUI/Textures/arrow_right.svg")
 
 var open = false
+var hidden = false
 
 func open():
 	self.show()
 	open = true
+	hidden = false
 	action_button.set_text("Close")
 	action_button.icon = arrow_left_icon
 	$Tween.interpolate_property(

@@ -9,6 +9,19 @@ func get_owned_slaves():
 func slave_count(collection):
 	return get_slave_scene().get_node("Collections/"+collection).get_child_count()
 
+func reset_active_slaves_visibility():
+	get_slave_scene().get_node("Camera").show()
+	get_slave_scene().get_node("Examine Slave").deactivate()
+	for node in get_tree().get_nodes_in_group("Active Slaves"):
+		if node.has_node("OmniLight"):
+			node.get_node("OmniLight").hide()
+		if node.has_node("UI Full"):
+			node.get_node("UI Full").hide()
+		if node.has_method("resize"):
+			node.resize()
+		node.remove_from_group("Active Slaves")
+		node.show()
+
 func sort_slaves(collection,mode,order):
 	collection = get_slave_scene().get_node("Collections/"+collection)
 	var list = []
@@ -22,6 +35,8 @@ func sort_slaves(collection,mode,order):
 		list.sort_custom(SortByAssignment,"sort_ascending")
 	elif mode == "Acquired":
 		list.sort_custom(SortByAcquired,"sort_ascending")
+	elif mode == "Gender":
+		list.sort_custom(SortByGender,"sort_ascending")
 	elif mode == "Name":
 		list.sort_custom(SortByName,"sort_ascending")
 	elif mode == "Age":
@@ -87,6 +102,15 @@ class SortByAcquired:
 								elif a.acquired['second'] == b.acquired['second']:
 									if a.name < b.name:
 										return true
+		return false
+
+class SortByGender:
+	static func sort_ascending(a, b):
+		if a.gender < b.gender:
+			return true
+		elif a.gender == b.gender:
+			if a.name < b.name:
+				return true
 		return false
 
 class SortByName:

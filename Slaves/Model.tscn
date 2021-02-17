@@ -3,7 +3,6 @@
 [ext_resource path="res://Slaves/Models/Female/Hair/hair female 1.obj" type="ArrayMesh" id=1]
 [ext_resource path="res://Slaves/Models/Salmacis 201.escn" type="PackedScene" id=3]
 
-
 [sub_resource type="GDScript" id=1]
 script/source = "extends Spatial
 
@@ -46,12 +45,14 @@ func set_default_values():
 		if dice.roll(4) == 0:
 			self.breasts_implants = clamp(math.gaussian(12,12),0,55)/100
 		if dice.roll(4) == 0:
-			self.voluptuous = clamp(math.gaussian(0,9),0,25)/100
+			self.voluptuous = clamp(math.gaussian(20,15),0,55)/100
 	elif _slave.gender == \"Trans female\":
 		self.masculinity = clamp(math.gaussian(50,24),30,90)/100
 		distribute_trans_breasts()
 		if dice.roll(4) == 0:
 			self.breasts_implants = clamp(math.gaussian(12,12),0,45)/100
+		if dice.roll(6) == 0:
+			self.voluptuous = clamp(math.gaussian(15,10),0,35)/100
 	self.penis_length = clamp(math.gaussian(16,9),10,50)/100
 	self.penis_thickness = clamp(math.gaussian(35,5),20,60)/100
 	self.testicles_size = clamp(math.gaussian(25,7),10,50)/100
@@ -168,28 +169,20 @@ func set_masculinity(value):
 	genitals_male.set(\"blend_shapes/Gender Male\", value)
 	genitals_female.set(\"blend_shapes/Gender Male\", value)
 	masculinity = value
-	if _slave.gender == \"Female\" or _slave.gender == \"Trans Female\":
-		if masculinity >= 0.85:
-			_slave.flags[\"gender\"] = \"[color=#d70000]Completely Masculine[/color]\"
-		elif masculinity >= 0.7:
-			_slave.flags[\"gender\"] = \"[color=#ff0000]Very Masculine[/color]\" 
+	if _slave.gender == \"Female\" or _slave.gender == \"Trans female\":
+		if masculinity >= 0.7:
+			_slave.flags[\"gender\"] = \"[color=#ffa500]Very masculine body[/color]\" 
 		elif masculinity >= 0.5:
-			_slave.flags[\"gender\"] = \"[color=#ff4500]Masculine[/color]\" 
+			_slave.flags[\"gender\"] = \"[color=#ffd100]Masculine body[/color]\" 
 		elif masculinity >= 0.3:
-			_slave.flags[\"gender\"] = \"[color=#ffa500]Somewhat Masculine[/color]\" 
-		elif masculinity >= 0.15:
-			_slave.flags[\"gender\"] = \"[color=#ffd100]Slightly Masculine[/color]\" 
-	elif _slave.gender == \"Male\" or _slave.gender == \"Trans Male\":
-		if masculinity <= 0.15:
-			_slave.flags[\"gender\"] = \"[color=#d70000]Completely Feminine[/color]\"
-		elif masculinity <= 0.3:
-			_slave.flags[\"gender\"] = \"[color=#ff0000]Very Feminine[/color]\"
+			_slave.flags[\"gender\"] = \"Slightly masculine body\"
+	elif _slave.gender == \"Male\" or _slave.gender == \"Trans male\":
+		if masculinity <= 0.3:
+			_slave.flags[\"gender\"] = \"[color=#ffa500]Very feminine body[/color]\"
 		elif masculinity <= 0.5:
-			_slave.flags[\"gender\"] = \"[color=#ff4500]Feminine[/color]\"
+			_slave.flags[\"gender\"] = \"[color=#ffd100]Feminine body[/color]\"
 		elif masculinity <= 0.7:
-			_slave.flags[\"gender\"] = \"[color=#ffa500]Somewhat Feminine[/color]\"
-		elif masculinity <= 0.85:
-			_slave.flags[\"gender\"] = \"[color=#ffd100]Slightly Feminine[/color]\"
+			_slave.flags[\"gender\"] = \"Slightly feminine body\"
 
 var genitals_male_adjustment = 0 setget set_genitals_male_adjustment
 func set_genitals_male_adjustment(value):
@@ -216,18 +209,18 @@ func set_weight(value):
 	genitals_female.set(\"blend_shapes/Weight Emaciated\",clamp((value-0.3)/-0.3,0,1))
 	weight = value
 	if weight <= 0.3:
-		_slave.flags[\"weight\"] = \"[color=#ff0000]Emaciated[/color]\"
+		_slave.flags[\"weight\"] = \"[color=#ffa500]Emaciated[/color]\"
 	elif weight <= 0.5:
-		_slave.flags[\"weight\"] = \"[color=#ffa500]Skinny[/color]\"
+		_slave.flags[\"weight\"] = \"[color=#ffd100]Skinny[/color]\"
 	elif weight <= 0.7:
 		_slave.flags[\"weight\"] = \"[color=white]Thin[/color]\"
 
 func set_overweight_flags():
 	var weight_total = weight + weight_fat + weight_pear + weight_round/2
 	if weight_total >= 1.5:
-		_slave.flags[\"weight\"] = \"[color=#ff0000]Obese[/color]\"
+		_slave.flags[\"weight\"] = \"[color=#ffa500]Obese[/color]\"
 	elif weight_total >= 1.3:
-		_slave.flags[\"weight\"] = \"[color=#ffa500]Fat[/color]\"
+		_slave.flags[\"weight\"] = \"[color=#ffd100]Fat[/color]\"
 	elif weight_total >= 1.1:
 		_slave.flags[\"weight\"] = \"[color=white]Chubby[/color]\"
 
@@ -267,6 +260,11 @@ func set_weight_fat(value):
 var waist_size = 0 setget set_waist_size
 func set_waist_size(value):
 	body.set(\"blend_shapes/WaistSize\",value)
+	#Absurd 
+	#Hourglass
+	#Feminine
+	#Average
+	#Masculine
 	waist_size = value
 
 var butt_size = 0 setget set_butt_size
@@ -274,6 +272,14 @@ func set_butt_size(value):
 	body.set(\"blend_shapes/ButtSize\",value)
 	genitals_male.set(\"blend_shapes/ButtSize\",value)
 	genitals_female.set(\"blend_shapes/ButtSize\",value)
+	#Flat
+	#Small
+	#Plump
+	#Healthy
+	#Huge
+	#Enormous
+	#Gigantic
+	#Massive
 	butt_size = value
 
 var body_size = 0 setget set_body_size
@@ -285,6 +291,13 @@ func set_body_size(value):
 	if masculinity > 0:
 		breasts_small = masculinity
 	body_size = value
+	if voluptuous <= 0.2:
+		if body_size >= 0.7:
+			_slave.flags[\"body\"] = \"Huge\"
+		elif body_size >= 0.5:
+			_slave.flags[\"body\"] = \"Beefy\"
+		elif body_size >= 0.3:
+			_slave.flags[\"body\"] = \"Husky\"
 
 var bodybuilder = 0 setget set_bodybuilder
 func set_bodybuilder(value):
@@ -293,6 +306,12 @@ func set_bodybuilder(value):
 	genitals_female.set(\"blend_shapes/Bodybuilder\",value)
 	armature_adjustment(value,bodybuilder,6.3)
 	bodybuilder = value
+	if bodybuilder >= 0.7:
+		_slave.flags[\"physique\"] = \"[color=#00aa0a]Ripped[/color]\"
+	elif bodybuilder >= 0.5:
+		_slave.flags[\"physique\"] = \"[color=#00aa0a]Buff[/color]\"
+	elif bodybuilder >= 0.3:
+		_slave.flags[\"physique\"] = \"[color=#00aa0a]Tone[/color]\"
 
 var voluptuous = 0 setget set_voluptuous
 func set_voluptuous(value):
@@ -301,7 +320,15 @@ func set_voluptuous(value):
 	genitals_female.set(\"blend_shapes/Voluptuous\",value)
 	armature_adjustment(value,voluptuous,1.7)
 	voluptuous = value
+	if voluptuous >= 0.5:
+		_slave.flags[\"body\"] = \"[color=#00aa0a]Voluptuous[/color]\"
+	elif voluptuous >= 0.35:
+		_slave.flags[\"body\"] = \"[color=#00aa0a]Curvy[/color]\"
+	elif voluptuous >= 0.2:
+		_slave.flags[\"body\"] = \"[color=#00aa0a]Plush[/color]\"
 
+# 37 to 42 weeks
+# math.gaussian(39,2)
 var pregnant = 0 setget set_pregnant
 func set_pregnant(value):
 	body.set(\"blend_shapes/Pregnant\",value)

@@ -28,8 +28,8 @@ func set_level():
 	get_node('Top/Level').set_text(str(_slave.get_level()))
 
 func display_location():
-	var loc = get_parent().location
-	var des = get_parent().destination
+	var loc = _slave.location
+	var des = _slave.destination
 	var location_address = ArcUtils.parse_address(loc)["address"]
 	var location_name = ArcUtils.parse_address(loc)["name"]
 	if _slave.destination:
@@ -40,10 +40,10 @@ func display_location():
 			get_display_name(location_name),
 			destination_address,
 			get_display_name(destination_name)]
-		get_node("Location").set_text("%s: %s  >>>  %s: %s"%format)
+		$Location.set_text("%s: %s  >>>  %s: %s"%format)
 	else:
 		var string = "%s - %s"%[location_address,get_display_name(location_name,true)]
-		get_node("Location").set_text(string)
+		$Location.set_text(string)
 
 func get_display_name(sector,full=false):
 	var _name = ArcUtils.sector_name(sector).to_lower()

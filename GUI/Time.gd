@@ -71,7 +71,6 @@ func _on_HSlider_value_changed(value):
 func animate_sml(node):
 	var tween = get_node('Tween')
 	var h_pos = 55
-	print(display.scale)
 	if display.scale < 0.6:
 		var s = display.scale*1.5
 		h_pos *= 0.8

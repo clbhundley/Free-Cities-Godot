@@ -52,6 +52,7 @@ func _on_Buy_pressed():
 	_slave.acquired = time.get_timestamp()
 	SlaveUtils.get_owned_slaves().add_child(_slave,true)
 	slaves.update_collection(slaves.active_collection)
+	game.get_gui().get_node("SidePanel/ManageSlaves").update()
 	slaves.update_header()
 	slave_ui.hide()
 
@@ -65,3 +66,16 @@ func _on_Sell_pressed():
 	_slave.queue_free()
 	slaves.update_collection(slaves.active_collection)
 	slaves.update_header()
+
+func _on_Examine_pressed():
+	for node in get_tree().get_nodes_in_group("Slave UI"):
+		if node.is_visible_in_tree():
+			node.add_to_group("Active Slaves")
+			node.hide()
+	for node in get_tree().get_nodes_in_group("Slaves"):
+		if node.is_visible_in_tree():
+			node.add_to_group("Active Slaves")
+			node.hide()
+	_slave.get_node("Camera").activate()
+	_slave.show()
+	panel.hide()

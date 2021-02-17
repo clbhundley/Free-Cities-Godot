@@ -45,7 +45,6 @@ var acquired
 var assignment
 var action
 var queued_action
-var current_time
 var for_sale = false
 
 var flags = {}

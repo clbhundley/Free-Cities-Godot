@@ -1,8 +1,8 @@
-[gd_scene load_steps=38 format=2]
+[gd_scene load_steps=37 format=2]
 
-[ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=1]
-[ext_resource path="res://Fonts/Rubik-Light.tres" type="DynamicFont" id=2]
-[ext_resource path="res://Slaves/Slave UI.gd" type="Script" id=3]
+[ext_resource path="res://Fonts/Rubik-Light.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://Fonts/Rubik-Light-36.tres" type="DynamicFont" id=3]
 [ext_resource path="res://Slaves/Textures/Gague/Wheel/20.svg" type="Texture" id=4]
 [ext_resource path="res://Slaves/Textures/Gague/Wheel/80.svg" type="Texture" id=5]
 [ext_resource path="res://Slaves/Textures/Gague/Wheel/70.svg" type="Texture" id=6]
@@ -19,27 +19,147 @@
 [ext_resource path="res://Slaves/Textures/Gague/Icons/happiness.svg" type="Texture" id=17]
 [ext_resource path="res://Slaves/Textures/Gague/Icons/hunger.svg" type="Texture" id=18]
 [ext_resource path="res://Slaves/Textures/Gague/Icons/bathroom.svg" type="Texture" id=19]
-[ext_resource path="res://Slaves/Slave UI Input.gd" type="Script" id=20]
+[ext_resource path="res://Slaves/Examine Slave.gd" type="Script" id=20]
 
 [sub_resource type="DynamicFont" id=1]
 size = 50
-font_data = ExtResource( 1 )
+font_data = ExtResource( 2 )
 
 [sub_resource type="DynamicFont" id=2]
 size = 40
-font_data = ExtResource( 1 )
+font_data = ExtResource( 2 )
 
 [sub_resource type="DynamicFont" id=3]
 size = 25
 use_mipmaps = true
-font_data = ExtResource( 1 )
+font_data = ExtResource( 2 )
 
-[sub_resource type="GDScript" id=4]
+[sub_resource type="DynamicFont" id=4]
+size = 20
+font_data = ExtResource( 2 )
+
+[sub_resource type="GDScript" id=5]
+script/source = "extends RichTextLabel
+
+func remove_lines(amount):
+	var lower_text = [
+		get_node(\"../Appearance\"),
+		get_node(\"../Sexuality\"),
+		get_node(\"../Skills\"),
+		get_node(\"../Traits\")]
+	for node in lower_text:
+		var pos_x = node.rect_position.x
+		var pos_y = node.rect_position.y
+		node.set_position(Vector2(pos_x,pos_y-(32*amount)),true)
+
+func set_stats(_slave):
+	var intelligence = _slave.stats._intelligence()
+	if intelligence != \"\":
+		parse_bbcode(
+		str(_slave.age)+\", \"+_slave.ethnicity+\", \"+_slave.gender+\"\\n\"+
+		_slave.stats._intelligence()+\"\\n\"+
+		_slave.stats._devotion()+\", \"+_slave.stats._trust())
+	else:
+		parse_bbcode(
+		str(_slave.age)+\", \"+_slave.ethnicity+\", \"+_slave.gender+\"\\n\"+
+		_slave.stats._devotion()+\", \"+_slave.stats._trust())
+		remove_lines(1)
+"
+
+[sub_resource type="GDScript" id=6]
+script/source = "extends RichTextLabel
+
+func adjust_lines(amount):
+	var lower_text = [
+		get_node(\"../Sexuality\"),
+		get_node(\"../Skills\"),
+		get_node(\"../Traits\")]
+	for node in lower_text:
+		var pos_x = node.rect_position.x
+		var pos_y = node.rect_position.y
+		node.set_position(Vector2(pos_x,pos_y-(30*amount)),true)
+
+func set_stats(_slave):
+	var string = \"\"
+	var face = _slave.get_node(\"Scripts/Stats\")._face()
+	if face != \"\":
+		string += face
+		if _slave.flags.has(\"weight\"):
+			string += \", \"
+			string += _slave.flags[\"weight\"]+\"\\n\"
+		else:
+			string += \"\\n\"
+	elif _slave.flags.has(\"weight\"):
+		string += _slave.flags[\"weight\"]+\"\\n\"
+	else:
+		adjust_lines(1)
+	
+	if _slave.flags.has(\"body\"):
+		string += _slave.flags[\"body\"]
+		if _slave.flags.has(\"physique\"):
+			string += \", \"
+			string += _slave.flags[\"physique\"]+\"\\n\"
+		else:
+			string += \"\\n\"
+	elif _slave.flags.has(\"physique\"):
+		string += _slave.flags[\"physique\"]+\"\\n\"
+	else:
+		adjust_lines(1)
+	
+	if _slave.flags.has(\"gender\"):
+		string += _slave.flags[\"gender\"]+\"\\n\"
+		adjust_lines(-1)
+	
+	if _slave.voice != \"\":
+		var voice_string = _slave.voice
+		voice_string[0] = voice_string[0].capitalize()
+		if voice_string != \"Mute\":
+			voice_string += \"voice\"
+		string += voice_string
+	else:
+		adjust_lines(1)
+	
+	if string == \"\":
+		adjust_lines(0.6)
+	parse_bbcode(string)
+"
+
+[sub_resource type="GDScript" id=7]
+script/source = "extends RichTextLabel
+
+func set_stats(_slave):
+	parse_bbcode(
+	_slave.get_node(\"Scripts/Stats\")._libido()+\"\\n\"+
+	_slave.get_node(\"Scripts/Stats\")._male_attraction()+\"\\n\"+
+	_slave.get_node(\"Scripts/Stats\")._female_attraction()+\"\\n\"+
+	\"#Fetishes\")
+"
+
+[sub_resource type="GDScript" id=8]
+script/source = "extends RichTextLabel
+
+func set_stats(_slave):
+	parse_bbcode(
+	_slave.get_node(\"Scripts/Stats\")._sexual_skill()+\"\\n\"+
+	_slave.get_node(\"Scripts/Stats\")._prostitution_skill()+\"\\n\"+
+	_slave.get_node(\"Scripts/Stats\")._entertainment_skill()+\"\\n\"+
+	_slave.get_node(\"Scripts/Stats\")._combat_skill())
+"
+
+[sub_resource type="GDScript" id=9]
+script/source = "extends RichTextLabel
+
+func set_stats(_slave):
+	parse_bbcode(
+	\"#Behavioral trait\"+\"\\n\"+
+	\"#Sexual trait\"+\"\\n\"+
+	\"#Relationships\")
+"
+
+[sub_resource type="GDScript" id=10]
 script/source = "extends Control
 
-onready var _slave = owner.owner
-
-#use setget to set gauges only when values change
+var _slave
 
 func _on_mouse_entered():
 	get_node('Title').show()
@@ -50,10 +170,6 @@ func _on_mouse_exited():
 	get_node('Title').hide()
 	get_node('Value').hide()
 	get_node('Icon').show()
-
-func _ready():
-	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'_set_gauge')
-	_set_gauge()
 
 func _set_gauge():
 	get_node('Value').set_text(str(int(_slave.health)))
@@ -117,14 +233,14 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="DynamicFont" id=5]
+[sub_resource type="DynamicFont" id=11]
 size = 25
-font_data = ExtResource( 1 )
+font_data = ExtResource( 2 )
 
-[sub_resource type="GDScript" id=6]
+[sub_resource type="GDScript" id=12]
 script/source = "extends Control
 
-onready var _slave = owner.owner
+var _slave
 
 func _on_mouse_entered():
 	get_node('Title').show()
@@ -135,10 +251,6 @@ func _on_mouse_exited():
 	get_node('Title').hide()
 	get_node('Value').hide()
 	get_node('Icon').show()
-
-func _ready():
-	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'_set_gauge')
-	_set_gauge()
 
 func _set_gauge():
 	get_node('Value').set_text(str(int(_slave.happiness)))
@@ -175,10 +287,10 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="GDScript" id=7]
+[sub_resource type="GDScript" id=13]
 script/source = "extends Control
 
-onready var _slave = owner.owner
+var _slave
 
 func _on_mouse_entered():
 	get_node('Title').show()
@@ -189,10 +301,6 @@ func _on_mouse_exited():
 	get_node('Title').hide()
 	get_node('Value').hide()
 	get_node('Icon').show()
-
-func _ready():
-	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'_set_gauge')
-	_set_gauge()
 
 func _set_gauge():
 	get_node('Value').set_text(str(int(_slave.arousal)))
@@ -233,10 +341,10 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="GDScript" id=8]
+[sub_resource type="GDScript" id=14]
 script/source = "extends Control
 
-onready var _slave = owner.owner
+var _slave
 
 func _on_mouse_entered():
 	get_node('Title').show()
@@ -247,10 +355,6 @@ func _on_mouse_exited():
 	get_node('Title').hide()
 	get_node('Value').hide()
 	get_node('Icon').show()
-
-func _ready():
-	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'_set_gauge')
-	_set_gauge()
 
 func _set_gauge():
 	get_node('Value').set_text(str(int(_slave.fatigue)))
@@ -287,10 +391,10 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="GDScript" id=9]
+[sub_resource type="GDScript" id=15]
 script/source = "extends Control
 
-onready var _slave = owner.owner
+var _slave
 
 func _on_mouse_entered():
 	get_node('Title').show()
@@ -301,10 +405,6 @@ func _on_mouse_exited():
 	get_node('Title').hide()
 	get_node('Value').hide()
 	get_node('Icon').show()
-
-func _ready():
-	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'_set_gauge')
-	_set_gauge()
 
 func _set_gauge():
 	get_node('Value').set_text(str(int(_slave.hunger)))
@@ -347,10 +447,10 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="GDScript" id=10]
+[sub_resource type="GDScript" id=16]
 script/source = "extends Control
 
-onready var _slave = owner.owner
+var _slave
 
 func _on_mouse_entered():
 	get_node('Title').show()
@@ -361,10 +461,6 @@ func _on_mouse_exited():
 	get_node('Title').hide()
 	get_node('Value').hide()
 	get_node('Icon').show()
-
-func _ready():
-	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'_set_gauge')
-	_set_gauge()
 
 func _set_gauge():
 	get_node('Value').set_text(str(int(_slave.bathroom)))
@@ -403,161 +499,93 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="DynamicFont" id=11]
-size = 20
-font_data = ExtResource( 1 )
-
-[sub_resource type="GDScript" id=12]
-script/source = "extends RichTextLabel
-
-func remove_lines(amount):
-	var lower_text = [
-		get_node(\"../Appearance\"),
-		get_node(\"../Sexuality\"),
-		get_node(\"../Skills\"),
-		get_node(\"../Traits\")]
-	for node in lower_text:
-		var pos_x = node.rect_position.x
-		var pos_y = node.rect_position.y
-		node.set_position(Vector2(pos_x,pos_y-(32*amount)),true)
-
-func set_stats():
-	var _slave = owner.owner
-	var intelligence = _slave.stats._intelligence()
-	if intelligence != \"\":
-		parse_bbcode(
-		str(_slave.age)+\", \"+_slave.ethnicity+\", \"+_slave.gender+\"\\n\"+
-		_slave.stats._intelligence()+\"\\n\"+
-		_slave.stats._devotion()+\", \"+_slave.stats._trust())
-	else:
-		parse_bbcode(
-		str(_slave.age)+\", \"+_slave.ethnicity+\", \"+_slave.gender+\"\\n\"+
-		_slave.stats._devotion()+\", \"+_slave.stats._trust())
-		remove_lines(1)
-"
-
-[sub_resource type="GDScript" id=13]
-script/source = "extends RichTextLabel
-
-func adjust_lines(amount):
-	var lower_text = [
-		get_node(\"../Sexuality\"),
-		get_node(\"../Skills\"),
-		get_node(\"../Traits\")]
-	for node in lower_text:
-		var pos_x = node.rect_position.x
-		var pos_y = node.rect_position.y
-		node.set_position(Vector2(pos_x,pos_y-(30*amount)),true)
-
-func set_stats():
-	var _slave = owner.owner
-	var string = \"\"
-	var face = _slave.get_node(\"Scripts/Stats\")._face()
-	if face != \"\":
-		string += face
-		if _slave.flags.has(\"weight\"):
-			string += \", \"
-			string += _slave.flags[\"weight\"]+\"\\n\"
-		else:
-			string += \"\\n\"
-	elif _slave.flags.has(\"weight\"):
-		string += _slave.flags[\"weight\"]+\"\\n\"
-	else:
-		adjust_lines(1)
-	
-	if _slave.flags.has(\"body\"):
-		string += _slave.flags[\"body\"]
-		if _slave.flags.has(\"physique\"):
-			string += \", \"
-			string += _slave.flags[\"physique\"]+\"\\n\"
-		else:
-			string += \"\\n\"
-	elif _slave.flags.has(\"physique\"):
-		string += _slave.flags[\"physique\"]+\"\\n\"
-	else:
-		adjust_lines(1)
-	
-	if _slave.flags.has(\"gender\"):
-		string += _slave.flags[\"gender\"]+\"\\n\"
-		adjust_lines(-1)
-	
-	if _slave.voice != \"\":
-		var voice_string = _slave.voice
-		voice_string[0] = voice_string[0].capitalize()
-		if voice_string != \"Mute\":
-			voice_string += \"voice\"
-		string += voice_string
-	else:
-		adjust_lines(1)
-	
-	if string == \"\":
-		adjust_lines(0.6)
-	parse_bbcode(string)
-"
-
-[sub_resource type="GDScript" id=14]
-script/source = "extends RichTextLabel
-
-func set_stats():
-	var _slave = owner.owner
-	parse_bbcode(
-	_slave.get_node(\"Scripts/Stats\")._libido()+\"\\n\"+
-	_slave.get_node(\"Scripts/Stats\")._male_attraction()+\"\\n\"+
-	_slave.get_node(\"Scripts/Stats\")._female_attraction()+\"\\n\"+
-	\"#Fetishes\")
-"
-
-[sub_resource type="GDScript" id=15]
-script/source = "extends RichTextLabel
-
-func set_stats():
-	var _slave = owner.owner
-	parse_bbcode(
-	_slave.get_node(\"Scripts/Stats\")._sexual_skill()+\"\\n\"+
-	_slave.get_node(\"Scripts/Stats\")._prostitution_skill()+\"\\n\"+
-	_slave.get_node(\"Scripts/Stats\")._entertainment_skill()+\"\\n\"+
-	_slave.get_node(\"Scripts/Stats\")._combat_skill())
-"
-
-[sub_resource type="GDScript" id=16]
-script/source = "extends RichTextLabel
-
-func set_stats():
-	var _slave = owner.owner
-	parse_bbcode(
-	\"#Behavioral trait\"+\"\\n\"+
-	\"#Sexual trait\"+\"\\n\"+
-	\"#Relationships\")
-"
-
-[sub_resource type="DynamicFont" id=17]
-resource_name = "Rubik-Light"
-size = 20
-font_data = ExtResource( 1 )
-
-[node name="Slave UI" type="Control" groups=[
+[node name="Examine Slave" type="Control" groups=[
 "Intercept Mouse",
 "Slave UI",
 ]]
-margin_right = 666.0
-margin_bottom = 1080.0
-script = ExtResource( 3 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 20 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Input" type="Node" parent="."]
-script = ExtResource( 20 )
-
-[node name="Activity" type="Control" parent="."]
-anchor_left = 0.0230769
-anchor_top = 0.106481
-anchor_right = 0.976923
-anchor_bottom = 0.147222
-margin_left = 12.0
-margin_right = 12.0
+[node name="Top" type="Control" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -497.0
+margin_top = 23.0
+margin_right = -137.0
+margin_bottom = 114.0
 __meta__ = {
 "_edit_use_anchors_": false
+}
+
+[node name="Level" type="Label" parent="Top"]
+anchor_left = 0.0323468
+anchor_top = 0.18286
+anchor_right = 0.276791
+anchor_bottom = 0.842201
+margin_right = -7.62939e-06
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 1 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "345"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Line" type="Label" parent="Top"]
+anchor_left = 0.335125
+anchor_top = 0.18286
+anchor_right = 0.36568
+anchor_bottom = 0.842201
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 1 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "|"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Name" type="Label" parent="Top"]
+anchor_left = 0.429569
+anchor_top = 0.0949484
+anchor_right = 0.987902
+anchor_bottom = 0.622421
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "Name Here"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Status" type="Label" parent="Top"]
+anchor_left = 0.437902
+anchor_top = 0.567476
+anchor_right = 0.896236
+anchor_bottom = 0.908135
+margin_top = -3.8147e-06
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "Public Servant"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Activity" type="Control" parent="."]
+anchor_left = 0.334136
+anchor_top = 0.0178161
+anchor_right = 0.665002
+anchor_bottom = 0.0585568
+__meta__ = {
+"_edit_use_anchors_": true
 }
 
 [node name="ProgressBar" type="ProgressBar" parent="Activity"]
@@ -579,7 +607,7 @@ margin_top = -12.0
 margin_right = -5.0
 margin_bottom = 12.0
 grow_horizontal = 0
-custom_fonts/font = ExtResource( 2 )
+custom_fonts/font = ExtResource( 1 )
 text = "Action"
 align = 2
 valign = 1
@@ -594,7 +622,7 @@ margin_left = 5.0
 margin_top = -12.0
 margin_right = 75.0
 margin_bottom = 12.0
-custom_fonts/font = ExtResource( 2 )
+custom_fonts/font = ExtResource( 1 )
 text = "0:00:00"
 align = 3
 valign = 1
@@ -602,154 +630,150 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Top" type="TextureButton" parent="."]
-anchor_right = 1.0
-anchor_bottom = 0.151278
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Level" type="Label" parent="Top"]
-anchor_left = 0.0222222
-anchor_top = 0.0754717
-anchor_right = 0.217778
-anchor_bottom = 0.641509
-margin_left = 1.0
-margin_top = -5.0
-margin_right = 1.0
-margin_bottom = -5.00001
-grow_horizontal = 2
-grow_vertical = 2
-custom_fonts/font = SubResource( 1 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-text = "345"
-valign = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Line" type="Label" parent="Top"]
-anchor_left = 0.208889
-anchor_top = 0.0754717
-anchor_right = 0.233334
-anchor_bottom = 0.64151
-margin_left = 1.0
-margin_top = -5.0
-margin_right = 1.0
-margin_bottom = -5.00001
-grow_horizontal = 2
-grow_vertical = 2
-custom_fonts/font = SubResource( 1 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-text = "|"
-valign = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Name" type="Label" parent="Top"]
-anchor_left = 0.26
-anchor_top = 0.00943396
-anchor_right = 0.706667
-anchor_bottom = 0.462264
-margin_left = 1.0
-margin_top = -5.0
-margin_right = 0.999969
-margin_bottom = -5.0
-custom_fonts/font = SubResource( 2 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-text = "Name Here"
-valign = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Status" type="Label" parent="Top"]
-anchor_left = 0.264445
-anchor_top = 0.386792
-anchor_right = 0.631112
-anchor_bottom = 0.679245
-margin_left = 1.0
-margin_top = -5.0
-margin_right = 1.0
-margin_bottom = -5.0
-custom_fonts/font = SubResource( 3 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-text = "Public Servant"
-valign = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Price" type="Label" parent="Top"]
-visible = false
-anchor_left = 0.272507
-anchor_top = 0.38972
-anchor_right = 0.481396
-anchor_bottom = 0.682173
-margin_left = -4.0
-margin_top = 2.0
-margin_right = -4.0
-margin_bottom = 2.0
-custom_fonts/font = SubResource( 3 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-text = "¤20,000"
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="Location" type="Label" parent="."]
-anchor_top = 0.151852
-anchor_right = 1.0
-anchor_bottom = 0.180556
-margin_left = 12.0
-margin_right = 12.0
+anchor_left = 0.326131
+anchor_top = 0.0631871
+anchor_right = 0.673006
+anchor_bottom = 0.0918908
 custom_fonts/font = SubResource( 3 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "P11: Slave Dorm  >>>  A13: Commercial"
 align = 1
 valign = 1
 __meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Stats Display temp" type="RichTextLabel" parent="."]
+anchor_left = 0.692708
+anchor_top = 0.119907
+anchor_right = 0.934896
+anchor_bottom = 0.90787
+focus_mode = 2
+custom_fonts/normal_font = SubResource( 4 )
+custom_constants/line_separation = -3
+selection_enabled = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Stats Display" type="Control" parent="."]
+visible = false
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -422.0
+margin_top = -300.5
+margin_bottom = 300.5
+__meta__ = {
 "_edit_use_anchors_": false
+}
+
+[node name="Basic" type="RichTextLabel" parent="Stats Display"]
+anchor_right = 1.10385
+anchor_bottom = 0.1675
+custom_fonts/normal_font = SubResource( 4 )
+custom_constants/line_separation = -3
+text = "str(age), ethnicity, gender
+stats._intelligence(), #Education
+stats._devotion(), stats._trust()"
+scroll_active = false
+script = SubResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Appearance" type="RichTextLabel" parent="Stats Display"]
+anchor_top = 0.18
+anchor_right = 1.10385
+anchor_bottom = 0.397416
+margin_right = -3.05176e-05
+custom_fonts/normal_font = SubResource( 4 )
+custom_constants/line_separation = -3
+text = "stats._face()
+flags[\"gender\"]
+flags[\"weight\"]
+voice()"
+scroll_active = false
+script = SubResource( 6 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Sexuality" type="RichTextLabel" parent="Stats Display"]
+anchor_top = 0.36
+anchor_right = 1.10385
+anchor_bottom = 0.58
+custom_fonts/normal_font = SubResource( 4 )
+custom_constants/line_separation = -3
+text = "stats._libido()
+stats._male_attraction()
+stats._female_attraction()
+#Fetishes()"
+scroll_active = false
+script = SubResource( 7 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Skills" type="RichTextLabel" parent="Stats Display"]
+anchor_top = 0.5925
+anchor_right = 1.10385
+anchor_bottom = 0.8125
+custom_fonts/normal_font = SubResource( 4 )
+custom_constants/line_separation = -3
+text = "stats._sexual_skill()
+stats._prostitution_skill()
+stats._entertainment_skill()
+stats._combat_skill()"
+scroll_active = false
+script = SubResource( 8 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Traits" type="RichTextLabel" parent="Stats Display"]
+anchor_top = 0.825
+anchor_right = 1.10385
+anchor_bottom = 0.9925
+custom_fonts/normal_font = SubResource( 4 )
+custom_constants/line_separation = -3
+text = "#Behavioral trait
+#Sexual trait
+#Relationships()"
+scroll_active = false
+script = SubResource( 9 )
+__meta__ = {
+"_edit_use_anchors_": true
 }
 
 [node name="Gauges" type="Control" parent="."]
-anchor_top = 0.215741
-anchor_right = 0.44391
-anchor_bottom = 0.42963
-margin_left = 12.0
-margin_top = -5.0
-margin_right = 12.0
-margin_bottom = -5.0
+anchor_left = 0.941146
+anchor_top = 0.181481
+anchor_right = 0.993229
+anchor_bottom = 0.818519
 __meta__ = {
-"_edit_use_anchors_": false
+"_edit_use_anchors_": true
 }
 
-[node name="Upper" type="Control" parent="Gauges"]
+[node name="Health" type="Control" parent="Gauges"]
 anchor_right = 1.0
-anchor_bottom = 0.426667
+anchor_bottom = 0.143256
+margin_bottom = 7.62939e-06
+script = SubResource( 10 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Health" type="Control" parent="Gauges/Upper"]
-anchor_right = 0.319999
-anchor_bottom = 1.0
-margin_right = -3.8147e-06
-script = SubResource( 4 )
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Fill" type="Control" parent="Gauges/Upper/Health"]
+[node name="Fill" type="Control" parent="Gauges/Health"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="overlay" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
+[node name="overlay" type="TextureRect" parent="Gauges/Health/Fill"]
 visible = false
 modulate = Color( 0.054902, 0.54902, 0, 1 )
 anchor_right = 1.0
@@ -761,7 +785,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="0" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
+[node name="0" type="TextureRect" parent="Gauges/Health/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -771,7 +795,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="10" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
+[node name="10" type="TextureRect" parent="Gauges/Health/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -782,7 +806,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="20" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
+[node name="20" type="TextureRect" parent="Gauges/Health/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -793,7 +817,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="30" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
+[node name="30" type="TextureRect" parent="Gauges/Health/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -804,7 +828,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="40" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
+[node name="40" type="TextureRect" parent="Gauges/Health/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -815,7 +839,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="50" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
+[node name="50" type="TextureRect" parent="Gauges/Health/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -826,7 +850,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="60" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
+[node name="60" type="TextureRect" parent="Gauges/Health/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -837,7 +861,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="70" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
+[node name="70" type="TextureRect" parent="Gauges/Health/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -848,7 +872,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="80" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
+[node name="80" type="TextureRect" parent="Gauges/Health/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -859,7 +883,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="90" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
+[node name="90" type="TextureRect" parent="Gauges/Health/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -870,7 +894,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="100" type="TextureRect" parent="Gauges/Upper/Health/Fill"]
+[node name="100" type="TextureRect" parent="Gauges/Health/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -881,7 +905,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Icon" type="TextureRect" parent="Gauges/Upper/Health"]
+[node name="Icon" type="TextureRect" parent="Gauges/Health"]
 anchor_left = 0.25
 anchor_top = 0.25
 anchor_right = 0.75
@@ -893,7 +917,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Title" type="Label" parent="Gauges/Upper/Health"]
+[node name="Title" type="Label" parent="Gauges/Health"]
 visible = false
 anchor_left = 0.5
 anchor_right = 0.5
@@ -910,7 +934,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Value" type="Label" parent="Gauges/Upper/Health"]
+[node name="Value" type="Label" parent="Gauges/Health"]
 visible = false
 anchor_left = 0.5
 anchor_top = 0.5
@@ -922,7 +946,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 11 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -930,30 +954,32 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Button" type="Control" parent="Gauges/Upper/Health"]
+[node name="Button" type="Control" parent="Gauges/Health"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Happiness" type="Control" parent="Gauges/Upper"]
-anchor_left = 0.339999
-anchor_right = 0.66
-anchor_bottom = 1.0
-script = SubResource( 6 )
+[node name="Happiness" type="Control" parent="Gauges"]
+anchor_top = 0.171512
+anchor_right = 1.0
+anchor_bottom = 0.314767
+margin_top = -7.62939e-06
+margin_bottom = -1.52588e-05
+script = SubResource( 12 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Fill" type="Control" parent="Gauges/Upper/Happiness"]
+[node name="Fill" type="Control" parent="Gauges/Happiness"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="0" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
+[node name="0" type="TextureRect" parent="Gauges/Happiness/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -963,7 +989,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="10" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
+[node name="10" type="TextureRect" parent="Gauges/Happiness/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -974,7 +1000,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="20" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
+[node name="20" type="TextureRect" parent="Gauges/Happiness/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -985,7 +1011,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="30" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
+[node name="30" type="TextureRect" parent="Gauges/Happiness/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -996,7 +1022,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="40" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
+[node name="40" type="TextureRect" parent="Gauges/Happiness/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1007,7 +1033,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="50" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
+[node name="50" type="TextureRect" parent="Gauges/Happiness/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1018,7 +1044,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="60" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
+[node name="60" type="TextureRect" parent="Gauges/Happiness/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1029,7 +1055,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="70" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
+[node name="70" type="TextureRect" parent="Gauges/Happiness/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1040,7 +1066,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="80" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
+[node name="80" type="TextureRect" parent="Gauges/Happiness/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1051,7 +1077,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="90" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
+[node name="90" type="TextureRect" parent="Gauges/Happiness/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1062,7 +1088,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="100" type="TextureRect" parent="Gauges/Upper/Happiness/Fill"]
+[node name="100" type="TextureRect" parent="Gauges/Happiness/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1073,7 +1099,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Icon" type="TextureRect" parent="Gauges/Upper/Happiness"]
+[node name="Icon" type="TextureRect" parent="Gauges/Happiness"]
 anchor_left = 0.25
 anchor_top = 0.265625
 anchor_right = 0.75
@@ -1085,7 +1111,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Title" type="Label" parent="Gauges/Upper/Happiness"]
+[node name="Title" type="Label" parent="Gauges/Happiness"]
 visible = false
 anchor_left = 0.5
 anchor_right = 0.5
@@ -1099,7 +1125,7 @@ text = "Happiness"
 align = 1
 valign = 2
 
-[node name="Value" type="Label" parent="Gauges/Upper/Happiness"]
+[node name="Value" type="Label" parent="Gauges/Happiness"]
 visible = false
 anchor_left = 0.5
 anchor_top = 0.5
@@ -1111,7 +1137,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 11 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -1119,30 +1145,31 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Button" type="Control" parent="Gauges/Upper/Happiness"]
+[node name="Button" type="Control" parent="Gauges/Happiness"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Arousal" type="Control" parent="Gauges/Upper"]
-anchor_left = 0.68
-anchor_right = 0.999999
-anchor_bottom = 1.0
-script = SubResource( 7 )
+[node name="Arousal" type="Control" parent="Gauges"]
+anchor_top = 0.343023
+anchor_right = 1.0
+anchor_bottom = 0.486279
+margin_top = -1.52588e-05
+script = SubResource( 13 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Fill" type="Control" parent="Gauges/Upper/Arousal"]
+[node name="Fill" type="Control" parent="Gauges/Arousal"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="0" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
+[node name="0" type="TextureRect" parent="Gauges/Arousal/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1152,7 +1179,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="10" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
+[node name="10" type="TextureRect" parent="Gauges/Arousal/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1163,7 +1190,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="20" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
+[node name="20" type="TextureRect" parent="Gauges/Arousal/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1174,7 +1201,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="30" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
+[node name="30" type="TextureRect" parent="Gauges/Arousal/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1185,7 +1212,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="40" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
+[node name="40" type="TextureRect" parent="Gauges/Arousal/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1196,7 +1223,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="50" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
+[node name="50" type="TextureRect" parent="Gauges/Arousal/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1207,7 +1234,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="60" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
+[node name="60" type="TextureRect" parent="Gauges/Arousal/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1218,7 +1245,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="70" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
+[node name="70" type="TextureRect" parent="Gauges/Arousal/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1229,7 +1256,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="80" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
+[node name="80" type="TextureRect" parent="Gauges/Arousal/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1240,7 +1267,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="90" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
+[node name="90" type="TextureRect" parent="Gauges/Arousal/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1251,7 +1278,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="100" type="TextureRect" parent="Gauges/Upper/Arousal/Fill"]
+[node name="100" type="TextureRect" parent="Gauges/Arousal/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1262,7 +1289,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Icon" type="TextureRect" parent="Gauges/Upper/Arousal"]
+[node name="Icon" type="TextureRect" parent="Gauges/Arousal"]
 anchor_left = 0.25
 anchor_top = 0.28125
 anchor_right = 0.75
@@ -1274,7 +1301,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Title" type="Label" parent="Gauges/Upper/Arousal"]
+[node name="Title" type="Label" parent="Gauges/Arousal"]
 visible = false
 anchor_left = 0.5
 anchor_right = 0.5
@@ -1288,7 +1315,7 @@ text = "Arousal"
 align = 1
 valign = 2
 
-[node name="Value" type="Label" parent="Gauges/Upper/Arousal"]
+[node name="Value" type="Label" parent="Gauges/Arousal"]
 visible = false
 anchor_left = 0.5
 anchor_top = 0.5
@@ -1300,7 +1327,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 11 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -1308,37 +1335,31 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Button" type="Control" parent="Gauges/Upper/Arousal"]
+[node name="Button" type="Control" parent="Gauges/Arousal"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Lower" type="Control" parent="Gauges"]
-anchor_top = 0.573334
+[node name="Fatigue" type="Control" parent="Gauges"]
+anchor_top = 0.514535
+anchor_right = 1.0
+anchor_bottom = 0.657791
+margin_bottom = -3.05176e-05
+script = SubResource( 14 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Fill" type="Control" parent="Gauges/Fatigue"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Fatigue" type="Control" parent="Gauges/Lower"]
-anchor_right = 0.32
-anchor_bottom = 1.0
-script = SubResource( 8 )
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Fill" type="Control" parent="Gauges/Lower/Fatigue"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="0" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="0" type="TextureRect" parent="Gauges/Fatigue/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1348,7 +1369,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="10" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="10" type="TextureRect" parent="Gauges/Fatigue/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1359,7 +1380,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="20" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="20" type="TextureRect" parent="Gauges/Fatigue/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1370,7 +1391,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="30" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="30" type="TextureRect" parent="Gauges/Fatigue/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1381,7 +1402,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="40" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="40" type="TextureRect" parent="Gauges/Fatigue/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1392,7 +1413,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="50" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="50" type="TextureRect" parent="Gauges/Fatigue/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1403,7 +1424,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="60" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="60" type="TextureRect" parent="Gauges/Fatigue/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1414,7 +1435,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="70" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="70" type="TextureRect" parent="Gauges/Fatigue/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1425,7 +1446,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="80" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="80" type="TextureRect" parent="Gauges/Fatigue/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1436,7 +1457,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="90" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="90" type="TextureRect" parent="Gauges/Fatigue/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1447,7 +1468,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="100" type="TextureRect" parent="Gauges/Lower/Fatigue/Fill"]
+[node name="100" type="TextureRect" parent="Gauges/Fatigue/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1458,7 +1479,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Icon" type="TextureRect" parent="Gauges/Lower/Fatigue"]
+[node name="Icon" type="TextureRect" parent="Gauges/Fatigue"]
 anchor_left = 0.265625
 anchor_top = 0.265625
 anchor_right = 0.765625
@@ -1470,7 +1491,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Title" type="Label" parent="Gauges/Lower/Fatigue"]
+[node name="Title" type="Label" parent="Gauges/Fatigue"]
 visible = false
 anchor_left = 0.5
 anchor_right = 0.5
@@ -1484,7 +1505,7 @@ text = "Fatigue"
 align = 1
 valign = 2
 
-[node name="Value" type="Label" parent="Gauges/Lower/Fatigue"]
+[node name="Value" type="Label" parent="Gauges/Fatigue"]
 visible = false
 anchor_left = 0.5
 anchor_top = 0.5
@@ -1496,7 +1517,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 11 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -1504,30 +1525,31 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Button" type="Control" parent="Gauges/Lower/Fatigue"]
+[node name="Button" type="Control" parent="Gauges/Fatigue"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Hunger" type="Control" parent="Gauges/Lower"]
-anchor_left = 0.339999
-anchor_right = 0.659999
-anchor_bottom = 1.0
-script = SubResource( 9 )
+[node name="Hunger" type="Control" parent="Gauges"]
+anchor_top = 0.686047
+anchor_right = 1.0
+anchor_bottom = 0.829302
+margin_top = -3.05176e-05
+script = SubResource( 15 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Fill" type="Control" parent="Gauges/Lower/Hunger"]
+[node name="Fill" type="Control" parent="Gauges/Hunger"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="0" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
+[node name="0" type="TextureRect" parent="Gauges/Hunger/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1537,7 +1559,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="10" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
+[node name="10" type="TextureRect" parent="Gauges/Hunger/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1548,7 +1570,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="20" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
+[node name="20" type="TextureRect" parent="Gauges/Hunger/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1559,7 +1581,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="30" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
+[node name="30" type="TextureRect" parent="Gauges/Hunger/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1570,7 +1592,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="40" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
+[node name="40" type="TextureRect" parent="Gauges/Hunger/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1581,7 +1603,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="50" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
+[node name="50" type="TextureRect" parent="Gauges/Hunger/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1592,7 +1614,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="60" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
+[node name="60" type="TextureRect" parent="Gauges/Hunger/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1603,7 +1625,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="70" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
+[node name="70" type="TextureRect" parent="Gauges/Hunger/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1614,7 +1636,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="80" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
+[node name="80" type="TextureRect" parent="Gauges/Hunger/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1625,7 +1647,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="90" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
+[node name="90" type="TextureRect" parent="Gauges/Hunger/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1636,7 +1658,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="100" type="TextureRect" parent="Gauges/Lower/Hunger/Fill"]
+[node name="100" type="TextureRect" parent="Gauges/Hunger/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1647,7 +1669,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Icon" type="TextureRect" parent="Gauges/Lower/Hunger"]
+[node name="Icon" type="TextureRect" parent="Gauges/Hunger"]
 anchor_left = 0.25
 anchor_top = 0.25
 anchor_right = 0.75
@@ -1659,7 +1681,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Title" type="Label" parent="Gauges/Lower/Hunger"]
+[node name="Title" type="Label" parent="Gauges/Hunger"]
 visible = false
 anchor_left = 0.5
 anchor_right = 0.5
@@ -1673,7 +1695,7 @@ text = "Hunger"
 align = 1
 valign = 2
 
-[node name="Value" type="Label" parent="Gauges/Lower/Hunger"]
+[node name="Value" type="Label" parent="Gauges/Hunger"]
 visible = false
 anchor_left = 0.5
 anchor_top = 0.5
@@ -1685,7 +1707,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 11 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -1693,30 +1715,30 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Button" type="Control" parent="Gauges/Lower/Hunger"]
+[node name="Button" type="Control" parent="Gauges/Hunger"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Bathroom" type="Control" parent="Gauges/Lower"]
-anchor_left = 0.68
+[node name="Bathroom" type="Control" parent="Gauges"]
+anchor_top = 0.857558
 anchor_right = 1.0
-anchor_bottom = 1.0
-script = SubResource( 10 )
+anchor_bottom = 1.00081
+script = SubResource( 16 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Fill" type="Control" parent="Gauges/Lower/Bathroom"]
+[node name="Fill" type="Control" parent="Gauges/Bathroom"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="0" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="0" type="TextureRect" parent="Gauges/Bathroom/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1726,7 +1748,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="10" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="10" type="TextureRect" parent="Gauges/Bathroom/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1737,7 +1759,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="20" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="20" type="TextureRect" parent="Gauges/Bathroom/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1748,7 +1770,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="30" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="30" type="TextureRect" parent="Gauges/Bathroom/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1759,7 +1781,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="40" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="40" type="TextureRect" parent="Gauges/Bathroom/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1770,7 +1792,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="50" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="50" type="TextureRect" parent="Gauges/Bathroom/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1781,7 +1803,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="60" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="60" type="TextureRect" parent="Gauges/Bathroom/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1792,7 +1814,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="70" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="70" type="TextureRect" parent="Gauges/Bathroom/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1803,7 +1825,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="80" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="80" type="TextureRect" parent="Gauges/Bathroom/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1814,7 +1836,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="90" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="90" type="TextureRect" parent="Gauges/Bathroom/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1825,7 +1847,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="100" type="TextureRect" parent="Gauges/Lower/Bathroom/Fill"]
+[node name="100" type="TextureRect" parent="Gauges/Bathroom/Fill"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1836,7 +1858,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Icon" type="TextureRect" parent="Gauges/Lower/Bathroom"]
+[node name="Icon" type="TextureRect" parent="Gauges/Bathroom"]
 anchor_left = 0.25
 anchor_top = 0.25
 anchor_right = 0.75
@@ -1848,7 +1870,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Title" type="Label" parent="Gauges/Lower/Bathroom"]
+[node name="Title" type="Label" parent="Gauges/Bathroom"]
 visible = false
 anchor_left = 0.5
 anchor_right = 0.5
@@ -1862,7 +1884,7 @@ text = "Bathroom"
 align = 1
 valign = 2
 
-[node name="Value" type="Label" parent="Gauges/Lower/Bathroom"]
+[node name="Value" type="Label" parent="Gauges/Bathroom"]
 visible = false
 anchor_left = 0.5
 anchor_top = 0.5
@@ -1874,7 +1896,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 11 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -1882,291 +1904,35 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Button" type="Control" parent="Gauges/Lower/Bathroom"]
+[node name="Button" type="Control" parent="Gauges/Bathroom"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Stats Display" type="Control" parent="."]
-anchor_top = 0.444444
-anchor_right = 0.578526
-anchor_bottom = 1.00093
-margin_left = 12.0
-margin_right = 12.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Basic" type="RichTextLabel" parent="Stats Display"]
-anchor_right = 1.10385
-anchor_bottom = 0.1675
-custom_fonts/normal_font = SubResource( 11 )
-custom_constants/line_separation = -3
-text = "str(age), ethnicity, gender
-stats._intelligence(), #Education
-stats._devotion(), stats._trust()"
-scroll_active = false
-script = SubResource( 12 )
+[node name="Back" type="Button" parent="."]
+anchor_left = 0.466667
+anchor_top = 0.931481
+anchor_right = 0.533333
+anchor_bottom = 0.976852
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = ExtResource( 3 )
+text = "Back"
 __meta__ = {
 "_edit_use_anchors_": true
 }
-
-[node name="Appearance" type="RichTextLabel" parent="Stats Display"]
-anchor_top = 0.18
-anchor_right = 1.10385
-anchor_bottom = 0.397416
-margin_right = -3.05176e-05
-custom_fonts/normal_font = SubResource( 11 )
-custom_constants/line_separation = -3
-text = "stats._face()
-flags[\"gender\"]
-flags[\"weight\"]
-voice()"
-scroll_active = false
-script = SubResource( 13 )
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Sexuality" type="RichTextLabel" parent="Stats Display"]
-anchor_top = 0.36
-anchor_right = 1.10385
-anchor_bottom = 0.58
-custom_fonts/normal_font = SubResource( 11 )
-custom_constants/line_separation = -3
-text = "stats._libido()
-stats._male_attraction()
-stats._female_attraction()
-#Fetishes()"
-scroll_active = false
-script = SubResource( 14 )
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Skills" type="RichTextLabel" parent="Stats Display"]
-anchor_top = 0.5925
-anchor_right = 1.10385
-anchor_bottom = 0.8125
-custom_fonts/normal_font = SubResource( 11 )
-custom_constants/line_separation = -3
-text = "stats._sexual_skill()
-stats._prostitution_skill()
-stats._entertainment_skill()
-stats._combat_skill()"
-scroll_active = false
-script = SubResource( 15 )
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Traits" type="RichTextLabel" parent="Stats Display"]
-anchor_top = 0.825
-anchor_right = 1.10385
-anchor_bottom = 0.9925
-custom_fonts/normal_font = SubResource( 11 )
-custom_constants/line_separation = -3
-text = "#Behavioral trait
-#Sexual trait
-#Relationships()"
-scroll_active = false
-script = SubResource( 16 )
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Stats Display orig" type="Control" parent="."]
-visible = false
-anchor_top = 0.444444
-anchor_right = 0.578526
-anchor_bottom = 1.00093
-margin_left = 12.0
-margin_right = 12.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Basic" type="RichTextLabel" parent="Stats Display orig"]
-anchor_right = 1.10385
-anchor_bottom = 0.1675
-custom_fonts/normal_font = SubResource( 11 )
-custom_constants/line_separation = -3
-text = "str(age), ethnicity, gender
-stats._intelligence()
-stats._devotion(), stats._trust()"
-scroll_active = false
-script = SubResource( 12 )
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Appearance" type="RichTextLabel" parent="Stats Display orig"]
-anchor_top = 0.18
-anchor_right = 1.10385
-anchor_bottom = 0.3475
-custom_fonts/normal_font = SubResource( 11 )
-custom_constants/line_separation = -3
-text = "stats._face()
-stats._figure()
-voice()"
-scroll_active = false
-script = SubResource( 13 )
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Sexuality" type="RichTextLabel" parent="Stats Display orig"]
-anchor_top = 0.36
-anchor_right = 1.10385
-anchor_bottom = 0.58
-custom_fonts/normal_font = SubResource( 11 )
-custom_constants/line_separation = -3
-text = "stats._libido()
-stats._male_attraction()
-stats._female_attraction()
-#Fetishes()"
-scroll_active = false
-script = SubResource( 14 )
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Skills" type="RichTextLabel" parent="Stats Display orig"]
-anchor_top = 0.5925
-anchor_right = 1.10385
-anchor_bottom = 0.8125
-custom_fonts/normal_font = SubResource( 11 )
-custom_constants/line_separation = -3
-text = "stats._sexual_skill()
-stats._prostitution_skill()
-stats._entertainment_skill()
-stats._combat_skill()"
-scroll_active = false
-script = SubResource( 15 )
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Traits" type="RichTextLabel" parent="Stats Display orig"]
-anchor_top = 0.825
-anchor_right = 1.10385
-anchor_bottom = 0.9925
-custom_fonts/normal_font = SubResource( 11 )
-custom_constants/line_separation = -3
-text = "#Behavioral trait
-#Sexual trait
-#Relationships()"
-scroll_active = false
-script = SubResource( 16 )
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Panel" type="Panel" parent="."]
-visible = false
-self_modulate = Color( 0.242798, 0.68877, 0.863281, 0.745098 )
-anchor_right = 1.06456
-anchor_bottom = 1.07685
-margin_right = 0.00305176
-margin_bottom = 0.00195313
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Buttons" type="VBoxContainer" parent="Panel"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -73.5
-margin_top = -110.0
-margin_right = 73.5
-margin_bottom = 110.0
-custom_constants/separation = 20
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Assignment" type="OptionButton" parent="Panel/Buttons"]
-margin_right = 147.0
-margin_bottom = 40.0
-rect_min_size = Vector2( 120, 40 )
-custom_fonts/font = SubResource( 17 )
-text = "Rest"
-items = [ "Rest", null, false, 0, null, "Prostitute", null, false, 1, null ]
-selected = 0
-
-[node name="Examine" type="Button" parent="Panel/Buttons"]
-margin_top = 60.0
-margin_right = 147.0
-margin_bottom = 100.0
-rect_min_size = Vector2( 120, 40 )
-custom_fonts/font = SubResource( 17 )
-text = "Examine"
-
-[node name="Summon" type="Button" parent="Panel/Buttons"]
-visible = false
-margin_top = 120.0
-margin_right = 147.0
-margin_bottom = 160.0
-rect_min_size = Vector2( 120, 40 )
-custom_fonts/font = SubResource( 17 )
-
-[node name="Sell" type="Button" parent="Panel/Buttons"]
-margin_top = 120.0
-margin_right = 147.0
-margin_bottom = 160.0
-rect_min_size = Vector2( 120, 40 )
-custom_fonts/font = SubResource( 17 )
-text = "Sell"
-
-[node name="Selling Buttons" type="VBoxContainer" parent="Panel"]
-visible = false
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -73.5
-margin_top = -50.0
-margin_right = 73.5
-margin_bottom = 50.0
-custom_constants/separation = 20
-
-[node name="Buy" type="Button" parent="Panel/Selling Buttons"]
-margin_right = 147.0
-margin_bottom = 40.0
-rect_min_size = Vector2( 120, 40 )
-mouse_filter = 1
-custom_fonts/font = ExtResource( 2 )
-text = "Buy"
-
-[node name="Examine" type="Button" parent="Panel/Selling Buttons"]
-margin_top = 60.0
-margin_right = 147.0
-margin_bottom = 100.0
-rect_min_size = Vector2( 120, 40 )
-mouse_filter = 1
-custom_fonts/font = ExtResource( 2 )
-disabled = true
-text = "Examine"
-[connection signal="mouse_entered" from="Top" to="Input" method="_on_Top_mouse_entered"]
-[connection signal="mouse_exited" from="Top" to="Input" method="_on_Top_mouse_exited"]
-[connection signal="pressed" from="Top" to="Input" method="_on_Top_pressed"]
-[connection signal="mouse_entered" from="Gauges/Upper/Health/Button" to="Gauges/Upper/Health" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Gauges/Upper/Health/Button" to="Gauges/Upper/Health" method="_on_mouse_exited"]
-[connection signal="mouse_entered" from="Gauges/Upper/Happiness/Button" to="Gauges/Upper/Happiness" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Gauges/Upper/Happiness/Button" to="Gauges/Upper/Happiness" method="_on_mouse_exited"]
-[connection signal="mouse_entered" from="Gauges/Upper/Arousal/Button" to="Gauges/Upper/Arousal" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Gauges/Upper/Arousal/Button" to="Gauges/Upper/Arousal" method="_on_mouse_exited"]
-[connection signal="mouse_entered" from="Gauges/Lower/Fatigue/Button" to="Gauges/Lower/Fatigue" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Gauges/Lower/Fatigue/Button" to="Gauges/Lower/Fatigue" method="_on_mouse_exited"]
-[connection signal="mouse_entered" from="Gauges/Lower/Hunger/Button" to="Gauges/Lower/Hunger" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Gauges/Lower/Hunger/Button" to="Gauges/Lower/Hunger" method="_on_mouse_exited"]
-[connection signal="mouse_entered" from="Gauges/Lower/Bathroom/Button" to="Gauges/Lower/Bathroom" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="Gauges/Lower/Bathroom/Button" to="Gauges/Lower/Bathroom" method="_on_mouse_exited"]
-[connection signal="item_selected" from="Panel/Buttons/Assignment" to="Input" method="_on_Assignment_item_selected"]
-[connection signal="pressed" from="Panel/Buttons/Examine" to="Input" method="_on_Examine_pressed"]
-[connection signal="pressed" from="Panel/Buttons/Sell" to="Input" method="_on_Sell_pressed"]
-[connection signal="pressed" from="Panel/Selling Buttons/Buy" to="Input" method="_on_Buy_pressed"]
+[connection signal="mouse_entered" from="Gauges/Health/Button" to="Gauges/Health" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Gauges/Health/Button" to="Gauges/Health" method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="Gauges/Happiness/Button" to="Gauges/Happiness" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Gauges/Happiness/Button" to="Gauges/Happiness" method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="Gauges/Arousal/Button" to="Gauges/Arousal" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Gauges/Arousal/Button" to="Gauges/Arousal" method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="Gauges/Fatigue/Button" to="Gauges/Fatigue" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Gauges/Fatigue/Button" to="Gauges/Fatigue" method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="Gauges/Hunger/Button" to="Gauges/Hunger" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Gauges/Hunger/Button" to="Gauges/Hunger" method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="Gauges/Bathroom/Button" to="Gauges/Bathroom" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Gauges/Bathroom/Button" to="Gauges/Bathroom" method="_on_mouse_exited"]
+[connection signal="pressed" from="Back" to="." method="_on_Back_pressed"]

@@ -78,21 +78,22 @@ func _level():
 #		text = "[color=#008c28]Extremely energetic[/color]"
 #	return(text)
 
+#Education: Educated | Uneducated
 func _intelligence():
 	if _slave.intelligence < 25:
-		return "[color=#d70000]Vegetable[/color]"
+		return "[color=#d70000]Moronic[/color]"
 	elif _slave.intelligence < 50:
-		return "[color=#d74b00]Handicapped[/color]"
+		return "[color=#d74b00]Very stupid[/color]"
 	elif _slave.intelligence < 75:
-		return "[color=#c89600]Slow[/color]"
+		return "[color=#c89600]Stupid[/color]"
 	elif _slave.intelligence < 125:
 		return ""
 	elif _slave.intelligence < 150:
-		return "[color=#00aa0a]Sharp[/color]"
+		return "[color=#00aa0a]Smart[/color]"
 	elif _slave.intelligence < 175:
-		return "[color=#00afb4]Superior intelligence[/color]"
+		return "[color=#00afb4]Very smart[/color]"
 	elif _slave.intelligence >= 175:
-		return "[color=aqua]Exceptional intelligence[/color]"
+		return "[color=aqua]Brilliant[/color]"
 
 func _devotion():
 	if _slave.devotion < -95:

@@ -189,52 +189,52 @@ func _voice(gender):
 		return "mute"
 	elif gender == "Male":
 		roll = dice.roll(12)
-		if roll <= 3:
+		if roll <= 2:
 			voice += "deep "
-		elif roll >= 9:
+		elif roll >= 10:
 			voice += "high "
 		if dice.roll(12) == 11:
 			voice += "feminine "
 	elif gender == "Female":
 		roll = dice.roll(12)
-		if roll <= 2:
+		if roll <= 1:
 			voice += "deep "
-		elif roll >= 8:
+		elif roll >= 9:
 			voice += "high "
 		if dice.roll(12) == 0:
 			voice += "masculine "
 	if gender == "Trans male":
 		roll = dice.roll(12)
-		if roll <= 2:
+		if roll <= 1:
 			voice += "deep "
-		elif roll >= 8:
+		elif roll >= 9:
 			voice += "high "
 		roll = dice.roll(12)
-		if roll <= 2:
+		if roll <= 1:
 			voice += "masculine "
-		elif roll >= 7:
+		elif roll >= 8:
 			voice += "feminine "
 	elif gender == "Trans female":
 		roll = dice.roll(12)
-		if roll <= 3:
+		if roll <= 2:
 			voice += "deep "
-		elif roll >= 9:
+		elif roll >= 10:
 			voice += "high "
 		roll = dice.roll(12)
-		if roll <= 4:
+		if roll <= 3:
 			voice += "masculine "
-		elif roll >= 9:
+		elif roll >= 10:
 			voice += "feminine "
 	elif gender == "Intersex":
 		roll = dice.roll(12)
-		if roll <= 3:
+		if roll <= 2:
 			voice += "deep "
-		elif roll >= 8:
+		elif roll >= 9:
 			voice += "high "
 		roll = dice.roll(12)
-		if roll <= 3:
+		if roll <= 2:
 			voice += "masculine "
-		elif roll >= 8:
+		elif roll >= 9:
 			voice += "feminine "
 	return voice
 

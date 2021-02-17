@@ -235,6 +235,7 @@ func load_game(slot,write=false):
 #		get_tree().get_root().get_node('Game/Finance').expenses = _data['finance']['expenses']
 		
 		var slaves = get_tree().get_root().get_node('Game/Slaves')
+		var side_panel = game.get_gui().get_node("SidePanel")
 		
 		var owned_slaves = slaves.get_node('Collections/Owned')
 		for child in owned_slaves.get_children():
@@ -247,6 +248,7 @@ func load_game(slot,write=false):
 			_slave._load(slave_data)
 			owned_slaves.add_child(_slave,true)
 		slaves.update_collection(owned_slaves)
+		side_panel.get_node("ManageSlaves").update()
 		
 		var kidnappers_market = slaves.get_node('Collections/Kidnappers Market')
 		for child in kidnappers_market.get_children():
@@ -259,7 +261,8 @@ func load_game(slot,write=false):
 			_slave._load(slave_data)
 			kidnappers_market.add_child(_slave,true)
 		slaves.update_collection(kidnappers_market)
-	
+		side_panel.get_node("KidnappersMarket").update()
+		
 		var neighboring_arcologies = slaves.get_node('Collections/Neighboring Arcologies')
 		for child in neighboring_arcologies.get_children():
 			neighboring_arcologies.remove_child(child)
@@ -272,6 +275,8 @@ func load_game(slot,write=false):
 				_slave._load(slave_data)
 				neighboring_arcologies.add_child(_slave,true)
 			slaves.update_collection(neighboring_arcologies)
+			side_panel.get_node("NeighboringArcologies").update()
+		
 		slaves.set_active_collection("Owned")
 		game.set_bg_color(game.BG_COLOR_DEFAULT)
 	return(_data)

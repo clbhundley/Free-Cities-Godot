@@ -1,6 +1,6 @@
 extends Node
 
-onready var p = get_parent()
+onready var gui = get_parent()
 onready var AI_panel = get_node('../AI Panel')
 onready var time_display = get_node('../Navigation/Time')
 onready var slider = get_node('../Navigation/Time/HSlider')
@@ -10,7 +10,7 @@ onready var timer = get_tree().get_root().get_node('Game/Clock')
 var motion_detected
 func is_input_stationary_select(event):
 	if event.is_action_released("ui_accept"):
-		if not p.mouse_over_gui:
+		if not gui.mouse_over_gui:
 			if not motion_detected:
 				var ev = InputEventAction.new()
 				ev.action = "stationary_select"
@@ -45,10 +45,10 @@ func _input(event):
 		var button = time_display.get_node('Button')
 		if AI_panel.is_visible_in_tree():
 			if button.is_pressed():
-				p._on_Time_toggled(false)
+				gui._on_Time_toggled(false)
 				button.set_pressed(false)
 			else:
-				p._on_AI_pressed()
+				gui._on_AI_pressed()
 		elif calendar.is_visible_in_tree():
-			p._on_Time_toggled(false)
+			gui._on_Time_toggled(false)
 			button.set_pressed(false)

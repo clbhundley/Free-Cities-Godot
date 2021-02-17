@@ -151,6 +151,7 @@ func connect_sector_signals(sector):
 		if sector.has_method(method):
 			time.connect(method,sector,method)
 
+#use global transform instead of translation and rotation?
 func animate_camera(translation_start,translation_end,rotation_start,rotation_end):
 	$Tween.interpolate_property(
 		camera,

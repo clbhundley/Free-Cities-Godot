@@ -3832,30 +3832,7 @@ material/0 = null
 transform = Transform( 1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 0, 0, 0 )
 shape = SubResource( 225 )
 
-[node name="ChangeView" type="Button" parent="." groups=[
-"Intercept Mouse",
-]]
-visible = false
-anchor_left = 0.451823
-anchor_top = 0.931481
-anchor_right = 0.548177
-anchor_bottom = 0.976852
-grow_horizontal = 2
-grow_vertical = 2
-custom_fonts/font = ExtResource( 4 )
-text = "View Terra"
-align = 2
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="DirectionalLight" type="DirectionalLight" parent="."]
-transform = Transform( 1, 0, 0, 0, -0.111864, 0.993724, 0, -0.993724, -0.111864, 0, 22.1038, -2.21351 )
-light_color = Color( 0.933333, 0.933333, 0.933333, 1 )
-
-[node name="DirectionalLight2" type="DirectionalLight" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.867721, 0.497052, 0, -0.497052, 0.867721, 0, 3.79303, 21.8866 )
-light_color = Color( 0.933333, 0.933333, 0.933333, 1 )
+[node name="Structure" type="Spatial" parent="."]
 
 [node name="Cambase" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.6, 0 )
@@ -3868,7 +3845,32 @@ fov = 49.1343
 near = 0.1
 far = 40.1
 
-[node name="Structure" type="Spatial" parent="."]
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, -0.111864, 0.993724, 0, -0.993724, -0.111864, 0, 22.1038, -2.21351 )
+light_color = Color( 0.933333, 0.933333, 0.933333, 1 )
+
+[node name="DirectionalLight2" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.867721, 0.497052, 0, -0.497052, 0.867721, 0, 3.79303, 21.8866 )
+light_color = Color( 0.933333, 0.933333, 0.933333, 1 )
+
+[node name="ChangeView" type="Button" parent="." groups=[
+"Intercept Mouse",
+]]
+visible = false
+anchor_left = 0.451823
+anchor_top = 0.931481
+anchor_right = 0.548177
+anchor_bottom = 0.976852
+margin_left = -0.00012207
+margin_right = 0.00012207
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = ExtResource( 4 )
+text = "View Terra"
+align = 2
+__meta__ = {
+"_edit_use_anchors_": true
+}
 
 [node name="Tween" type="Tween" parent="."]
 [connection signal="pressed" from="ChangeView" to="Input" method="_on_ChangeView_pressed"]

@@ -9,7 +9,7 @@ var active_collection
 func _ready():
 	$Camera.current = true
 	$Camera.set_translation(Vector3(cam_pos, 3.2, 5))
-	for i in range(abs(math.gaussian(7,2))):
+	for i in range(abs(math.gaussian(8,2))):
 		var preset = "kidnappers market"
 		var new_slave = get_node('New Slave').new(preset)
 		new_slave.acquired =  time.get_timestamp()
@@ -71,16 +71,6 @@ func update_collection(collection):
 		_slave.translation.y = vertical_pos
 		_slave.ui.tracking()
 
-func clamp_camera_position():
-	if cam_pos < min_camera_pos:
-		cam_pos = min_camera_pos
-	elif cam_pos > max_camera_pos:
-		cam_pos = max_camera_pos
-
-func _on_Tween_tween_step(object, key, elapsed, value):
-	for _slave in active_collection.get_children():
-		_slave.ui.tracking()
-
 func slide_camera():
 	$Tween.interpolate_method(
 		$Camera,'set_translation',
@@ -90,3 +80,13 @@ func slide_camera():
 		Tween.TRANS_CUBIC,
 		Tween.EASE_OUT)
 	$Tween.start()
+
+func clamp_camera_position():
+	if cam_pos < min_camera_pos:
+		cam_pos = min_camera_pos
+	elif cam_pos > max_camera_pos:
+		cam_pos = max_camera_pos
+
+func _on_Tween_tween_step(object, key, elapsed, value):
+	for _slave in active_collection.get_children():
+		_slave.ui.tracking()
