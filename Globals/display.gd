@@ -39,12 +39,15 @@ func set_msaa(id):
 var scale = 1
 var scale_x = 1
 var scale_y = 1
+var width
+var height
+var area
 var aspect_ratio
 func resize():
 	var view = get_tree().get_root().get_size()
-	var width = view.x
-	var height = view.y
-	var area = width*height
+	width = view.x
+	height = view.y
+	area = width*height
 	var display_scale = area/(1920*1080)
 	aspect_ratio = width/height
 	if area < 1803000:

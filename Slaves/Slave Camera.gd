@@ -22,24 +22,25 @@ func activate():
 		Tween.EASE_OUT)
 	$Tween.start()
 
-func deactivate():
+func deactivate(reset_dock_mode=true):
 	var transform_start = global_transform
 	var transform_end = slaves_camera.global_transform
+	slave_scene.get_node("Examine Slave").deactivate(reset_dock_mode)
 	for node in get_tree().get_nodes_in_group("Active Slaves"):
 		node.remove_from_group("Active Slaves")
 		node.show()
-	slave_scene.get_node("Examine Slave").deactivate()
 	slaves_camera.current = true
 	slaves_camera.show()
 	light.hide()
-	$Tween.interpolate_property(
-		slaves_camera,
-		'global_transform',
-		transform_start,
-		transform_end,
-		0.8,
-		Tween.TRANS_CUBIC,
-		Tween.EASE_OUT)
-	$Tween.start()
-	game.get_gui().get_node("Dock").set_mode("ManageSlaves")
+	slave_scene.slide_camera()
+#	$Tween.interpolate_property(
+#		slaves_camera,
+#		'global_transform',
+#		transform_start,
+#		transform_end,
+#		0.8,
+#		Tween.TRANS_CUBIC,
+#		Tween.EASE_OUT)
+#	$Tween.start()
+	#game.get_gui().get_node("Dock").set_mode("ManageSlaves")
 	#global_transform = default_position

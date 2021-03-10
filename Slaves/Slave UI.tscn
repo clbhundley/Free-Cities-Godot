@@ -531,7 +531,6 @@ func set_stats():
 "
 
 [sub_resource type="DynamicFont" id=17]
-resource_name = "Rubik-Light"
 size = 20
 font_data = ExtResource( 1 )
 
@@ -2149,7 +2148,6 @@ margin_bottom = 100.0
 rect_min_size = Vector2( 120, 40 )
 mouse_filter = 1
 custom_fonts/font = ExtResource( 2 )
-disabled = true
 text = "Examine"
 [connection signal="mouse_entered" from="Top" to="Input" method="_on_Top_mouse_entered"]
 [connection signal="mouse_exited" from="Top" to="Input" method="_on_Top_mouse_exited"]
@@ -2170,3 +2168,4 @@ text = "Examine"
 [connection signal="pressed" from="Panel/Buttons/Examine" to="Input" method="_on_Examine_pressed"]
 [connection signal="pressed" from="Panel/Buttons/Sell" to="Input" method="_on_Sell_pressed"]
 [connection signal="pressed" from="Panel/Selling Buttons/Buy" to="Input" method="_on_Buy_pressed"]
+[connection signal="pressed" from="Panel/Selling Buttons/Examine" to="Input" method="_on_Examine_pressed"]

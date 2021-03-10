@@ -15,9 +15,6 @@ func location(section):
 func destination(section):
 	return ArcUtils.parse_address(_slave.destination)[section]
 
-func display_action():
-	pass
-
 func tick():
 	if not _slave.travel_mode:
 		update_travel_mode()
@@ -103,7 +100,7 @@ func arrival():
 	_slave.get_node('Scripts/Assignments/'+_slave.assignment).next_action()
 
 func step(action_text):
-	current_time += 1
+	current_time += 1 * time.scale
 	if action_text:
 		_slave.get_node('UI/Activity/Action').set_text(action_text)
 	_slave.get_node('UI/Activity/ProgressBar').set("value",current_time)

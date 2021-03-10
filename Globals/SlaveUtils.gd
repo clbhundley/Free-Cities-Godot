@@ -10,15 +10,17 @@ func slave_count(collection):
 	return get_slave_scene().get_node("Collections/"+collection).get_child_count()
 
 func reset_active_slaves_visibility():
+	var examine_slave = get_slave_scene().get_node("Examine Slave")
+	if not examine_slave.active:
+		return
 	get_slave_scene().get_node("Camera").show()
-	get_slave_scene().get_node("Examine Slave").deactivate()
+	#get_slave_scene().get_node("Camera").show()
+	examine_slave.deactivate(false)
 	for node in get_tree().get_nodes_in_group("Active Slaves"):
 		if node.has_node("OmniLight"):
 			node.get_node("OmniLight").hide()
-		if node.has_node("UI Full"):
-			node.get_node("UI Full").hide()
-		if node.has_method("resize"):
-			node.resize()
+#		if node.has_method("resize"):
+#			node.resize(true)
 		node.remove_from_group("Active Slaves")
 		node.show()
 

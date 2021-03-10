@@ -9,6 +9,10 @@ script/source = "extends Control
 
 func _on_Back_pressed():
 	hide()
+
+func refresh():
+	for node in $Panel/Slots.get_children():
+		node._ready()
 "
 
 [sub_resource type="DynamicFont" id=2]

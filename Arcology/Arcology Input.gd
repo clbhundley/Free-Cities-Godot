@@ -6,23 +6,32 @@ onready var dock = gui.get_node("Dock")
 
 var mouse_motion_detected
 var mouse_over_sector
+var active_input
 
 var camera_rotation = 0.0
 func _input(event):
 	if not p.visible:
 		return
-	var calendar = gui.get_node("Navigation/Time/Calendar")
-	if calendar.is_visible():
+	if event.is_action_pressed('ui_back'):
+		active_input = true
+	var mouse_over_ui_panel = game.get_gui().mouse_over_ui_panel()
+	if mouse_over_ui_panel and not active_input:
 		return
-	if event.is_class("InputEventMouseMotion"):
+	if Input.is_action_just_pressed("ui_accept") and not mouse_over_ui_panel:
+		active_input = true
+	elif event.is_action_released("ui_accept"):
+		active_input = false
+	if event.is_class("InputEventMouseMotion") and active_input:
 		if event.button_mask&(BUTTON_MASK_LEFT):
 			camera_rotation += event.relative.x * 0.005
 			get_node("../Cambase").set_rotation(Vector3(0, -1*camera_rotation, 0))
+	elif event.is_action_pressed('ui_back') and gui.get_node("Navigation/Time/TimePanel").is_visible_in_tree():
+			gui.get_node("Navigation/Time")._on_Button_toggled(false)
+			gui.get_node("Navigation/Time/Button").set_pressed(false)
 	elif event.is_action_pressed('ui_back') or event.is_action_pressed("stationary_select") and not mouse_over_sector:
 		if p.view == "arcology":
 			gui.mouse_over_gui = false
 			if p.selected_terra:
-				#get_tree().set_input_as_handled()
 				p.selected_terra = null
 				p.update_header(p._name)
 				if dock.mode != "ManageArcology":
@@ -31,10 +40,9 @@ func _input(event):
 				for terra in get_node("../Structure").get_children():
 					p.outline_terra(terra,null)
 			elif event.is_action_pressed('ui_back'):
-				if gui.get_node("SidePanel").open:
+				if gui.get_node("SidePanel").is_open:
 					dock._on_ActionButton_pressed()
 		elif p.view == "terra":
-			#get_tree().set_input_as_handled()
 			p.selected_building = null
 			for ring in get_node("../Structure").get_node(p.selected_terra).get_children():
 				for sector in ring.get_children():
@@ -79,7 +87,7 @@ func arc_input_event(camera,event,click_position,click_normal,shape_idx,sector):
 						p.selected_building = ArcUtils.get_building(sector)
 						sector.selected = true
 						gui.get_node("SidePanel/ManageBuilding").update()
-						if not dock.side_panel.open:
+						if not dock.side_panel.is_open:
 							dock.set_mode("ManageBuilding",false)
 						else:
 							dock.set_mode("ManageBuilding")
@@ -98,7 +106,7 @@ func arc_input_event(camera,event,click_position,click_normal,shape_idx,sector):
 			_on_ChangeView_pressed()
 	elif p.view == "terra":
 		if event.doubleclick:
-			if not dock.side_panel.open:
+			if not dock.side_panel.is_open:
 				dock.set_mode("ManageBuilding",false)
 				dock._on_ActionButton_pressed()
 

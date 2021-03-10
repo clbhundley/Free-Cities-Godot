@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/bg_test.jpg-1fc8d5eb92bf697f1a74e119823c8cc4.stex"
+path="res://.import/chatline.png-ef53b6531dcbd23254106357ad62c330.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://GUI/Textures/bg_test.jpg"
-dest_files=[ "res://.import/bg_test.jpg-1fc8d5eb92bf697f1a74e119823c8cc4.stex" ]
+source_file="res://GUI/Textures/chatline.png"
+dest_files=[ "res://.import/chatline.png-ef53b6531dcbd23254106357ad62c330.stex" ]
 
 [params]
 
@@ -27,8 +27,8 @@ flags/srgb=2
 process/fix_alpha_border=false
 process/premult_alpha=false
 process/HDR_as_SRGB=false
-process/invert_color=false
+process/invert_color=true
 stream=false
 size_limit=0
-detect_3d=true
+detect_3d=false
 svg/scale=1.0

@@ -123,7 +123,7 @@ func begin():
 	step()
 
 func step():
-	current_time += 1
+	current_time += 1 * time.scale
 	_slave.get_node('UI/Activity/ProgressBar').set(\"value\",current_time)
 	_slave.get_node('UI/Activity/Time').set_text(math.time_remaining(current_time,total_time))
 
@@ -164,9 +164,12 @@ func begin():
 	step()
 
 func step():
-	current_time += 1
+	current_time += 1 * time.scale
 	if _slave.fatigue > 0:
-		_slave.fatigue -= 0.0028
+		var overstep = 1
+		if total_time - current_time < 0:
+			overstep = time.scale / abs(total_time-current_time)
+		_slave.fatigue = max(_slave.fatigue - 0.0028 * time.scale / overstep, 0)
 	_slave.get_node('UI/Activity/ProgressBar').set(\"value\",current_time)
 	_slave.get_node('UI/Activity/Time').set_text(math.time_remaining(current_time,total_time))
 		
@@ -238,9 +241,12 @@ func start():
 	step()
 
 func step():
-	current_time += 1
+	current_time += 1 * time.scale
 	if _slave.hunger > 0:
-		_slave.hunger -= 0.2
+		var overstep = 1
+		if total_time - current_time < 0:
+			overstep = time.scale / abs(total_time-current_time)
+		_slave.hunger = max(_slave.hunger - 0.2 * time.scale / overstep, 0)
 	_slave.get_node('UI/Activity/ProgressBar').set(\"value\",current_time)
 	_slave.get_node('UI/Activity/Time').set_text(math.time_remaining(current_time,total_time))
 
@@ -276,9 +282,12 @@ func start():
 	step()
 
 func step():
-	current_time += 1
+	current_time += 1 * time.scale
 	if _slave.bathroom > 0:
-		_slave.bathroom -= 0.3
+		var overstep = 1
+		if total_time - current_time < 0:
+			overstep = time.scale / abs(total_time-current_time)
+		_slave.bathroom = max(_slave.bathroom - 0.3 * time.scale / overstep, 0)
 	_slave.get_node('UI/Activity/ProgressBar').set(\"value\",current_time)
 	_slave.get_node('UI/Activity/Time').set_text(math.time_remaining(current_time,total_time))
 
@@ -313,9 +322,12 @@ func start():
 	step()
 
 func step():
-	current_time += 1
+	current_time += 1 * time.scale
 	if _slave.arousal > 0:
-		_slave.arousal -= 0.1
+		var overstep = 1
+		if total_time - current_time < 0:
+			overstep = time.scale / abs(total_time-current_time)
+		_slave.arousal = max(_slave.arousal - 0.1 * time.scale / overstep, 0)
 	_slave.get_node('UI/Activity/ProgressBar').set(\"value\",current_time)
 	_slave.get_node('UI/Activity/Time').set_text(math.time_remaining(current_time,total_time))
 
@@ -351,9 +363,12 @@ func start():
 	step()
 
 func step():
-	current_time += 1
+	current_time += 1 * time.scale
 	if _slave.arousal <= 90:  #anticipation
-		_slave.arousal += 0.1
+		var overstep = 1
+		if total_time - current_time < 0:
+			overstep = time.scale / abs(total_time-current_time)
+		_slave.arousal = max(_slave.arousal + 0.1 * time.scale / overstep, 0)
 	_slave.get_node('UI/Activity/ProgressBar').set(\"value\",current_time)
 	_slave.get_node('UI/Activity/Time').set_text(math.time_remaining(current_time,total_time))
 
@@ -394,15 +409,18 @@ func start():
 	var arousal = round(_slave.arousal/10)
 	if arousal == 0:
 		arousal = 1
-	total_time = abs(math.gaussian(230,21))*arousal
+	total_time = abs(math.gaussian(2300,210))*arousal
 	_slave.get_node('UI/Activity/ProgressBar').max_value = total_time
 	display_action()
 	step()
 
 func step():
-	current_time += 1
+	current_time += 1 * time.scale
 	if _slave.arousal > 0:    #satisfaction
-		_slave.arousal -= 0.1
+		var overstep = 1
+		if total_time - current_time < 0:
+			overstep = time.scale / abs(total_time-current_time)
+		_slave.arousal = max(_slave.arousal - 0.1 * time.scale / overstep, 0)
 	_slave.get_node('UI/Activity/ProgressBar').set(\"value\",current_time)
 	_slave.get_node('UI/Activity/Time').set_text(math.time_remaining(current_time,total_time))
 

@@ -295,9 +295,9 @@ func set_body_size(value):
 		if body_size >= 0.7:
 			_slave.flags[\"body\"] = \"Huge\"
 		elif body_size >= 0.5:
-			_slave.flags[\"body\"] = \"Beefy\"
+			_slave.flags[\"body\"] = \"Heavily built\"
 		elif body_size >= 0.3:
-			_slave.flags[\"body\"] = \"Husky\"
+			_slave.flags[\"body\"] = \"Stocky\"
 
 var bodybuilder = 0 setget set_bodybuilder
 func set_bodybuilder(value):

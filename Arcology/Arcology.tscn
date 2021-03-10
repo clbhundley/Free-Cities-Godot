@@ -3867,7 +3867,6 @@ grow_horizontal = 2
 grow_vertical = 2
 custom_fonts/font = ExtResource( 4 )
 text = "View Terra"
-align = 2
 __meta__ = {
 "_edit_use_anchors_": true
 }

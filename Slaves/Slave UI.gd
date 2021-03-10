@@ -61,16 +61,16 @@ func get_display_name(sector,full=false):
 	else:
 		return _name.capitalize()
 
-func tracking():
-	if not is_visible_in_tree():
+func tracking(force=false):
+	if not is_visible_in_tree() and not force:
 		return
 	var position = _slave.get_translation()
 	var camera = root.get_camera()
 	var projection = camera.unproject_position(position)
 	set_position(projection)
 
-func resize():
-	if not is_visible_in_tree():
+func resize(force=false):
+	if not is_visible_in_tree() and not force:
 		return
 	var scale_y = display.scale_y
 	var scale_adjusted = scale_y*20
