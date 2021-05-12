@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=2]
+[gd_scene load_steps=38 format=2]
 
 [ext_resource path="res://Fonts/Rubik-Light.tres" type="DynamicFont" id=1]
 [ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=2]
@@ -19,7 +19,8 @@
 [ext_resource path="res://Slaves/Textures/Gague/Icons/happiness.svg" type="Texture" id=17]
 [ext_resource path="res://Slaves/Textures/Gague/Icons/hunger.svg" type="Texture" id=18]
 [ext_resource path="res://Slaves/Textures/Gague/Icons/bathroom.svg" type="Texture" id=19]
-[ext_resource path="res://Slaves/Examine Slave.gd" type="Script" id=20]
+[ext_resource path="res://Slaves/ExamineSlave.gd" type="Script" id=20]
+[ext_resource path="res://Slaves/Textures/kick 6.svg" type="Texture" id=21]
 
 [sub_resource type="DynamicFont" id=1]
 size = 50
@@ -499,7 +500,7 @@ func _color():
 	return(color)
 "
 
-[node name="Examine Slave" type="Control" groups=[
+[node name="ExamineSlave" type="Control" groups=[
 "Intercept Mouse",
 "Slave UI",
 ]]
@@ -1911,7 +1912,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Back" type="Button" parent="."]
+[node name="Close" type="Button" parent="."]
 anchor_left = 0.466667
 anchor_top = 0.931481
 anchor_right = 0.533333
@@ -1919,10 +1920,21 @@ anchor_bottom = 0.976852
 grow_horizontal = 2
 grow_vertical = 2
 custom_fonts/font = ExtResource( 3 )
-text = "Back"
+text = "Close"
 __meta__ = {
 "_edit_use_anchors_": true
 }
+
+[node name="Button" type="Button" parent="."]
+margin_left = 187.0
+margin_top = 59.0
+margin_right = 294.0
+margin_bottom = 122.0
+icon = ExtResource( 21 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [connection signal="mouse_entered" from="Gauges/Health/Button" to="Gauges/Health" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="Gauges/Health/Button" to="Gauges/Health" method="_on_mouse_exited"]
 [connection signal="mouse_entered" from="Gauges/Happiness/Button" to="Gauges/Happiness" method="_on_mouse_entered"]
@@ -1935,4 +1947,5 @@ __meta__ = {
 [connection signal="mouse_exited" from="Gauges/Hunger/Button" to="Gauges/Hunger" method="_on_mouse_exited"]
 [connection signal="mouse_entered" from="Gauges/Bathroom/Button" to="Gauges/Bathroom" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="Gauges/Bathroom/Button" to="Gauges/Bathroom" method="_on_mouse_exited"]
-[connection signal="pressed" from="Back" to="." method="_on_Back_pressed"]
+[connection signal="pressed" from="Close" to="." method="_on_Close_pressed"]
+[connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]

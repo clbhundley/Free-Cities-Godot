@@ -3,7 +3,14 @@ extends NinePatchRect
 func _ready():
 	get_tree().get_root().connect('size_changed',self,'resize')
 
-func dialogue(string):
+func dialogue(string,instant:=false):
+	if instant:
+		$Text.set_text("")
+		$Text.parse_bbcode(string)
+		yield(get_tree(),"idle_frame")
+		for node in get_parent().get_children():
+			node.resize()
+		return
 	var half_stop = [",", ";", "-"]
 	var full_stop = [".", "!", "?"]
 	while not string.empty():
@@ -40,7 +47,7 @@ func _on_toggled(button_pressed):
 		$ExtensionPanel.show()
 		animate_outline('modulate',Color('ffffff'),Color('ff7200'),0.4)
 		get_node("../../../NaviActionButton").pressed = false
-		get_node("../../")._on_NaviActionButton_toggled(false)
+		get_node("../../../NaviPanel")._on_NaviActionButton_toggled(false)
 		for message in get_parent().get_children():
 			if message != self and message.get_node("Button").pressed:
 				message.get_node("Button").pressed = false
@@ -126,6 +133,3 @@ func animate_message(property,start,end,tween=$Tween):
 		Tween.TRANS_EXPO,
 		Tween.EASE_OUT)
 	tween.start()
-
-
-

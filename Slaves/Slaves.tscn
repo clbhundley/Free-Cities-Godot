@@ -1,17 +1,13 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Slaves/Markets/Neighboring Arcologies.gd" type="Script" id=1]
-[ext_resource path="res://Slaves/Slaves Input.gd" type="Script" id=2]
 [ext_resource path="res://Slaves/slaves.gd" type="Script" id=3]
 [ext_resource path="res://Slaves/New Slave/New Slave.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Slaves/Markets/Kidnappers Market.gd" type="Script" id=5]
-[ext_resource path="res://Slaves/Examine Slave.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Slaves/ExamineSlave.tscn" type="PackedScene" id=6]
 
 [node name="Slaves" type="Spatial"]
 script = ExtResource( 3 )
-
-[node name="Input" type="Node" parent="."]
-script = ExtResource( 2 )
 
 [node name="New Slave" parent="." instance=ExtResource( 4 )]
 
@@ -35,8 +31,9 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6141, 4.66826 )
 omni_range = 80.0
 
-[node name="Examine Slave" parent="." instance=ExtResource( 6 )]
+[node name="ExamineSlave" parent="." instance=ExtResource( 6 )]
 visible = false
 
 [node name="Tween" type="Tween" parent="."]
+
 [connection signal="tween_step" from="Tween" to="." method="_on_Tween_tween_step"]

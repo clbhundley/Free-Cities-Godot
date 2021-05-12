@@ -55,6 +55,11 @@ func set_bg_color(new_color):
 	tween.start()
 	bg_color = Color(new_color)
 
+func popup_is_visible():
+	for popup in get_tree().get_nodes_in_group("Popups"):
+		if popup.is_visible_in_tree():
+			return true
+
 const DESKTOP_QUIT = MainLoop.NOTIFICATION_WM_QUIT_REQUEST
 const ANDROID_QUIT = MainLoop.NOTIFICATION_WM_GO_BACK_REQUEST
 var limiter = false #prevents malfunction due to multiple quit requests from windows
@@ -66,3 +71,6 @@ func _notification(event):
 			return
 		limiter = true
 		data.save_game(data.save_slot)
+		for popup in get_tree().get_nodes_in_group("Popups"):
+			if popup.is_visible_in_tree():
+				popup.hide()

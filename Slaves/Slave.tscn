@@ -1,10 +1,13 @@
-[gd_scene load_steps=34 format=2]
+[gd_scene load_steps=44 format=2]
 
 [ext_resource path="res://Slaves/Slave UI.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Slaves/slave.gd" type="Script" id=2]
 [ext_resource path="res://Slaves/Model.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Slaves/stats.gd" type="Script" id=4]
 [ext_resource path="res://Slaves/Slave Camera.gd" type="Script" id=5]
+[ext_resource path="res://Slaves/Effects/Pregnancy.gd" type="Script" id=6]
+[ext_resource path="res://Slaves/Effects/Diet.gd" type="Script" id=7]
+[ext_resource path="res://Slaves/Effects/Hormones.gd" type="Script" id=8]
 [ext_resource path="res://Slaves/Actions/travel.gd" type="Script" id=74]
 
 [sub_resource type="GDScript" id=1]
@@ -16,35 +19,43 @@ func begin():
 	_slave.get_node('UI/Top/Status').set_text(\"Resting\")
 
 func next_action():
+	var new_action
+	var new_queued_action
+	
 	if _slave.queued_action:
 		_slave.action = _slave.queued_action
 		_slave.queued_action = null
 	if _slave.bathroom > 50:
 		if _slave.location == _slave.quarters:
-			_slave.action = \"Bathroom\"
+			new_action = \"Bathroom\"
 		else:
 			_slave.destination = _slave.quarters
-			_slave.action = \"Travel\"
-			_slave.queued_action = \"Bathroom\"
+			new_action = \"Travel\"
+			new_queued_action = \"Bathroom\"
 	elif _slave.hunger > 40:
 		var nutrition_system = ArcUtils.get_nutrition_system()
 		if _slave.location == nutrition_system:
-			_slave.action = \"Eating\"
+			new_action = \"Eating\"
 		else:
 			_slave.destination = nutrition_system
-			_slave.action = \"Travel\"
-			_slave.queued_action = \"Eating\"
+			new_action = \"Travel\"
+			new_queued_action = \"Eating\"
 	elif _slave.fatigue > 70:
 		if _slave.location == _slave.quarters:
-			_slave.action = \"Sleeping\"
+			new_action = \"Sleeping\"
 		else:
 			_slave.destination = _slave.quarters
-			_slave.action = \"Travel\"
-			_slave.queued_action = \"Sleeping\"
+			new_action = \"Travel\"
+			new_queued_action = \"Sleeping\"
 	elif _slave.arousal > 50:
-		_slave.action = \"Masturbation\"
+		new_action = \"Masturbation\"
 	else:
-		_slave.action = \"Idle\"
+		new_action = \"Idle\"
+	
+	if new_action:
+		_slave.action = _slave.get_node('Actions/'+new_action)
+	if new_queued_action:
+		_slave.queued_action = _slave.get_node('Actions/'+new_queued_action)
 "
 
 [sub_resource type="GDScript" id=2]
@@ -56,48 +67,47 @@ func begin():
 	_slave.get_node('UI/Top/Status').set_text(\"Prostitute\")
 
 func next_action():
+	var new_action
+	var new_queued_action
+	
 	if _slave.queued_action:
 		_slave.action = _slave.queued_action
 		_slave.queued_action = null
 	elif _slave.bathroom > 60:
 		if _slave.location == _slave.quarters:
-			_slave.action = \"Bathroom\"
+			new_action = \"Bathroom\"
 		else:
 			_slave.destination = _slave.quarters
-			_slave.action = \"Travel\"
-			_slave.queued_action = \"Bathroom\"
+			new_action = \"Travel\"
+			new_queued_action = \"Bathroom\"
 	elif _slave.hunger > 50:
 		var nutrition_system = ArcUtils.get_nutrition_system()
 		if _slave.location == nutrition_system:
-			_slave.action = \"Eating\"
+			new_action = \"Eating\"
 		else:
 			_slave.destination = nutrition_system
-			_slave.action = \"Travel\"
-			_slave.queued_action = \"Eating\"
+			new_action = \"Travel\"
+			new_queued_action = \"Eating\"
 	elif _slave.fatigue > 70:
 		if _slave.location == _slave.quarters:
-			_slave.action = \"Sleeping\"
+			new_action = \"Sleeping\"
 		else:
 			_slave.destination = _slave.quarters
-			_slave.action = \"Travel\"
-			_slave.queued_action = \"Sleeping\"
+			new_action = \"Travel\"
+			new_queued_action = \"Sleeping\"
 	elif _slave.arousal > 90:
-		_slave.action = \"Masturbation\"
+		new_action = \"Masturbation\"
 	else:
-		_slave.action = \"Awaiting customer\"
-		_slave.queued_action = \"Servicing customer\"
+		new_action = \"Awaiting customer\"
+		new_queued_action = \"Servicing customer\"
+	
+	if new_action:
+		_slave.action = _slave.get_node('Actions/'+new_action)
+	if new_queued_action:
+		_slave.queued_action = _slave.get_node('Actions/'+new_queued_action)
 "
 
 [sub_resource type="GDScript" id=3]
-script/source = "extends Node
-
-onready var _slave = owner
-
-func tick():
-	pass
-"
-
-[sub_resource type="GDScript" id=4]
 script/source = "extends Node
 
 onready var _slave = owner
@@ -129,12 +139,12 @@ func step():
 
 func end():
 	current_time = 0
-	_slave.get_node('Scripts/Assignments/'+_slave.assignment).next_action()
+	_slave.get_node('Assignments/'+_slave.assignment).next_action()
 	_slave.get_node('UI/Activity/Time').set_text(\"Done\")
 	_slave.get_node('UI/Activity/Action').set_text(\"\")
 "
 
-[sub_resource type="GDScript" id=5]
+[sub_resource type="GDScript" id=4]
 script/source = "extends Node
 
 onready var _slave = owner
@@ -215,12 +225,12 @@ func step():
 func end():
 	current_time = 0
 	_slave.is_awake = true
-	_slave.get_node('Scripts/Assignments/'+_slave.assignment).next_action()
+	_slave.get_node('Assignments/'+_slave.assignment).next_action()
 	_slave.get_node('UI/Activity/Time').set_text(\"Done\")
 	_slave.get_node('UI/Activity/Action').set_text(\"\")
 "
 
-[sub_resource type="GDScript" id=6]
+[sub_resource type="GDScript" id=5]
 script/source = "extends Node
 
 onready var _slave = owner
@@ -261,7 +271,7 @@ func tick():
 		_slave._action_ended()
 "
 
-[sub_resource type="GDScript" id=7]
+[sub_resource type="GDScript" id=6]
 script/source = "extends Node
 
 onready var _slave = owner
@@ -301,7 +311,7 @@ func tick():
 		_slave._action_ended()
 "
 
-[sub_resource type="GDScript" id=8]
+[sub_resource type="GDScript" id=7]
 script/source = "extends Node
 
 onready var _slave = owner
@@ -341,7 +351,7 @@ func tick():
 		_slave._action_ended()
 "
 
-[sub_resource type="GDScript" id=9]
+[sub_resource type="GDScript" id=8]
 script/source = "extends Node
 
 onready var _slave = owner
@@ -364,7 +374,7 @@ func start():
 
 func step():
 	current_time += 1 * time.scale
-	if _slave.arousal <= 90:  #anticipation
+	if _slave.arousal <= 90:
 		var overstep = 1
 		if total_time - current_time < 0:
 			overstep = time.scale / abs(total_time-current_time)
@@ -380,7 +390,7 @@ func tick():
 	else:
 		current_time = 0
 		_slave.destination = random_sector_test()
-		_slave.action = \"Travel\"
+		_slave.action = _slave.get_node('Actions/Travel')
 
 func random_sector_test():
 	var terras = [\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\",\"H\",\"I\",\"J\",\"K\",\"L\"]
@@ -393,7 +403,7 @@ func random_sector_test():
 	return terra+str(sector)
 "
 
-[sub_resource type="GDScript" id=10]
+[sub_resource type="GDScript" id=9]
 script/source = "extends Node
 
 onready var _slave = owner
@@ -414,6 +424,22 @@ func start():
 	display_action()
 	step()
 
+func end():
+	current_time = 0
+	game.update_money(abs(math.gaussian(50,20)))
+	if dice.roll(3) == 0:
+		_slave.inseminate()
+	if dice.roll(12) == 0 and dice.roll(8) == 0:
+		var damage = clamp(abs(math.gaussian(1,2)),1,5)
+		var starting_health = _slave.health
+		_slave.health -= damage
+		var damage_actual = starting_health - _slave.health
+		NAVI.say(
+			_slave.name+
+			\" took \"+str(damage_actual)+\" damage\"+
+			\" while servicing a customer\")
+	_slave._action_ended()
+
 func step():
 	current_time += 1 * time.scale
 	if _slave.arousal > 0:    #satisfaction
@@ -430,9 +456,24 @@ func tick():
 	elif current_time < total_time:
 		step()
 	else:
-		current_time = 0
-		game.update_money(abs(math.gaussian(50,20)))
-		_slave._action_ended()
+		end()
+"
+
+[sub_resource type="GDScript" id=10]
+script/source = "extends Node
+
+func activate(node,_signal=\"minute\"):
+	if not time.is_connected(_signal,node,_signal):
+		time.connect(_signal,node,_signal)
+
+func deactivate(node,_signal=\"minute\"):
+	if time.is_connected(_signal,node,_signal):
+		time.disconnect(_signal,node,_signal)
+
+func deactivate_all():
+	for node in get_children():
+		if node.has_method(\"deactivate\"):
+			node.deactivate()
 "
 
 [sub_resource type="GDScript" id=11]
@@ -440,10 +481,21 @@ script/source = "extends Node
 
 onready var _slave = owner
 
-var active = true
+func _ready():
+	if not _slave.for_sale:
+		time.connect(\"minute\",self,\"minute\")
 
-func tick():
-	pass
+func deactivate():
+	if time.is_connected(\"tick\",self,\"tick\"):
+		time.disconnect(\"tick\",self,\"tick\")
+
+func minute():
+	if _slave.health > 100:
+		if not _slave.regimen.has(\"Preventatives\"):
+			_slave.health -= 0.0002
+	
+	
+	
 #	if s.health < 200:
 #		s.health += 1
 	
@@ -505,14 +557,20 @@ script/source = "extends Node
 
 onready var _slave = owner
 
-var active = true
+func _ready():
+	if not _slave.for_sale:
+		time.connect(\"tick\",self,\"tick\")
+
+func deactivate():
+	if time.is_connected(\"tick\",self,\"tick\"):
+		time.disconnect(\"tick\",self,\"tick\")
 
 func tick():
 	if _slave.is_awake:
 		if _slave.fatigue < 80:
-			_slave.fatigue += 0.0014
+			_slave.fatigue += 0.0014 * time.scale
 		elif _slave.fatigue < 100:
-			_slave.fatigue += 0.0007
+			_slave.fatigue += 0.0007 * time.scale
 "
 
 [sub_resource type="GDScript" id=13]
@@ -520,14 +578,20 @@ script/source = "extends Node
 
 onready var _slave = owner
 
-var active = true
+func _ready():
+	if not _slave.for_sale:
+		time.connect(\"tick\",self,\"tick\")
+
+func deactivate():
+	if time.is_connected(\"tick\",self,\"tick\"):
+		time.disconnect(\"tick\",self,\"tick\")
 
 func tick():
 	if _slave.hunger < 100:
 		if _slave.is_awake:
-			_slave.hunger += 0.0018
+			_slave.hunger += 0.0018 * time.scale
 		else:
-			_slave.hunger += 0.0014
+			_slave.hunger += 0.0014 * time.scale
 "
 
 [sub_resource type="GDScript" id=14]
@@ -535,14 +599,20 @@ script/source = "extends Node
 
 onready var _slave = owner
 
-var active = true
+func _ready():
+	if not _slave.for_sale:
+		time.connect(\"tick\",self,\"tick\")
+
+func deactivate():
+	if time.is_connected(\"tick\",self,\"tick\"):
+		time.disconnect(\"tick\",self,\"tick\")
 
 func tick():
 	if _slave.bathroom < 100:
 		if _slave.is_awake:
-			_slave.bathroom += 0.0036
+			_slave.bathroom += 0.0036 * time.scale
 		else:
-			_slave.bathroom += 0.0026
+			_slave.bathroom += 0.0026 * time.scale
 "
 
 [sub_resource type="GDScript" id=15]
@@ -550,187 +620,158 @@ script/source = "extends Node
 
 onready var _slave = owner
 
-var active = true
+func _ready():
+	if not _slave.for_sale:
+		time.connect(\"tick\",self,\"tick\")
+
+func deactivate():
+	if time.is_connected(\"tick\",self,\"tick\"):
+		time.disconnect(\"tick\",self,\"tick\")
 
 func tick():
 	if _slave.arousal < 100:
 		if _slave.libido < 25:
-			_slave.arousal += 0.0004
+			_slave.arousal += 0.0004 * time.scale
 		elif _slave.libido < 50:
-			_slave.arousal += 0.0005
+			_slave.arousal += 0.0005 * time.scale
 		elif _slave.libido < 75:
-			_slave.arousal += 0.0006
+			_slave.arousal += 0.0006 * time.scale
 		elif _slave.libido < 125:
-			_slave.arousal += 0.0007
+			_slave.arousal += 0.0007 * time.scale
 		elif _slave.libido < 150:
-			_slave.arousal += 0.0008
+			_slave.arousal += 0.0008 * time.scale
 		elif _slave.libido < 175:
-			_slave.arousal += 0.0009
+			_slave.arousal += 0.0009 * time.scale
 		elif _slave.libido >= 175:
-			_slave.arousal += 0.001
+			_slave.arousal += 0.001 * time.scale
 "
 
-[sub_resource type="GDScript" id=16]
-script/source = "extends Node
-
-var active
-
-func _ready():
-	# Called when the node is added to the scene for the first time.
-	# Initialization here
-	pass
-
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
-"
+[sub_resource type="Curve" id=16]
+_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 1, 1 ), 0.0, 0.0, 0, 0 ]
 
 [sub_resource type="GDScript" id=17]
 script/source = "extends Node
 
-var active
-
-func _ready():
-	# Called when the node is added to the scene for the first time.
-	# Initialization here
-	pass
-
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
+func deactivate():
+	for node in get_children():
+		if node.has_method(\"deactivate\"):
+			node.deactivate()
 "
 
 [sub_resource type="GDScript" id=18]
 script/source = "extends Node
 
-var active
-
-func _ready():
-	# Called when the node is added to the scene for the first time.
-	# Initialization here
-	pass
-
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
+func deactivate():
+	for node in get_children():
+		if node.has_method(\"deactivate\"):
+			node.deactivate()
 "
 
 [sub_resource type="GDScript" id=19]
 script/source = "extends Node
 
-var active
+func tick():
+	print(\"ticking \",name)
 
-func _ready():
-	# Called when the node is added to the scene for the first time.
-	# Initialization here
+func minute():
 	pass
-
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
 "
 
 [sub_resource type="GDScript" id=20]
 script/source = "extends Node
 
-var active
+func tick():
+	print(\"ticking \",name)
 
-func _ready():
-	# Called when the node is added to the scene for the first time.
-	# Initialization here
+func minute():
 	pass
-
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
 "
 
 [sub_resource type="GDScript" id=21]
 script/source = "extends Node
 
-var active
+func tick():
+	print(\"ticking \",name)
 
-func _ready():
-	# Called when the node is added to the scene for the first time.
-	# Initialization here
+func minute():
 	pass
-
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
 "
 
 [sub_resource type="GDScript" id=22]
 script/source = "extends Node
 
-var active
+func tick():
+	print(\"ticking \",name)
 
-func _ready():
-	# Called when the node is added to the scene for the first time.
-	# Initialization here
+func minute():
 	pass
-
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
 "
 
 [sub_resource type="GDScript" id=23]
 script/source = "extends Node
 
-var active
+func tick():
+	print(\"ticking \",name)
 
-func _ready():
-	# Called when the node is added to the scene for the first time.
-	# Initialization here
+func minute():
 	pass
-
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
 "
 
 [sub_resource type="GDScript" id=24]
 script/source = "extends Node
 
-var active
+func tick():
+	print(\"ticking \",name)
 
-func _ready():
-	# Called when the node is added to the scene for the first time.
-	# Initialization here
+func minute():
 	pass
-
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
 "
 
 [sub_resource type="GDScript" id=25]
 script/source = "extends Node
 
-var active
+func tick():
+	print(\"ticking \",name)
 
-func _ready():
-	# Called when the node is added to the scene for the first time.
-	# Initialization here
+func minute():
 	pass
-
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
 "
 
 [sub_resource type="GDScript" id=26]
+script/source = "extends Node
+
+func tick():
+	print(\"ticking \",name)
+
+func minute():
+	return
+	print(\"MINUTE!!1 - \",name)
+"
+
+[sub_resource type="GDScript" id=27]
+script/source = "extends Node
+
+onready var _slave = owner
+
+func minute():
+	if _slave.regimen.has(\"Curatives\"):
+		if _slave.assignment == \"Resting\":
+			_slave.health += 0.002
+		else:
+			_slave.health += 0.0006
+"
+
+[sub_resource type="GDScript" id=28]
+script/source = "extends Node
+
+func tick():
+	print(\"ticking \",name)
+
+func minute():
+	print(\"MINUTE!!1 - \",name)
+"
+
+[sub_resource type="GDScript" id=29]
 script/source = "extends Node
 
 var active
@@ -746,7 +787,71 @@ func _ready():
 #	pass
 "
 
-[sub_resource type="GDScript" id=27]
+[sub_resource type="GDScript" id=30]
+script/source = "extends Node
+
+var active
+
+func _ready():
+	# Called when the node is added to the scene for the first time.
+	# Initialization here
+	pass
+
+#func _process(delta):
+#	# Called every frame. Delta is time since last frame.
+#	# Update game logic here.
+#	pass
+"
+
+[sub_resource type="GDScript" id=31]
+script/source = "extends Node
+
+var active
+
+func _ready():
+	# Called when the node is added to the scene for the first time.
+	# Initialization here
+	pass
+
+#func _process(delta):
+#	# Called every frame. Delta is time since last frame.
+#	# Update game logic here.
+#	pass
+"
+
+[sub_resource type="GDScript" id=32]
+script/source = "extends Node
+
+var active
+
+func _ready():
+	# Called when the node is added to the scene for the first time.
+	# Initialization here
+	pass
+
+#func _process(delta):
+#	# Called every frame. Delta is time since last frame.
+#	# Update game logic here.
+#	pass
+"
+
+[sub_resource type="GDScript" id=33]
+script/source = "extends Node
+
+var active
+
+func _ready():
+	# Called when the node is added to the scene for the first time.
+	# Initialization here
+	pass
+
+#func _process(delta):
+#	# Called every frame. Delta is time since last frame.
+#	# Update game logic here.
+#	pass
+"
+
+[sub_resource type="GDScript" id=34]
 script/source = "extends Node
 
 var active
@@ -782,143 +887,164 @@ script = ExtResource( 5 )
 
 [node name="UI" parent="." instance=ExtResource( 1 )]
 
-[node name="Scripts" type="Node" parent="."]
-
-[node name="Stats" type="Node" parent="Scripts"]
+[node name="Stats" type="Node" parent="."]
 script = ExtResource( 4 )
 
-[node name="Manager" type="Node" parent="Scripts"]
+[node name="Assignments" type="Node" parent="."]
 
-[node name="Assignments" type="Node" parent="Scripts"]
-
-[node name="Resting" type="Node" parent="Scripts/Assignments"]
+[node name="Resting" type="Node" parent="Assignments"]
 script = SubResource( 1 )
 
-[node name="Prostitute" type="Node" parent="Scripts/Assignments"]
+[node name="Prostitute" type="Node" parent="Assignments"]
 script = SubResource( 2 )
 
-[node name="Confinement" type="Node" parent="Scripts/Assignments"]
+[node name="Confinement" type="Node" parent="Assignments"]
 
-[node name="Classes" type="Node" parent="Scripts/Assignments"]
+[node name="Classes" type="Node" parent="Assignments"]
 
-[node name="House Servant" type="Node" parent="Scripts/Assignments"]
+[node name="House Servant" type="Node" parent="Assignments"]
 
-[node name="Pet" type="Node" parent="Scripts/Assignments"]
+[node name="Pet" type="Node" parent="Assignments"]
 
-[node name="Escort" type="Node" parent="Scripts/Assignments"]
+[node name="Escort" type="Node" parent="Assignments"]
 
-[node name="Public Servant" type="Node" parent="Scripts/Assignments"]
+[node name="Public Servant" type="Node" parent="Assignments"]
 
-[node name="Subordinate Assistant" type="Node" parent="Scripts/Assignments"]
+[node name="Subordinate Assistant" type="Node" parent="Assignments"]
 
-[node name="Subordinate Slave" type="Node" parent="Scripts/Assignments"]
+[node name="Subordinate Slave" type="Node" parent="Assignments"]
 
-[node name="Glory Hole" type="Node" parent="Scripts/Assignments"]
+[node name="Glory Hole" type="Node" parent="Assignments"]
 
-[node name="Sex Arcade" type="Node" parent="Scripts/Assignments"]
+[node name="Sex Arcade" type="Node" parent="Assignments"]
 
-[node name="Club Entertainer" type="Node" parent="Scripts/Assignments"]
+[node name="Club Entertainer" type="Node" parent="Assignments"]
 
-[node name="Office Toy" type="Node" parent="Scripts/Assignments"]
+[node name="Office Toy" type="Node" parent="Assignments"]
 
-[node name="Office Ornament" type="Node" parent="Scripts/Assignments"]
+[node name="Office Ornament" type="Node" parent="Assignments"]
 
-[node name="Arcology Toy" type="Node" parent="Scripts/Assignments"]
+[node name="Arcology Toy" type="Node" parent="Assignments"]
 
-[node name="Arcology Ornament" type="Node" parent="Scripts/Assignments"]
+[node name="Arcology Ornament" type="Node" parent="Assignments"]
 
-[node name="Fluid Extraction" type="Node" parent="Scripts/Assignments"]
+[node name="Fluid Extraction" type="Node" parent="Assignments"]
 
-[node name="Actions" type="Node" parent="Scripts"]
+[node name="Actions" type="Node" parent="."]
 
-[node name="None" type="Node" parent="Scripts/Actions"]
+[node name="Idle" type="Node" parent="Actions"]
 script = SubResource( 3 )
 
-[node name="Idle" type="Node" parent="Scripts/Actions"]
-script = SubResource( 4 )
-
-[node name="Travel" type="Node" parent="Scripts/Actions"]
+[node name="Travel" type="Node" parent="Actions"]
 script = ExtResource( 74 )
 
-[node name="Sleeping" type="Node" parent="Scripts/Actions"]
+[node name="Sleeping" type="Node" parent="Actions"]
+script = SubResource( 4 )
+
+[node name="Eating" type="Node" parent="Actions"]
 script = SubResource( 5 )
 
-[node name="Eating" type="Node" parent="Scripts/Actions"]
+[node name="Bathroom" type="Node" parent="Actions"]
 script = SubResource( 6 )
 
-[node name="Bathroom" type="Node" parent="Scripts/Actions"]
+[node name="Bathing" type="Node" parent="Actions"]
+
+[node name="Masturbation" type="Node" parent="Actions"]
 script = SubResource( 7 )
 
-[node name="Bathing" type="Node" parent="Scripts/Actions"]
-
-[node name="Masturbation" type="Node" parent="Scripts/Actions"]
+[node name="Awaiting customer" type="Node" parent="Actions"]
 script = SubResource( 8 )
 
-[node name="Awaiting customer" type="Node" parent="Scripts/Actions"]
+[node name="Servicing customer" type="Node" parent="Actions"]
 script = SubResource( 9 )
 
-[node name="Servicing customer" type="Node" parent="Scripts/Actions"]
+[node name="Effects" type="Node" parent="."]
 script = SubResource( 10 )
 
-[node name="Rules" type="Node" parent="Scripts"]
-
-[node name="preset rules 1" type="Node" parent="Scripts/Rules"]
-
-[node name="preset rules 2" type="Node" parent="Scripts/Rules"]
-
-[node name="preset rules 3" type="Node" parent="Scripts/Rules"]
-
-[node name="preset rules 4" type="Node" parent="Scripts/Rules"]
-
-[node name="Effects" type="Node" parent="Scripts"]
-
-[node name="Health" type="Node" parent="Scripts/Effects"]
+[node name="Health" type="Node" parent="Effects"]
 script = SubResource( 11 )
 
-[node name="Fatigue" type="Node" parent="Scripts/Effects"]
+[node name="Fatigue" type="Node" parent="Effects"]
 script = SubResource( 12 )
 
-[node name="Hunger" type="Node" parent="Scripts/Effects"]
+[node name="Hunger" type="Node" parent="Effects"]
 script = SubResource( 13 )
 
-[node name="Bathroom" type="Node" parent="Scripts/Effects"]
+[node name="Bathroom" type="Node" parent="Effects"]
 script = SubResource( 14 )
 
-[node name="Arousal" type="Node" parent="Scripts/Effects"]
+[node name="Arousal" type="Node" parent="Effects"]
 script = SubResource( 15 )
 
-[node name="Drugs" type="Node" parent="Scripts/Effects"]
-script = SubResource( 16 )
+[node name="Pregnancy" type="Node" parent="Effects"]
+script = ExtResource( 6 )
+belly_size = SubResource( 16 )
 
-[node name="Curatives" type="Node" parent="Scripts/Effects"]
+[node name="Regimen" type="Node" parent="Effects"]
 script = SubResource( 17 )
 
-[node name="Preventatives" type="Node" parent="Scripts/Effects"]
+[node name="Pharmaceuticals" type="Node" parent="Effects/Regimen"]
 script = SubResource( 18 )
 
-[node name="Aphrodisiacs" type="Node" parent="Scripts/Effects"]
+[node name="Psychosuppressants" type="Node" parent="Effects/Regimen/Pharmaceuticals"]
 script = SubResource( 19 )
 
-[node name="Hormones" type="Node" parent="Scripts/Effects"]
+[node name="BreastGrowth" type="Node" parent="Effects/Regimen/Pharmaceuticals"]
 script = SubResource( 20 )
 
-[node name="Diet" type="Node" parent="Scripts/Effects"]
+[node name="ButtocksGrowth" type="Node" parent="Effects/Regimen/Pharmaceuticals"]
 script = SubResource( 21 )
 
-[node name="Living Standard" type="Node" parent="Scripts/Effects"]
+[node name="PenisClitGrowth" type="Node" parent="Effects/Regimen/Pharmaceuticals"]
 script = SubResource( 22 )
 
-[node name="Rules" type="Node" parent="Scripts/Effects"]
+[node name="LipGrowth" type="Node" parent="Effects/Regimen/Pharmaceuticals"]
 script = SubResource( 23 )
 
-[node name="Orgasm Rules" type="Node" parent="Scripts/Effects"]
+[node name="Steroids" type="Node" parent="Effects/Regimen/Pharmaceuticals"]
 script = SubResource( 24 )
 
-[node name="Speech Rules" type="Node" parent="Scripts/Effects"]
+[node name="FertilityEnhancers" type="Node" parent="Effects/Regimen/Pharmaceuticals"]
 script = SubResource( 25 )
 
-[node name="Relationship Rules" type="Node" parent="Scripts/Effects"]
+[node name="Preventatives" type="Node" parent="Effects/Regimen"]
 script = SubResource( 26 )
 
-[node name="Smart Piercing" type="Node" parent="Scripts/Effects"]
+[node name="Curatives" type="Node" parent="Effects/Regimen"]
 script = SubResource( 27 )
+
+[node name="Contraception" type="Node" parent="Effects/Regimen"]
+script = SubResource( 27 )
+
+[node name="Diet" type="Node" parent="Effects/Regimen"]
+script = ExtResource( 7 )
+
+[node name="Hormones" type="Node" parent="Effects/Regimen"]
+script = ExtResource( 8 )
+
+[node name="Aphrodisiacs" type="Node" parent="Effects/Regimen"]
+script = SubResource( 28 )
+
+[node name="Living Standard" type="Node" parent="Effects"]
+script = SubResource( 29 )
+
+[node name="Rules" type="Node" parent="Effects"]
+script = SubResource( 30 )
+
+[node name="Orgasm Rules" type="Node" parent="Effects"]
+script = SubResource( 31 )
+
+[node name="Speech Rules" type="Node" parent="Effects"]
+script = SubResource( 32 )
+
+[node name="Relationship Rules" type="Node" parent="Effects"]
+script = SubResource( 33 )
+
+[node name="Smart Piercing" type="Node" parent="Effects"]
+script = SubResource( 34 )
+
+[node name="Rules" type="Node" parent="."]
+
+[node name="Rule 1" type="Node" parent="Rules"]
+
+[node name="Rule 2" type="Node" parent="Rules"]

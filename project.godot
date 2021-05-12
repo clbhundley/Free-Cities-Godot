@@ -8,11 +8,6 @@
 
 config_version=4
 
-_global_script_classes=[  ]
-_global_script_class_icons={
-
-}
-
 [application]
 
 config/name="Free Cities"
@@ -31,6 +26,7 @@ time="*res://Globals/time.gd"
 game="*res://Globals/game.gd"
 ArcUtils="*res://Globals/ArcUtils.gd"
 SlaveUtils="*res://Globals/SlaveUtils.gd"
+NAVI="*res://Globals/NAVI.gd"
 
 [display]
 

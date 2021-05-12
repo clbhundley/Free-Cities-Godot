@@ -9,8 +9,16 @@ func get_owned_slaves():
 func slave_count(collection):
 	return get_slave_scene().get_node("Collections/"+collection).get_child_count()
 
+func update_owned_slaves():
+	for _slave in get_owned_slaves().get_children():
+		_slave.get_node("UI/StatsDisplay").refresh()
+		_slave.get_node("UI/Gauges").refresh()
+
+func uptate_examine_slave():
+	get_slave_scene().get_node("ExamineSlave").uptate_display()
+
 func reset_active_slaves_visibility():
-	var examine_slave = get_slave_scene().get_node("Examine Slave")
+	var examine_slave = get_slave_scene().get_node("ExamineSlave")
 	if not examine_slave.active:
 		return
 	get_slave_scene().get_node("Camera").show()
@@ -63,9 +71,9 @@ class SortByDevotion:
 
 class SortByLevel:
 	static func sort_ascending(a, b):
-		if a.get_level() < b.get_level():
+		if a.stats._level() < b.stats._level():
 			return true
-		elif a.get_level() == b.get_level():
+		elif a.stats._level() == b.stats._level():
 			if a.name < b.name:
 				return true
 		return false

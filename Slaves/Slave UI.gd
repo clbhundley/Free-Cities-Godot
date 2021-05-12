@@ -1,31 +1,28 @@
-extends Control
-
-onready var root = get_tree().get_root()
-onready var slaves = root.get_node("Game/Slaves")
-onready var _slave = owner
+extends "res://Slaves/Slave UI Input.gd"
 
 func _ready():
 	yield(_slave,"ready")
-	root.connect('size_changed',self,'resize')
+	get_tree().get_root().connect('size_changed',self,'resize')
 	if _slave.assignment == "Resting":
-		get_node("Panel/Buttons/Assignment")._select_int(0)
+		$Panel/Buttons/Assignment._select_int(0)
 	elif _slave.assignment == "Prostitute":
-		get_node("Panel/Buttons/Assignment")._select_int(1)
+		$Panel/Buttons/Assignment._select_int(1)
 	if _slave.for_sale:
-		get_node('Panel/Buttons').hide()
-		get_node('Panel/Selling Buttons').show()
-	for text in get_node("Stats Display").get_children():
+		$Panel/Buttons.hide()
+		$Panel/SellingButtons.show()
+	for text in $StatsDisplay.get_children():
 		text.set_stats()
-	get_node('Top/Name').set_text(_slave.name)
-	get_node('Top/Status').set_text(_slave.assignment)
-	get_node('../Scripts/Actions/'+_slave.action).display_action()
+	$Top/Name.set_text(_slave.name)
+	if _slave.health > 0:
+		$Top/Status.set_text(_slave.assignment)
+	_slave.action.display_action()
 	display_location()
 	set_level()
 	tracking()
 	resize()
 
 func set_level():
-	get_node('Top/Level').set_text(str(_slave.get_level()))
+	$Top/Level.set_text(str(_slave.stats._level()))
 
 func display_location():
 	var loc = _slave.location
@@ -65,7 +62,7 @@ func tracking(force=false):
 	if not is_visible_in_tree() and not force:
 		return
 	var position = _slave.get_translation()
-	var camera = root.get_camera()
+	var camera = get_tree().get_root().get_camera()
 	var projection = camera.unproject_position(position)
 	set_position(projection)
 
@@ -79,10 +76,10 @@ func resize(force=false):
 	rect_min_size = Vector2(max(baseline.x*scale_y,270),max(baseline.y*scale_y,420))
 	rect_size = Vector2(max(baseline.x*scale_y,270),max(baseline.y*scale_y,420))
 	#line and level using same custom font, only one resize needed
-	get_node("Top/Level").get('custom_fonts/font').size = max(scale_adjusted*2,24)
-	get_node("Top/Line").get('custom_fonts/font').size = max(scale_adjusted*2,24)
-	get_node("Top/Name").get('custom_fonts/font').size = max(scale_adjusted*1.5,18)
-	get_node("Top/Status").get('custom_fonts/font').size = max(scale_adjusted,12)
-	get_node("Stats Display/Basic").get('custom_fonts/normal_font').size = clamp(scale_adjusted,12,20)
-	get_node("Gauges/Upper/Health/Value").get('custom_fonts/font').size = scale_adjusted*1.2
+	$Top/Level.get('custom_fonts/font').size = max(scale_adjusted*2,24)
+	$Top/Line.get('custom_fonts/font').size = max(scale_adjusted*2,24)
+	$Top/Name.get('custom_fonts/font').size = max(scale_adjusted*1.5,18)
+	$Top/Status.get('custom_fonts/font').size = max(scale_adjusted,12)
+	$StatsDisplay/Basic.get('custom_fonts/normal_font').size = clamp(scale_adjusted,12,20)
+	$Gauges/Upper/Health/Value.get('custom_fonts/font').size = scale_adjusted*1.2
 	tracking()

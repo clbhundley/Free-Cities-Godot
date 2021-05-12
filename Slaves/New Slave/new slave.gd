@@ -3,7 +3,7 @@ extends Node
 var region = "Asia"
 
 
-func new(preset=null,selling=false):
+func new(preset=null,for_sale=false):
 	randomize()
 	
 	var _slave = load('res://Slaves/Slave.tscn').instance()
@@ -12,7 +12,7 @@ func new(preset=null,selling=false):
 		_slave.ethnicity = _ethnicity(region)
 	var presets = load('res://Slaves/New Slave/Presets/%s.gd'%preset).presets()
 	
-	_slave.for_sale = selling
+	_slave.for_sale = for_sale
 	
 	if preset:
 		for setting in presets.keys():
@@ -49,7 +49,12 @@ func new(preset=null,selling=false):
 		#_slave.penis = true
 		_slave.penis_size = traits['penis_size']
 		_slave.testicles_size = 1
-	
+	if not _slave.fertility:
+		if dice.roll(12) == 0 and dice.roll(6) == 0:
+			_slave.fertility = 0
+		else:
+			_slave.fertility = randf()
+	_pregnancy(_slave)
 	if not _slave.skin_color:
 		_slave.skin_color = skin_color(traits)
 #	if not _slave.hair_color:
@@ -108,6 +113,20 @@ func new(preset=null,selling=false):
 	if not _slave.combat_skill:
 		_slave.combat_skill = abs(math.gaussian(10,25))
 	
+	if _slave.gender == "Female" or _slave.gender == "Trans male":
+		_slave.regimen.append("Contraception")
+	_slave.diet = "Healthy"
+	_slave.diet_base = "Normal"
+	
+	_slave.wardrobe["choosing"] = "none"
+	_slave.wardrobe["clothing"] = {}
+	for i in ["outfit","shirt","pants","shoes"]:
+		_slave.wardrobe["clothing"][i] = null
+	_slave.wardrobe["clothing"]["outfit"] = "Nude"
+	_slave.wardrobe["accessories"] = {}
+	for i in ["head","face","neck","arms","torso","genitals","legs"]:
+		_slave.wardrobe["accessories"][i] = "None"
+	
 	#force gauged values to below 100. should not be needed if slave is generated properly
 	var gauges = ['happiness','arousal','fatigue','hunger','bathroom']
 	for value in gauges:
@@ -117,13 +136,13 @@ func new(preset=null,selling=false):
 
 func _ethnicity(region):
 	var ethnicities = {
-			"Africa": ["Arabic", "Ethiopian", "Egyptian"],
-			"Asia": ["Korean", "Japanese", "Chinese", "Indian"],
-			"Australia": ["British", "Italian", "Vietnamese"],
-			"Europe": ["British", "French", "German", "Italian", "Spanish", "Russian", "Turkish"],
-			"Middle East": ["Egyptian", "Iranian", "Saudi", "Turkish"],
-			"North America": ["British", "French", "German", "Italian", "Spanish", "Korean", "Japanese", "Chinese", "Indian", "Mexican"],
-			"South America": ["Brazilian", "Colombian", "Mexican", "Latina"]}
+		"Africa": ["Arabic", "Ethiopian", "Egyptian"],
+		"Asia": ["Korean", "Japanese", "Chinese", "Indian"],
+		"Australia": ["British", "Italian", "Vietnamese"],
+		"Europe": ["British", "French", "German", "Italian", "Spanish", "Russian", "Turkish"],
+		"Middle East": ["Egyptian", "Iranian", "Saudi", "Turkish"],
+		"North America": ["British", "French", "German", "Italian", "Spanish", "Korean", "Japanese", "Chinese", "Indian", "Mexican"],
+		"South America": ["Brazilian", "Colombian", "Mexican", "Latina"]}
 	return ethnicities[region][randi()%ethnicities[region].size()]
 
 func skin_color(traits):
@@ -179,6 +198,47 @@ func _gender():
 			return "Male"
 		else:
 			return "Intersex"
+
+#aiming for 37 to 42 weeks
+func _pregnancy(_slave):
+	if _slave.gender != "Female" and _slave.gender != "Trans male":
+		return
+	if _slave.gender == "Female":
+		if dice.roll(8) != 0:
+			return
+	if _slave.gender == "Trans male":
+		if dice.roll(9) != 0 and dice.roll(3) != 0:
+			return
+	if randi()%100 < _slave.fertility * 100:
+		return
+	var weeks_pregnant = randi()%int(math.gaussian(39,1))
+	var conceived = time.get_reversed_time(
+		randi()%60,
+		randi()%60,
+		randi()%24,
+		randi()%7,
+		weeks_pregnant)
+	var weeks_forward = max(int(math.gaussian(39,1)),weeks_pregnant)-weeks_pregnant
+	var due = time.get_forward_time(
+		randi()%60,
+		randi()%60,
+		randi()%24,
+		randi()%7,
+		weeks_forward)
+	var babies = 1
+	if randi()%1000 == 0:
+		babies = 5
+	elif randi()%120 == 0:
+		babies = 4
+	elif randi()%60 == 0:
+		babies = 3
+	elif randi()%30 == 0:
+		babies = 2
+	_slave.pregnancy = {
+		"conceived":conceived,
+		"due":due,
+		"babies":babies}
+	#print(_slave.name," ",_slave.gender," ",JSON.print(_slave.pregnancy," "))
 
 func _voice(gender):
 	var accents = ["Ugly", "Cute", "Pretty", "Exotic"]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=72 format=2]
+[gd_scene load_steps=87 format=2]
 
 [ext_resource path="res://GUI/gui.gd" type="Script" id=1]
 [ext_resource path="res://GUI/Textures/chatline.png" type="Texture" id=2]
@@ -33,37 +33,750 @@
 [ext_resource path="res://GUI/Message.gd" type="Script" id=31]
 [ext_resource path="res://GUI/SidePanel.gd" type="Script" id=32]
 [ext_resource path="res://GUI/Time.gd" type="Script" id=33]
-[ext_resource path="res://GUI/GUI Input.gd" type="Script" id=34]
+[ext_resource path="res://GUI/TotalWeeks.gd" type="Script" id=34]
 [ext_resource path="res://GUI/Textures/arrow_left.svg" type="Texture" id=35]
 [ext_resource path="res://GUI/Textures/X.svg" type="Texture" id=36]
 [ext_resource path="res://GUI/Textures/ninepatch outline rounded 20px.png" type="Texture" id=37]
 [ext_resource path="res://Textures/circle.png" type="Texture" id=38]
+[ext_resource path="res://Fonts/Rubik-Light-28.tres" type="DynamicFont" id=39]
+[ext_resource path="res://GUI/Textures/edit button.svg" type="Texture" id=40]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends VBoxContainer
 
+onready var dock = owner.get_node(\"Dock\")
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = \"text\"
+func _on_Regimen_pressed():
+	dock.set_mode(\"Regimen\")
 
+func _on_Rules_pressed():
+	dock.set_mode(\"Rules\")
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+func _on_Wardrobe_pressed():
+	dock.set_mode(\"Wardrobe\")
 "
 
 [sub_resource type="DynamicFont" id=2]
-resource_name = "Rubik-Light"
 size = 20
 font_data = ExtResource( 3 )
 
 [sub_resource type="GDScript" id=3]
+script/source = "extends VBoxContainer
+
+onready var dock = owner.get_node(\"Dock\")
+
+var _slave
+
+func _ready():
+	connect_check_boxes()
+	set_side_effect_text(0)
+
+func refresh():
+	_on_Pharmaceuticals_toggled(false)
+	$Pharmaceuticals.pressed = false
+	_slave = get_slave()
+	if _slave:
+		load_settings(_slave)
+
+func get_slave():
+	var root = get_tree().get_root()
+	var examine_slave = root.get_node(\"Game/Slaves/ExamineSlave\")
+	return examine_slave.get(\"_slave\")
+
+onready var extension_panel = $Pharmaceuticals/ExtensionPanel/Panel
+func _on_Pharmaceuticals_toggled(button_pressed):
+	if button_pressed:
+		set_panel_mouse_filter(\"stop\")
+		get_parent().animate_extension_panel(extension_panel,\"open\")
+	else:
+		set_panel_mouse_filter(\"ignore\")
+		get_parent().animate_extension_panel(extension_panel,\"close\")
+
+func pharmaceutical_checked(button_pressed,button):
+	button.pressed = button_pressed
+	var effects = _slave.get_node(\"Effects\")
+	var selected_drug = button.get_parent().name
+	if button_pressed:
+		if not _slave.regimen.has(selected_drug):
+			_slave.regimen.append(selected_drug)
+	else:
+		_slave.regimen.erase(selected_drug)
+	match selected_drug:
+		\"Preventatives\",\"Curatives\",\"Contraception\":
+			var drug = effects.get_node(\"Regimen/\"+selected_drug)
+			if button_pressed:
+				effects.activate(drug)
+			else:
+				effects.deactivate(drug)
+		_:
+			var pharma = effects.get_node(\"Regimen/Pharmaceuticals\")
+			var selected_pharma
+			if pharma.has_node(selected_drug):
+				selected_pharma = pharma.get_node(selected_drug)
+			if button_pressed:
+				if selected_pharma:
+					effects.activate(selected_pharma)
+			else:
+				if selected_pharma:
+					effects.deactivate(selected_pharma)
+	set_side_effect_text(side_effect_risk())
+
+func _on_Diet_item_selected(index):
+	_slave.diet = $Diet/Selection.get_item_text(index)
+	_slave.get_node(\"Effects/Regimen/Diet\").selected = index
+
+func _on_DietBase_item_selected(index):
+	_slave.diet_base = $DietBase/Selection.get_item_text(index)
+
+func _on_Hormones_item_selected(index):
+	var hormone_types = [
+		\"HormonesFemale\",
+		\"HormonesFemaleIntensive\",
+		\"HormonesMale\",
+		\"HormonesMaleIntensive\"]
+	for _drug in hormone_types:
+		_slave.regimen.erase(_drug)
+	var effects = _slave.get_node(\"Effects\")
+	var hormones = effects.get_node(\"Regimen/Hormones\")
+	var drug
+	match index:
+		1:
+			drug = \"HormonesFemale\"
+		2:
+			drug = \"HormonesFemaleIntensive\"
+		3:
+			drug = \"HormonesMale\"
+		4:
+			drug = \"HormonesMaleIntensive\"
+	if index > 0:
+		effects.activate(hormones,\"hour\")
+		_slave.regimen.append(drug)
+	else:
+		effects.deactivate(hormones)
+	set_side_effect_text(side_effect_risk())
+	_slave.get_node(\"Effects/Regimen/Hormones\").selected = index
+
+func _on_Aphrodisiacs_item_selected(index):
+	for drug in [\"Aphrodisiacs\",\"AphrodisiacsHigh\",\"AphrodisiacsExtreme\"]:
+		_slave.regimen.erase(drug)
+	var effects = _slave.get_node(\"Effects\")
+	var aphrodisiacs = effects.get_node(\"Regimen/Aphrodisiacs\")
+	var drug
+	match index:
+		1:
+			drug = \"Aphrodisiacs\"
+		2:
+			drug = \"AphrodisiacsHigh\"
+		3:
+			drug = \"AphrodisiacsExtreme\"
+	if index > 0:
+		effects.activate(aphrodisiacs)
+		_slave.regimen.append(drug)
+	else:
+		effects.deactivate(aphrodisiacs)
+	set_side_effect_text(side_effect_risk())
+
+func side_effect_risk():
+	var risk = 0
+	risk += _slave.regimen.size()
+	var growth_drug_counter = 0
+	for drug in _slave.regimen:
+		if drug == \"Psychosuppressants\":
+			risk += 1
+		elif drug == \"Preventatives\" or drug == \"Contraception\":
+			risk -= 1
+		elif drug == \"HormonesMale\" or drug == \"HormonesFemale\":
+			risk -= 1
+		elif drug.ends_with(\"Intensive\"):
+			risk += 1
+		elif drug == \"Aphrodisiacs\" and _slave.regimen.size() == 1:
+			risk -= 1
+		elif drug == \"AphrodisiacsHigh\":
+			risk += 1
+		elif drug == \"AphrodisiacsExtreme\":
+			risk += 2
+		elif drug.ends_with(\"Growth\"):
+			growth_drug_counter += 1
+	if growth_drug_counter > 1:
+		risk += growth_drug_counter-1
+	return risk
+
+func set_side_effect_text(value):
+	var risk = [
+		\"[color=#0e8c00]None[/color]\",
+		\"[color=#7a8c00]Very Low[/color]\",
+		\"[color=#c8a500]Low[/color]\",
+		\"[color=#c88c00]Moderate[/color]\",
+		\"[color=#c85f00]High\",
+		\"[color=#c80000]Very High[/color]\",
+		\"[color=#860000]Extreme[/color]\"]
+	$Risk.parse_bbcode(\"Risk of side effects: \"+risk[min(value,risk.size()-1)])
+
+func load_settings(selected_slave):
+	_slave = selected_slave
+	var regimen = _slave.regimen
+	if [\"Male\",\"Trans female\"].has(_slave.gender) or _slave.pregnancy:
+		$Contraception.hide()
+	else:
+		$Contraception.show()
+	if regimen.has(\"Preventatives\"):
+		pharmaceutical_checked(true,$Health/Hbox/Preventatives/CheckBox)
+	else:
+		pharmaceutical_checked(false,$Health/Hbox/Preventatives/CheckBox)
+	if regimen.has(\"Curatives\"):
+		pharmaceutical_checked(true,$Health/Hbox/Curatives/CheckBox)
+	else:
+		pharmaceutical_checked(false,$Health/Hbox/Curatives/CheckBox)
+	if regimen.has(\"Contraception\"):
+		pharmaceutical_checked(true,$Contraception/CheckBox)
+	else:
+		pharmaceutical_checked(false,$Contraception/CheckBox)
+	for item in $Diet/Selection.get_item_count():
+		if $Diet/Selection.get_item_text(item) == _slave.diet:
+			$Diet/Selection.select(item)
+			_on_Diet_item_selected(item) #both needed?
+	for item in $DietBase/Selection.get_item_count():
+		if $DietBase/Selection.get_item_text(item) == _slave.diet_base:
+			$DietBase/Selection.select(item)
+	var hormones_selection
+	if regimen.has(\"HormonesFemale\"):
+		hormones_selection = 1
+	elif regimen.has(\"HormonesFemaleIntensive\"):
+		hormones_selection = 2
+	elif regimen.has(\"HormonesMale\"):
+		hormones_selection = 3
+	elif regimen.has(\"HormonesMaleIntensive\"):
+		hormones_selection = 4
+	else:
+		hormones_selection = 0
+	$Hormones/Selection.select(hormones_selection)
+	_on_Hormones_item_selected(hormones_selection) #both needed?
+	if regimen.has(\"Aphrodisiacs\"):
+		$Aphrodisiacs/Selection.select(1)
+	elif regimen.has(\"AphrodisiacsHigh\"):
+		$Aphrodisiacs/Selection.select(2)
+	elif regimen.has(\"AphrodisiacsExtreme\"):
+		$Aphrodisiacs/Selection.select(3)
+	else:
+		$Aphrodisiacs/Selection.select(0)
+	var pharma = extension_panel.get_node(\"VBox\")
+	for drug in pharma.get_children():
+		var check_box = pharma.get_node(drug.name+\"/CheckBox\")
+		if regimen.has(drug.name):
+			pharmaceutical_checked(true,check_box)
+		else:
+			pharmaceutical_checked(false,check_box)
+
+func connect_check_boxes():
+	var check_boxes = [
+	$Health/Hbox/Preventatives/CheckBox,
+	$Health/Hbox/Curatives/CheckBox,
+	$Contraception/CheckBox]
+	for button in check_boxes:
+		button.connect(\"toggled\",self,\"pharmaceutical_checked\",[button])
+	var pharma_panel = $Pharmaceuticals/ExtensionPanel/Panel/VBox
+	for option in pharma_panel.get_children():
+		for button in option.get_children():
+			if button is CheckBox:
+				button.connect(\"toggled\",self,\"pharmaceutical_checked\",[button])
+
+func set_panel_mouse_filter(mode):
+	var filter
+	if mode == \"stop\":
+		filter = Control.MOUSE_FILTER_STOP
+	elif mode == \"ignore\":
+		filter = Control.MOUSE_FILTER_IGNORE
+	extension_panel.mouse_filter = filter
+	for container in extension_panel.get_node(\"VBox\").get_children():
+		for node in container.get_children():
+			if node is CheckBox:
+				node.mouse_filter = filter
+
+func resize():
+	if not is_visible_in_tree():
+		return
+	yield(get_tree(),\"idle_frame\")
+	get_parent().position_extension_panel($Pharmaceuticals,extension_panel)
+"
+
+[sub_resource type="DynamicFont" id=4]
+size = 24
+font_data = ExtResource( 3 )
+
+[sub_resource type="GDScript" id=5]
+script/source = "extends VBoxContainer
+
+onready var clothing_panel = $Clothing/ExtensionPanel/Panel
+onready var accessories_panel = $Accessories/ExtensionPanel/Panel
+
+onready var outfit = clothing_panel.get_node(\"VBox/Outfit\")
+onready var outfit_button = outfit.get_node(\"Selection\")
+onready var outfit_popup_a = outfit_button.get_node(\"PopupMenuA\")
+onready var outfit_popup_b = outfit_button.get_node(\"PopupMenuB\")
+
+onready var shirt_button = clothing_panel.get_node(\"VBox/Shirt/Selection\")
+onready var pants_button = clothing_panel.get_node(\"VBox/Pants/Selection\")
+onready var shoes_button = clothing_panel.get_node(\"VBox/Shoes/Selection\")
+
+onready var edit_popup = $EditPopup/PopupPanel
+
+var _slave
+
+func _ready():
+	connect_edit_buttons()
+	connect_accessories_buttons()
+	edit_popup.connect(\"popup_hide\",self,\"popup_close\")
+
+func refresh():
+	_on_Clothing_toggled(false)
+	$Clothing.pressed = false
+	_on_Accessories_toggled(false)
+	$Accessories.pressed = false
+	_slave = get_slave()
+	if _slave:
+		load_settings(_slave)
+
+func get_slave():
+	var root = get_tree().get_root()
+	var examine_slave = root.get_node(\"Game/Slaves/ExamineSlave\")
+	return examine_slave.get(\"_slave\")
+
+func edit_pressed(button):
+	var button_pos = button.rect_global_position
+	var option = button.get_parent().name
+	edit_popup.rect_global_position = button_pos + Vector2(36,-1)
+	build_menu()
+
+func _on_Clothing_toggled(button_pressed):
+	if button_pressed:
+		_on_Accessories_toggled(false)
+		$Accessories.pressed = false
+		$Accessories/ExtensionPanel.z_index = -2
+		$Clothing/ExtensionPanel.z_index = -1
+		set_panel_mouse_filter(clothing_panel,\"stop\")
+		get_parent().animate_extension_panel(clothing_panel,\"open\")
+	else:
+		set_panel_mouse_filter(clothing_panel,\"ignore\")
+		get_parent().animate_extension_panel(clothing_panel,\"close\")
+
+func _on_Accessories_toggled(button_pressed):
+	if button_pressed:
+		_on_Clothing_toggled(false)
+		$Clothing.pressed = false
+		$Clothing/ExtensionPanel.z_index = -2
+		$Accessories/ExtensionPanel.z_index = -1
+		set_panel_mouse_filter(accessories_panel,\"stop\")
+		get_parent().animate_extension_panel(accessories_panel,\"open\")
+	else:
+		set_panel_mouse_filter(accessories_panel,\"ignore\")
+		get_parent().animate_extension_panel(accessories_panel,\"close\")
+
+func accessory_selected(index,type):
+	var accessory = accessories_panel.get_node(
+		\"VBox/\"+type.capitalize()+\"/Selection\")
+	_slave.wardrobe[\"accessories\"][type] = accessory.get_item_text(index)
+
+func set_panel_mouse_filter(extension_panel,mode):
+	var filter
+	if mode == \"stop\":
+		filter = Control.MOUSE_FILTER_STOP
+	elif mode == \"ignore\":
+		filter = Control.MOUSE_FILTER_IGNORE
+	extension_panel.mouse_filter = filter
+	for container in extension_panel.get_node(\"VBox\").get_children():
+		for node in container.get_children():
+			if node is OptionButton:
+				node.mouse_filter = filter
+
+var item_edits = {
+	\"Color\":\"ColorPicker\",
+	\"Color2\":\"ColorPicker\",
+	\"Type\":[\"Type A1111111X\",\"Type B\"],
+	\"Size\":[\"Large22\",\"Medium22222222\",\"Small\"],
+	\"Color3\":\"ColorPicker\"}
+
+func build_menu():
+	var popup_options = edit_popup.get_node(\"Options\")
+	for option in item_edits:
+		var button
+		var entry = edit_popup.get_node(\"Item\").duplicate()
+		entry.get_node(\"Label\").set_text(option+\":\")
+		if typeof(item_edits[option]) == TYPE_STRING:
+			if item_edits[option] == \"ColorPicker\":
+				button = ColorPickerButton.new()
+				button.rect_min_size.x = 40
+				var color_picker = button.get_picker()
+				color_picker.edit_alpha = false
+				for child in color_picker.get_child_count():
+					var node = color_picker.get_child(child)
+					match child:
+						2,5,6,7:
+							node.hide()
+						1:
+							node.get_child(1).hint_tooltip = \"\"
+							node.get_child(1).set_self_modulate(\"00ffffff\")
+							node.get_child(1).disabled = true
+						3:
+							node.set_self_modulate(\"00ffffff\")
+						4:
+							for _child in node.get_child_count():
+								match _child:
+									0,1,2,3:
+										node.get_child(_child).hide()
+									4:
+										node.get_child(4).get_child(0).hide()
+										node.get_child(4).get_child(1).hide()
+		elif typeof(item_edits[option]) == TYPE_ARRAY:
+			button = OptionButton.new()
+			var custom_font = load(\"res://Fonts/Rubik-Light-24.tres\")
+			button.set(\"custom_fonts/font\", custom_font)
+			button.size_flags_horizontal = SIZE_EXPAND_FILL
+			for item in item_edits[option]:
+				button.add_item(item)
+		if button is OptionButton:
+			var longest_item_text = 0
+			for item in button.get_item_count():
+				var item_text = button.get_item_text(item)
+				if item_text.length() > longest_item_text:
+					longest_item_text = item_text.length()
+					button.set_text(item_text)
+		entry.add_child(button)
+		entry.show()
+		popup_options.add_child(entry)
+	edit_popup.popup()
+	edit_popup.rect_size = edit_popup.rect_min_size
+	edit_popup.rect_size += Vector2(20,20)
+	popup_options.set_anchors_and_margins_preset(PRESET_CENTER)
+	for item in popup_options.get_children():
+		for button in item.get_children():
+			if button is OptionButton:
+				button.set_text(button.get_item_text(0))
+
+func popup_close():
+	for node in edit_popup.get_node(\"Options\").get_children():
+		edit_popup.get_node(\"Options\").remove_child(node)
+		node.queue_free()
+
+func load_settings(selected_slave):
+	var clothing_checkbox = $ChoosingClothing/CheckBox
+	var accessories_checkbox = $ChoosingAccessories/CheckBox
+	_slave = selected_slave
+	match _slave.wardrobe[\"choosing\"]:
+		\"all\":
+			clothing_checkbox.pressed = true
+			accessories_checkbox.pressed = true
+		\"clothing\":
+			clothing_checkbox.pressed = true
+			accessories_checkbox.pressed = false
+		\"accessories\":
+			clothing_checkbox.pressed = false
+			accessories_checkbox.pressed = true
+		\"none\":
+			clothing_checkbox.pressed = false
+			accessories_checkbox.pressed = false
+	outfit._load()
+	clothing_panel.get_node(\"VBox/Shirt\")._load()
+	clothing_panel.get_node(\"VBox/Pants\")._load()
+	clothing_panel.get_node(\"VBox/Shoes\")._load()
+	var accessories = _slave.wardrobe[\"accessories\"]
+	for type in $Accessories/ExtensionPanel/Panel/VBox.get_children():
+		var selection = type.get_node(\"Selection\")
+		for item in selection.get_item_count():
+			if selection.get_item_text(item) == accessories[type.name.to_lower()]:
+				selection.select(item)
+
+func connect_edit_buttons():
+	var clothing = $Clothing/ExtensionPanel/Panel/VBox
+	var acccessories = $Accessories/ExtensionPanel/Panel/VBox
+	for item in [clothing,acccessories]:
+		for option in item.get_children():
+			for button in option.get_children():
+				if button.name == \"Edit\":
+					button.connect(\"pressed\",self,\"edit_pressed\",[button])
+
+func connect_accessories_buttons():
+	var acccessories = $Accessories/ExtensionPanel/Panel/VBox
+	for option in acccessories.get_children():
+		var selection = option.get_node(\"Selection\")
+		selection.connect(
+			\"item_selected\",
+			self,
+			\"accessory_selected\",
+			[selection.get_parent().name.to_lower()])
+
+func _input(event):
+	if not is_visible_in_tree():
+		return
+	if not event is InputEventMouseButton or not event.pressed:
+		return
+	var button_rect = Rect2(Vector2(0,0),outfit_button.rect_size)
+	var button_local = outfit_button.make_input_local(event)
+	if button_rect.has_point(button_local.position):
+		return
+	if outfit_popup_a.is_visible_in_tree():
+		var rect_a = Rect2(Vector2(0,0),outfit_popup_a.rect_size)
+		var rect_b = Rect2(Vector2(0,0),outfit_popup_b.rect_size)
+		var local_a = outfit_popup_a.make_input_local(event)
+		var local_b = outfit_popup_b.make_input_local(event)
+		if not rect_a.has_point(local_a.position):
+			if not rect_b.has_point(local_b.position):
+				outfit_button.pressed = false
+				outfit_button.grab_focus()
+				outfit_popup_a.hide()
+				outfit_popup_b.hide()
+
+func resize():
+	if not is_visible_in_tree():
+		return
+	yield(get_tree(),\"idle_frame\")
+	get_parent().position_extension_panel($Clothing,clothing_panel)
+	get_parent().position_extension_panel($Accessories,accessories_panel)
+	outfit.position_outfit_popups()
+
+func _on_Choosing_CheckBox_toggled(button_pressed,button):
+	match _slave.wardrobe[\"choosing\"]:
+		\"all\":
+			if not button_pressed:
+				if button == \"clothing\":
+					_slave.wardrobe[\"choosing\"] = \"accessories\"
+				elif button == \"accessories\":
+					_slave.wardrobe[\"choosing\"] = \"clothing\"
+		\"clothing\":
+			if button == \"clothing\" and not button_pressed:
+				_slave.wardrobe[\"choosing\"] = \"none\"
+			elif button == \"accessories\" and button_pressed:
+				_slave.wardrobe[\"choosing\"] = \"all\"
+		\"accessories\":
+			if button == \"clothing\" and button_pressed:
+				_slave.wardrobe[\"choosing\"] = \"all\"
+			elif button == \"accessories\" and not button_pressed:
+				_slave.wardrobe[\"choosing\"] = \"none\"
+		\"none\":
+			if button_pressed:
+				_slave.wardrobe[\"choosing\"] = button
+
+"
+
+[sub_resource type="GDScript" id=6]
+script/source = "extends HBoxContainer
+
+onready var selection = $Selection
+onready var popup_menu_a = $Selection/PopupMenuA
+onready var popup_menu_b = $Selection/PopupMenuB
+onready var popup_menu_orig = selection.get_popup()
+onready var wardrobe = game.get_gui().get_node(\"SidePanel/Wardrobe\")
+
+func _ready():
+	popup_menu_a.connect(\"hide\",popup_menu_b,\"hide\")
+	popup_menu_b.connect(\"hide\",popup_menu_a,\"hide\")
+
+func _on_Selection_pressed():
+	var a_visible = popup_menu_a.is_visible_in_tree()
+	var b_visible = popup_menu_b.is_visible_in_tree()
+	if not a_visible or not b_visible:
+		position_outfit_popups()
+		popup_menu_orig.hide()
+		selection.pressed = true
+		popup_menu_a.show()
+		popup_menu_b.show()
+	else:
+		popup_menu_orig.hide()
+		selection.grab_focus()
+		popup_menu_a.hide()
+		popup_menu_b.hide()
+
+func _on_Selection_PopupMenu_id_pressed(id,popup):
+	wardrobe.shirt_button.select(wardrobe.shirt_button.get_item_index(0))
+	wardrobe.pants_button.select(wardrobe.pants_button.get_item_index(0))
+	wardrobe.shoes_button.select(wardrobe.shoes_button.get_item_index(0))
+	var index = popup_menu_orig.get_item_index(id)
+	var slave_clothing = wardrobe._slave.wardrobe[\"clothing\"]
+	slave_clothing[\"outfit\"] = popup_menu_orig.get_item_text(index)
+	clear_outfit_popups()
+	if popup == \"A\":
+		var index_a = popup_menu_a.get_item_index(id)
+		popup_menu_a.set_item_checked(index_a,true)
+		popup_menu_b.popup()
+		popup_menu_b.hide()
+	elif popup == \"B\":
+		var index_b = popup_menu_b.get_item_index(id)
+		popup_menu_b.set_item_checked(index_b,true)
+		popup_menu_a.popup()
+		popup_menu_a.hide()
+	selection.pressed = false
+	selection.grab_focus()
+	selection.select(id)
+	popup_menu_a.hide()
+	popup_menu_b.hide()
+
+func clear_outfit_popups():
+	for popup in [popup_menu_a,popup_menu_b]:
+		for item in popup.get_item_count():
+			popup.set_item_checked(item,false)
+
+func position_outfit_popups():
+	var button_pos_x = selection.rect_global_position.x - 3
+	var button_pos_y = selection.rect_global_position.y
+	button_pos_y += selection.rect_size.y
+	popup_menu_a.rect_global_position = Vector2(button_pos_x,button_pos_y)
+	popup_menu_b.rect_position = popup_menu_a.rect_position
+	popup_menu_b.rect_position.x += popup_menu_a.rect_size.x - 3
+
+func _load():
+	var slave_outfit = wardrobe._slave.wardrobe[\"clothing\"][\"outfit\"]
+	var item_id
+	var popup_menu
+	for item in popup_menu_orig.get_item_count():
+		if popup_menu_orig.get_item_text(item) == slave_outfit:
+			item_id = popup_menu_orig.get_item_id(item)
+	for item in popup_menu_a.get_item_count():
+		if popup_menu_a.get_item_text(item) == slave_outfit:
+			popup_menu = \"A\"
+	for item in popup_menu_b.get_item_count():
+		if popup_menu_b.get_item_text(item) == slave_outfit:
+			popup_menu = \"B\"
+	_on_Selection_PopupMenu_id_pressed(item_id,popup_menu)
+"
+
+[sub_resource type="DynamicFont" id=7]
+size = 24
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=8]
+size = 24
+font_data = ExtResource( 3 )
+
+[sub_resource type="GDScript" id=9]
+script/source = "extends HBoxContainer
+
+onready var selection = $Selection
+onready var popup = selection.get_popup()
+onready var wardrobe = game.get_gui().get_node(\"SidePanel/Wardrobe\")
+
+func _ready():
+	popup.connect(\"popup_hide\",self,\"_on_popup_hidden\")
+	popup.add_radio_check_item(\"Set By Outfit\",0)
+
+func _on_Selection_pressed():
+	selection.remove_item(selection.get_item_index(0))
+	popup.rect_size = popup.rect_min_size
+
+func _on_Selection_item_selected(index):
+	selection.select(index)
+	wardrobe.outfit_button.select(wardrobe.outfit_button.get_item_index(0))
+	var slave_clothing = wardrobe._slave.wardrobe[\"clothing\"]
+	slave_clothing[\"outfit\"] = \"Custom\"
+	slave_clothing[\"shirt\"] = selection.get_item_text(index)
+	if wardrobe.pants_button.get_selected_id() == 0:
+		wardrobe.pants_button.select(0)
+	if wardrobe.shoes_button.get_selected_id() == 0:
+		wardrobe.shoes_button.select(0)
+#	wardrobe.outfit.clear_outfit_popups()
+#	for popup in [wardrobe.outfit.popup_menu_a,wardrobe.outfit.popup_menu_b]:
+#		popup.popup()
+#		popup.hide()
+	$Edit.show()
+
+func _on_popup_hidden():
+	popup.add_radio_check_item(\"Set By Outfit\",0)
+
+func _load():
+	var slave_shirt = wardrobe._slave.wardrobe[\"clothing\"][\"shirt\"]
+	for item in popup.get_item_count():
+		if popup.get_item_text(item) == slave_shirt:
+			_on_Selection_item_selected(item)
+"
+
+[sub_resource type="GDScript" id=10]
+script/source = "extends HBoxContainer
+
+onready var selection = $Selection
+onready var popup = selection.get_popup()
+onready var wardrobe = game.get_gui().get_node(\"SidePanel/Wardrobe\")
+
+func _ready():
+	popup.connect(\"popup_hide\",self,\"_on_popup_hidden\")
+	popup.add_radio_check_item(\"Set By Outfit\",0)
+
+func _on_Selection_pressed():
+	selection.remove_item(selection.get_item_index(0))
+	popup.rect_size = popup.rect_min_size
+
+func _on_Selection_item_selected(index):
+	selection.select(index)
+	var slave_clothing = wardrobe._slave.wardrobe[\"clothing\"]
+	wardrobe.outfit_button.select(wardrobe.outfit_button.get_item_index(0))
+	slave_clothing[\"outfit\"] = \"Custom\"
+	slave_clothing[\"pants\"] = selection.get_item_text(index)
+	if wardrobe.shirt_button.get_selected_id() == 0:
+		wardrobe.shirt_button.select(0)
+	if wardrobe.shoes_button.get_selected_id() == 0:
+		wardrobe.shoes_button.select(0)
+#	wardrobe.outfit.clear_outfit_popups()
+#	for popup in [wardrobe.outfit.popup_menu_a,wardrobe.outfit.popup_menu_b]:
+#		popup.popup()
+#		popup.hide()
+	
+
+func _on_popup_hidden():
+	popup.add_radio_check_item(\"Set By Outfit\",0)
+
+func _load():
+	var slave_pants = wardrobe._slave.wardrobe[\"clothing\"][\"pants\"]
+	for item in popup.get_item_count():
+		if popup.get_item_text(item) == slave_pants:
+			_on_Selection_item_selected(item)
+"
+
+[sub_resource type="GDScript" id=11]
+script/source = "extends HBoxContainer
+
+onready var selection = $Selection
+onready var popup = selection.get_popup()
+onready var wardrobe = game.get_gui().get_node(\"SidePanel/Wardrobe\")
+
+func _ready():
+	popup.connect(\"popup_hide\",self,\"_on_popup_hidden\")
+	popup.add_radio_check_item(\"Set By Outfit\",0)
+
+func _on_Selection_pressed():
+	selection.remove_item(selection.get_item_index(0))
+	popup.rect_size = popup.rect_min_size
+
+func _on_Selection_item_selected(index):
+	selection.select(index)
+	var slave_clothing = wardrobe._slave.wardrobe[\"clothing\"]
+	wardrobe.outfit_button.select(wardrobe.outfit_button.get_item_index(0))
+	slave_clothing[\"outfit\"] = \"Custom\"
+	slave_clothing[\"shoes\"] = selection.get_item_text(index)
+	if wardrobe.shirt_button.get_selected_id() == 0:
+		wardrobe.shirt_button.select(0)
+	if wardrobe.pants_button.get_selected_id() == 0:
+		wardrobe.pants_button.select(0)
+#	wardrobe.outfit.clear_outfit_popups()
+#	for popup in [wardrobe.outfit.popup_menu_a,wardrobe.outfit.popup_menu_b]:
+#		popup.popup()
+#		popup.hide()
+
+func _on_popup_hidden():
+	popup.add_radio_check_item(\"Set By Outfit\",0)
+
+func _load():
+	var slave_shoes = wardrobe._slave.wardrobe[\"clothing\"][\"shoes\"]
+	for item in popup.get_item_count():
+		if popup.get_item_text(item) == slave_shoes:
+			_on_Selection_item_selected(item)
+"
+
+[sub_resource type="DynamicFont" id=12]
+size = 24
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=13]
+size = 24
+font_data = ExtResource( 3 )
+
+[sub_resource type="GDScript" id=14]
 script/source = "extends VBoxContainer
 
 onready var dock = owner.get_node(\"Dock\")
@@ -76,20 +789,21 @@ func _on_PurchaseSlaves_pressed():
 
 var sort_mode = \"Devotion\"
 func _on_SortMode_item_selected(index):
-	if index == 0:
-		sort_mode = \"Devotion\"
-	elif index == 1:
-		sort_mode = \"Level\"
-	elif index == 2:
-		sort_mode = \"Assignment\"
-	elif index == 3:
-		sort_mode = \"Acquired\"
-	elif index == 4:
-		sort_mode = \"Gender\"
-	elif index == 5:
-		sort_mode = \"Name\"
-	elif index == 6:
-		sort_mode = \"Age\"
+	match index:
+		0:
+			sort_mode = \"Devotion\"
+		1:
+			sort_mode = \"Level\"
+		2:
+			sort_mode = \"Assignment\"
+		3:
+			sort_mode = \"Acquired\"
+		4:
+			sort_mode = \"Gender\"
+		5:
+			sort_mode = \"Name\"
+		6:
+			sort_mode = \"Age\"
 	SlaveUtils.sort_slaves(\"Owned\",sort_mode,sort_order)
 
 var sort_order = \"Descending\"
@@ -101,17 +815,7 @@ func _on_SortOrder_item_selected(index):
 	SlaveUtils.sort_slaves(\"Owned\",sort_mode,sort_order)
 "
 
-[sub_resource type="GDScript" id=4]
-script/source = "extends VBoxContainer
-
-func _ready():
-	pass # Replace with function body.
-
-func update():
-	pass
-"
-
-[sub_resource type="GDScript" id=5]
+[sub_resource type="GDScript" id=15]
 script/source = "extends VBoxContainer
 
 func update():
@@ -149,7 +853,7 @@ func _on_Hide_pressed():
 	side_panel.get_node(\"ShowPanel\").show()
 "
 
-[sub_resource type="GDScript" id=6]
+[sub_resource type="GDScript" id=16]
 script/source = "extends Button
 
 func _on_Hide_pressed():
@@ -158,7 +862,7 @@ func _on_Hide_pressed():
 	side_panel.dock.get_node(\"ActionButton\").icon = side_panel.arrow_left_icon
 "
 
-[sub_resource type="GDScript" id=7]
+[sub_resource type="GDScript" id=17]
 script/source = "extends VBoxContainer
 
 func update():
@@ -196,7 +900,7 @@ func _on_Hide_pressed():
 	side_panel.get_node(\"ShowPanel\").show()
 "
 
-[sub_resource type="GDScript" id=8]
+[sub_resource type="GDScript" id=18]
 script/source = "extends VBoxContainer
 
 func _ready():
@@ -208,7 +912,7 @@ func update():
 	get_node(\"Ownership/HBox/Owner\").set_text(str(percent)+\"% Owner\")
 "
 
-[sub_resource type="GDScript" id=9]
+[sub_resource type="GDScript" id=19]
 script/source = "extends VBoxContainer
 
 func _ready():
@@ -219,11 +923,8 @@ func update():
 	get_node(\"Title\").set_text(selected_terra+\":\")
 "
 
-[sub_resource type="GDScript" id=10]
+[sub_resource type="GDScript" id=20]
 script/source = "extends VBoxContainer
-
-func _ready():
-	pass # Replace with function body.
 
 func update():
 	var selected_building = ArcUtils.get_arcology().selected_building
@@ -243,7 +944,7 @@ func update():
 		get_node(\"Construction\").hide()
 "
 
-[sub_resource type="GDScript" id=11]
+[sub_resource type="GDScript" id=21]
 script/source = "extends TextureRect
 
 func _on_button_pressed():
@@ -264,11 +965,11 @@ func _on_mouse_exited():
 	set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="DynamicFont" id=12]
+[sub_resource type="DynamicFont" id=22]
 size = 20
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=13]
+[sub_resource type="GDScript" id=23]
 script/source = "extends Control
 
 onready var side_panel = get_node(\"../SidePanel\")
@@ -290,6 +991,8 @@ func set_mode(new_mode,animation=true,reset_cam_pos=true):
 				$ActionButton.set_text(\"Close\")
 			else:
 				$ActionButton.set_text(action_button_text)
+		\"Regimen\",\"Rules\",\"Wardrobe\":
+			$ActionButton.set_text(\"Back\")
 		\"ManageSlaves\":
 			action_button_text = \"Manage Slaves\"
 			if side_panel.is_open:
@@ -342,7 +1045,8 @@ func set_mode(new_mode,animation=true,reset_cam_pos=true):
 				$ActionButton.set_text(\"Close\")
 			else:
 				$ActionButton.set_text(action_button_text)
-	get_content(new_mode).update()
+	if get_content(new_mode).has_method(\"update\"):
+		get_content(new_mode).update()
 	side_panel.change_content(get_content(mode),get_content(new_mode),animation)
 	mode = new_mode
 
@@ -355,57 +1059,61 @@ func _on_ActionButton_pressed():
 		animation = false
 	if side_panel.rect_size.x > margin_right+30:
 		side_panel.rect_size.x = margin_right+30
-	if mode == \"PurchaseSlave\":
-		var _slave = get_viewport().get_camera().get_parent()
-		var new_mode = slaves.get_node(\"Examine Slave\").previous_dock_mode
-		get_viewport().get_camera().deactivate(false)
-		_slave.get_node(\"UI/Input\")._on_Buy_pressed()
-		$ActionButton.get_node(\"Tag\").hide()
-		set_mode(new_mode,false,false)
-		side_panel.open()
-	elif mode == \"PurchaseSlaves\":
-		mode = \"ManageSlaves\"
-		game.set_bg_color(game.BG_COLOR_DEFAULT)
-		slaves.set_active_collection(\"Owned\",false)
-		side_panel.change_content(
-			get_content(\"PurchaseSlaves\"),
-			get_content(mode))
-		action_button_text = \"Manage Slaves\"
-		$ActionButton.set_text(\"Close\")
-	elif mode == \"KidnappersMarket\":
-		mode = \"PurchaseSlaves\"
-		game.set_bg_color(game.BG_COLOR_DEFAULT)
-		slaves.set_active_collection(\"Owned\")
-		side_panel.get_node(\"ShowPanel\").hide()
-		side_panel.change_content(
-			get_content(\"KidnappersMarket\"),
-			get_content(mode),
-			animation)
-		if not side_panel.is_open:
+	match mode:
+		\"Regimen\",\"Rules\",\"Wardrobe\":
+			set_mode(\"ManageSlave\")
+		\"PurchaseSlave\":
+			var _slave = get_viewport().get_camera().get_parent()
+			var new_mode = slaves.get_node(\"ExamineSlave\").previous_dock_mode
+			get_viewport().get_camera().deactivate(false)
+			_slave.get_node(\"UI\")._on_Buy_pressed()
+			$ActionButton.get_node(\"Tag\").hide()
+			set_mode(new_mode,false,false)
 			side_panel.open()
-		$ActionButton.show()
-		$SplitButton.hide()
-		action_button_text = \"Back\"
-		$ActionButton.set_text(action_button_text)
-	elif mode == \"NeighboringArcologies\":
-		mode = \"PurchaseSlaves\"
-		game.set_bg_color(game.BG_COLOR_DEFAULT)
-		slaves.set_active_collection(\"Owned\")
-		side_panel.get_node(\"ShowPanel\").hide()
-		side_panel.change_content(
-			get_content(\"NeighboringArcologies\"),
-			get_content(mode),
-			animation)
-		if not side_panel.is_open:
-			side_panel.open()
-		$ActionButton.show()
-		$SplitButton.hide()
-		action_button_text = \"Back\"
-		$ActionButton.set_text(action_button_text)
-	elif side_panel.is_open:
-		side_panel.close()
-	else:
-		side_panel.open()
+		\"PurchaseSlaves\":
+			mode = \"ManageSlaves\"
+			game.set_bg_color(game.BG_COLOR_DEFAULT)
+			slaves.set_active_collection(\"Owned\",false)
+			side_panel.change_content(
+				get_content(\"PurchaseSlaves\"),
+				get_content(mode))
+			action_button_text = \"Manage Slaves\"
+			$ActionButton.set_text(\"Close\")
+		\"KidnappersMarket\":
+			mode = \"PurchaseSlaves\"
+			game.set_bg_color(game.BG_COLOR_DEFAULT)
+			slaves.set_active_collection(\"Owned\")
+			side_panel.get_node(\"ShowPanel\").hide()
+			side_panel.change_content(
+				get_content(\"KidnappersMarket\"),
+				get_content(mode),
+				animation)
+			if not side_panel.is_open:
+				side_panel.open()
+			$ActionButton.show()
+			$SplitButton.hide()
+			action_button_text = \"Back\"
+			$ActionButton.set_text(action_button_text)
+		\"NeighboringArcologies\":
+			mode = \"PurchaseSlaves\"
+			game.set_bg_color(game.BG_COLOR_DEFAULT)
+			slaves.set_active_collection(\"Owned\")
+			side_panel.get_node(\"ShowPanel\").hide()
+			side_panel.change_content(
+				get_content(\"NeighboringArcologies\"),
+				get_content(mode),
+				animation)
+			if not side_panel.is_open:
+				side_panel.open()
+			$ActionButton.show()
+			$SplitButton.hide()
+			action_button_text = \"Back\"
+			$ActionButton.set_text(action_button_text)
+		_:
+			if side_panel.is_open:
+				side_panel.close()
+			else:
+				side_panel.open()
 
 func _on_Exit_pressed():
 	game.set_bg_color(game.BG_COLOR_DEFAULT)
@@ -420,23 +1128,26 @@ func _on_Exit_pressed():
 	slaves.set_active_collection(\"Owned\")
 	set_mode(\"ManageSlaves\",false)
 
-var rubik_44 = preload('res://Fonts/Rubik-Light-44.tres')
-var rubik_40 = preload('res://Fonts/Rubik-Light-40.tres')
-var rubik_36 = preload('res://Fonts/Rubik-Light-36.tres')
-var rubik_30 = preload('res://Fonts/Rubik-Light-30.tres')
 var rubik_24 = preload('res://Fonts/Rubik-Light-24.tres')
+var rubik_28 = preload('res://Fonts/Rubik-Light-28.tres')
+var rubik_30 = preload('res://Fonts/Rubik-Light-30.tres')
+var rubik_36 = preload('res://Fonts/Rubik-Light-36.tres')
+var rubik_40 = preload('res://Fonts/Rubik-Light-40.tres')
+var rubik_44 = preload('res://Fonts/Rubik-Light-44.tres')
 func scale_fonts():
 	var scale_adjusted = display.scale * 1.6
 	var scale_rubik_24 = display.scale_x * 33
+	var scale_rubik_28 = display.scale_x * 34
 	var scale_rubik_30 = display.scale_x * 35
 	var scale_rubik_36 = display.scale_x * 40
 	var scale_rubik_40 = display.scale_x * 45
 	var scale_rubik_44 = display.scale_x * 50
 	rubik_24.size = clamp(scale_rubik_24, 20, 30)
-	rubik_30.size = clamp(scale_rubik_30, 28, 35)
-	rubik_36.size = clamp(scale_rubik_36, 26, 39)
-	rubik_40.size = clamp(scale_rubik_40, 28, 42)
-	rubik_44.size = clamp(scale_rubik_44, 34, 49)
+	rubik_28.size = clamp(scale_rubik_28, 22, 32)
+	rubik_30.size = clamp(scale_rubik_30, 24, 34)
+	rubik_36.size = clamp(scale_rubik_36, 26, 38)
+	rubik_40.size = clamp(scale_rubik_40, 30, 42)
+	rubik_44.size = clamp(scale_rubik_44, 34, 48)
 
 func resize():
 	scale_fonts()
@@ -459,17 +1170,21 @@ func resize():
 	$NaviActionButton.margin_left += 0
 	$ActionButton.margin_left += 0
 	$SplitButton.margin_left += 0
+	for node in side_panel.get_children():
+		if node.has_method(\"resize\"):
+			node.resize()
 "
 
-[sub_resource type="DynamicFont" id=14]
+[sub_resource type="DynamicFont" id=24]
 size = 24
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=15]
+[sub_resource type="GDScript" id=25]
 script/source = "extends Control
 
 func _on_toggled(button_pressed):
 	var navi_chat = get_node(\"../NaviChat\")
+	#$Button.pressed = button_pressed
 	if button_pressed:
 		navi_chat.activate()
 	else:
@@ -489,14 +1204,28 @@ func _on_mouse_exited():
 		get_node('tab_left').set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="GDScript" id=16]
+[sub_resource type="GDScript" id=26]
 script/source = "extends Panel
 
 func _on_Communication_pressed():
 	get_node(\"../../Communication\").popup_centered()
+
+func _on_NaviActionButton_toggled(button_pressed):
+	var navi_action_button = get_node(\"../NaviActionButton\")
+	if button_pressed:
+		show()
+		navi_action_button.set_text(\"<<End Query>>\")
+		for message in get_node(\"../NaviChat/ChatLog\").get_children():
+			if message.get_node(\"Button\").pressed:
+				message.get_node(\"Button\").pressed = false
+				message._on_toggled(false)
+				message._on_mouse_exited()
+	else:
+		hide()
+		navi_action_button.set_text(\"<<Query Navi>>\")
 "
 
-[sub_resource type="GDScript" id=17]
+[sub_resource type="GDScript" id=27]
 script/source = "extends Control
 
 func _ready():
@@ -513,7 +1242,7 @@ func resize():
 	$Time/LabelTop.get('custom_fonts/font').size = clamp(scale_text,10,16)
 "
 
-[sub_resource type="GDScript" id=18]
+[sub_resource type="GDScript" id=28]
 script/source = "extends TextureRect
 
 func _ready():
@@ -542,7 +1271,7 @@ func _on_mouse_exited():
 		set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="GDScript" id=19]
+[sub_resource type="GDScript" id=29]
 script/source = "extends TextureRect
 
 func _ready():
@@ -563,7 +1292,9 @@ func _on_pressed():
 		animation = false
 		side_panel.open()
 		side_panel.get_node(\"ShowPanel\").hide()
+	var arrow_right = load(\"res://GUI/Textures/arrow_right.svg\")
 	dock.get_node(\"ActionButton\").show()
+	dock.get_node(\"ActionButton\").icon = arrow_right
 	dock.get_node(\"SplitButton\").hide()
 	if arcology.selected_building:
 		dock.set_mode(\"ManageBuilding\",animation)
@@ -594,7 +1325,7 @@ func _on_mouse_exited():
 		set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="GDScript" id=20]
+[sub_resource type="GDScript" id=30]
 script/source = "extends TextureRect
 
 func _ready():
@@ -615,7 +1346,9 @@ func _on_pressed():
 		animation = false
 		side_panel.open()
 		side_panel.get_node(\"ShowPanel\").hide()
+	var arrow_right = load(\"res://GUI/Textures/arrow_right.svg\")
 	dock.get_node(\"ActionButton\").show()
+	dock.get_node(\"ActionButton\").icon = arrow_right
 	dock.get_node(\"SplitButton\").hide()
 	get_node(\"../../Dock\").set_mode(\"ManageSlaves\",animation)
 	get_node(\"../../Header/Slaves\").show()
@@ -641,11 +1374,43 @@ func _on_mouse_exited():
 		set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="DynamicFont" id=21]
+[sub_resource type="DynamicFont" id=31]
+resource_name = "Rubik-Light"
 size = 30
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=22]
+[sub_resource type="DynamicFont" id=32]
+resource_name = "Rubik-Light"
+size = 30
+font_data = ExtResource( 3 )
+
+[sub_resource type="GDScript" id=33]
+script/source = "extends VBoxContainer
+
+onready var game_clock = get_tree().get_root().get_node('Game/Clock')
+
+func _on_Play_pressed():
+	$Play.set_self_modulate('ff7200')
+	$Pause.set_self_modulate('ffffff')
+	game_clock.set_paused(false)
+
+func _on_Pause_pressed():
+	$Pause.set_self_modulate('ff7200')
+	$Play.set_self_modulate('ffffff')
+	game_clock.set_paused(true)
+
+func _on_Button_mouse_entered(button):
+	get_node(button).set_scale(Vector2(0.95,0.95))
+
+func _on_Button_mouse_exited(button):
+	get_node(button).set_scale(Vector2(1,1))
+"
+
+[sub_resource type="DynamicFont" id=34]
+size = 30
+font_data = ExtResource( 3 )
+
+[sub_resource type="GDScript" id=35]
 script/source = "extends Control
 
 onready var timer = get_tree().get_root().get_node('Game/Clock')
@@ -670,17 +1435,17 @@ func _on_TimeScale_value_changed(value):
 	$Sliders/TimeScale/Label.set_text(\"Time Scale: x\"+display_value)
 "
 
-[sub_resource type="DynamicFont" id=23]
+[sub_resource type="DynamicFont" id=36]
 size = 20
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=24]
+[sub_resource type="DynamicFont" id=37]
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=25]
+[sub_resource type="DynamicFont" id=38]
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=26]
+[sub_resource type="GDScript" id=39]
 script/source = "extends Control
 
 func _on_mouse_entered():
@@ -690,11 +1455,11 @@ func _on_mouse_exited():
 		get_node('circle').set_self_modulate('64333a4b')
 "
 
-[sub_resource type="DynamicFont" id=27]
+[sub_resource type="DynamicFont" id=40]
 size = 20
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=28]
+[sub_resource type="GDScript" id=41]
 script/source = "extends Panel
 
 func _pause():
@@ -732,33 +1497,33 @@ func _on_Menu_Button_pressed():
 	_pause()
 "
 
-[sub_resource type="DynamicFont" id=29]
+[sub_resource type="DynamicFont" id=42]
 size = 50
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=30]
+[sub_resource type="DynamicFont" id=43]
 size = 30
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=31]
+[sub_resource type="DynamicFont" id=44]
 size = 30
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=32]
+[sub_resource type="DynamicFont" id=45]
 size = 24
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=33]
+[sub_resource type="GDScript" id=46]
 script/source = "extends WindowDialog
 
 func _on_Button_pressed():
-	get_node(\"../Dock/NaviChat\").say(\"res://GUI/sample_text_1.txt\")
+	get_node(\"../Dock/NaviChat\").read(\"res://GUI/sample_text_1.txt\")
 
 func _on_Button2_pressed():
-	get_node(\"../Dock/NaviChat\").say(\"res://GUI/sample_text_2.txt\")
+	get_node(\"../Dock/NaviChat\").read(\"res://GUI/sample_text_2.txt\")
 
 func _on_Button3_pressed():
-	get_node(\"../Dock/NaviChat\").say(\"res://GUI/intro.txt\")
+	get_node(\"../Dock/NaviChat\").read(\"res://GUI/intro.txt\")
 "
 
 [node name="GUI" type="Control"]
@@ -771,9 +1536,6 @@ script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="Input" type="Node" parent="."]
-script = ExtResource( 34 )
 
 [node name="SidePanel" type="Panel" parent="." groups=[
 "Intercept Mouse",
@@ -883,7 +1645,6 @@ margin_top = 317.0
 margin_right = 420.0
 margin_bottom = 352.0
 custom_fonts/font = ExtResource( 25 )
-disabled = true
 text = "Regimen"
 align = 0
 expand_icon = true
@@ -896,7 +1657,6 @@ margin_top = 370.0
 margin_right = 420.0
 margin_bottom = 405.0
 custom_fonts/font = ExtResource( 25 )
-disabled = true
 text = "Rules"
 align = 0
 expand_icon = true
@@ -909,7 +1669,6 @@ margin_top = 423.0
 margin_right = 420.0
 margin_bottom = 458.0
 custom_fonts/font = ExtResource( 25 )
-disabled = true
 text = "Wardrobe"
 align = 0
 expand_icon = true
@@ -943,13 +1702,1271 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
+[node name="Regimen" type="VBoxContainer" parent="SidePanel"]
+visible = false
+anchor_left = 0.0434783
+anchor_top = 0.12037
+anchor_right = 0.956522
+anchor_bottom = 0.580555
+margin_bottom = -137.999
+custom_constants/separation = 18
+script = SubResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Title" type="Label" parent="SidePanel/Regimen"]
+margin_right = 420.0
+margin_bottom = 48.0
+custom_fonts/font = ExtResource( 28 )
+text = "Regimen:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Risk" type="RichTextLabel" parent="SidePanel/Regimen"]
+margin_top = 66.0
+margin_right = 420.0
+margin_bottom = 101.0
+custom_fonts/normal_font = ExtResource( 39 )
+bbcode_enabled = true
+bbcode_text = "Risk of side effects: Very High"
+text = "Risk of side effects: Very High"
+fit_content_height = true
+
+[node name="Pharmaceuticals" type="Button" parent="SidePanel/Regimen"]
+margin_top = 119.0
+margin_right = 420.0
+margin_bottom = 154.0
+custom_fonts/font = ExtResource( 25 )
+toggle_mode = true
+text = "Pharmaceuticals"
+align = 0
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="ExtensionPanel" type="Node2D" parent="SidePanel/Regimen/Pharmaceuticals"]
+z_index = -1
+
+[node name="Panel" type="Panel" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel"]
+self_modulate = Color( 0.294118, 0.329412, 0.376471, 0.941176 )
+margin_right = 265.0
+margin_bottom = 265.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Tween" type="Tween" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel"]
+
+[node name="VBox" type="VBoxContainer" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -128.5
+margin_top = -130.0
+margin_right = 128.5
+margin_bottom = 130.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Psychosuppressants" type="HBoxContainer" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox"]
+margin_right = 257.0
+margin_bottom = 29.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/Psychosuppressants"]
+margin_right = 227.0
+margin_bottom = 29.0
+custom_fonts/font = SubResource( 4 )
+text = "Psychosuppressants"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="CheckBox" type="CheckBox" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/Psychosuppressants"]
+margin_left = 233.0
+margin_right = 257.0
+margin_bottom = 29.0
+
+[node name="BreastGrowth" type="HBoxContainer" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox"]
+margin_top = 33.0
+margin_right = 257.0
+margin_bottom = 62.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/BreastGrowth"]
+margin_right = 156.0
+margin_bottom = 29.0
+custom_fonts/font = SubResource( 4 )
+text = "Breast Growth"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="CheckBox" type="CheckBox" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/BreastGrowth"]
+margin_left = 162.0
+margin_right = 186.0
+margin_bottom = 29.0
+
+[node name="ButtocksGrowth" type="HBoxContainer" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox"]
+margin_top = 66.0
+margin_right = 257.0
+margin_bottom = 95.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/ButtocksGrowth"]
+margin_right = 183.0
+margin_bottom = 29.0
+custom_fonts/font = SubResource( 4 )
+text = "Buttocks Growth"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="CheckBox" type="CheckBox" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/ButtocksGrowth"]
+margin_left = 189.0
+margin_right = 213.0
+margin_bottom = 29.0
+
+[node name="PenisClitGrowth" type="HBoxContainer" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox"]
+margin_top = 99.0
+margin_right = 257.0
+margin_bottom = 128.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/PenisClitGrowth"]
+margin_right = 190.0
+margin_bottom = 29.0
+custom_fonts/font = SubResource( 4 )
+text = "Penis/Clit Growth"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="CheckBox" type="CheckBox" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/PenisClitGrowth"]
+margin_left = 196.0
+margin_right = 220.0
+margin_bottom = 29.0
+
+[node name="LipGrowth" type="HBoxContainer" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox"]
+margin_top = 132.0
+margin_right = 257.0
+margin_bottom = 161.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/LipGrowth"]
+margin_right = 117.0
+margin_bottom = 29.0
+custom_fonts/font = SubResource( 4 )
+text = "Lip Growth"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="CheckBox" type="CheckBox" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/LipGrowth"]
+margin_left = 123.0
+margin_right = 147.0
+margin_bottom = 29.0
+
+[node name="Steroids" type="HBoxContainer" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox"]
+margin_top = 198.0
+margin_right = 257.0
+margin_bottom = 227.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/Steroids"]
+margin_right = 89.0
+margin_bottom = 29.0
+custom_fonts/font = SubResource( 4 )
+text = "Steroids"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="CheckBox" type="CheckBox" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/Steroids"]
+margin_left = 95.0
+margin_right = 119.0
+margin_bottom = 29.0
+
+[node name="FertilityEnhancers" type="HBoxContainer" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox"]
+margin_top = 165.0
+margin_right = 257.0
+margin_bottom = 194.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/FertilityEnhancers"]
+margin_right = 174.0
+margin_bottom = 29.0
+custom_fonts/font = SubResource( 4 )
+text = "Fertility Enhancers"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="CheckBox" type="CheckBox" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/FertilityEnhancers"]
+margin_left = 180.0
+margin_right = 204.0
+margin_bottom = 29.0
+
+[node name="HormoneEnhancers" type="HBoxContainer" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox"]
+margin_top = 231.0
+margin_right = 257.0
+margin_bottom = 260.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/HormoneEnhancers"]
+margin_right = 220.0
+margin_bottom = 29.0
+custom_fonts/font = SubResource( 4 )
+text = "Hormone Enhancers"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="CheckBox" type="CheckBox" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/HormoneEnhancers"]
+margin_left = 226.0
+margin_right = 250.0
+margin_bottom = 29.0
+
+[node name="Health" type="VBoxContainer" parent="SidePanel/Regimen"]
+margin_top = 172.0
+margin_right = 420.0
+margin_bottom = 238.0
+custom_constants/separation = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="SidePanel/Regimen/Health"]
+margin_right = 420.0
+margin_bottom = 37.0
+custom_fonts/font = ExtResource( 29 )
+text = "Health:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Hbox" type="HBoxContainer" parent="SidePanel/Regimen/Health"]
+margin_top = 37.0
+margin_right = 420.0
+margin_bottom = 66.0
+custom_constants/separation = 15
+
+[node name="Preventatives" type="HBoxContainer" parent="SidePanel/Regimen/Health/Hbox"]
+margin_right = 180.0
+margin_bottom = 29.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Regimen/Health/Hbox/Preventatives"]
+margin_right = 150.0
+margin_bottom = 29.0
+custom_fonts/font = ExtResource( 25 )
+text = "Preventatives"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="CheckBox" type="CheckBox" parent="SidePanel/Regimen/Health/Hbox/Preventatives"]
+margin_left = 156.0
+margin_right = 180.0
+margin_bottom = 29.0
+
+[node name="VSeparator" type="VSeparator" parent="SidePanel/Regimen/Health/Hbox"]
+margin_left = 195.0
+margin_right = 199.0
+margin_bottom = 29.0
+
+[node name="Curatives" type="HBoxContainer" parent="SidePanel/Regimen/Health/Hbox"]
+margin_left = 214.0
+margin_right = 347.0
+margin_bottom = 29.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Regimen/Health/Hbox/Curatives"]
+margin_right = 103.0
+margin_bottom = 29.0
+custom_fonts/font = ExtResource( 25 )
+text = "Curatives"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="CheckBox" type="CheckBox" parent="SidePanel/Regimen/Health/Hbox/Curatives"]
+margin_left = 109.0
+margin_right = 133.0
+margin_bottom = 29.0
+
+[node name="Contraception" type="HBoxContainer" parent="SidePanel/Regimen"]
+margin_top = 256.0
+margin_right = 420.0
+margin_bottom = 285.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Regimen/Contraception"]
+margin_right = 160.0
+margin_bottom = 29.0
+custom_fonts/font = ExtResource( 25 )
+text = "Contraception:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="CheckBox" type="CheckBox" parent="SidePanel/Regimen/Contraception"]
+margin_left = 166.0
+margin_right = 190.0
+margin_bottom = 29.0
+
+[node name="Diet" type="HBoxContainer" parent="SidePanel/Regimen"]
+margin_top = 303.0
+margin_right = 420.0
+margin_bottom = 338.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Regimen/Diet"]
+margin_top = 3.0
+margin_right = 49.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "Diet:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Regimen/Diet"]
+margin_left = 55.0
+margin_right = 420.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 25 )
+text = "Healthy"
+items = [ "Healthy", null, false, 0, null, "Lose Weight", null, false, 1, null, "Gain Weight", null, false, 2, null, "Build Muscle", null, false, 3, null ]
+selected = 0
+
+[node name="DietBase" type="HBoxContainer" parent="SidePanel/Regimen"]
+margin_top = 356.0
+margin_right = 420.0
+margin_bottom = 391.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Regimen/DietBase"]
+margin_top = 3.0
+margin_right = 109.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "Diet Base:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Regimen/DietBase"]
+margin_left = 115.0
+margin_right = 420.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 25 )
+text = "Normal"
+items = [ "Normal", null, false, 0, null, "Cum Added", null, false, 1, null, "Breast Milk Added", null, false, 2, null, "Cum & Breast Milk Added", null, false, 3, null, "Cum Based", null, false, 4, null, "Breast Milk Based", null, false, 5, null ]
+selected = 0
+
+[node name="Hormones" type="HBoxContainer" parent="SidePanel/Regimen"]
+margin_top = 409.0
+margin_right = 420.0
+margin_bottom = 444.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Regimen/Hormones"]
+margin_top = 3.0
+margin_right = 117.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "Hormones:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Regimen/Hormones"]
+margin_left = 123.0
+margin_right = 420.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 25 )
+text = "None"
+items = [ "None", null, false, 0, null, "Female", null, false, 1, null, "Intensive Female", null, false, 2, null, "Male", null, false, 3, null, "Intensive Male", null, false, 4, null ]
+selected = 0
+
+[node name="Aphrodisiacs" type="HBoxContainer" parent="SidePanel/Regimen"]
+margin_top = 462.0
+margin_right = 420.0
+margin_bottom = 497.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Regimen/Aphrodisiacs"]
+margin_top = 3.0
+margin_right = 145.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "Aphrodisiacs:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Regimen/Aphrodisiacs"]
+margin_left = 151.0
+margin_right = 420.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 25 )
+text = "None"
+items = [ "None", null, false, 0, null, "Normal Dosage", null, false, 1, null, "High Dosage", null, false, 2, null, "Extreme Dosage", null, false, 3, null ]
+selected = 0
+
+[node name="Rules" type="VBoxContainer" parent="SidePanel"]
+visible = false
+anchor_left = 0.0434783
+anchor_top = 0.12037
+anchor_right = 0.956522
+anchor_bottom = 0.655556
+custom_constants/separation = 18
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Title" type="Label" parent="SidePanel/Rules"]
+margin_right = 420.0
+margin_bottom = 48.0
+custom_fonts/font = ExtResource( 28 )
+text = "Rules:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="LivingStandard" type="HBoxContainer" parent="SidePanel/Rules"]
+margin_top = 66.0
+margin_right = 420.0
+margin_bottom = 101.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Rules/LivingStandard"]
+margin_top = 3.0
+margin_right = 176.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "Living Standard:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Rules/LivingStandard"]
+margin_left = 182.0
+margin_right = 420.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 25 )
+text = "Spare"
+items = [ "Spare", null, false, 0, null, "Normal", null, false, 1, null, "Luxurious", null, false, 2, null ]
+selected = 0
+
+[node name="Speech" type="HBoxContainer" parent="SidePanel/Rules"]
+margin_top = 119.0
+margin_right = 420.0
+margin_bottom = 154.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Rules/Speech"]
+margin_top = 3.0
+margin_right = 88.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "Speech:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Rules/Speech"]
+margin_left = 94.0
+margin_right = 420.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 25 )
+text = "Restricted"
+items = [ "Restricted", null, false, 0, null, "Permitted", null, false, 1, null, "Accent Elimination", null, false, 2, null ]
+selected = 0
+
+[node name="Relationships" type="HBoxContainer" parent="SidePanel/Rules"]
+margin_top = 172.0
+margin_right = 420.0
+margin_bottom = 207.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Rules/Relationships"]
+margin_top = 3.0
+margin_right = 150.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "Relationships:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Rules/Relationships"]
+margin_left = 156.0
+margin_right = 420.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 25 )
+text = "Restricted"
+items = [ "Restricted", null, false, 0, null, "Permitted", null, false, 1, null ]
+selected = 0
+
+[node name="TypicalPunishment" type="HBoxContainer" parent="SidePanel/Rules"]
+margin_top = 225.0
+margin_right = 420.0
+margin_bottom = 260.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Rules/TypicalPunishment"]
+margin_top = 3.0
+margin_right = 219.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "Typical Punishment:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Rules/TypicalPunishment"]
+margin_left = 225.0
+margin_right = 420.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 25 )
+text = "Confinement"
+items = [ "Confinement", null, false, 0, null, "Whipping", null, false, 1, null, "Chastity", null, false, 2, null, "Situational", null, false, 3, null ]
+selected = 0
+
+[node name="TypicalReward" type="HBoxContainer" parent="SidePanel/Rules"]
+margin_top = 278.0
+margin_right = 420.0
+margin_bottom = 313.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Rules/TypicalReward"]
+margin_top = 3.0
+margin_right = 170.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "Typical Reward:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Rules/TypicalReward"]
+margin_left = 176.0
+margin_right = 420.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 25 )
+text = "Relaxation"
+items = [ "Relaxation", null, false, 0, null, "Drugs", null, false, 1, null, "Orgasm", null, false, 2, null, "Situational", null, false, 3, null ]
+selected = 0
+
+[node name="Masturbation" type="HBoxContainer" parent="SidePanel/Rules"]
+margin_top = 331.0
+margin_right = 420.0
+margin_bottom = 366.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Rules/Masturbation"]
+margin_top = 3.0
+margin_right = 149.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "Masturbation:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Rules/Masturbation"]
+margin_left = 155.0
+margin_right = 420.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 25 )
+text = "Restricted"
+items = [ "Restricted", null, false, 0, null, "Permitted", null, false, 1, null ]
+selected = 0
+
+[node name="Orgasms" type="HBoxContainer" parent="SidePanel/Rules"]
+margin_top = 384.0
+margin_right = 420.0
+margin_bottom = 419.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Rules/Orgasms"]
+margin_top = 3.0
+margin_right = 102.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "Orgasms:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Rules/Orgasms"]
+margin_left = 108.0
+margin_right = 420.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 25 )
+text = "Restricted"
+items = [ "Restricted", null, false, 0, null, "Permitted", null, false, 1, null ]
+selected = 0
+
+[node name="InterslaveSex" type="HBoxContainer" parent="SidePanel/Rules"]
+margin_top = 437.0
+margin_right = 420.0
+margin_bottom = 472.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Rules/InterslaveSex"]
+margin_top = 3.0
+margin_right = 158.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "Interslave Sex:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Rules/InterslaveSex"]
+margin_left = 164.0
+margin_right = 420.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 25 )
+text = "Restricted"
+items = [ "Restricted", null, false, 0, null, "Permitted", null, false, 1, null ]
+selected = 0
+
+[node name="ConsentGiving" type="HBoxContainer" parent="SidePanel/Rules"]
+margin_top = 490.0
+margin_right = 420.0
+margin_bottom = 525.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Rules/ConsentGiving"]
+margin_top = 3.0
+margin_right = 186.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "Consent (Giving):"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Rules/ConsentGiving"]
+margin_left = 192.0
+margin_right = 420.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 25 )
+text = "Not Required"
+items = [ "Not Required", null, false, 0, null, "Required", null, false, 1, null ]
+selected = 0
+
+[node name="ConsentReceiving" type="HBoxContainer" parent="SidePanel/Rules"]
+margin_top = 543.0
+margin_right = 420.0
+margin_bottom = 578.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Rules/ConsentReceiving"]
+margin_top = 3.0
+margin_right = 224.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "Consent (Receiving):"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Rules/ConsentReceiving"]
+margin_left = 230.0
+margin_right = 420.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 25 )
+text = "Not Required"
+items = [ "Not Required", null, false, 0, null, "Required", null, false, 1, null ]
+selected = 0
+
+[node name="Wardrobe" type="VBoxContainer" parent="SidePanel"]
+visible = false
+anchor_left = 0.0434783
+anchor_top = 0.12037
+anchor_right = 0.956522
+anchor_bottom = 0.655556
+custom_constants/separation = 18
+script = SubResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Title" type="Label" parent="SidePanel/Wardrobe"]
+margin_right = 420.0
+margin_bottom = 48.0
+custom_fonts/font = ExtResource( 28 )
+text = "Wardrobe:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="ChoosingClothing" type="HBoxContainer" parent="SidePanel/Wardrobe"]
+margin_top = 66.0
+margin_right = 420.0
+margin_bottom = 95.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Wardrobe/ChoosingClothing"]
+margin_right = 296.0
+margin_bottom = 29.0
+custom_fonts/font = ExtResource( 25 )
+text = "Allowed to choose clothing:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="CheckBox" type="CheckBox" parent="SidePanel/Wardrobe/ChoosingClothing"]
+margin_left = 302.0
+margin_right = 326.0
+margin_bottom = 29.0
+
+[node name="ChoosingAccessories" type="HBoxContainer" parent="SidePanel/Wardrobe"]
+margin_top = 113.0
+margin_right = 420.0
+margin_bottom = 142.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Wardrobe/ChoosingAccessories"]
+margin_right = 336.0
+margin_bottom = 29.0
+custom_fonts/font = ExtResource( 25 )
+text = "Allowed to choose accessories:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="CheckBox" type="CheckBox" parent="SidePanel/Wardrobe/ChoosingAccessories"]
+margin_left = 342.0
+margin_right = 366.0
+margin_bottom = 29.0
+
+[node name="Clothing" type="Button" parent="SidePanel/Wardrobe"]
+margin_top = 160.0
+margin_right = 420.0
+margin_bottom = 195.0
+custom_fonts/font = ExtResource( 25 )
+toggle_mode = true
+text = "Clothing"
+align = 0
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="ExtensionPanel" type="Node2D" parent="SidePanel/Wardrobe/Clothing"]
+z_index = -1
+
+[node name="Panel" type="Panel" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel"]
+self_modulate = Color( 0.294118, 0.329412, 0.376471, 0.941176 )
+margin_right = 387.0
+margin_bottom = 175.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Tween" type="Tween" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel"]
+
+[node name="VBox" type="VBoxContainer" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel"]
+anchor_left = 0.0135501
+anchor_top = 0.0228571
+anchor_right = 0.990294
+anchor_bottom = 0.977143
+margin_right = -0.438965
+custom_constants/separation = 9
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Outfit" type="HBoxContainer" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox"]
+margin_right = 377.0
+margin_bottom = 35.0
+custom_constants/separation = 6
+script = SubResource( 6 )
+
+[node name="Label" type="Label" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Outfit"]
+margin_top = 3.0
+margin_right = 68.0
+margin_bottom = 32.0
+custom_fonts/font = SubResource( 7 )
+text = "Outfit:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Outfit"]
+margin_left = 74.0
+margin_right = 341.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = SubResource( 8 )
+text = "Custom"
+items = [ "Custom", null, false, 0, null, "Nude", null, false, 1, null, "Lingerie", null, false, 2, null, "Mesh Bodysuit", null, false, 3, null, "Leotard", null, false, 4, null, "String Bikini", null, false, 5, null, "Latex Catsuit", null, false, 6, null, "Restrictive Latex", null, false, 7, null, "Harsh Shibari Ropes", null, false, 8, null, "Uncomfortable Straps", null, false, 9, null, "Chains", null, false, 10, null, "Maid", null, false, 11, null, "Slutty Maid", null, false, 12, null, "Nurse", null, false, 13, null, "Slutty Nurse", null, false, 14, null, "Nun's Habit", null, false, 15, null, "Slutty Nun's Habit", null, false, 16, null, "Penitent Nun's Habit", null, false, 17, null, "Business Suit", null, false, 18, null, "Slutty Business Suit", null, false, 19, null, "Military Uniform", null, false, 20, null, "Combat Fatigues", null, false, 21, null, "Slutty Combat Fatigues", null, false, 22, null, "Schoolgirl", null, false, 23, null, "Cheerleader", null, false, 24, null, "Frilly Dress", null, false, 25, null, "Mini Dress", null, false, 26, null, "Halterneck Dress", null, false, 27, null, "Evening Gown", null, false, 28, null, "Ball Gown", null, false, 29, null, "Kimono", null, false, 30, null, "Qipao", null, false, 31, null, "Huipil", null, false, 32, null, "Toga", null, false, 33, null, "Hijab and Abaya", null, false, 34, null, "Cat Costume", null, false, 35, null, "Dog Costume", null, false, 36, null, "Bunny Costume", null, false, 37, null, "Mouse Costume", null, false, 38, null, "Angel Costume", null, false, 39, null, "Demon Costume", null, false, 40, null, "Western Costume", null, false, 41, null, "Cop Costume", null, false, 42, null ]
+selected = 0
+
+[node name="PopupMenuA" type="PopupMenu" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Outfit/Selection"]
+margin_right = 20.0
+margin_bottom = 20.0
+items = [ "Nude", null, 2, false, false, 1, 0, null, "", false, "Lingerie", null, 2, false, false, 2, 0, null, "", false, "Mesh Bodysuit", null, 2, false, false, 3, 0, null, "", false, "Leotard", null, 2, false, false, 4, 0, null, "", false, "String Bikini", null, 2, false, false, 5, 0, null, "", false, "Latex Catsuit", null, 2, false, false, 6, 0, null, "", false, "Restrictive Latex", null, 2, false, false, 7, 0, null, "", false, "Harsh Shibari Ropes", null, 2, false, false, 8, 0, null, "", false, "Uncomfortable Straps", null, 2, false, false, 9, 0, null, "", false, "Chains", null, 2, false, false, 10, 0, null, "", false, "Maid", null, 2, false, false, 11, 0, null, "", false, "Slutty Maid", null, 2, false, false, 12, 0, null, "", false, "Nurse", null, 2, false, false, 13, 0, null, "", false, "Slutty Nurse", null, 2, false, false, 14, 0, null, "", false, "Nun's Habit", null, 2, false, false, 15, 0, null, "", false, "Slutty Nun's Habit", null, 2, false, false, 16, 0, null, "", false, "Penitent Nun's Habit", null, 2, false, false, 17, 0, null, "", false, "Business Suit", null, 2, false, false, 18, 0, null, "", false, "Slutty Business Suit", null, 2, false, false, 19, 0, null, "", false, "Military Uniform", null, 2, false, false, 20, 0, null, "", false, "Combat Fatigues", null, 2, false, false, 21, 0, null, "", false ]
+
+[node name="PopupMenuB" type="PopupMenu" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Outfit/Selection"]
+margin_right = 20.0
+margin_bottom = 20.0
+items = [ "Slutty Combat Fatigues", null, 2, false, false, 22, 0, null, "", false, "Schoolgirl", null, 2, false, false, 23, 0, null, "", false, "Cheerleader", null, 2, false, false, 24, 0, null, "", false, "Frilly Dress", null, 2, false, false, 25, 0, null, "", false, "Mini Dress", null, 2, false, false, 26, 0, null, "", false, "Halterneck Dress", null, 2, false, false, 27, 0, null, "", false, "Evening Gown", null, 2, false, false, 28, 0, null, "", false, "Ball Gown", null, 2, false, false, 29, 0, null, "", false, "Kimono", null, 2, false, false, 30, 0, null, "", false, "Qipao", null, 2, false, false, 31, 0, null, "", false, "Huipil", null, 2, false, false, 32, 0, null, "", false, "Toga", null, 2, false, false, 33, 0, null, "", false, "Hijab and Abaya", null, 2, false, false, 34, 0, null, "", false, "Cat Costume", null, 2, false, false, 35, 0, null, "", false, "Dog Costume", null, 2, false, false, 36, 0, null, "", false, "Bunny Costume", null, 2, false, false, 37, 0, null, "", false, "Mouse Costume", null, 2, false, false, 38, 0, null, "", false, "Angel Costume", null, 2, false, false, 39, 0, null, "", false, "Demon Costume", null, 2, false, false, 40, 0, null, "", false, "Western Costume", null, 2, false, false, 41, 0, null, "", false, "Cop Costume", null, 2, false, false, 42, 0, null, "", false ]
+
+[node name="Edit" type="Button" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Outfit"]
+margin_left = 347.0
+margin_right = 377.0
+margin_bottom = 35.0
+icon = ExtResource( 40 )
+
+[node name="Shirt" type="HBoxContainer" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox"]
+margin_top = 44.0
+margin_right = 377.0
+margin_bottom = 79.0
+custom_constants/separation = 6
+script = SubResource( 9 )
+
+[node name="Label" type="Label" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shirt"]
+margin_top = 3.0
+margin_right = 57.0
+margin_bottom = 32.0
+custom_fonts/font = SubResource( 7 )
+text = "Shirt:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shirt"]
+margin_left = 63.0
+margin_right = 341.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = SubResource( 8 )
+text = "None"
+items = [ "None", null, false, 1, null, "T-Shirt", null, false, 2, null, "Long Sleeve Shirt", null, false, 3, null, "Belly Shirt", null, false, 4, null, "Tank Top", null, false, 5, null, "Tube Top", null, false, 6, null, "Hoodie", null, false, 7, null, "Sports Bra", null, false, 8, null, "Bra", null, false, 9, null ]
+selected = 0
+
+[node name="Edit" type="Button" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shirt"]
+margin_left = 347.0
+margin_right = 377.0
+margin_bottom = 35.0
+icon = ExtResource( 40 )
+
+[node name="Pants" type="HBoxContainer" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox"]
+margin_top = 88.0
+margin_right = 377.0
+margin_bottom = 123.0
+custom_constants/separation = 6
+script = SubResource( 10 )
+
+[node name="Label" type="Label" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Pants"]
+margin_top = 3.0
+margin_right = 69.0
+margin_bottom = 32.0
+custom_fonts/font = SubResource( 7 )
+text = "Pants:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Pants"]
+margin_left = 75.0
+margin_right = 377.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = SubResource( 8 )
+text = "None"
+items = [ "None", null, false, 1, null, "Jeans", null, false, 2, null, "Capris", null, false, 3, null, "Shorts", null, false, 4, null, "Cutoff Shorts", null, false, 5, null, "Skirt", null, false, 6, null, "Short Skirt", null, false, 7, null, "Panties", null, false, 8, null ]
+selected = 0
+
+[node name="Edit" type="Button" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Pants"]
+margin_left = -76.0
+margin_top = -34.0
+margin_right = -46.0
+margin_bottom = 1.0
+icon = ExtResource( 40 )
+
+[node name="Shoes" type="HBoxContainer" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox"]
+margin_top = 132.0
+margin_right = 377.0
+margin_bottom = 167.0
+custom_constants/separation = 6
+script = SubResource( 11 )
+
+[node name="Label" type="Label" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shoes"]
+margin_top = 3.0
+margin_right = 73.0
+margin_bottom = 32.0
+custom_fonts/font = SubResource( 7 )
+text = "Shoes:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shoes"]
+margin_left = 79.0
+margin_right = 377.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = SubResource( 8 )
+text = "None"
+items = [ "None", null, false, 1, null, "Flats", null, false, 2, null, "Sneakers", null, false, 3, null, "Simple Sandals", null, false, 4, null, "Elegant Sandals", null, false, 5, null, "High Heels", null, false, 6, null, "Extreme High Heels", null, false, 7, null, "Platform Boots", null, false, 8, null, "Stiletto Boots", null, false, 9, null, "Latex Thigh Boots", null, false, 10, null, "Combat Boots", null, false, 11, null ]
+selected = 0
+
+[node name="Edit" type="Button" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shoes"]
+margin_left = -76.0
+margin_top = -78.0
+margin_right = -46.0
+margin_bottom = -43.0
+icon = ExtResource( 40 )
+
+[node name="Accessories" type="Button" parent="SidePanel/Wardrobe"]
+margin_top = 213.0
+margin_right = 420.0
+margin_bottom = 248.0
+custom_fonts/font = ExtResource( 25 )
+toggle_mode = true
+text = "Accessories"
+align = 0
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="ExtensionPanel" type="Node2D" parent="SidePanel/Wardrobe/Accessories"]
+z_index = -1
+
+[node name="Panel" type="Panel" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel"]
+self_modulate = Color( 0.294118, 0.329412, 0.376471, 0.941176 )
+margin_right = 361.0
+margin_bottom = 308.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Tween" type="Tween" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel"]
+
+[node name="VBox" type="VBoxContainer" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel"]
+anchor_left = 0.0138504
+anchor_top = 0.0162338
+anchor_right = 0.98615
+anchor_bottom = 0.987013
+custom_constants/separation = 9
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Head" type="HBoxContainer" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox"]
+margin_right = 351.0
+margin_bottom = 35.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Head"]
+margin_top = 3.0
+margin_right = 63.0
+margin_bottom = 32.0
+custom_fonts/font = SubResource( 12 )
+text = "Head:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Head"]
+margin_left = 69.0
+margin_right = 351.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = SubResource( 12 )
+text = "None"
+items = [ "None", null, false, 0, null, "Fedora", null, false, 1, null, "Cloche", null, false, 2, null, "Cabbie Hat", null, false, 4, null, "Beret", null, false, 5, null, "Military Beret", null, false, 6, null, "Beanie", null, false, 7, null, "Straw Hat", null, false, 8, null, "Western Hat", null, false, 9, null, "Kentucky Derby Hat", null, false, 10, null, "Hair Pin", null, false, 11, null, "Hair Ribbon", null, false, 12, null, "Hair Bow", null, false, 13, null ]
+selected = 0
+
+[node name="Edit" type="Button" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Head"]
+visible = false
+margin_left = 321.0
+margin_right = 351.0
+margin_bottom = 35.0
+icon = ExtResource( 40 )
+
+[node name="Face" type="HBoxContainer" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox"]
+margin_top = 44.0
+margin_right = 351.0
+margin_bottom = 79.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Face"]
+margin_top = 3.0
+margin_right = 59.0
+margin_bottom = 32.0
+custom_fonts/font = SubResource( 12 )
+text = "Face:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Face"]
+margin_left = 65.0
+margin_right = 351.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = SubResource( 12 )
+text = "None"
+items = [ "None", null, false, 0, null, "Basic Glasses", null, false, 1, null, "Stylish Glasses", null, false, 2, null, "Sunglasses", null, false, 3, null, "Contacts", null, false, 4, null, "Ball Gag", null, false, 5, null, "Bit Gag", null, false, 6, null, "Dildo Gag", null, false, 7, null ]
+selected = 0
+
+[node name="Edit" type="Button" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Face"]
+visible = false
+margin_left = 321.0
+margin_right = 351.0
+margin_bottom = 35.0
+icon = ExtResource( 40 )
+
+[node name="Neck" type="HBoxContainer" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox"]
+margin_top = 88.0
+margin_right = 351.0
+margin_bottom = 123.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Neck"]
+margin_top = 3.0
+margin_right = 60.0
+margin_bottom = 32.0
+custom_fonts/font = SubResource( 12 )
+text = "Neck:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Neck"]
+margin_left = 66.0
+margin_right = 351.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = SubResource( 12 )
+text = "None"
+items = [ "None", null, false, 0, null, "Stylish Leather", null, false, 1, null, "Uncomfortable Leather", null, false, 2, null, "Heavy Gold", null, false, 3, null, "Pretty Jewelry", null, false, 4, null, "Satin Choker", null, false, 5, null, "Cowbell", null, false, 6, null, "Tight Steel", null, false, 7, null, "Shock Punishment", null, false, 8, null, "Nice Retirement Counter", null, false, 9, null, "Cruel Retirement Counter", null, false, 10, null, "Neck Corset", null, false, 11, null ]
+selected = 0
+
+[node name="Edit" type="Button" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Neck"]
+visible = false
+margin_left = 321.0
+margin_right = 351.0
+margin_bottom = 35.0
+icon = ExtResource( 40 )
+
+[node name="Arms" type="HBoxContainer" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox"]
+margin_top = 132.0
+margin_right = 351.0
+margin_bottom = 167.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Arms"]
+margin_top = 3.0
+margin_right = 63.0
+margin_bottom = 32.0
+custom_fonts/font = SubResource( 12 )
+text = "Arms:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Arms"]
+margin_left = 69.0
+margin_right = 351.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = SubResource( 12 )
+text = "None"
+items = [ "None", null, false, 0, null, "Fishnet Gloves", null, false, 1, null, "Striped Gloves", null, false, 2, null, "Lace Gloves", null, false, 3, null, "Chains", null, false, 4, null ]
+selected = 0
+
+[node name="Edit" type="Button" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Arms"]
+visible = false
+margin_left = 321.0
+margin_right = 351.0
+margin_bottom = 35.0
+icon = ExtResource( 40 )
+
+[node name="Torso" type="HBoxContainer" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox"]
+margin_top = 176.0
+margin_right = 351.0
+margin_bottom = 211.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Torso"]
+margin_top = 3.0
+margin_right = 65.0
+margin_bottom = 32.0
+custom_fonts/font = SubResource( 12 )
+text = "Torso:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Torso"]
+margin_left = 71.0
+margin_right = 351.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = SubResource( 12 )
+text = "None"
+items = [ "None", null, false, 0, null, "Tight Corset", null, false, 1, null, "Extreme Corset", null, false, 2, null ]
+selected = 0
+
+[node name="Edit" type="Button" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Torso"]
+visible = false
+margin_left = 321.0
+margin_right = 351.0
+margin_bottom = 35.0
+icon = ExtResource( 40 )
+
+[node name="Genitals" type="HBoxContainer" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox"]
+margin_top = 264.0
+margin_right = 351.0
+margin_bottom = 299.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Genitals"]
+margin_top = 3.0
+margin_right = 93.0
+margin_bottom = 32.0
+custom_fonts/font = SubResource( 12 )
+text = "Genitals:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Genitals"]
+margin_left = 99.0
+margin_right = 351.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = SubResource( 12 )
+text = "None"
+items = [ "None", null, false, 0, null ]
+selected = 0
+
+[node name="Edit" type="Button" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Genitals"]
+visible = false
+margin_left = 321.0
+margin_right = 351.0
+margin_bottom = 35.0
+icon = ExtResource( 40 )
+
+[node name="Legs" type="HBoxContainer" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox"]
+margin_top = 220.0
+margin_right = 351.0
+margin_bottom = 255.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Legs"]
+margin_top = 3.0
+margin_right = 58.0
+margin_bottom = 32.0
+custom_fonts/font = SubResource( 12 )
+text = "Legs:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Legs"]
+margin_left = 64.0
+margin_right = 351.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = SubResource( 12 )
+text = "None"
+items = [ "None", null, false, 0, null ]
+selected = 0
+
+[node name="Edit" type="Button" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Legs"]
+visible = false
+margin_left = 321.0
+margin_right = 351.0
+margin_bottom = 35.0
+icon = ExtResource( 40 )
+
+[node name="EditPopup" type="Node" parent="SidePanel/Wardrobe"]
+
+[node name="PopupPanel" type="PopupPanel" parent="SidePanel/Wardrobe/EditPopup" groups=[
+"Popups",
+]]
+margin_left = 913.0
+margin_top = 520.0
+margin_right = 1008.0
+margin_bottom = 557.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Item" type="HBoxContainer" parent="SidePanel/Wardrobe/EditPopup/PopupPanel"]
+visible = false
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 91.0
+margin_bottom = 33.0
+custom_constants/separation = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="SidePanel/Wardrobe/EditPopup/PopupPanel/Item"]
+margin_top = 3.0
+margin_right = 87.0
+margin_bottom = 32.0
+custom_fonts/font = SubResource( 13 )
+text = "Option1:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Options" type="VBoxContainer" parent="SidePanel/Wardrobe/EditPopup/PopupPanel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -43.5
+margin_top = -14.5
+margin_right = 43.5
+margin_bottom = 14.5
+custom_constants/separation = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="ManageSlaves" type="VBoxContainer" parent="SidePanel"]
+visible = false
 anchor_left = 0.0434783
 anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.452778
 custom_constants/separation = 18
-script = SubResource( 3 )
+script = SubResource( 14 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -1064,7 +3081,6 @@ anchor_right = 0.956522
 anchor_bottom = 0.452778
 margin_bottom = 204.999
 custom_constants/separation = 18
-script = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -1076,14 +3092,13 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.267593
 custom_constants/separation = 18
-script = SubResource( 4 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
 [node name="Title" type="Label" parent="SidePanel/PurchaseSlaves"]
 margin_right = 420.0
-margin_bottom = 53.0
+margin_bottom = 48.0
 custom_fonts/font = ExtResource( 28 )
 text = "Purchase Slaves:"
 __meta__ = {
@@ -1091,9 +3106,9 @@ __meta__ = {
 }
 
 [node name="KidnappersMarket" type="Button" parent="SidePanel/PurchaseSlaves"]
-margin_top = 71.0
+margin_top = 66.0
 margin_right = 420.0
-margin_bottom = 106.0
+margin_bottom = 101.0
 custom_fonts/font = ExtResource( 25 )
 text = "Kidnappers Market"
 align = 0
@@ -1103,9 +3118,9 @@ __meta__ = {
 }
 
 [node name="NeighboringArcologies" type="Button" parent="SidePanel/PurchaseSlaves"]
-margin_top = 124.0
+margin_top = 119.0
 margin_right = 420.0
-margin_bottom = 159.0
+margin_bottom = 154.0
 custom_fonts/font = ExtResource( 25 )
 text = "Neighboring Arcologies"
 align = 0
@@ -1115,9 +3130,9 @@ __meta__ = {
 }
 
 [node name="Desc" type="Label" parent="SidePanel/PurchaseSlaves"]
-margin_top = 177.0
+margin_top = 172.0
 margin_right = 420.0
-margin_bottom = 270.0
+margin_bottom = 265.0
 custom_fonts/font = ExtResource( 25 )
 text = "Many organizations are selective about their clientele, and will only sell to you if you are reputable."
 autowrap = true
@@ -1133,7 +3148,7 @@ anchor_right = 0.956522
 anchor_bottom = 0.408333
 margin_bottom = -151.999
 custom_constants/separation = 18
-script = SubResource( 5 )
+script = SubResource( 15 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1197,7 +3212,7 @@ custom_fonts/font = ExtResource( 25 )
 text = "Hide"
 align = 0
 expand_icon = true
-script = SubResource( 6 )
+script = SubResource( 16 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1220,7 +3235,7 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.399074
 custom_constants/separation = 18
-script = SubResource( 7 )
+script = SubResource( 17 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1306,14 +3321,14 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.494444
 custom_constants/separation = 18
-script = SubResource( 8 )
+script = SubResource( 18 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
 [node name="Title" type="Label" parent="SidePanel/ManageArcology"]
 margin_right = 420.0
-margin_bottom = 53.0
+margin_bottom = 48.0
 custom_fonts/font = ExtResource( 28 )
 text = "Manage Arcology:"
 __meta__ = {
@@ -1321,9 +3336,9 @@ __meta__ = {
 }
 
 [node name="Upkeep" type="HBoxContainer" parent="SidePanel/ManageArcology"]
-margin_top = 71.0
+margin_top = 66.0
 margin_right = 420.0
-margin_bottom = 106.0
+margin_bottom = 101.0
 custom_constants/separation = 6
 
 [node name="Mode" type="OptionButton" parent="SidePanel/ManageArcology/Upkeep"]
@@ -1347,9 +3362,9 @@ __meta__ = {
 }
 
 [node name="Population" type="VBoxContainer" parent="SidePanel/ManageArcology"]
-margin_top = 124.0
+margin_top = 119.0
 margin_right = 420.0
-margin_bottom = 190.0
+margin_bottom = 185.0
 custom_constants/separation = 0
 
 [node name="Title" type="Label" parent="SidePanel/ManageArcology/Population"]
@@ -1386,9 +3401,9 @@ custom_fonts/font = ExtResource( 25 )
 text = "XXXXX Slaves"
 
 [node name="Ownership" type="VBoxContainer" parent="SidePanel/ManageArcology"]
-margin_top = 208.0
+margin_top = 203.0
 margin_right = 420.0
-margin_bottom = 274.0
+margin_bottom = 269.0
 custom_constants/separation = 0
 
 [node name="Title" type="Label" parent="SidePanel/ManageArcology/Ownership"]
@@ -1425,9 +3440,9 @@ custom_fonts/font = ExtResource( 25 )
 text = "XX% Secondary"
 
 [node name="Policies" type="Button" parent="SidePanel/ManageArcology"]
-margin_top = 292.0
+margin_top = 287.0
 margin_right = 420.0
-margin_bottom = 327.0
+margin_bottom = 322.0
 custom_fonts/font = ExtResource( 25 )
 disabled = true
 text = "Policies"
@@ -1438,9 +3453,9 @@ __meta__ = {
 }
 
 [node name="NeighboringArcologies" type="Button" parent="SidePanel/ManageArcology"]
-margin_top = 345.0
+margin_top = 340.0
 margin_right = 420.0
-margin_bottom = 380.0
+margin_bottom = 375.0
 custom_fonts/font = ExtResource( 25 )
 disabled = true
 text = "Neighboring Arcologies"
@@ -1451,9 +3466,9 @@ __meta__ = {
 }
 
 [node name="ArcologyUpgrades" type="Button" parent="SidePanel/ManageArcology"]
-margin_top = 398.0
+margin_top = 393.0
 margin_right = 420.0
-margin_bottom = 433.0
+margin_bottom = 428.0
 custom_fonts/font = ExtResource( 25 )
 disabled = true
 text = "Arcology Upgrades"
@@ -1484,14 +3499,14 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.494444
 custom_constants/separation = 18
-script = SubResource( 9 )
+script = SubResource( 19 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
 [node name="Title" type="Label" parent="SidePanel/ManageTerra"]
 margin_right = 420.0
-margin_bottom = 53.0
+margin_bottom = 48.0
 custom_fonts/font = ExtResource( 28 )
 text = "Manage Terra:"
 __meta__ = {
@@ -1499,9 +3514,9 @@ __meta__ = {
 }
 
 [node name="Upkeep" type="HBoxContainer" parent="SidePanel/ManageTerra"]
-margin_top = 71.0
+margin_top = 66.0
 margin_right = 420.0
-margin_bottom = 106.0
+margin_bottom = 101.0
 custom_constants/separation = 6
 
 [node name="Mode" type="OptionButton" parent="SidePanel/ManageTerra/Upkeep"]
@@ -1525,9 +3540,9 @@ __meta__ = {
 }
 
 [node name="Population" type="VBoxContainer" parent="SidePanel/ManageTerra"]
-margin_top = 124.0
+margin_top = 119.0
 margin_right = 420.0
-margin_bottom = 190.0
+margin_bottom = 185.0
 custom_constants/separation = 0
 
 [node name="Title" type="Label" parent="SidePanel/ManageTerra/Population"]
@@ -1564,9 +3579,9 @@ custom_fonts/font = ExtResource( 25 )
 text = "XXXXX Slaves"
 
 [node name="Construction" type="Button" parent="SidePanel/ManageTerra"]
-margin_top = 208.0
+margin_top = 203.0
 margin_right = 420.0
-margin_bottom = 243.0
+margin_bottom = 238.0
 custom_fonts/font = ExtResource( 25 )
 disabled = true
 text = "Construction"
@@ -1583,7 +3598,7 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.443519
 custom_constants/separation = 18
-script = SubResource( 10 )
+script = SubResource( 20 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1713,7 +3728,7 @@ anchor_top = 0.446296
 anchor_right = 1.13044
 anchor_bottom = 0.553704
 texture = ExtResource( 38 )
-script = SubResource( 11 )
+script = SubResource( 21 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1747,7 +3762,6 @@ self_modulate = Color( 0.294118, 0.329412, 0.376471, 0 )
 anchor_bottom = 1.0
 margin_right = 460.0
 rect_min_size = Vector2( 260, 0 )
-mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -1788,7 +3802,7 @@ visible = false
 margin_left = 202.0
 margin_right = 313.0
 margin_bottom = 38.0
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 22 )
 text = "Full View"
 items = [ "Full View", null, false, 0, null, "List View", null, false, 1, null ]
 selected = 0
@@ -1817,7 +3831,7 @@ visible = false
 margin_left = 294.0
 margin_right = 405.0
 margin_bottom = 43.0
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 22 )
 text = "Full View"
 items = [ "Full View", null, false, 0, null, "List View", null, false, 1, null ]
 selected = 0
@@ -1829,7 +3843,7 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 margin_top = -110.0
 margin_right = 430.0
-script = SubResource( 13 )
+script = SubResource( 23 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -1850,6 +3864,7 @@ __meta__ = {
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -1923,7 +3938,7 @@ anchor_top = 0.0930229
 anchor_right = 0.979381
 anchor_bottom = 0.906976
 margin_top = 2.38419e-07
-custom_fonts/font = SubResource( 14 )
+custom_fonts/font = SubResource( 24 )
 text = "Close"
 align = 0
 expand_icon = true
@@ -1962,7 +3977,7 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 margin_top = -110.0
 margin_right = 110.0
-script = SubResource( 15 )
+script = SubResource( 25 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -2021,7 +4036,7 @@ anchor_bottom = 1.0
 margin_left = -0.100037
 margin_top = -199.0
 margin_right = 193.9
-script = SubResource( 16 )
+script = SubResource( 26 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -2031,7 +4046,7 @@ anchor_left = 0.0206186
 anchor_top = 0.0201005
 anchor_right = 0.979381
 anchor_bottom = 0.19598
-custom_fonts/font = SubResource( 14 )
+custom_fonts/font = SubResource( 24 )
 text = "Communication"
 align = 0
 expand_icon = true
@@ -2044,7 +4059,7 @@ anchor_left = 0.0206186
 anchor_top = 0.21608
 anchor_right = 0.979381
 anchor_bottom = 0.39196
-custom_fonts/font = SubResource( 14 )
+custom_fonts/font = SubResource( 24 )
 disabled = true
 text = "Set Notification"
 align = 0
@@ -2059,7 +4074,7 @@ anchor_top = 0.41206
 anchor_right = 0.979381
 anchor_bottom = 0.58794
 margin_bottom = -7.62939e-06
-custom_fonts/font = SubResource( 14 )
+custom_fonts/font = SubResource( 24 )
 disabled = true
 text = "Manage Navi"
 align = 0
@@ -2073,7 +4088,7 @@ anchor_left = 0.0206186
 anchor_top = 0.60804
 anchor_right = 0.979381
 anchor_bottom = 0.78392
-custom_fonts/font = SubResource( 14 )
+custom_fonts/font = SubResource( 24 )
 disabled = true
 text = "Directives"
 align = 0
@@ -2087,7 +4102,7 @@ anchor_left = 0.0206186
 anchor_top = 0.80402
 anchor_right = 0.979381
 anchor_bottom = 0.979899
-custom_fonts/font = SubResource( 14 )
+custom_fonts/font = SubResource( 24 )
 disabled = true
 text = "Help"
 align = 0
@@ -2179,7 +4194,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -350.0
 margin_top = -110.0
-script = SubResource( 17 )
+script = SubResource( 27 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -2193,7 +4208,7 @@ anchor_bottom = 1.0
 margin_bottom = -7.62939e-06
 texture = ExtResource( 19 )
 expand = true
-script = SubResource( 18 )
+script = SubResource( 28 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2221,7 +4236,7 @@ anchor_bottom = 1.0
 margin_bottom = -7.62939e-06
 texture = ExtResource( 19 )
 expand = true
-script = SubResource( 19 )
+script = SubResource( 29 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2253,7 +4268,7 @@ anchor_bottom = 1.0
 margin_bottom = -7.62939e-06
 texture = ExtResource( 19 )
 expand = true
-script = SubResource( 20 )
+script = SubResource( 30 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2316,6 +4331,123 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
+[node name="Control" type="Control" parent="Navigation/Time/TimePanel/MouseDetection"]
+anchor_left = -0.154351
+anchor_top = 0.296297
+anchor_right = 0.0147783
+anchor_bottom = 0.642593
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Control2" type="Control" parent="Navigation/Time/TimePanel/MouseDetection"]
+anchor_left = 0.172414
+anchor_top = -0.227778
+anchor_right = 0.817734
+anchor_bottom = 0.0111111
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="TotalWeeks" type="Button" parent="Navigation/Time/TimePanel"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -148.0
+margin_top = 100.0
+margin_right = 150.0
+margin_bottom = 143.0
+custom_fonts/font = SubResource( 31 )
+text = "Week XX"
+script = ExtResource( 34 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ProgressBar" type="ProgressBar" parent="Navigation/Time/TimePanel/TotalWeeks"]
+modulate = Color( 1, 1, 1, 0 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+max_value = 1.0
+percent_visible = false
+
+[node name="HBox" type="HBoxContainer" parent="Navigation/Time/TimePanel/TotalWeeks"]
+modulate = Color( 1, 1, 1, 0 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EndDay" type="Button" parent="Navigation/Time/TimePanel/TotalWeeks/HBox"]
+margin_right = 138.0
+margin_bottom = 43.0
+mouse_filter = 2
+custom_fonts/font = SubResource( 32 )
+text = "END DAY"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EndWeek" type="Button" parent="Navigation/Time/TimePanel/TotalWeeks/HBox"]
+margin_left = 142.0
+margin_right = 298.0
+margin_bottom = 43.0
+mouse_filter = 2
+custom_fonts/font = SubResource( 32 )
+text = "END WEEK"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Tween" type="Tween" parent="Navigation/Time/TimePanel/TotalWeeks"]
+
+[node name="Timer" type="Timer" parent="Navigation/Time/TimePanel/TotalWeeks"]
+wait_time = 4.0
+one_shot = true
+
+[node name="PlayPause" type="VBoxContainer" parent="Navigation/Time/TimePanel"]
+anchor_left = 0.0869074
+anchor_top = 0.405192
+anchor_right = 0.141084
+anchor_bottom = 0.568849
+margin_bottom = 3.05176e-05
+custom_constants/separation = 30
+script = SubResource( 33 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Play" type="TextureRect" parent="Navigation/Time/TimePanel/PlayPause"]
+self_modulate = Color( 1, 0.447059, 0, 1 )
+margin_right = 48.0
+margin_bottom = 55.0
+rect_pivot_offset = Vector2( 24, 30 )
+texture = ExtResource( 11 )
+
+[node name="Button" type="TextureButton" parent="Navigation/Time/TimePanel/PlayPause/Play"]
+anchor_right = 1.02083
+anchor_bottom = 1.0
+toggle_mode = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Pause" type="TextureRect" parent="Navigation/Time/TimePanel/PlayPause"]
+margin_top = 85.0
+margin_right = 48.0
+margin_bottom = 145.0
+rect_pivot_offset = Vector2( 21.5, 30 )
+texture = ExtResource( 12 )
+
+[node name="Button" type="TextureButton" parent="Navigation/Time/TimePanel/PlayPause/Pause"]
+anchor_right = 1.04651
+anchor_bottom = 1.01667
+toggle_mode = true
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
 [node name="Calendar" type="TextureRect" parent="Navigation/Time/TimePanel"]
 anchor_left = 0.173174
 anchor_top = 0.240537
@@ -2331,7 +4463,7 @@ margin_left = 23.0
 margin_top = -36.0
 margin_right = 86.0
 margin_bottom = 1.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "Date"
 valign = 1
 
@@ -2340,7 +4472,7 @@ margin_left = 509.0
 margin_top = -36.0
 margin_right = 575.0
 margin_bottom = 1.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "Time"
 align = 2
 valign = 1
@@ -2365,7 +4497,7 @@ __meta__ = {
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -2377,7 +4509,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "M"
 align = 1
 valign = 1
@@ -2389,7 +4521,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -2401,7 +4533,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "W"
 align = 1
 valign = 1
@@ -2413,7 +4545,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -2425,7 +4557,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "F"
 align = 1
 valign = 1
@@ -2437,7 +4569,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -2448,7 +4580,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "1"
 align = 1
 valign = 1
@@ -2464,7 +4596,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -2476,7 +4608,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "M"
 align = 1
 valign = 1
@@ -2488,7 +4620,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -2500,7 +4632,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "W"
 align = 1
 valign = 1
@@ -2512,7 +4644,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -2524,7 +4656,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "F"
 align = 1
 valign = 1
@@ -2536,7 +4668,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -2547,7 +4679,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "2"
 align = 1
 valign = 1
@@ -2563,7 +4695,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -2575,7 +4707,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "M"
 align = 1
 valign = 1
@@ -2587,7 +4719,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -2599,7 +4731,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "W"
 align = 1
 valign = 1
@@ -2611,7 +4743,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -2623,7 +4755,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "F"
 align = 1
 valign = 1
@@ -2635,7 +4767,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -2646,7 +4778,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "3"
 align = 1
 valign = 1
@@ -2662,7 +4794,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -2674,7 +4806,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "M"
 align = 1
 valign = 1
@@ -2686,7 +4818,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -2698,7 +4830,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "W"
 align = 1
 valign = 1
@@ -2710,7 +4842,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -2722,7 +4854,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "F"
 align = 1
 valign = 1
@@ -2734,7 +4866,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -2745,7 +4877,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "4"
 align = 1
 valign = 1
@@ -2761,7 +4893,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -2773,7 +4905,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "M"
 align = 1
 valign = 1
@@ -2785,7 +4917,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -2797,7 +4929,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "W"
 align = 1
 valign = 1
@@ -2809,7 +4941,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -2821,7 +4953,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "F"
 align = 1
 valign = 1
@@ -2833,7 +4965,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -2844,7 +4976,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "5"
 align = 1
 valign = 1
@@ -2860,7 +4992,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -2872,7 +5004,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "M"
 align = 1
 valign = 1
@@ -2884,7 +5016,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -2896,7 +5028,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "W"
 align = 1
 valign = 1
@@ -2908,7 +5040,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -2920,7 +5052,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "F"
 align = 1
 valign = 1
@@ -2932,7 +5064,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -2943,7 +5075,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "6"
 align = 1
 valign = 1
@@ -2959,7 +5091,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -2971,7 +5103,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "M"
 align = 1
 valign = 1
@@ -2983,7 +5115,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -2995,7 +5127,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "W"
 align = 1
 valign = 1
@@ -3007,7 +5139,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -3019,7 +5151,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "F"
 align = 1
 valign = 1
@@ -3031,7 +5163,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -3042,7 +5174,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "7"
 align = 1
 valign = 1
@@ -3058,7 +5190,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -3070,7 +5202,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "M"
 align = 1
 valign = 1
@@ -3082,7 +5214,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -3094,7 +5226,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "W"
 align = 1
 valign = 1
@@ -3106,7 +5238,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -3118,7 +5250,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "F"
 align = 1
 valign = 1
@@ -3130,7 +5262,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -3141,7 +5273,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "8"
 align = 1
 valign = 1
@@ -3157,7 +5289,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -3169,7 +5301,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "M"
 align = 1
 valign = 1
@@ -3181,7 +5313,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -3193,7 +5325,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "W"
 align = 1
 valign = 1
@@ -3205,7 +5337,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -3217,7 +5349,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "F"
 align = 1
 valign = 1
@@ -3229,7 +5361,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -3240,7 +5372,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "9"
 align = 1
 valign = 1
@@ -3256,7 +5388,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 30.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -3268,7 +5400,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 30.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "M"
 align = 1
 valign = 1
@@ -3280,7 +5412,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 30.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -3292,7 +5424,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 30.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "W"
 align = 1
 valign = 1
@@ -3304,7 +5436,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 30.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -3316,7 +5448,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 30.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "F"
 align = 1
 valign = 1
@@ -3328,7 +5460,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 30.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -3339,7 +5471,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 30.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "10"
 align = 1
 valign = 1
@@ -3355,7 +5487,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -3367,7 +5499,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "M"
 align = 1
 valign = 1
@@ -3379,7 +5511,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -3391,7 +5523,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "W"
 align = 1
 valign = 1
@@ -3403,7 +5535,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -3415,7 +5547,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "F"
 align = 1
 valign = 1
@@ -3427,7 +5559,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -3438,7 +5570,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "11"
 align = 1
 valign = 1
@@ -3454,7 +5586,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 29.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -3466,7 +5598,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 29.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "M"
 align = 1
 valign = 1
@@ -3478,7 +5610,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 29.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -3490,7 +5622,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 29.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "W"
 align = 1
 valign = 1
@@ -3502,7 +5634,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 29.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -3514,7 +5646,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 29.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "F"
 align = 1
 valign = 1
@@ -3526,7 +5658,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 29.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -3537,7 +5669,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 29.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "12"
 align = 1
 valign = 1
@@ -3553,7 +5685,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 29.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -3565,7 +5697,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 29.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "M"
 align = 1
 valign = 1
@@ -3577,7 +5709,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 29.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -3589,7 +5721,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 29.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "W"
 align = 1
 valign = 1
@@ -3601,7 +5733,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 29.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "T"
 align = 1
 valign = 1
@@ -3613,7 +5745,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 29.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "F"
 align = 1
 valign = 1
@@ -3625,7 +5757,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 29.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "S"
 align = 1
 valign = 1
@@ -3636,7 +5768,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 29.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 34 )
 text = "13"
 align = 1
 valign = 1
@@ -3646,7 +5778,7 @@ anchor_left = 0.231377
 anchor_top = 0.704289
 anchor_right = 0.702032
 anchor_bottom = 0.79684
-script = SubResource( 22 )
+script = SubResource( 35 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -3674,7 +5806,7 @@ __meta__ = {
 anchor_top = -1.4375
 anchor_right = 1.0
 anchor_bottom = 0.0625
-custom_fonts/font = SubResource( 23 )
+custom_fonts/font = SubResource( 36 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "Clock Speed:"
@@ -3698,7 +5830,7 @@ __meta__ = {
 anchor_top = -1.4375
 anchor_right = 1.0
 anchor_bottom = 0.0625
-custom_fonts/font = SubResource( 23 )
+custom_fonts/font = SubResource( 36 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "Time Scale:"
@@ -3790,7 +5922,7 @@ anchor_bottom = 0.490909
 margin_left = 2.38419e-07
 margin_top = -1.90735e-05
 margin_bottom = -1.90735e-05
-custom_fonts/font = SubResource( 24 )
+custom_fonts/font = SubResource( 37 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "24:00
@@ -3808,7 +5940,7 @@ anchor_bottom = 0.827273
 margin_left = 2.38419e-07
 margin_top = 3.8147e-06
 margin_bottom = 7.62939e-06
-custom_fonts/font = SubResource( 25 )
+custom_fonts/font = SubResource( 38 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "Week 1
@@ -3877,7 +6009,7 @@ margin_left = 13.0
 margin_top = 10.0
 margin_right = 43.0
 margin_bottom = 40.0
-script = SubResource( 26 )
+script = SubResource( 39 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -3927,7 +6059,7 @@ show_behind_parent = true
 margin_bottom = 24.0
 size_flags_horizontal = 2
 size_flags_vertical = 0
-custom_fonts/font = SubResource( 27 )
+custom_fonts/font = SubResource( 40 )
 
 [node name="Income" type="Label" parent="Money"]
 self_modulate = Color( 0.218887, 0.589844, 0.242072, 1 )
@@ -3936,7 +6068,7 @@ margin_right = 55.0
 margin_bottom = 24.0
 size_flags_horizontal = 2
 size_flags_vertical = 0
-custom_fonts/font = SubResource( 27 )
+custom_fonts/font = SubResource( 40 )
 
 [node name="Expenses" type="Label" parent="Money"]
 self_modulate = Color( 0.832031, 0.165756, 0.165756, 1 )
@@ -3945,7 +6077,7 @@ margin_right = 111.0
 margin_bottom = 24.0
 size_flags_horizontal = 2
 size_flags_vertical = 0
-custom_fonts/font = SubResource( 27 )
+custom_fonts/font = SubResource( 40 )
 
 [node name="Pause Menu" type="Panel" parent="."]
 pause_mode = 2
@@ -3953,7 +6085,7 @@ visible = false
 self_modulate = Color( 1, 1, 1, 0.862745 )
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = SubResource( 28 )
+script = SubResource( 41 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -3973,7 +6105,7 @@ custom_constants/separation = 10
 margin_right = 425.0
 margin_bottom = 80.0
 rect_min_size = Vector2( 0, 80 )
-custom_fonts/font = SubResource( 29 )
+custom_fonts/font = SubResource( 42 )
 text = "PAUSED"
 align = 1
 
@@ -3982,7 +6114,7 @@ margin_top = 90.0
 margin_right = 425.0
 margin_bottom = 150.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 30 )
+custom_fonts/font = SubResource( 43 )
 text = "Resume"
 
 [node name="Save-Load" type="Button" parent="Pause Menu/Menu"]
@@ -3990,7 +6122,7 @@ margin_top = 160.0
 margin_right = 425.0
 margin_bottom = 220.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 30 )
+custom_fonts/font = SubResource( 43 )
 text = "Save/Load"
 
 [node name="Options" type="Button" parent="Pause Menu/Menu"]
@@ -3998,7 +6130,7 @@ margin_top = 230.0
 margin_right = 425.0
 margin_bottom = 290.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 30 )
+custom_fonts/font = SubResource( 43 )
 text = "Options"
 
 [node name="Main Menu" type="Button" parent="Pause Menu/Menu"]
@@ -4006,7 +6138,7 @@ margin_top = 300.0
 margin_right = 425.0
 margin_bottom = 360.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 31 )
+custom_fonts/font = SubResource( 44 )
 text = "Main Menu"
 
 [node name="Saves" parent="Pause Menu" instance=ExtResource( 23 )]
@@ -4020,7 +6152,7 @@ margin_left = 18.0
 margin_top = 11.0
 margin_right = 328.0
 margin_bottom = 136.0
-custom_fonts/font = SubResource( 32 )
+custom_fonts/font = SubResource( 45 )
 text = "Controls:
 BACK: right click
 TOGGLE PAUSE: space
@@ -4041,7 +6173,7 @@ margin_top = -175.0
 margin_right = 250.0
 margin_bottom = 175.0
 window_title = "Communication"
-script = SubResource( 33 )
+script = SubResource( 46 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -4080,6 +6212,28 @@ align = 0
 process_mode = 0
 one_shot = true
 autostart = true
+
+[connection signal="pressed" from="SidePanel/ManageSlave/Regimen" to="SidePanel/ManageSlave" method="_on_Regimen_pressed"]
+[connection signal="pressed" from="SidePanel/ManageSlave/Rules" to="SidePanel/ManageSlave" method="_on_Rules_pressed"]
+[connection signal="pressed" from="SidePanel/ManageSlave/Wardrobe" to="SidePanel/ManageSlave" method="_on_Wardrobe_pressed"]
+[connection signal="toggled" from="SidePanel/Regimen/Pharmaceuticals" to="SidePanel/Regimen" method="_on_Pharmaceuticals_toggled"]
+[connection signal="item_selected" from="SidePanel/Regimen/Diet/Selection" to="SidePanel/Regimen" method="_on_Diet_item_selected"]
+[connection signal="item_selected" from="SidePanel/Regimen/DietBase/Selection" to="SidePanel/Regimen" method="_on_DietBase_item_selected"]
+[connection signal="item_selected" from="SidePanel/Regimen/Hormones/Selection" to="SidePanel/Regimen" method="_on_Hormones_item_selected"]
+[connection signal="item_selected" from="SidePanel/Regimen/Aphrodisiacs/Selection" to="SidePanel/Regimen" method="_on_Aphrodisiacs_item_selected"]
+[connection signal="toggled" from="SidePanel/Wardrobe/ChoosingClothing/CheckBox" to="SidePanel/Wardrobe" method="_on_Choosing_CheckBox_toggled" binds= [ "clothing" ]]
+[connection signal="toggled" from="SidePanel/Wardrobe/ChoosingAccessories/CheckBox" to="SidePanel/Wardrobe" method="_on_Choosing_CheckBox_toggled" binds= [ "accessories" ]]
+[connection signal="toggled" from="SidePanel/Wardrobe/Clothing" to="SidePanel/Wardrobe" method="_on_Clothing_toggled"]
+[connection signal="pressed" from="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Outfit/Selection" to="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Outfit" method="_on_Selection_pressed"]
+[connection signal="id_pressed" from="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Outfit/Selection/PopupMenuA" to="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Outfit" method="_on_Selection_PopupMenu_id_pressed" binds= [ "A" ]]
+[connection signal="id_pressed" from="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Outfit/Selection/PopupMenuB" to="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Outfit" method="_on_Selection_PopupMenu_id_pressed" binds= [ "B" ]]
+[connection signal="item_selected" from="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shirt/Selection" to="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shirt" method="_on_Selection_item_selected"]
+[connection signal="pressed" from="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shirt/Selection" to="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shirt" method="_on_Selection_pressed"]
+[connection signal="item_selected" from="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Pants/Selection" to="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Pants" method="_on_Selection_item_selected"]
+[connection signal="pressed" from="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Pants/Selection" to="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Pants" method="_on_Selection_pressed"]
+[connection signal="item_selected" from="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shoes/Selection" to="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shoes" method="_on_Selection_item_selected"]
+[connection signal="pressed" from="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shoes/Selection" to="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shoes" method="_on_Selection_pressed"]
+[connection signal="toggled" from="SidePanel/Wardrobe/Accessories" to="SidePanel/Wardrobe" method="_on_Accessories_toggled"]
 [connection signal="item_selected" from="SidePanel/ManageSlaves/Sort/HBox/SortMode" to="SidePanel/ManageSlaves" method="_on_SortMode_item_selected"]
 [connection signal="item_selected" from="SidePanel/ManageSlaves/Sort/HBox/SortOrder" to="SidePanel/ManageSlaves" method="_on_SortOrder_item_selected"]
 [connection signal="pressed" from="SidePanel/ManageSlaves/PurchaseSlaves" to="SidePanel/ManageSlaves" method="_on_PurchaseSlaves_pressed"]
@@ -4111,7 +6265,7 @@ autostart = true
 [connection signal="pressed" from="Dock/ActionButton" to="Dock" method="_on_ActionButton_pressed"]
 [connection signal="pressed" from="Dock/SplitButton/Exit" to="Dock" method="_on_Exit_pressed"]
 [connection signal="pressed" from="Dock/SplitButton/Back" to="Dock" method="_on_ActionButton_pressed"]
-[connection signal="toggled" from="Dock/NaviActionButton" to="Dock/NaviChat" method="_on_NaviActionButton_toggled"]
+[connection signal="toggled" from="Dock/NaviActionButton" to="Dock/NaviPanel" method="_on_NaviActionButton_toggled"]
 [connection signal="mouse_entered" from="Navigation/Finance/Button" to="Navigation/Finance" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="Navigation/Finance/Button" to="Navigation/Finance" method="_on_mouse_exited"]
 [connection signal="pressed" from="Navigation/Finance/Button" to="Navigation/Finance" method="_on_pressed"]
@@ -4121,6 +6275,16 @@ autostart = true
 [connection signal="mouse_entered" from="Navigation/Slaves/Button" to="Navigation/Slaves" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="Navigation/Slaves/Button" to="Navigation/Slaves" method="_on_mouse_exited"]
 [connection signal="pressed" from="Navigation/Slaves/Button" to="Navigation/Slaves" method="_on_pressed"]
+[connection signal="pressed" from="Navigation/Time/TimePanel/TotalWeeks" to="Navigation/Time/TimePanel/TotalWeeks" method="_on_TotalWeeks_pressed"]
+[connection signal="pressed" from="Navigation/Time/TimePanel/TotalWeeks/HBox/EndDay" to="Navigation/Time/TimePanel/TotalWeeks" method="_on_EndDay_pressed"]
+[connection signal="pressed" from="Navigation/Time/TimePanel/TotalWeeks/HBox/EndWeek" to="Navigation/Time/TimePanel/TotalWeeks" method="_on_EndWeek_pressed"]
+[connection signal="timeout" from="Navigation/Time/TimePanel/TotalWeeks/Timer" to="Navigation/Time/TimePanel/TotalWeeks" method="_on_Timer_timeout"]
+[connection signal="mouse_entered" from="Navigation/Time/TimePanel/PlayPause/Play/Button" to="Navigation/Time/TimePanel/PlayPause" method="_on_Button_mouse_entered" binds= [ "Play" ]]
+[connection signal="mouse_exited" from="Navigation/Time/TimePanel/PlayPause/Play/Button" to="Navigation/Time/TimePanel/PlayPause" method="_on_Button_mouse_exited" binds= [ "Play" ]]
+[connection signal="pressed" from="Navigation/Time/TimePanel/PlayPause/Play/Button" to="Navigation/Time/TimePanel/PlayPause" method="_on_Play_pressed"]
+[connection signal="mouse_entered" from="Navigation/Time/TimePanel/PlayPause/Pause/Button" to="Navigation/Time/TimePanel/PlayPause" method="_on_Button_mouse_entered" binds= [ "Pause" ]]
+[connection signal="mouse_exited" from="Navigation/Time/TimePanel/PlayPause/Pause/Button" to="Navigation/Time/TimePanel/PlayPause" method="_on_Button_mouse_exited" binds= [ "Pause" ]]
+[connection signal="pressed" from="Navigation/Time/TimePanel/PlayPause/Pause/Button" to="Navigation/Time/TimePanel/PlayPause" method="_on_Pause_pressed"]
 [connection signal="value_changed" from="Navigation/Time/TimePanel/Controls/Sliders/ClockSpeed" to="Navigation/Time/TimePanel/Controls" method="_on_ClockSpeed_value_changed"]
 [connection signal="value_changed" from="Navigation/Time/TimePanel/Controls/Sliders/TimeScale" to="Navigation/Time/TimePanel/Controls" method="_on_TimeScale_value_changed"]
 [connection signal="mouse_entered" from="Navigation/Time/Button" to="Navigation/Time" method="_on_mouse_entered"]

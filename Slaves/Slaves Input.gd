@@ -1,12 +1,17 @@
-extends Node
+extends Spatial
 
-onready var slaves = get_parent()
 onready var gui = game.get_gui()
 
 var active_input
 
+var cam_pos = 7.0
+var min_camera_pos = 7
+var max_camera_pos = 0.0
+
 func _input(event):
-	if not slaves.is_visible_in_tree():
+	if not is_visible_in_tree():
+		return
+	if game.popup_is_visible():
 		return
 	var active_camera = get_viewport().get_camera()
 	if active_camera.get_parent().name != "Slaves":
@@ -38,23 +43,24 @@ func _input(event):
 			active_camera.deactivate()
 	elif event.is_class("InputEventMouseMotion") and active_input: # add android swipe here?
 		if event.button_mask&(BUTTON_MASK_LEFT):
-			slaves.cam_pos -= event.relative.x * 0.015
+			cam_pos -= event.relative.x * 0.015
 			slide = true
 	elif event.is_action_pressed('ui_page_up'):# and not mouse_over_ui_panel:
 		if not mouse_over_ui_panel:
-			slaves.cam_pos -= 2
+			cam_pos -= 2
 			slide = true
 		else:
 			active_input = false
 	elif event.is_action_pressed('ui_page_down'):# and not mouse_over_ui_panel:
 		if not mouse_over_ui_panel:
-			slaves.cam_pos += 2
+			cam_pos += 2
 			slide = true
 		else:
 			active_input = false
 	if slide and active_input:
-		slaves.max_camera_pos = SlaveUtils.slave_count(slaves.active_collection.name)*5+0.7
-		if SlaveUtils.slave_count(slaves.active_collection.name) == 1:
-			slaves.max_camera_pos *= 1.3
-		slaves.clamp_camera_position()
-		slaves.slide_camera()
+		var active_collection = get("active_collection")
+		max_camera_pos = SlaveUtils.slave_count(active_collection.name)*5+0.7
+		if SlaveUtils.slave_count(active_collection.name) == 1:
+			max_camera_pos *= 1.3
+		call("clamp_camera_position")
+		call("slide_camera")

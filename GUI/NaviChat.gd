@@ -2,7 +2,29 @@ extends Control
 
 var is_active
 
-func say(file):
+func say(text,instant:=false):
+	if time.fast_forward:
+		yield(time,"ff_end")
+		instant = true
+	if is_active:
+		new_message_text(text,instant)
+	else:
+		new_message_text(text,instant)
+		$ChatLog.show()
+		show_chatline()
+		animate_message(
+			'modulate',
+			Color('00ffffff'),
+			Color('ffffff'))
+		animate_message(
+			'rect_position:y',
+			$ChatLog.get_child(0).rect_position.y + 10,
+			$ChatLog.get_child(0).rect_position.y)
+		for message in $ChatLog.get_children():
+			message.hide()
+		$ChatLog.get_child(0).show()
+
+func read(file):
 	if is_active:
 		new_message(file)
 	else:
@@ -28,12 +50,24 @@ func new_message(file):
 	$ChatLog.move_child(new_message,0)
 	new_message.read(file)
 
+func new_message_text(text,instant):
+	var new_message = $Message.duplicate()
+	new_message.show()
+	$ChatLog.add_child(new_message)
+	$ChatLog.move_child(new_message,0)
+	new_message.dialogue(text,instant)
+
 func remove_message(index):
 	var selected_msg = $ChatLog.get_child(index)
+	yield(get_tree(),"idle_frame")
 	$ChatLog.remove_child(selected_msg)
 	selected_msg.queue_free()
-	for message in $ChatLog.get_children():
-		message.reposition()
+	if not $ChatLog.get_children().empty():
+		for message in $ChatLog.get_children():
+			message.reposition()
+	var navi_button = get_node("../NaviButton/Button")
+	if not navi_button.pressed:
+		deactivate()
 
 func animate_message(property,start,end):
 	$Tween.interpolate_property(
@@ -52,6 +86,7 @@ func activate():
 	$ChatLog.show()
 	for message in $ChatLog.get_children():
 		message.show()
+		message.resize()
 	navi_action_button.show()
 	show_background()
 	show_chatline()
@@ -63,7 +98,7 @@ func deactivate():
 		message.get_node("Button").pressed = false
 		message._on_toggled(false)
 		message._on_mouse_exited()
-	_on_NaviActionButton_toggled(false)
+	get_node("../NaviPanel")._on_NaviActionButton_toggled(false)
 	navi_action_button.pressed = false
 	navi_action_button.hide()
 	hide_background()
@@ -131,21 +166,7 @@ func animate_background(mode):
 			'self_modulate',
 			Color(visibility[0]),
 			Color(visibility[1]),
-			0.6,
+			0.4,
 			Tween.TRANS_QUAD,
 			Tween.EASE_OUT)
 	chat_background_tween.start()
-
-func _on_NaviActionButton_toggled(button_pressed):
-	var navi_panel = get_node("../NaviPanel")
-	if button_pressed:
-		navi_panel.show()
-		navi_action_button.set_text("<<End Query>>")
-		for message in $ChatLog.get_children():
-			if message.get_node("Button").pressed:
-				message.get_node("Button").pressed = false
-				message._on_toggled(false)
-				message._on_mouse_exited()
-	else:
-		navi_panel.hide()
-		navi_action_button.set_text("<<Query Navi>>")

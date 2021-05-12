@@ -1,7 +1,7 @@
 extends Control
 
 func _ready():
-	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'update_time')
+	time.connect('tick',self,'update_time')
 	get_tree().get_root().connect('size_changed',self,'resize')
 	update_time()
 	resize()
@@ -17,10 +17,12 @@ func resize():
 	get_node("Label Top").get('custom_fonts/font').size = clamp(scale_large,10,16)
 
 func update_time():
+	yield(get_tree(),"idle_frame")
 	$LabelTop.set_text(hour()+":"+minute()+"\n"+day())
 	$LabelBot.set_text("Week "+week()+"\n"+quarter()+" "+str(time.year))
 	$TimePanel/Calendar/Date.set_text(day()+", "+quarter()+" "+str(time.year))
 	$TimePanel/Calendar/Time.set_text(hour()+":"+minute())
+	$TimePanel/TotalWeeks.set_text("Week "+str(time.total_weeks))
 	for nodes in get_tree().get_nodes_in_group('Days'):
 		nodes.set_modulate('28ffffff')
 	for nodes in get_tree().get_nodes_in_group('Weeks'):

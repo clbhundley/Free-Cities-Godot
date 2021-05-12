@@ -1,85 +1,76 @@
-extends Spatial
+extends "res://Slaves/Slave Properties.gd"
 
-var ethnicity
-var skin_color
-var tissue_color
-var hair_color_natural
-var hair_color
-var hair_style
-var gender
-var genitals
-var penis_size
-var testicles_size
-var vagina
-var chest
-var age
-var height
-var weight
-var health
-var fatigue
-var is_awake
-var hunger
-var bathroom
-var arousal
-var libido
-var male_attraction
-var female_attraction
-var intelligence
-var devotion
-var trust
-var happiness
-var social
-var face
-var figure
-var hips
-var voice
-var sexual_skill
-var oral_skill
-var anal_skill
-var vaginal_skill
-var penis_skill
-var prostitution_skill
-var entertainment_skill
-var combat_skill
-var acquired
-var assignment
-var action
-var queued_action
-var for_sale = false
-
-var flags = {}
-
-var quarters = "P5"
-var location
-var destination
-var travel_mode
-
-onready var stats = get_node("Scripts/Stats")
-onready var ui = get_node("UI")
+onready var model = $Model
+onready var stats = $Stats
+onready var ui = $UI
 
 func _ready():
-	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'tick')
 	if not action:
-		action = "Idle"
+		action = $Actions/Idle
 	if not assignment:
 		assignment = "Resting"
+	if health == 0:
+		die()
+	elif not for_sale:
+		activate()
+		yield(game.get_gui(),"ready")
+		game.get_gui().get_node("SidePanel/Regimen").load_settings(self)
+	$UI.set_level()
 
-func get_level():
-	return get_node('Scripts/Stats')._level()
+func activate():
+	if not time.is_connected("tick",self,"tick"):
+		time.connect('tick',self,'tick')
+
+func deactivate():
+	if time.is_connected("tick",self,"tick"):
+		time.disconnect('tick',self,'tick')
 
 func tick():
-	if not for_sale:
-		get_node('Scripts/Actions/'+action).tick()
-		for effect in get_node('Scripts/Effects').get_children():
-			if effect.active:
-				effect.tick()
+	action.tick()
+
+func inseminate():
+	if pregnancy or regimen.has("Contraception"):
+		return
+	if randi()%10000 > round(fertility * 1000): # 0%-10% chance
+		return
+	var due = time.get_forward_time(
+		randi()%60,
+		randi()%60,
+		randi()%24,
+		randi()%7,
+		int(math.gaussian(39,1)))
+	var babies = 1
+	if randi()%1000 == 0:
+		babies = 5
+	elif randi()%250 == 0:
+		babies = 4
+	elif randi()%100 == 0:
+		babies = 3
+	elif randi()%50 == 0:
+		babies = 2
+	pregnancy = {
+		"conceived":time.get_timestamp(),
+		"due":due,
+		"babies":babies}
+	$Effects/Pregnancy.activate()
+
+func die():
+	pregnancy = null
+	$Effects.deactivate_all()
+	deactivate()
+	$UI/Top/Status.set_text("Deceased")
+	$UI/Top/Status.set_modulate("860000")
+	$UI/Panel/Buttons/Assignment.disabled = true
 
 func _action_ended():
-	get_node('Scripts/Assignments/'+assignment).next_action()
+	get_node('Assignments/'+assignment).next_action()
 	get_node('UI/Activity/Time').set_text("Done")
 	get_node('UI/Activity/Action').set_text("")
 
 func _data():
+	var _queued_action
+	if queued_action:
+		_queued_action = queued_action.name
 	return {
 		slave_data = {
 			ethnicity = ethnicity,
@@ -97,6 +88,9 @@ func _data():
 			testicles_size = testicles_size,
 			vagina = vagina,
 			chest = chest,
+			fertility = fertility,
+			pregnancy = pregnancy,
+			pregnancy_history = pregnancy_history,
 			face = face,
 			figure = figure,
 			voice = voice,
@@ -123,15 +117,20 @@ func _data():
 			is_awake = is_awake,
 			for_sale = for_sale,
 			acquired = acquired,
+			diet = diet,
+			diet_base = diet_base,
+			regimen = regimen,
+			rules = rules,
+			wardrobe = wardrobe,
 			assignment = assignment,
-			action = action,
-			current_time = get_node('Scripts/Actions/'+action).current_time,
-			total_time = get_node('Scripts/Actions/'+action).total_time,
+			action = action.name,
+			current_time = action.current_time,
+			total_time = action.total_time,
+			queued_action = _queued_action,
 			quarters = quarters,
 			location = location,
 			destination = destination,
-			travel_mode = travel_mode,
-			queued_action = queued_action},
+			travel_mode = travel_mode},
 		model_data = {
 			masculinity = $Model.masculinity,
 			genitals_male_adjustment = $Model.genitals_male_adjustment,
@@ -155,25 +154,33 @@ func _data():
 			penis_micro = $Model.penis_micro}}
 
 func _load(_data):
-	for setting in _data["slave_data"]:
-		set(setting, _data["slave_data"][setting])
+	var slave_data = _data["slave_data"]
+	for setting in slave_data:
+		if setting == "health":
+			health = slave_data[setting]
+		elif setting == "action":
+			action = get_node('Actions/'+slave_data["action"])
+		elif setting == "queued_action" and slave_data["queued_action"]:
+			queued_action = get_node('Actions/'+slave_data["queued_action"])
+		else:
+			set(setting, slave_data[setting])
 	$Model.model_data = _data["model_data"]
-	get_node('Scripts/Actions/'+action).current_time = _data["slave_data"]['current_time']
-	get_node('Scripts/Actions/'+action).total_time = _data["slave_data"]['total_time']
-	if get_node('Scripts/Actions/'+action).total_time:
-		get_node('UI/Activity/ProgressBar').max_value = get_node('Scripts/Actions/'+action).total_time
-		get_node('UI/Activity/ProgressBar').value = get_node('Scripts/Actions/'+action).current_time
+	action.current_time = _data["slave_data"]['current_time']
+	action.total_time = _data["slave_data"]['total_time']
+	if action.total_time:
+		get_node('UI/Activity/ProgressBar').max_value = action.total_time
+		get_node('UI/Activity/ProgressBar').value = action.current_time
 
-func _get_properties(input):
-	var properties = input.get_property_list()
-	var array = []
-	for i in properties.size():
-		array.append(properties[i].name)
-	var slice = array.find('Script Variables')+1
-	var dict = {}
-	for i in range(slice,array.size()):
-		dict[array[i]] = input.get(array[i])
-	return dict
+#func _get_properties(input):
+#	var properties = input.get_property_list()
+#	var array = []
+#	for i in properties.size():
+#		array.append(properties[i].name)
+#	var slice = array.find('Script Variables')+1
+#	var dict = {}
+#	for i in range(slice,array.size()):
+#		dict[array[i]] = input.get(array[i])
+#	return dict
 
 #var breasts = Breasts.new()
 #class Breasts:

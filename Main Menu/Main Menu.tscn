@@ -1,6 +1,5 @@
-[gd_scene load_steps=28 format=2]
+[gd_scene load_steps=27 format=2]
 
-[ext_resource path="res://Main Menu/Main Menu Input.gd" type="Script" id=1]
 [ext_resource path="res://Main Menu/arcghost.png" type="Texture" id=2]
 [ext_resource path="res://Main Menu/Buttons/new normal.png" type="Texture" id=3]
 [ext_resource path="res://Main Menu/Buttons/new pressed.png" type="Texture" id=4]
@@ -108,9 +107,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Input" type="Node" parent="."]
-script = ExtResource( 1 )
-
 [node name="background" type="TextureRect" parent="."]
 modulate = Color( 0, 0, 0, 1 )
 anchor_right = 1.0
@@ -217,7 +213,7 @@ visible = false
 [node name="Options" parent="." instance=ExtResource( 17 )]
 visible = false
 
-[node name="New Game" type="Control" parent="."]
+[node name="NewGame" type="Control" parent="."]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -225,7 +221,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Saves" type="Control" parent="New Game"]
+[node name="Saves" type="Control" parent="NewGame"]
 self_modulate = Color( 0.286377, 0.569544, 0.796875, 1 )
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -233,12 +229,12 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="BG" type="Panel" parent="New Game/Saves"]
+[node name="BG" type="Panel" parent="NewGame/Saves"]
 modulate = Color( 0, 0, 0, 1 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="Data" type="Panel" parent="New Game/Saves"]
+[node name="Data" type="Panel" parent="NewGame/Saves"]
 anchor_left = 0.408
 anchor_top = 0.371
 anchor_right = 0.593
@@ -251,7 +247,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="New Game/Saves/Data"]
+[node name="Label" type="Label" parent="NewGame/Saves/Data"]
 anchor_left = 0.5
 anchor_right = 0.5
 margin_left = -117.5
@@ -265,7 +261,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Slots" type="Control" parent="New Game/Saves/Data"]
+[node name="Slots" type="Control" parent="NewGame/Saves/Data"]
 anchor_left = 0.107357
 anchor_top = 0.143464
 anchor_right = 0.892643
@@ -274,7 +270,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="1" type="Control" parent="New Game/Saves/Data/Slots"]
+[node name="1" type="Control" parent="NewGame/Saves/Data/Slots"]
 anchor_right = 0.999444
 anchor_bottom = 0.0825243
 rect_min_size = Vector2( 0, 34 )
@@ -284,7 +280,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Top Line" type="TextureRect" parent="New Game/Saves/Data/Slots/1"]
+[node name="Top Line" type="TextureRect" parent="NewGame/Saves/Data/Slots/1"]
 modulate = Color( 1, 1, 1, 0.392157 )
 anchor_right = 1.0
 margin_top = -1.0
@@ -296,7 +292,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="New Game/Saves/Data/Slots/1"]
+[node name="Label" type="Label" parent="NewGame/Saves/Data/Slots/1"]
 anchor_left = -0.0382409
 anchor_top = 0.176471
 anchor_right = -0.0152964
@@ -309,7 +305,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Info" type="Label" parent="New Game/Saves/Data/Slots/1"]
+[node name="Info" type="Label" parent="NewGame/Saves/Data/Slots/1"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -325,7 +321,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Bottom Line" type="TextureRect" parent="New Game/Saves/Data/Slots/1"]
+[node name="Bottom Line" type="TextureRect" parent="NewGame/Saves/Data/Slots/1"]
 modulate = Color( 1, 1, 1, 0.392157 )
 anchor_top = 1.0
 anchor_right = 1.0
@@ -334,11 +330,11 @@ rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
 
-[node name="Button" type="TextureButton" parent="New Game/Saves/Data/Slots/1"]
+[node name="Button" type="TextureButton" parent="NewGame/Saves/Data/Slots/1"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="ConfirmationDialog" type="ConfirmationDialog" parent="New Game/Saves/Data/Slots/1"]
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="NewGame/Saves/Data/Slots/1"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -352,7 +348,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="2" type="Control" parent="New Game/Saves/Data/Slots"]
+[node name="2" type="Control" parent="NewGame/Saves/Data/Slots"]
 anchor_top = 0.131068
 anchor_right = 0.999444
 anchor_bottom = 0.213592
@@ -363,7 +359,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Top Line" type="TextureRect" parent="New Game/Saves/Data/Slots/2"]
+[node name="Top Line" type="TextureRect" parent="NewGame/Saves/Data/Slots/2"]
 modulate = Color( 1, 1, 1, 0.392157 )
 anchor_right = 1.0
 margin_top = -1.0
@@ -375,7 +371,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="New Game/Saves/Data/Slots/2"]
+[node name="Label" type="Label" parent="NewGame/Saves/Data/Slots/2"]
 anchor_left = -0.0382409
 anchor_top = 0.176471
 anchor_right = -0.0152964
@@ -388,7 +384,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Info" type="Label" parent="New Game/Saves/Data/Slots/2"]
+[node name="Info" type="Label" parent="NewGame/Saves/Data/Slots/2"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -401,7 +397,7 @@ custom_fonts/font = ExtResource( 15 )
 align = 1
 valign = 1
 
-[node name="Bottom Line" type="TextureRect" parent="New Game/Saves/Data/Slots/2"]
+[node name="Bottom Line" type="TextureRect" parent="NewGame/Saves/Data/Slots/2"]
 modulate = Color( 1, 1, 1, 0.392157 )
 anchor_top = 1.0
 anchor_right = 1.0
@@ -410,11 +406,11 @@ rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
 
-[node name="Button" type="TextureButton" parent="New Game/Saves/Data/Slots/2"]
+[node name="Button" type="TextureButton" parent="NewGame/Saves/Data/Slots/2"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="ConfirmationDialog" type="ConfirmationDialog" parent="New Game/Saves/Data/Slots/2"]
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="NewGame/Saves/Data/Slots/2"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -428,7 +424,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="3" type="Control" parent="New Game/Saves/Data/Slots"]
+[node name="3" type="Control" parent="NewGame/Saves/Data/Slots"]
 anchor_top = 0.262136
 anchor_right = 0.999444
 anchor_bottom = 0.34466
@@ -439,7 +435,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Top Line" type="TextureRect" parent="New Game/Saves/Data/Slots/3"]
+[node name="Top Line" type="TextureRect" parent="NewGame/Saves/Data/Slots/3"]
 modulate = Color( 1, 1, 1, 0.392157 )
 anchor_right = 1.0
 margin_top = -1.0
@@ -451,7 +447,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="New Game/Saves/Data/Slots/3"]
+[node name="Label" type="Label" parent="NewGame/Saves/Data/Slots/3"]
 anchor_left = -0.0382409
 anchor_top = 0.176471
 anchor_right = -0.0152964
@@ -464,7 +460,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Info" type="Label" parent="New Game/Saves/Data/Slots/3"]
+[node name="Info" type="Label" parent="NewGame/Saves/Data/Slots/3"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -477,7 +473,7 @@ custom_fonts/font = ExtResource( 15 )
 align = 1
 valign = 1
 
-[node name="Bottom Line" type="TextureRect" parent="New Game/Saves/Data/Slots/3"]
+[node name="Bottom Line" type="TextureRect" parent="NewGame/Saves/Data/Slots/3"]
 modulate = Color( 1, 1, 1, 0.392157 )
 anchor_top = 1.0
 anchor_right = 1.0
@@ -486,11 +482,11 @@ rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
 
-[node name="Button" type="TextureButton" parent="New Game/Saves/Data/Slots/3"]
+[node name="Button" type="TextureButton" parent="NewGame/Saves/Data/Slots/3"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="ConfirmationDialog" type="ConfirmationDialog" parent="New Game/Saves/Data/Slots/3"]
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="NewGame/Saves/Data/Slots/3"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -504,7 +500,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="4" type="Control" parent="New Game/Saves/Data/Slots"]
+[node name="4" type="Control" parent="NewGame/Saves/Data/Slots"]
 anchor_top = 0.393204
 anchor_right = 0.999444
 anchor_bottom = 0.475728
@@ -515,7 +511,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Top Line" type="TextureRect" parent="New Game/Saves/Data/Slots/4"]
+[node name="Top Line" type="TextureRect" parent="NewGame/Saves/Data/Slots/4"]
 modulate = Color( 1, 1, 1, 0.392157 )
 anchor_right = 1.0
 margin_top = -1.0
@@ -527,7 +523,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="New Game/Saves/Data/Slots/4"]
+[node name="Label" type="Label" parent="NewGame/Saves/Data/Slots/4"]
 anchor_left = -0.0382409
 anchor_top = 0.176471
 anchor_right = -0.0152964
@@ -540,7 +536,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Info" type="Label" parent="New Game/Saves/Data/Slots/4"]
+[node name="Info" type="Label" parent="NewGame/Saves/Data/Slots/4"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -556,7 +552,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Bottom Line" type="TextureRect" parent="New Game/Saves/Data/Slots/4"]
+[node name="Bottom Line" type="TextureRect" parent="NewGame/Saves/Data/Slots/4"]
 modulate = Color( 1, 1, 1, 0.392157 )
 anchor_top = 1.0
 anchor_right = 1.0
@@ -565,11 +561,11 @@ rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
 
-[node name="Button" type="TextureButton" parent="New Game/Saves/Data/Slots/4"]
+[node name="Button" type="TextureButton" parent="NewGame/Saves/Data/Slots/4"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="ConfirmationDialog" type="ConfirmationDialog" parent="New Game/Saves/Data/Slots/4"]
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="NewGame/Saves/Data/Slots/4"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -583,7 +579,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="5" type="Control" parent="New Game/Saves/Data/Slots"]
+[node name="5" type="Control" parent="NewGame/Saves/Data/Slots"]
 anchor_top = 0.524272
 anchor_right = 0.999444
 anchor_bottom = 0.606796
@@ -595,7 +591,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Top Line" type="TextureRect" parent="New Game/Saves/Data/Slots/5"]
+[node name="Top Line" type="TextureRect" parent="NewGame/Saves/Data/Slots/5"]
 modulate = Color( 1, 1, 1, 0.392157 )
 anchor_right = 1.0
 margin_top = -1.0
@@ -607,7 +603,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="New Game/Saves/Data/Slots/5"]
+[node name="Label" type="Label" parent="NewGame/Saves/Data/Slots/5"]
 anchor_left = -0.0382409
 anchor_top = 0.176471
 anchor_right = -0.0152964
@@ -620,7 +616,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Info" type="Label" parent="New Game/Saves/Data/Slots/5"]
+[node name="Info" type="Label" parent="NewGame/Saves/Data/Slots/5"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -633,7 +629,7 @@ custom_fonts/font = ExtResource( 15 )
 align = 1
 valign = 1
 
-[node name="Bottom Line" type="TextureRect" parent="New Game/Saves/Data/Slots/5"]
+[node name="Bottom Line" type="TextureRect" parent="NewGame/Saves/Data/Slots/5"]
 modulate = Color( 1, 1, 1, 0.392157 )
 anchor_top = 1.0
 anchor_right = 1.0
@@ -642,11 +638,11 @@ rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
 
-[node name="Button" type="TextureButton" parent="New Game/Saves/Data/Slots/5"]
+[node name="Button" type="TextureButton" parent="NewGame/Saves/Data/Slots/5"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="ConfirmationDialog" type="ConfirmationDialog" parent="New Game/Saves/Data/Slots/5"]
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="NewGame/Saves/Data/Slots/5"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -660,7 +656,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="6" type="Control" parent="New Game/Saves/Data/Slots"]
+[node name="6" type="Control" parent="NewGame/Saves/Data/Slots"]
 anchor_top = 0.65534
 anchor_right = 0.999444
 anchor_bottom = 0.737864
@@ -671,7 +667,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Top Line" type="TextureRect" parent="New Game/Saves/Data/Slots/6"]
+[node name="Top Line" type="TextureRect" parent="NewGame/Saves/Data/Slots/6"]
 modulate = Color( 1, 1, 1, 0.392157 )
 anchor_right = 1.0
 margin_top = -1.0
@@ -683,7 +679,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="New Game/Saves/Data/Slots/6"]
+[node name="Label" type="Label" parent="NewGame/Saves/Data/Slots/6"]
 anchor_left = -0.0382409
 anchor_top = 0.176471
 anchor_right = -0.0152964
@@ -696,7 +692,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Info" type="Label" parent="New Game/Saves/Data/Slots/6"]
+[node name="Info" type="Label" parent="NewGame/Saves/Data/Slots/6"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -709,7 +705,7 @@ custom_fonts/font = ExtResource( 15 )
 align = 1
 valign = 1
 
-[node name="Bottom Line" type="TextureRect" parent="New Game/Saves/Data/Slots/6"]
+[node name="Bottom Line" type="TextureRect" parent="NewGame/Saves/Data/Slots/6"]
 modulate = Color( 1, 1, 1, 0.392157 )
 anchor_top = 1.0
 anchor_right = 1.0
@@ -718,11 +714,11 @@ rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
 
-[node name="Button" type="TextureButton" parent="New Game/Saves/Data/Slots/6"]
+[node name="Button" type="TextureButton" parent="NewGame/Saves/Data/Slots/6"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="ConfirmationDialog" type="ConfirmationDialog" parent="New Game/Saves/Data/Slots/6"]
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="NewGame/Saves/Data/Slots/6"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -736,7 +732,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="7" type="Control" parent="New Game/Saves/Data/Slots"]
+[node name="7" type="Control" parent="NewGame/Saves/Data/Slots"]
 anchor_top = 0.786408
 anchor_right = 0.999444
 anchor_bottom = 0.868932
@@ -747,7 +743,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Top Line" type="TextureRect" parent="New Game/Saves/Data/Slots/7"]
+[node name="Top Line" type="TextureRect" parent="NewGame/Saves/Data/Slots/7"]
 modulate = Color( 1, 1, 1, 0.392157 )
 anchor_right = 1.0
 margin_top = -1.0
@@ -759,7 +755,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="New Game/Saves/Data/Slots/7"]
+[node name="Label" type="Label" parent="NewGame/Saves/Data/Slots/7"]
 anchor_left = -0.0382409
 anchor_top = 0.176471
 anchor_right = -0.0152964
@@ -772,7 +768,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Info" type="Label" parent="New Game/Saves/Data/Slots/7"]
+[node name="Info" type="Label" parent="NewGame/Saves/Data/Slots/7"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -785,7 +781,7 @@ custom_fonts/font = ExtResource( 15 )
 align = 1
 valign = 1
 
-[node name="Bottom Line" type="TextureRect" parent="New Game/Saves/Data/Slots/7"]
+[node name="Bottom Line" type="TextureRect" parent="NewGame/Saves/Data/Slots/7"]
 modulate = Color( 1, 1, 1, 0.392157 )
 anchor_top = 1.0
 anchor_right = 1.0
@@ -794,11 +790,11 @@ rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
 
-[node name="Button" type="TextureButton" parent="New Game/Saves/Data/Slots/7"]
+[node name="Button" type="TextureButton" parent="NewGame/Saves/Data/Slots/7"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="ConfirmationDialog" type="ConfirmationDialog" parent="New Game/Saves/Data/Slots/7"]
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="NewGame/Saves/Data/Slots/7"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -812,7 +808,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="8" type="Control" parent="New Game/Saves/Data/Slots"]
+[node name="8" type="Control" parent="NewGame/Saves/Data/Slots"]
 anchor_top = 0.917476
 anchor_right = 0.999444
 anchor_bottom = 1.0
@@ -823,7 +819,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Top Line" type="TextureRect" parent="New Game/Saves/Data/Slots/8"]
+[node name="Top Line" type="TextureRect" parent="NewGame/Saves/Data/Slots/8"]
 modulate = Color( 1, 1, 1, 0.392157 )
 anchor_right = 1.0
 margin_top = -1.0
@@ -835,7 +831,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="New Game/Saves/Data/Slots/8"]
+[node name="Label" type="Label" parent="NewGame/Saves/Data/Slots/8"]
 anchor_left = -0.0382409
 anchor_top = 0.176471
 anchor_right = -0.0152964
@@ -848,7 +844,7 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Info" type="Label" parent="New Game/Saves/Data/Slots/8"]
+[node name="Info" type="Label" parent="NewGame/Saves/Data/Slots/8"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -861,7 +857,7 @@ custom_fonts/font = ExtResource( 15 )
 align = 1
 valign = 1
 
-[node name="Bottom Line" type="TextureRect" parent="New Game/Saves/Data/Slots/8"]
+[node name="Bottom Line" type="TextureRect" parent="NewGame/Saves/Data/Slots/8"]
 modulate = Color( 1, 1, 1, 0.392157 )
 anchor_top = 1.0
 anchor_right = 1.0
@@ -870,11 +866,11 @@ rect_min_size = Vector2( 0, 2 )
 texture = ExtResource( 19 )
 expand = true
 
-[node name="Button" type="TextureButton" parent="New Game/Saves/Data/Slots/8"]
+[node name="Button" type="TextureButton" parent="NewGame/Saves/Data/Slots/8"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="ConfirmationDialog" type="ConfirmationDialog" parent="New Game/Saves/Data/Slots/8"]
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="NewGame/Saves/Data/Slots/8"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -888,7 +884,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Back" type="Button" parent="New Game/Saves"]
+[node name="Back" type="Button" parent="NewGame/Saves"]
 anchor_left = 0.460938
 anchor_top = 0.699
 anchor_right = 0.539
@@ -920,40 +916,41 @@ This is a work of fiction; any resemblance to actual persons, places, or events 
 
 Press \"OK\" only if you are 18 years of age or older."
 script = SubResource( 4 )
-[connection signal="pressed" from="Buttons/New Game" to="Input" method="_on_New_Game_pressed"]
-[connection signal="pressed" from="Buttons/Load Game" to="Input" method="_on_Load_Game_pressed"]
-[connection signal="pressed" from="Buttons/Options" to="Input" method="_on_Options_pressed"]
-[connection signal="pressed" from="Buttons/Exit" to="Input" method="_on_Exit_pressed"]
-[connection signal="mouse_entered" from="New Game/Saves/Data/Slots/1/Button" to="New Game/Saves/Data/Slots/1" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="New Game/Saves/Data/Slots/1/Button" to="New Game/Saves/Data/Slots/1" method="_on_mouse_exited"]
-[connection signal="pressed" from="New Game/Saves/Data/Slots/1/Button" to="New Game/Saves/Data/Slots/1" method="_on_pressed"]
-[connection signal="confirmed" from="New Game/Saves/Data/Slots/1/ConfirmationDialog" to="New Game/Saves/Data/Slots/1" method="_on_ConfirmationDialog_confirmed"]
-[connection signal="mouse_entered" from="New Game/Saves/Data/Slots/2/Button" to="New Game/Saves/Data/Slots/2" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="New Game/Saves/Data/Slots/2/Button" to="New Game/Saves/Data/Slots/2" method="_on_mouse_exited"]
-[connection signal="pressed" from="New Game/Saves/Data/Slots/2/Button" to="New Game/Saves/Data/Slots/2" method="_on_pressed"]
-[connection signal="confirmed" from="New Game/Saves/Data/Slots/2/ConfirmationDialog" to="New Game/Saves/Data/Slots/2" method="_on_ConfirmationDialog_confirmed"]
-[connection signal="mouse_entered" from="New Game/Saves/Data/Slots/3/Button" to="New Game/Saves/Data/Slots/3" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="New Game/Saves/Data/Slots/3/Button" to="New Game/Saves/Data/Slots/3" method="_on_mouse_exited"]
-[connection signal="pressed" from="New Game/Saves/Data/Slots/3/Button" to="New Game/Saves/Data/Slots/3" method="_on_pressed"]
-[connection signal="confirmed" from="New Game/Saves/Data/Slots/3/ConfirmationDialog" to="New Game/Saves/Data/Slots/3" method="_on_ConfirmationDialog_confirmed"]
-[connection signal="mouse_entered" from="New Game/Saves/Data/Slots/4/Button" to="New Game/Saves/Data/Slots/4" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="New Game/Saves/Data/Slots/4/Button" to="New Game/Saves/Data/Slots/4" method="_on_mouse_exited"]
-[connection signal="pressed" from="New Game/Saves/Data/Slots/4/Button" to="New Game/Saves/Data/Slots/4" method="_on_pressed"]
-[connection signal="confirmed" from="New Game/Saves/Data/Slots/4/ConfirmationDialog" to="New Game/Saves/Data/Slots/4" method="_on_ConfirmationDialog_confirmed"]
-[connection signal="mouse_entered" from="New Game/Saves/Data/Slots/5/Button" to="New Game/Saves/Data/Slots/5" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="New Game/Saves/Data/Slots/5/Button" to="New Game/Saves/Data/Slots/5" method="_on_mouse_exited"]
-[connection signal="pressed" from="New Game/Saves/Data/Slots/5/Button" to="New Game/Saves/Data/Slots/5" method="_on_pressed"]
-[connection signal="confirmed" from="New Game/Saves/Data/Slots/5/ConfirmationDialog" to="New Game/Saves/Data/Slots/5" method="_on_ConfirmationDialog_confirmed"]
-[connection signal="mouse_entered" from="New Game/Saves/Data/Slots/6/Button" to="New Game/Saves/Data/Slots/6" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="New Game/Saves/Data/Slots/6/Button" to="New Game/Saves/Data/Slots/6" method="_on_mouse_exited"]
-[connection signal="pressed" from="New Game/Saves/Data/Slots/6/Button" to="New Game/Saves/Data/Slots/6" method="_on_pressed"]
-[connection signal="confirmed" from="New Game/Saves/Data/Slots/6/ConfirmationDialog" to="New Game/Saves/Data/Slots/6" method="_on_ConfirmationDialog_confirmed"]
-[connection signal="mouse_entered" from="New Game/Saves/Data/Slots/7/Button" to="New Game/Saves/Data/Slots/7" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="New Game/Saves/Data/Slots/7/Button" to="New Game/Saves/Data/Slots/7" method="_on_mouse_exited"]
-[connection signal="pressed" from="New Game/Saves/Data/Slots/7/Button" to="New Game/Saves/Data/Slots/7" method="_on_pressed"]
-[connection signal="confirmed" from="New Game/Saves/Data/Slots/7/ConfirmationDialog" to="New Game/Saves/Data/Slots/7" method="_on_ConfirmationDialog_confirmed"]
-[connection signal="mouse_entered" from="New Game/Saves/Data/Slots/8/Button" to="New Game/Saves/Data/Slots/8" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="New Game/Saves/Data/Slots/8/Button" to="New Game/Saves/Data/Slots/8" method="_on_mouse_exited"]
-[connection signal="pressed" from="New Game/Saves/Data/Slots/8/Button" to="New Game/Saves/Data/Slots/8" method="_on_pressed"]
-[connection signal="confirmed" from="New Game/Saves/Data/Slots/8/ConfirmationDialog" to="New Game/Saves/Data/Slots/8" method="_on_ConfirmationDialog_confirmed"]
-[connection signal="pressed" from="New Game/Saves/Back" to="Input" method="_on_New_Game_Back_pressed"]
+
+[connection signal="pressed" from="Buttons/New Game" to="." method="_on_New_Game_pressed"]
+[connection signal="pressed" from="Buttons/Load Game" to="." method="_on_Load_Game_pressed"]
+[connection signal="pressed" from="Buttons/Options" to="." method="_on_Options_pressed"]
+[connection signal="pressed" from="Buttons/Exit" to="." method="_on_Exit_pressed"]
+[connection signal="mouse_entered" from="NewGame/Saves/Data/Slots/1/Button" to="NewGame/Saves/Data/Slots/1" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="NewGame/Saves/Data/Slots/1/Button" to="NewGame/Saves/Data/Slots/1" method="_on_mouse_exited"]
+[connection signal="pressed" from="NewGame/Saves/Data/Slots/1/Button" to="NewGame/Saves/Data/Slots/1" method="_on_pressed"]
+[connection signal="confirmed" from="NewGame/Saves/Data/Slots/1/ConfirmationDialog" to="NewGame/Saves/Data/Slots/1" method="_on_ConfirmationDialog_confirmed"]
+[connection signal="mouse_entered" from="NewGame/Saves/Data/Slots/2/Button" to="NewGame/Saves/Data/Slots/2" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="NewGame/Saves/Data/Slots/2/Button" to="NewGame/Saves/Data/Slots/2" method="_on_mouse_exited"]
+[connection signal="pressed" from="NewGame/Saves/Data/Slots/2/Button" to="NewGame/Saves/Data/Slots/2" method="_on_pressed"]
+[connection signal="confirmed" from="NewGame/Saves/Data/Slots/2/ConfirmationDialog" to="NewGame/Saves/Data/Slots/2" method="_on_ConfirmationDialog_confirmed"]
+[connection signal="mouse_entered" from="NewGame/Saves/Data/Slots/3/Button" to="NewGame/Saves/Data/Slots/3" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="NewGame/Saves/Data/Slots/3/Button" to="NewGame/Saves/Data/Slots/3" method="_on_mouse_exited"]
+[connection signal="pressed" from="NewGame/Saves/Data/Slots/3/Button" to="NewGame/Saves/Data/Slots/3" method="_on_pressed"]
+[connection signal="confirmed" from="NewGame/Saves/Data/Slots/3/ConfirmationDialog" to="NewGame/Saves/Data/Slots/3" method="_on_ConfirmationDialog_confirmed"]
+[connection signal="mouse_entered" from="NewGame/Saves/Data/Slots/4/Button" to="NewGame/Saves/Data/Slots/4" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="NewGame/Saves/Data/Slots/4/Button" to="NewGame/Saves/Data/Slots/4" method="_on_mouse_exited"]
+[connection signal="pressed" from="NewGame/Saves/Data/Slots/4/Button" to="NewGame/Saves/Data/Slots/4" method="_on_pressed"]
+[connection signal="confirmed" from="NewGame/Saves/Data/Slots/4/ConfirmationDialog" to="NewGame/Saves/Data/Slots/4" method="_on_ConfirmationDialog_confirmed"]
+[connection signal="mouse_entered" from="NewGame/Saves/Data/Slots/5/Button" to="NewGame/Saves/Data/Slots/5" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="NewGame/Saves/Data/Slots/5/Button" to="NewGame/Saves/Data/Slots/5" method="_on_mouse_exited"]
+[connection signal="pressed" from="NewGame/Saves/Data/Slots/5/Button" to="NewGame/Saves/Data/Slots/5" method="_on_pressed"]
+[connection signal="confirmed" from="NewGame/Saves/Data/Slots/5/ConfirmationDialog" to="NewGame/Saves/Data/Slots/5" method="_on_ConfirmationDialog_confirmed"]
+[connection signal="mouse_entered" from="NewGame/Saves/Data/Slots/6/Button" to="NewGame/Saves/Data/Slots/6" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="NewGame/Saves/Data/Slots/6/Button" to="NewGame/Saves/Data/Slots/6" method="_on_mouse_exited"]
+[connection signal="pressed" from="NewGame/Saves/Data/Slots/6/Button" to="NewGame/Saves/Data/Slots/6" method="_on_pressed"]
+[connection signal="confirmed" from="NewGame/Saves/Data/Slots/6/ConfirmationDialog" to="NewGame/Saves/Data/Slots/6" method="_on_ConfirmationDialog_confirmed"]
+[connection signal="mouse_entered" from="NewGame/Saves/Data/Slots/7/Button" to="NewGame/Saves/Data/Slots/7" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="NewGame/Saves/Data/Slots/7/Button" to="NewGame/Saves/Data/Slots/7" method="_on_mouse_exited"]
+[connection signal="pressed" from="NewGame/Saves/Data/Slots/7/Button" to="NewGame/Saves/Data/Slots/7" method="_on_pressed"]
+[connection signal="confirmed" from="NewGame/Saves/Data/Slots/7/ConfirmationDialog" to="NewGame/Saves/Data/Slots/7" method="_on_ConfirmationDialog_confirmed"]
+[connection signal="mouse_entered" from="NewGame/Saves/Data/Slots/8/Button" to="NewGame/Saves/Data/Slots/8" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="NewGame/Saves/Data/Slots/8/Button" to="NewGame/Saves/Data/Slots/8" method="_on_mouse_exited"]
+[connection signal="pressed" from="NewGame/Saves/Data/Slots/8/Button" to="NewGame/Saves/Data/Slots/8" method="_on_pressed"]
+[connection signal="confirmed" from="NewGame/Saves/Data/Slots/8/ConfirmationDialog" to="NewGame/Saves/Data/Slots/8" method="_on_ConfirmationDialog_confirmed"]
+[connection signal="pressed" from="NewGame/Saves/Back" to="." method="_on_NewGame_Back_pressed"]

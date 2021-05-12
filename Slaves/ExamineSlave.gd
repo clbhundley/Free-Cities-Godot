@@ -17,9 +17,11 @@ var model_rotation = 0.0
 func _input(event):
 	if not is_visible_in_tree():
 		return
+	if game.popup_is_visible():
+		return
 	if not _slave:
 		return
-	var mouse_over_ui_panel = game.get_gui().mouse_over_ui_panel()
+	var mouse_over_ui_panel = gui.mouse_over_ui_panel()
 	if mouse_over_ui_panel and not active_input:
 		return
 	if Input.is_action_just_pressed("ui_accept") and not mouse_over_ui_panel:
@@ -33,16 +35,16 @@ func _input(event):
 
 func activate(selected_slave):
 	active = true
+	_slave = selected_slave
 	root.get_node('Game/Clock').connect('timeout',self,'uptate_display')
-	previous_dock_mode = game.get_gui().get_node("Dock").mode
+	previous_dock_mode = gui.get_node("Dock").mode
 	if previous_dock_mode == "ManageSlaves" or previous_dock_mode == "PurchaseSlaves":
-		game.get_gui().get_node("Dock").set_mode("ManageSlave")
+		gui.get_node("Dock").set_mode("ManageSlave")
 	else:
-		game.get_gui().get_node("Dock").set_mode("PurchaseSlave")
-	game.get_gui().get_node("Header").hide()
+		gui.get_node("Dock").set_mode("PurchaseSlave")
+	gui.get_node("Header").hide()
 	for node in $Gauges.get_children():
 		node._slave = selected_slave
-	_slave = selected_slave
 	model_rotation = 0.0
 	_slave.get_node("Model").set_rotation(Vector3(0,0,0))
 	$Top/Name.set_text(_slave.name)
@@ -51,7 +53,7 @@ func activate(selected_slave):
 
 func deactivate(reset_dock_mode=true):
 	active = false
-	#game.get_gui().get_node("Dock").set_mode("ManageSlaves")
+	#gui.get_node("Dock").set_mode("ManageSlaves")
 	for node in get_tree().get_nodes_in_group("Active Slaves"):
 		if node.has_method("resize"):
 			node.resize(true)
@@ -73,13 +75,15 @@ func deactivate(reset_dock_mode=true):
 	hide()
 
 func uptate_display():
+	if not _slave:
+		return
 	set_level()
 	set_gauges()
 	set_activity()
 	set_stats_temp()
 
 func set_level():
-	get_node('Top/Level').set_text(str(_slave.get_level()))
+	get_node('Top/Level').set_text(str(_slave.stats._level()))
 
 func set_stats_temp():
 	$"Stats Display temp".set_text(JSON.print(_slave._data()," "))
@@ -112,13 +116,13 @@ func set_activity():
 	$Activity/Time.set_text(time_text)
 	$Location.set_text(location_text)
 
-func _on_Back_pressed():
+func _on_Close_pressed():
 	model_rotation = 0.0
 	_slave.get_node("Model").set_rotation(Vector3(0,0,0))
 	get_viewport().get_camera().deactivate()
-	game.get_gui().get_node("Dock/ActionButton/Tag").hide()
+	gui.get_node("Dock/ActionButton/Tag").hide()
 	slaves.slide_camera()
-#	var gui = game.get_gui()
+#	var gui = gui
 #	gui.get_node("Dock").resize()
 #	gui.get_node("SidePanel").close()
 
@@ -140,3 +144,11 @@ func _on_Back_pressed():
 #	#get_node("Top/Status").get('custom_fonts/font').size = max(scale_adjusted,12)
 #	#get_node("Stats Display/Basic").get('custom_fonts/normal_font').size = clamp(scale_adjusted,12,20)
 #	#get_node("Gauges/Health/Value").get('custom_fonts/font').size = scale_adjusted*1.2
+
+
+func _on_Button_pressed():
+	print("SLAVE HEALTH ", _slave.health)
+	_slave.health -= 10
+	print("hitting")
+	print("SLAVE HEALTH ", _slave.health)
+

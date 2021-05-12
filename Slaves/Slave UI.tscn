@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=2]
+[gd_scene load_steps=39 format=2]
 
 [ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Fonts/Rubik-Light.tres" type="DynamicFont" id=2]
@@ -19,7 +19,6 @@
 [ext_resource path="res://Slaves/Textures/Gague/Icons/happiness.svg" type="Texture" id=17]
 [ext_resource path="res://Slaves/Textures/Gague/Icons/hunger.svg" type="Texture" id=18]
 [ext_resource path="res://Slaves/Textures/Gague/Icons/bathroom.svg" type="Texture" id=19]
-[ext_resource path="res://Slaves/Slave UI Input.gd" type="Script" id=20]
 
 [sub_resource type="DynamicFont" id=1]
 size = 50
@@ -35,6 +34,15 @@ use_mipmaps = true
 font_data = ExtResource( 1 )
 
 [sub_resource type="GDScript" id=4]
+script/source = "extends Control
+
+func refresh():
+	for section in get_children():
+		for gauge in section.get_children():
+			gauge._set_gauge()
+"
+
+[sub_resource type="GDScript" id=5]
 script/source = "extends Control
 
 onready var _slave = owner.owner
@@ -117,11 +125,11 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="DynamicFont" id=5]
+[sub_resource type="DynamicFont" id=6]
 size = 25
 font_data = ExtResource( 1 )
 
-[sub_resource type="GDScript" id=6]
+[sub_resource type="GDScript" id=7]
 script/source = "extends Control
 
 onready var _slave = owner.owner
@@ -175,7 +183,7 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="GDScript" id=7]
+[sub_resource type="GDScript" id=8]
 script/source = "extends Control
 
 onready var _slave = owner.owner
@@ -233,7 +241,7 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="GDScript" id=8]
+[sub_resource type="GDScript" id=9]
 script/source = "extends Control
 
 onready var _slave = owner.owner
@@ -287,7 +295,7 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="GDScript" id=9]
+[sub_resource type="GDScript" id=10]
 script/source = "extends Control
 
 onready var _slave = owner.owner
@@ -347,7 +355,7 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="GDScript" id=10]
+[sub_resource type="GDScript" id=11]
 script/source = "extends Control
 
 onready var _slave = owner.owner
@@ -403,14 +411,40 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="DynamicFont" id=11]
+[sub_resource type="GDScript" id=12]
+script/source = "extends Control
+
+func _ready():
+	time.connect(\"hour\",self,\"auto_refresh\")
+
+func refresh():
+	for _display in get_children():
+		_display.refresh()
+
+func auto_refresh():
+	if not is_visible_in_tree() or time.fast_forward:
+		return
+	refresh()
+"
+
+[sub_resource type="DynamicFont" id=13]
 size = 20
 font_data = ExtResource( 1 )
 
-[sub_resource type="GDScript" id=12]
+[sub_resource type="GDScript" id=14]
 script/source = "extends RichTextLabel
 
-func remove_lines(amount):
+onready var _slave = owner.owner
+var default_rect
+
+func refresh():
+	remove_lines(-1*adjustment_amount)
+	adjustment_amount = 0
+	set_stats()
+
+var adjustment_amount = 0
+func remove_lines(amount): #temp solution
+	adjustment_amount += amount
 	var lower_text = [
 		get_node(\"../Appearance\"),
 		get_node(\"../Sexuality\"),
@@ -422,7 +456,6 @@ func remove_lines(amount):
 		node.set_position(Vector2(pos_x,pos_y-(32*amount)),true)
 
 func set_stats():
-	var _slave = owner.owner
 	var intelligence = _slave.stats._intelligence()
 	if intelligence != \"\":
 		parse_bbcode(
@@ -436,10 +469,19 @@ func set_stats():
 		remove_lines(1)
 "
 
-[sub_resource type="GDScript" id=13]
+[sub_resource type="GDScript" id=15]
 script/source = "extends RichTextLabel
 
-func adjust_lines(amount):
+onready var _slave = owner.owner
+
+func refresh():
+	adjust_lines(-1*adjustment_amount)
+	adjustment_amount = 0
+	set_stats()
+
+var adjustment_amount = 0
+func adjust_lines(amount): #temp solution
+	adjustment_amount += amount
 	var lower_text = [
 		get_node(\"../Sexuality\"),
 		get_node(\"../Skills\"),
@@ -449,10 +491,45 @@ func adjust_lines(amount):
 		var pos_y = node.rect_position.y
 		node.set_position(Vector2(pos_x,pos_y-(30*amount)),true)
 
+func get_weeks_pregnant():
+	if not _slave.pregnancy:
+		return
+	var time_pregnant = time.get_total_time(
+		_slave.pregnancy['conceived'],
+		time.get_timestamp())
+	return time_pregnant['weeks'] + time_pregnant['quarters']*13
+
+var first_run = true #temp solution
+var pregnancy_discovered = false #temp solution
 func set_stats():
-	var _slave = owner.owner
 	var string = \"\"
-	var face = _slave.get_node(\"Scripts/Stats\")._face()
+	
+	if _slave.pregnancy and get_weeks_pregnant() > 0:
+		var babies = _slave.pregnancy['babies']
+		if babies > 1:
+			babies = \" (\"+str(babies)+\")\"
+		else:
+			babies = \"\"
+		var weeks_pregnant = str(get_weeks_pregnant())
+		if get_weeks_pregnant() < 2:
+			weeks_pregnant += \" week pregnant\"
+		else:
+			weeks_pregnant += \" weeks pregnant\"
+		string += \"[color=#ff69b4]\"+weeks_pregnant+babies+\"[/color]\"+\"\\n\"
+		if first_run:
+			adjust_lines(-1)
+		else:
+			if pregnancy_discovered:
+				adjust_lines(-1)
+			else:
+				adjust_lines(-0.6)
+				adjustment_amount -= 0.4
+		pregnancy_discovered = true
+	elif pregnancy_discovered:
+		adjust_lines(-0.4)
+	first_run = false
+	
+	var face = _slave.stats._face()
 	if face != \"\":
 		string += face
 		if _slave.flags.has(\"weight\"):
@@ -460,6 +537,7 @@ func set_stats():
 			string += _slave.flags[\"weight\"]+\"\\n\"
 		else:
 			string += \"\\n\"
+	
 	elif _slave.flags.has(\"weight\"):
 		string += _slave.flags[\"weight\"]+\"\\n\"
 	else:
@@ -472,6 +550,7 @@ func set_stats():
 			string += _slave.flags[\"physique\"]+\"\\n\"
 		else:
 			string += \"\\n\"
+	
 	elif _slave.flags.has(\"physique\"):
 		string += _slave.flags[\"physique\"]+\"\\n\"
 	else:
@@ -495,42 +574,57 @@ func set_stats():
 	parse_bbcode(string)
 "
 
-[sub_resource type="GDScript" id=14]
-script/source = "extends RichTextLabel
-
-func set_stats():
-	var _slave = owner.owner
-	parse_bbcode(
-	_slave.get_node(\"Scripts/Stats\")._libido()+\"\\n\"+
-	_slave.get_node(\"Scripts/Stats\")._male_attraction()+\"\\n\"+
-	_slave.get_node(\"Scripts/Stats\")._female_attraction()+\"\\n\"+
-	\"#Fetishes\")
-"
-
-[sub_resource type="GDScript" id=15]
-script/source = "extends RichTextLabel
-
-func set_stats():
-	var _slave = owner.owner
-	parse_bbcode(
-	_slave.get_node(\"Scripts/Stats\")._sexual_skill()+\"\\n\"+
-	_slave.get_node(\"Scripts/Stats\")._prostitution_skill()+\"\\n\"+
-	_slave.get_node(\"Scripts/Stats\")._entertainment_skill()+\"\\n\"+
-	_slave.get_node(\"Scripts/Stats\")._combat_skill())
-"
-
 [sub_resource type="GDScript" id=16]
 script/source = "extends RichTextLabel
 
+onready var _slave = owner.owner
+var default_rect
+
+func refresh():
+	set_stats()
+
 func set_stats():
-	var _slave = owner.owner
+	parse_bbcode(
+	_slave.stats._libido()+\"\\n\"+
+	_slave.stats._male_attraction()+\"\\n\"+
+	_slave.stats._female_attraction()+\"\\n\"+
+	\"#Fetishes\")
+"
+
+[sub_resource type="GDScript" id=17]
+script/source = "extends RichTextLabel
+
+onready var _slave = owner.owner
+var default_rect
+
+func refresh():
+	set_stats()
+
+func set_stats():
+	parse_bbcode(
+	_slave.stats._sexual_skill()+\"\\n\"+
+	_slave.stats._prostitution_skill()+\"\\n\"+
+	_slave.stats._entertainment_skill()+\"\\n\"+
+	_slave.stats._combat_skill())
+"
+
+[sub_resource type="GDScript" id=18]
+script/source = "extends RichTextLabel
+
+onready var _slave = owner.owner
+var default_rect
+
+func refresh():
+	set_stats()
+
+func set_stats():
 	parse_bbcode(
 	\"#Behavioral trait\"+\"\\n\"+
 	\"#Sexual trait\"+\"\\n\"+
 	\"#Relationships\")
 "
 
-[sub_resource type="DynamicFont" id=17]
+[sub_resource type="DynamicFont" id=19]
 size = 20
 font_data = ExtResource( 1 )
 
@@ -544,9 +638,6 @@ script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="Input" type="Node" parent="."]
-script = ExtResource( 20 )
 
 [node name="Activity" type="Control" parent="."]
 anchor_left = 0.0230769
@@ -721,6 +812,7 @@ margin_left = 12.0
 margin_top = -5.0
 margin_right = 12.0
 margin_bottom = -5.0
+script = SubResource( 4 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -736,7 +828,7 @@ __meta__ = {
 anchor_right = 0.319999
 anchor_bottom = 1.0
 margin_right = -3.8147e-06
-script = SubResource( 4 )
+script = SubResource( 5 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -921,7 +1013,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 6 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -940,7 +1032,7 @@ __meta__ = {
 anchor_left = 0.339999
 anchor_right = 0.66
 anchor_bottom = 1.0
-script = SubResource( 6 )
+script = SubResource( 7 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1110,7 +1202,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 6 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -1129,7 +1221,7 @@ __meta__ = {
 anchor_left = 0.68
 anchor_right = 0.999999
 anchor_bottom = 1.0
-script = SubResource( 7 )
+script = SubResource( 8 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1299,7 +1391,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 6 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -1325,7 +1417,7 @@ __meta__ = {
 [node name="Fatigue" type="Control" parent="Gauges/Lower"]
 anchor_right = 0.32
 anchor_bottom = 1.0
-script = SubResource( 8 )
+script = SubResource( 9 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1495,7 +1587,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 6 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -1514,7 +1606,7 @@ __meta__ = {
 anchor_left = 0.339999
 anchor_right = 0.659999
 anchor_bottom = 1.0
-script = SubResource( 9 )
+script = SubResource( 10 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1684,7 +1776,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 6 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -1703,7 +1795,7 @@ __meta__ = {
 anchor_left = 0.68
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = SubResource( 10 )
+script = SubResource( 11 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1873,7 +1965,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 6 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -1888,90 +1980,91 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Stats Display" type="Control" parent="."]
+[node name="StatsDisplay" type="Control" parent="."]
 anchor_top = 0.444444
 anchor_right = 0.578526
 anchor_bottom = 1.00093
 margin_left = 12.0
 margin_right = 12.0
+script = SubResource( 12 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Basic" type="RichTextLabel" parent="Stats Display"]
+[node name="Basic" type="RichTextLabel" parent="StatsDisplay"]
 anchor_right = 1.10385
 anchor_bottom = 0.1675
-custom_fonts/normal_font = SubResource( 11 )
+custom_fonts/normal_font = SubResource( 13 )
 custom_constants/line_separation = -3
 text = "str(age), ethnicity, gender
 stats._intelligence(), #Education
 stats._devotion(), stats._trust()"
-scroll_active = false
-script = SubResource( 12 )
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Appearance" type="RichTextLabel" parent="Stats Display"]
-anchor_top = 0.18
-anchor_right = 1.10385
-anchor_bottom = 0.397416
-margin_right = -3.05176e-05
-custom_fonts/normal_font = SubResource( 11 )
-custom_constants/line_separation = -3
-text = "stats._face()
-flags[\"gender\"]
-flags[\"weight\"]
-voice()"
-scroll_active = false
-script = SubResource( 13 )
-__meta__ = {
-"_edit_use_anchors_": true
-}
-
-[node name="Sexuality" type="RichTextLabel" parent="Stats Display"]
-anchor_top = 0.36
-anchor_right = 1.10385
-anchor_bottom = 0.58
-custom_fonts/normal_font = SubResource( 11 )
-custom_constants/line_separation = -3
-text = "stats._libido()
-stats._male_attraction()
-stats._female_attraction()
-#Fetishes()"
 scroll_active = false
 script = SubResource( 14 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Skills" type="RichTextLabel" parent="Stats Display"]
-anchor_top = 0.5925
+[node name="Appearance" type="RichTextLabel" parent="StatsDisplay"]
+anchor_top = 0.18
 anchor_right = 1.10385
-anchor_bottom = 0.8125
-custom_fonts/normal_font = SubResource( 11 )
+anchor_bottom = 0.397416
+margin_right = -3.05176e-05
+custom_fonts/normal_font = SubResource( 13 )
 custom_constants/line_separation = -3
-text = "stats._sexual_skill()
-stats._prostitution_skill()
-stats._entertainment_skill()
-stats._combat_skill()"
+text = "stats._face()
+flags[\"gender\"]
+flags[\"weight\"]
+voice()"
 scroll_active = false
 script = SubResource( 15 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Traits" type="RichTextLabel" parent="Stats Display"]
+[node name="Sexuality" type="RichTextLabel" parent="StatsDisplay"]
+anchor_top = 0.36
+anchor_right = 1.10385
+anchor_bottom = 0.58
+custom_fonts/normal_font = SubResource( 13 )
+custom_constants/line_separation = -3
+text = "stats._libido()
+stats._male_attraction()
+stats._female_attraction()
+#Fetishes()"
+scroll_active = false
+script = SubResource( 16 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Skills" type="RichTextLabel" parent="StatsDisplay"]
+anchor_top = 0.5925
+anchor_right = 1.10385
+anchor_bottom = 0.8125
+custom_fonts/normal_font = SubResource( 13 )
+custom_constants/line_separation = -3
+text = "stats._sexual_skill()
+stats._prostitution_skill()
+stats._entertainment_skill()
+stats._combat_skill()"
+scroll_active = false
+script = SubResource( 17 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Traits" type="RichTextLabel" parent="StatsDisplay"]
 anchor_top = 0.825
 anchor_right = 1.10385
 anchor_bottom = 0.9925
-custom_fonts/normal_font = SubResource( 11 )
+custom_fonts/normal_font = SubResource( 13 )
 custom_constants/line_separation = -3
 text = "#Behavioral trait
 #Sexual trait
 #Relationships()"
 scroll_active = false
-script = SubResource( 16 )
+script = SubResource( 18 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1990,13 +2083,13 @@ __meta__ = {
 [node name="Basic" type="RichTextLabel" parent="Stats Display orig"]
 anchor_right = 1.10385
 anchor_bottom = 0.1675
-custom_fonts/normal_font = SubResource( 11 )
+custom_fonts/normal_font = SubResource( 13 )
 custom_constants/line_separation = -3
 text = "str(age), ethnicity, gender
 stats._intelligence()
 stats._devotion(), stats._trust()"
 scroll_active = false
-script = SubResource( 12 )
+script = SubResource( 14 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2005,13 +2098,13 @@ __meta__ = {
 anchor_top = 0.18
 anchor_right = 1.10385
 anchor_bottom = 0.3475
-custom_fonts/normal_font = SubResource( 11 )
+custom_fonts/normal_font = SubResource( 13 )
 custom_constants/line_separation = -3
 text = "stats._face()
 stats._figure()
 voice()"
 scroll_active = false
-script = SubResource( 13 )
+script = SubResource( 15 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2020,14 +2113,14 @@ __meta__ = {
 anchor_top = 0.36
 anchor_right = 1.10385
 anchor_bottom = 0.58
-custom_fonts/normal_font = SubResource( 11 )
+custom_fonts/normal_font = SubResource( 13 )
 custom_constants/line_separation = -3
 text = "stats._libido()
 stats._male_attraction()
 stats._female_attraction()
 #Fetishes()"
 scroll_active = false
-script = SubResource( 14 )
+script = SubResource( 16 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2036,14 +2129,14 @@ __meta__ = {
 anchor_top = 0.5925
 anchor_right = 1.10385
 anchor_bottom = 0.8125
-custom_fonts/normal_font = SubResource( 11 )
+custom_fonts/normal_font = SubResource( 13 )
 custom_constants/line_separation = -3
 text = "stats._sexual_skill()
 stats._prostitution_skill()
 stats._entertainment_skill()
 stats._combat_skill()"
 scroll_active = false
-script = SubResource( 15 )
+script = SubResource( 17 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2052,13 +2145,13 @@ __meta__ = {
 anchor_top = 0.825
 anchor_right = 1.10385
 anchor_bottom = 0.9925
-custom_fonts/normal_font = SubResource( 11 )
+custom_fonts/normal_font = SubResource( 13 )
 custom_constants/line_separation = -3
 text = "#Behavioral trait
 #Sexual trait
 #Relationships()"
 scroll_active = false
-script = SubResource( 16 )
+script = SubResource( 18 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2092,7 +2185,7 @@ __meta__ = {
 margin_right = 147.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 120, 40 )
-custom_fonts/font = SubResource( 17 )
+custom_fonts/font = SubResource( 19 )
 text = "Rest"
 items = [ "Rest", null, false, 0, null, "Prostitute", null, false, 1, null ]
 selected = 0
@@ -2102,7 +2195,7 @@ margin_top = 60.0
 margin_right = 147.0
 margin_bottom = 100.0
 rect_min_size = Vector2( 120, 40 )
-custom_fonts/font = SubResource( 17 )
+custom_fonts/font = SubResource( 19 )
 text = "Examine"
 
 [node name="Summon" type="Button" parent="Panel/Buttons"]
@@ -2111,17 +2204,17 @@ margin_top = 120.0
 margin_right = 147.0
 margin_bottom = 160.0
 rect_min_size = Vector2( 120, 40 )
-custom_fonts/font = SubResource( 17 )
+custom_fonts/font = SubResource( 19 )
 
 [node name="Sell" type="Button" parent="Panel/Buttons"]
 margin_top = 120.0
 margin_right = 147.0
 margin_bottom = 160.0
 rect_min_size = Vector2( 120, 40 )
-custom_fonts/font = SubResource( 17 )
+custom_fonts/font = SubResource( 19 )
 text = "Sell"
 
-[node name="Selling Buttons" type="VBoxContainer" parent="Panel"]
+[node name="SellingButtons" type="VBoxContainer" parent="Panel"]
 visible = false
 anchor_left = 0.5
 anchor_top = 0.5
@@ -2133,7 +2226,7 @@ margin_right = 73.5
 margin_bottom = 50.0
 custom_constants/separation = 20
 
-[node name="Buy" type="Button" parent="Panel/Selling Buttons"]
+[node name="Buy" type="Button" parent="Panel/SellingButtons"]
 margin_right = 147.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 120, 40 )
@@ -2141,7 +2234,7 @@ mouse_filter = 1
 custom_fonts/font = ExtResource( 2 )
 text = "Buy"
 
-[node name="Examine" type="Button" parent="Panel/Selling Buttons"]
+[node name="Examine" type="Button" parent="Panel/SellingButtons"]
 margin_top = 60.0
 margin_right = 147.0
 margin_bottom = 100.0
@@ -2149,9 +2242,10 @@ rect_min_size = Vector2( 120, 40 )
 mouse_filter = 1
 custom_fonts/font = ExtResource( 2 )
 text = "Examine"
-[connection signal="mouse_entered" from="Top" to="Input" method="_on_Top_mouse_entered"]
-[connection signal="mouse_exited" from="Top" to="Input" method="_on_Top_mouse_exited"]
-[connection signal="pressed" from="Top" to="Input" method="_on_Top_pressed"]
+
+[connection signal="mouse_entered" from="Top" to="." method="_on_Top_mouse_entered"]
+[connection signal="mouse_exited" from="Top" to="." method="_on_Top_mouse_exited"]
+[connection signal="pressed" from="Top" to="." method="_on_Top_pressed"]
 [connection signal="mouse_entered" from="Gauges/Upper/Health/Button" to="Gauges/Upper/Health" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="Gauges/Upper/Health/Button" to="Gauges/Upper/Health" method="_on_mouse_exited"]
 [connection signal="mouse_entered" from="Gauges/Upper/Happiness/Button" to="Gauges/Upper/Happiness" method="_on_mouse_entered"]
@@ -2164,8 +2258,8 @@ text = "Examine"
 [connection signal="mouse_exited" from="Gauges/Lower/Hunger/Button" to="Gauges/Lower/Hunger" method="_on_mouse_exited"]
 [connection signal="mouse_entered" from="Gauges/Lower/Bathroom/Button" to="Gauges/Lower/Bathroom" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="Gauges/Lower/Bathroom/Button" to="Gauges/Lower/Bathroom" method="_on_mouse_exited"]
-[connection signal="item_selected" from="Panel/Buttons/Assignment" to="Input" method="_on_Assignment_item_selected"]
-[connection signal="pressed" from="Panel/Buttons/Examine" to="Input" method="_on_Examine_pressed"]
-[connection signal="pressed" from="Panel/Buttons/Sell" to="Input" method="_on_Sell_pressed"]
-[connection signal="pressed" from="Panel/Selling Buttons/Buy" to="Input" method="_on_Buy_pressed"]
-[connection signal="pressed" from="Panel/Selling Buttons/Examine" to="Input" method="_on_Examine_pressed"]
+[connection signal="item_selected" from="Panel/Buttons/Assignment" to="." method="_on_Assignment_item_selected"]
+[connection signal="pressed" from="Panel/Buttons/Examine" to="." method="_on_Examine_pressed"]
+[connection signal="pressed" from="Panel/Buttons/Sell" to="." method="_on_Sell_pressed"]
+[connection signal="pressed" from="Panel/SellingButtons/Buy" to="." method="_on_Buy_pressed"]
+[connection signal="pressed" from="Panel/SellingButtons/Examine" to="." method="_on_Examine_pressed"]

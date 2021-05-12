@@ -1,8 +1,4 @@
-extends Spatial
-
-var cam_pos = 7.0
-var min_camera_pos = 7
-var max_camera_pos = 0.0
+extends "res://Slaves/Slaves Input.gd"
 
 var active_collection
 
@@ -12,7 +8,7 @@ func _ready():
 	for i in range(abs(math.gaussian(8,2))):
 		var preset = "kidnappers market"
 		var new_slave = get_node('New Slave').new(preset)
-		new_slave.acquired =  time.get_timestamp()
+		new_slave.acquired = time.get_timestamp()
 		get_node("Collections/Owned").add_child(new_slave,true)
 	set_active_collection("Owned")
 	update_collection(active_collection)

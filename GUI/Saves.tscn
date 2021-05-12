@@ -53,7 +53,7 @@ func _on_Load_pressed():
 func _on_Delete_pressed():
 	data.delete_game(name)
 	if scene == \"Main Menu\":
-		for slot in get_node('../../../../New Game/Saves/Data/Slots').get_children():
+		for slot in get_node('../../../../NewGame/Saves/Data/Slots').get_children():
 			slot._ready()
 	_ready()
 "
@@ -655,6 +655,7 @@ text = "Back"
 __meta__ = {
 "_edit_use_anchors_": true
 }
+
 [connection signal="pressed" from="Panel/Slots/1/Save" to="Panel/Slots/1" method="_on_Save_pressed"]
 [connection signal="pressed" from="Panel/Slots/1/Load" to="Panel/Slots/1" method="_on_Load_pressed"]
 [connection signal="pressed" from="Panel/Slots/1/Delete" to="Panel/Slots/1" method="_on_Delete_pressed"]

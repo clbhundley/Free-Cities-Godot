@@ -8,7 +8,7 @@ onready var slaves_camera = slave_scene.get_node("Camera")
 func activate():
 	var transform_start = get_viewport().get_camera().global_transform
 	var transform_end = global_transform
-	slave_scene.get_node("Examine Slave").activate(get_parent())
+	slave_scene.get_node("ExamineSlave").activate(get_parent())
 	current = true
 	slaves_camera.hide()
 	light.show()
@@ -25,7 +25,7 @@ func activate():
 func deactivate(reset_dock_mode=true):
 	var transform_start = global_transform
 	var transform_end = slaves_camera.global_transform
-	slave_scene.get_node("Examine Slave").deactivate(reset_dock_mode)
+	slave_scene.get_node("ExamineSlave").deactivate(reset_dock_mode)
 	for node in get_tree().get_nodes_in_group("Active Slaves"):
 		node.remove_from_group("Active Slaves")
 		node.show()

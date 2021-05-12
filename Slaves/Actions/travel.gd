@@ -9,6 +9,9 @@ const TRAVEL_SPEED = 30
 
 enum {WAITING, ELEVATOR, LATERAL, RADIAL}
 
+func display_action():
+	owner.get_node('UI/Activity/Action').set_text("Traveling")
+
 func location(section):
 	return ArcUtils.parse_address(_slave.location)[section]
 
@@ -97,7 +100,7 @@ func arrival():
 	_slave.destination = null
 	_slave.get_node('UI/Activity/Time').set_text("")
 	_slave.get_node('UI/Activity/Action').set_text("Arriving at destination")
-	_slave.get_node('Scripts/Assignments/'+_slave.assignment).next_action()
+	_slave.get_node('Assignments/'+_slave.assignment).next_action()
 
 func step(action_text):
 	current_time += 1 * time.scale

@@ -122,7 +122,8 @@ func index():
 		day = time.day,
 		week = time.week,
 		quarter = time.quarter,
-		year = time.year}
+		year = time.year,
+		total_weeks = time.total_weeks}
 
 func quick_save(): #!needs repurpose!
 	var file = File.new()
@@ -221,6 +222,7 @@ func load_game(slot,write=false):
 		time.week = _data['index']['week']
 		time.quarter = _data['index']['quarter']
 		time.year = _data['index']['year']
+		time.total_weeks = _data['index']['total_weeks']
 		get_tree().get_root().get_node('Game/GUI/Navigation/Time').update_time()
 		
 		game.money = _data['player']['money']

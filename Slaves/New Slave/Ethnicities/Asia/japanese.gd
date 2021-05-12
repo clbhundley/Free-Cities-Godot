@@ -88,7 +88,7 @@ const first_names_male = [
 	"Hiroto",
 	"Hiroyuki",
 	"Hisao",
-	"hisashi",
+	"Hisashi",
 	"Hisato",
 	"Hitomu",
 	"Hitoshi",

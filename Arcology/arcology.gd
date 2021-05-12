@@ -1,14 +1,12 @@
-extends Node
+extends "res://Arcology/Arcology Input.gd"
 
 var location = "Asia"
-var _name = "Arcology X-4"
+var arcology_name = "Arcology X-4"
 var size = 7
 var structure #not being used properly
-var selected_terra
-var selected_building
-var view = "arcology"
-onready var GUI = get_tree().get_root().get_node("Game/GUI")
-onready var dock = GUI.get_node("Dock")
+
+#onready var GUI = get_tree().get_root().get_node("Game/GUI")
+#onready var dock = GUI.get_node("Dock")
 onready var camera = get_node('Cambase/Camera')
 onready var highlight_white = load('res://Arcology/Materials/white.material')
 onready var highlight_cyan = load('res://Arcology/Materials/cyan.material')
@@ -23,11 +21,11 @@ func _ready():
 			$Structure.add_child(terra)
 			position -= 1.5
 	show_ownership_outlines()
-	update_header(_name)
+	update_header(arcology_name)
 	resize()
 
 func update_header(text):
-	var header = GUI.get_node("Header/Arcology/Title")
+	var header = gui.get_node("Header/Arcology/Title")
 	header.set_text(text)
 
 func show_ownership_outlines():
@@ -80,7 +78,7 @@ func view_arcology():
 	$ChangeView.show()
 	$ChangeView.set_text("View Terra")
 	$ChangeView.margin_left = 0 #refresh size
-	update_header(_name + "  -  " + selected_terra)
+	update_header(arcology_name + "  -  " + selected_terra)
 	animate_camera(t_start,t_end,r_start,r_end)
 	if dock.mode != "ManageTerra":
 		dock.set_mode("ManageTerra")
@@ -112,7 +110,7 @@ func _data():
 			for sector in ring.get_children():
 				structure[terra.name][ring.name][sector.name] = sector._data()
 	return {
-		name = _name,
+		name = arcology_name,
 		location = location,
 		structure = structure}
 
@@ -143,9 +141,9 @@ func _load(structure):
 	show_ownership_outlines()
 
 func connect_sector_signals(sector):
-	sector.connect('input_event',$Input,'arc_input_event',[sector])
-	sector.connect('mouse_entered',$Input,'sector_mouse_entered',[sector])
-	sector.connect('mouse_exited',$Input,'sector_mouse_exited',[sector])
+	sector.connect('input_event',self,'arc_input_event',[sector])
+	sector.connect('mouse_entered',self,'sector_mouse_entered',[sector])
+	sector.connect('mouse_exited',self,'sector_mouse_exited',[sector])
 	var methods = ["tick","minute","hour","day","week","quarter","year"]
 	for method in methods:
 		if sector.has_method(method):
