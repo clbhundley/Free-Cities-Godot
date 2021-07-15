@@ -8,6 +8,10 @@
 
 config_version=4
 
+_global_script_classes=[  ]
+_global_script_class_icons={
+}
+
 [application]
 
 config/name="Free Cities"
@@ -108,7 +112,6 @@ stationary_select={
 
 [rendering]
 
-quality/driver/fallback_to_gles2=true
 environment/default_clear_color=Color( 0.192157, 0.27451, 0.313726, 1 )
 quality/filters/msaa=3
 quality/depth/hdr=false

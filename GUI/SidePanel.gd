@@ -111,7 +111,7 @@ func animate_extension_panel(extension_panel,mode):
 		position_extension_panel(content,extension_panel)
 		extension_panel.hide()
 
-func position_extension_panel(content,panel):
+func position_extension_panel(button,panel):
 	var pos_x = rect_size.x
-	var pos_y = content.rect_global_position.y
+	var pos_y = button.rect_global_position.y
 	panel.set_global_position(Vector2(pos_x,pos_y))

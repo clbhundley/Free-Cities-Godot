@@ -1,4 +1,4 @@
-[gd_scene load_steps=87 format=2]
+[gd_scene load_steps=88 format=2]
 
 [ext_resource path="res://GUI/gui.gd" type="Script" id=1]
 [ext_resource path="res://GUI/Textures/chatline.png" type="Texture" id=2]
@@ -306,6 +306,126 @@ font_data = ExtResource( 3 )
 [sub_resource type="GDScript" id=5]
 script/source = "extends VBoxContainer
 
+onready var dock = owner.get_node(\"Dock\")
+
+var _slave
+
+func _ready():
+	pass
+	#connect_check_boxes()
+	#set_side_effect_text(0)
+
+func refresh():
+	_on_InterslaveConsent_toggled(false)
+	$InterslaveConsent.pressed = false
+	_slave = get_slave()
+	if _slave:
+		load_settings(_slave)
+
+func get_slave():
+	var root = get_tree().get_root()
+	var examine_slave = root.get_node(\"Game/Slaves/ExamineSlave\")
+	return examine_slave.get(\"_slave\")
+
+func load_settings(selected_slave):
+	_slave = selected_slave
+	var rules = _slave.rules
+	var concent = extension_panel.get_node(\"VBox\")
+	
+	var giving_concent_selection
+	if rules.has(\"GivingConsent\"):
+		match rules[\"GivingConsent\"]:
+			true:
+				giving_concent_selection = 0
+			false:
+				giving_concent_selection = 1
+	else:
+		giving_concent_selection = 1
+	var giving_concent = concent.get_node(\"GivingConsent/Selection\")
+	giving_concent.select(giving_concent_selection)#both needed?
+	_on_GivingConsent_item_selected(giving_concent_selection)
+	
+	var receiving_concent_selection
+	if rules.has(\"ReceivingConsent\"):
+		match rules[\"ReceivingConsent\"]:
+			true:
+				receiving_concent_selection = 0
+			false:
+				receiving_concent_selection = 1
+	else:
+		receiving_concent_selection = 1
+	var receiving_concent = concent.get_node(\"ReceivingConsent/Selection\")
+	receiving_concent.select(receiving_concent_selection)#both needed?
+	_on_ReceivingConsent_item_selected(receiving_concent_selection)
+	
+	var resisting_advances_selection
+	if rules.has(\"ResistingAdvances\"):
+		match rules[\"ResistingAdvances\"]:
+			true:
+				resisting_advances_selection = 0
+			false:
+				resisting_advances_selection = 1
+	else:
+		resisting_advances_selection = 0
+	var resisting_advances = concent.get_node(\"ResistingAdvances/Selection\")
+	resisting_advances.select(resisting_advances_selection)#both needed?
+	_on_ResistingAdvances_item_selected(resisting_advances_selection)
+
+func _on_GivingConsent_item_selected(index):
+	var rules = _slave.rules
+	match index:
+		0:
+			rules[\"GivingConsent\"] = true
+		1:
+			rules[\"GivingConsent\"] = false
+
+func _on_ReceivingConsent_item_selected(index):
+	var rules = _slave.rules
+	match index:
+		0:
+			rules[\"ReceivingConsent\"] = true
+		1:
+			rules[\"ReceivingConsent\"] = false
+
+func _on_ResistingAdvances_item_selected(index):
+	var rules = _slave.rules
+	match index:
+		0:
+			rules[\"ResistingAdvances\"] = true
+		1:
+			rules[\"ResistingAdvances\"] = false
+
+onready var extension_panel = $InterslaveConsent/ExtensionPanel/Panel
+func _on_InterslaveConsent_toggled(button_pressed):
+	if button_pressed:
+		set_panel_mouse_filter(\"stop\")
+		get_parent().animate_extension_panel(extension_panel,\"open\")
+	else:
+		set_panel_mouse_filter(\"ignore\")
+		get_parent().animate_extension_panel(extension_panel,\"close\")
+
+func set_panel_mouse_filter(mode):
+	var filter
+	if mode == \"stop\":
+		filter = Control.MOUSE_FILTER_STOP
+	elif mode == \"ignore\":
+		filter = Control.MOUSE_FILTER_IGNORE
+	extension_panel.mouse_filter = filter
+	for container in extension_panel.get_node(\"VBox\").get_children():
+		for node in container.get_children():
+			if node is CheckBox:
+				node.mouse_filter = filter
+
+func resize():
+	if not is_visible_in_tree():
+		return
+	yield(get_tree(),\"idle_frame\")
+	get_parent().position_extension_panel($InterslaveConsent,extension_panel)
+"
+
+[sub_resource type="GDScript" id=6]
+script/source = "extends VBoxContainer
+
 onready var clothing_panel = $Clothing/ExtensionPanel/Panel
 onready var accessories_panel = $Accessories/ExtensionPanel/Panel
 
@@ -557,7 +677,7 @@ func _on_Choosing_CheckBox_toggled(button_pressed,button):
 
 "
 
-[sub_resource type="GDScript" id=6]
+[sub_resource type="GDScript" id=7]
 script/source = "extends HBoxContainer
 
 onready var selection = $Selection
@@ -638,15 +758,15 @@ func _load():
 	_on_Selection_PopupMenu_id_pressed(item_id,popup_menu)
 "
 
-[sub_resource type="DynamicFont" id=7]
-size = 24
-font_data = ExtResource( 3 )
-
 [sub_resource type="DynamicFont" id=8]
 size = 24
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=9]
+[sub_resource type="DynamicFont" id=9]
+size = 24
+font_data = ExtResource( 3 )
+
+[sub_resource type="GDScript" id=10]
 script/source = "extends HBoxContainer
 
 onready var selection = $Selection
@@ -687,7 +807,7 @@ func _load():
 			_on_Selection_item_selected(item)
 "
 
-[sub_resource type="GDScript" id=10]
+[sub_resource type="GDScript" id=11]
 script/source = "extends HBoxContainer
 
 onready var selection = $Selection
@@ -728,7 +848,7 @@ func _load():
 			_on_Selection_item_selected(item)
 "
 
-[sub_resource type="GDScript" id=11]
+[sub_resource type="GDScript" id=12]
 script/source = "extends HBoxContainer
 
 onready var selection = $Selection
@@ -768,15 +888,15 @@ func _load():
 			_on_Selection_item_selected(item)
 "
 
-[sub_resource type="DynamicFont" id=12]
-size = 24
-font_data = ExtResource( 3 )
-
 [sub_resource type="DynamicFont" id=13]
 size = 24
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=14]
+[sub_resource type="DynamicFont" id=14]
+size = 24
+font_data = ExtResource( 3 )
+
+[sub_resource type="GDScript" id=15]
 script/source = "extends VBoxContainer
 
 onready var dock = owner.get_node(\"Dock\")
@@ -815,7 +935,7 @@ func _on_SortOrder_item_selected(index):
 	SlaveUtils.sort_slaves(\"Owned\",sort_mode,sort_order)
 "
 
-[sub_resource type="GDScript" id=15]
+[sub_resource type="GDScript" id=16]
 script/source = "extends VBoxContainer
 
 func update():
@@ -853,7 +973,7 @@ func _on_Hide_pressed():
 	side_panel.get_node(\"ShowPanel\").show()
 "
 
-[sub_resource type="GDScript" id=16]
+[sub_resource type="GDScript" id=17]
 script/source = "extends Button
 
 func _on_Hide_pressed():
@@ -862,7 +982,7 @@ func _on_Hide_pressed():
 	side_panel.dock.get_node(\"ActionButton\").icon = side_panel.arrow_left_icon
 "
 
-[sub_resource type="GDScript" id=17]
+[sub_resource type="GDScript" id=18]
 script/source = "extends VBoxContainer
 
 func update():
@@ -900,7 +1020,7 @@ func _on_Hide_pressed():
 	side_panel.get_node(\"ShowPanel\").show()
 "
 
-[sub_resource type="GDScript" id=18]
+[sub_resource type="GDScript" id=19]
 script/source = "extends VBoxContainer
 
 func _ready():
@@ -912,7 +1032,7 @@ func update():
 	get_node(\"Ownership/HBox/Owner\").set_text(str(percent)+\"% Owner\")
 "
 
-[sub_resource type="GDScript" id=19]
+[sub_resource type="GDScript" id=20]
 script/source = "extends VBoxContainer
 
 func _ready():
@@ -923,7 +1043,7 @@ func update():
 	get_node(\"Title\").set_text(selected_terra+\":\")
 "
 
-[sub_resource type="GDScript" id=20]
+[sub_resource type="GDScript" id=21]
 script/source = "extends VBoxContainer
 
 func update():
@@ -944,7 +1064,7 @@ func update():
 		get_node(\"Construction\").hide()
 "
 
-[sub_resource type="GDScript" id=21]
+[sub_resource type="GDScript" id=22]
 script/source = "extends TextureRect
 
 func _on_button_pressed():
@@ -965,11 +1085,11 @@ func _on_mouse_exited():
 	set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="DynamicFont" id=22]
+[sub_resource type="DynamicFont" id=23]
 size = 20
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=23]
+[sub_resource type="GDScript" id=24]
 script/source = "extends Control
 
 onready var side_panel = get_node(\"../SidePanel\")
@@ -1175,11 +1295,11 @@ func resize():
 			node.resize()
 "
 
-[sub_resource type="DynamicFont" id=24]
+[sub_resource type="DynamicFont" id=25]
 size = 24
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=25]
+[sub_resource type="GDScript" id=26]
 script/source = "extends Control
 
 func _on_toggled(button_pressed):
@@ -1204,7 +1324,7 @@ func _on_mouse_exited():
 		get_node('tab_left').set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="GDScript" id=26]
+[sub_resource type="GDScript" id=27]
 script/source = "extends Panel
 
 func _on_Communication_pressed():
@@ -1225,7 +1345,7 @@ func _on_NaviActionButton_toggled(button_pressed):
 		navi_action_button.set_text(\"<<Query Navi>>\")
 "
 
-[sub_resource type="GDScript" id=27]
+[sub_resource type="GDScript" id=28]
 script/source = "extends Control
 
 func _ready():
@@ -1242,7 +1362,7 @@ func resize():
 	$Time/LabelTop.get('custom_fonts/font').size = clamp(scale_text,10,16)
 "
 
-[sub_resource type="GDScript" id=28]
+[sub_resource type="GDScript" id=29]
 script/source = "extends TextureRect
 
 func _ready():
@@ -1271,7 +1391,7 @@ func _on_mouse_exited():
 		set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="GDScript" id=29]
+[sub_resource type="GDScript" id=30]
 script/source = "extends TextureRect
 
 func _ready():
@@ -1325,7 +1445,7 @@ func _on_mouse_exited():
 		set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="GDScript" id=30]
+[sub_resource type="GDScript" id=31]
 script/source = "extends TextureRect
 
 func _ready():
@@ -1374,17 +1494,15 @@ func _on_mouse_exited():
 		set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="DynamicFont" id=31]
-resource_name = "Rubik-Light"
-size = 30
-font_data = ExtResource( 3 )
-
 [sub_resource type="DynamicFont" id=32]
-resource_name = "Rubik-Light"
 size = 30
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=33]
+[sub_resource type="DynamicFont" id=33]
+size = 30
+font_data = ExtResource( 3 )
+
+[sub_resource type="GDScript" id=34]
 script/source = "extends VBoxContainer
 
 onready var game_clock = get_tree().get_root().get_node('Game/Clock')
@@ -1406,11 +1524,11 @@ func _on_Button_mouse_exited(button):
 	get_node(button).set_scale(Vector2(1,1))
 "
 
-[sub_resource type="DynamicFont" id=34]
+[sub_resource type="DynamicFont" id=35]
 size = 30
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=35]
+[sub_resource type="GDScript" id=36]
 script/source = "extends Control
 
 onready var timer = get_tree().get_root().get_node('Game/Clock')
@@ -1435,17 +1553,17 @@ func _on_TimeScale_value_changed(value):
 	$Sliders/TimeScale/Label.set_text(\"Time Scale: x\"+display_value)
 "
 
-[sub_resource type="DynamicFont" id=36]
-size = 20
-font_data = ExtResource( 3 )
-
 [sub_resource type="DynamicFont" id=37]
+size = 20
 font_data = ExtResource( 3 )
 
 [sub_resource type="DynamicFont" id=38]
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=39]
+[sub_resource type="DynamicFont" id=39]
+font_data = ExtResource( 3 )
+
+[sub_resource type="GDScript" id=40]
 script/source = "extends Control
 
 func _on_mouse_entered():
@@ -1455,11 +1573,11 @@ func _on_mouse_exited():
 		get_node('circle').set_self_modulate('64333a4b')
 "
 
-[sub_resource type="DynamicFont" id=40]
+[sub_resource type="DynamicFont" id=41]
 size = 20
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=41]
+[sub_resource type="GDScript" id=42]
 script/source = "extends Panel
 
 func _pause():
@@ -1497,12 +1615,8 @@ func _on_Menu_Button_pressed():
 	_pause()
 "
 
-[sub_resource type="DynamicFont" id=42]
-size = 50
-font_data = ExtResource( 3 )
-
 [sub_resource type="DynamicFont" id=43]
-size = 30
+size = 50
 font_data = ExtResource( 3 )
 
 [sub_resource type="DynamicFont" id=44]
@@ -1510,10 +1624,14 @@ size = 30
 font_data = ExtResource( 3 )
 
 [sub_resource type="DynamicFont" id=45]
+size = 30
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=46]
 size = 24
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=46]
+[sub_resource type="GDScript" id=47]
 script/source = "extends WindowDialog
 
 func _on_Button_pressed():
@@ -1873,9 +1991,9 @@ margin_right = 147.0
 margin_bottom = 29.0
 
 [node name="Steroids" type="HBoxContainer" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox"]
-margin_top = 198.0
+margin_top = 165.0
 margin_right = 257.0
-margin_bottom = 227.0
+margin_bottom = 194.0
 custom_constants/separation = 6
 
 [node name="Label" type="Label" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/Steroids"]
@@ -1893,13 +2011,13 @@ margin_right = 119.0
 margin_bottom = 29.0
 
 [node name="FertilityEnhancers" type="HBoxContainer" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox"]
-margin_top = 165.0
+margin_top = 198.0
 margin_right = 257.0
-margin_bottom = 194.0
+margin_bottom = 227.0
 custom_constants/separation = 6
 
 [node name="Label" type="Label" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/FertilityEnhancers"]
-margin_right = 174.0
+margin_right = 202.0
 margin_bottom = 29.0
 custom_fonts/font = SubResource( 4 )
 text = "Fertility Enhancers"
@@ -1908,8 +2026,8 @@ __meta__ = {
 }
 
 [node name="CheckBox" type="CheckBox" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox/FertilityEnhancers"]
-margin_left = 180.0
-margin_right = 204.0
+margin_left = 208.0
+margin_right = 232.0
 margin_bottom = 29.0
 
 [node name="HormoneEnhancers" type="HBoxContainer" parent="SidePanel/Regimen/Pharmaceuticals/ExtensionPanel/Panel/VBox"]
@@ -2131,6 +2249,7 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.655556
 custom_constants/separation = 18
+script = SubResource( 5 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2166,6 +2285,7 @@ margin_right = 420.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
 custom_fonts/font = ExtResource( 25 )
+disabled = true
 text = "Spare"
 items = [ "Spare", null, false, 0, null, "Normal", null, false, 1, null, "Luxurious", null, false, 2, null ]
 selected = 0
@@ -2192,6 +2312,7 @@ margin_right = 420.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
 custom_fonts/font = ExtResource( 25 )
+disabled = true
 text = "Restricted"
 items = [ "Restricted", null, false, 0, null, "Permitted", null, false, 1, null, "Accent Elimination", null, false, 2, null ]
 selected = 0
@@ -2218,6 +2339,7 @@ margin_right = 420.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
 custom_fonts/font = ExtResource( 25 )
+disabled = true
 text = "Restricted"
 items = [ "Restricted", null, false, 0, null, "Permitted", null, false, 1, null ]
 selected = 0
@@ -2244,6 +2366,7 @@ margin_right = 420.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
 custom_fonts/font = ExtResource( 25 )
+disabled = true
 text = "Confinement"
 items = [ "Confinement", null, false, 0, null, "Whipping", null, false, 1, null, "Chastity", null, false, 2, null, "Situational", null, false, 3, null ]
 selected = 0
@@ -2270,6 +2393,7 @@ margin_right = 420.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
 custom_fonts/font = ExtResource( 25 )
+disabled = true
 text = "Relaxation"
 items = [ "Relaxation", null, false, 0, null, "Drugs", null, false, 1, null, "Orgasm", null, false, 2, null, "Situational", null, false, 3, null ]
 selected = 0
@@ -2296,8 +2420,9 @@ margin_right = 420.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
 custom_fonts/font = ExtResource( 25 )
+disabled = true
 text = "Restricted"
-items = [ "Restricted", null, false, 0, null, "Permitted", null, false, 1, null ]
+items = [ "Restricted", null, false, 0, null, "Permitted", null, false, 1, null, "Only With Other Slaves", null, false, 2, null, "Only With Owner", null, false, 3, null ]
 selected = 0
 
 [node name="Orgasms" type="HBoxContainer" parent="SidePanel/Rules"]
@@ -2322,8 +2447,9 @@ margin_right = 420.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
 custom_fonts/font = ExtResource( 25 )
+disabled = true
 text = "Restricted"
-items = [ "Restricted", null, false, 0, null, "Permitted", null, false, 1, null ]
+items = [ "Restricted", null, false, 0, null, "Permitted", null, false, 1, null, "Only With Other Slaves", null, false, 2, null, "Only With Owner", null, false, 3, null ]
 selected = 0
 
 [node name="InterslaveSex" type="HBoxContainer" parent="SidePanel/Rules"]
@@ -2348,61 +2474,126 @@ margin_right = 420.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
 custom_fonts/font = ExtResource( 25 )
-text = "Restricted"
+disabled = true
+text = "Permitted"
 items = [ "Restricted", null, false, 0, null, "Permitted", null, false, 1, null ]
-selected = 0
+selected = 1
 
-[node name="ConsentGiving" type="HBoxContainer" parent="SidePanel/Rules"]
+[node name="InterslaveConsent" type="Button" parent="SidePanel/Rules"]
 margin_top = 490.0
 margin_right = 420.0
 margin_bottom = 525.0
-custom_constants/separation = 6
-
-[node name="Label" type="Label" parent="SidePanel/Rules/ConsentGiving"]
-margin_top = 3.0
-margin_right = 186.0
-margin_bottom = 32.0
 custom_fonts/font = ExtResource( 25 )
-text = "Consent (Giving):"
+toggle_mode = true
+text = "Interslave Consent"
+align = 0
+expand_icon = true
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Selection" type="OptionButton" parent="SidePanel/Rules/ConsentGiving"]
-margin_left = 192.0
-margin_right = 420.0
-margin_bottom = 35.0
-size_flags_horizontal = 3
-custom_fonts/font = ExtResource( 25 )
-text = "Not Required"
-items = [ "Not Required", null, false, 0, null, "Required", null, false, 1, null ]
-selected = 0
+[node name="ExtensionPanel" type="Node2D" parent="SidePanel/Rules/InterslaveConsent"]
+z_index = -1
 
-[node name="ConsentReceiving" type="HBoxContainer" parent="SidePanel/Rules"]
-margin_top = 543.0
-margin_right = 420.0
-margin_bottom = 578.0
+[node name="Panel" type="Panel" parent="SidePanel/Rules/InterslaveConsent/ExtensionPanel"]
+self_modulate = Color( 0.294118, 0.329412, 0.376471, 0.941176 )
+margin_right = 393.0
+margin_bottom = 123.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Tween" type="Tween" parent="SidePanel/Rules/InterslaveConsent/ExtensionPanel/Panel"]
+
+[node name="VBox" type="VBoxContainer" parent="SidePanel/Rules/InterslaveConsent/ExtensionPanel/Panel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -191.5
+margin_top = -56.5
+margin_right = 191.5
+margin_bottom = 56.5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GivingConsent" type="HBoxContainer" parent="SidePanel/Rules/InterslaveConsent/ExtensionPanel/Panel/VBox"]
+margin_right = 383.0
+margin_bottom = 35.0
 custom_constants/separation = 6
 
-[node name="Label" type="Label" parent="SidePanel/Rules/ConsentReceiving"]
+[node name="Label" type="Label" parent="SidePanel/Rules/InterslaveConsent/ExtensionPanel/Panel/VBox/GivingConsent"]
 margin_top = 3.0
-margin_right = 224.0
+margin_right = 170.0
 margin_bottom = 32.0
 custom_fonts/font = ExtResource( 25 )
-text = "Consent (Receiving):"
+text = "Giving Consent:"
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="Selection" type="OptionButton" parent="SidePanel/Rules/ConsentReceiving"]
-margin_left = 230.0
-margin_right = 420.0
+[node name="Selection" type="OptionButton" parent="SidePanel/Rules/InterslaveConsent/ExtensionPanel/Panel/VBox/GivingConsent"]
+margin_left = 176.0
+margin_right = 383.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
 custom_fonts/font = ExtResource( 25 )
-text = "Not Required"
-items = [ "Not Required", null, false, 0, null, "Required", null, false, 1, null ]
+text = "Required"
+items = [ "Required", null, false, 0, null, "Not Required", null, false, 1, null ]
 selected = 0
+
+[node name="ReceivingConsent" type="HBoxContainer" parent="SidePanel/Rules/InterslaveConsent/ExtensionPanel/Panel/VBox"]
+margin_top = 39.0
+margin_right = 383.0
+margin_bottom = 74.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Rules/InterslaveConsent/ExtensionPanel/Panel/VBox/ReceivingConsent"]
+margin_top = 3.0
+margin_right = 208.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "Receiving Consent:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Rules/InterslaveConsent/ExtensionPanel/Panel/VBox/ReceivingConsent"]
+margin_left = 214.0
+margin_right = 383.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 25 )
+text = "Required"
+items = [ "Required", null, false, 0, null, "Not Required", null, false, 1, null ]
+selected = 0
+
+[node name="ResistingAdvances" type="HBoxContainer" parent="SidePanel/Rules/InterslaveConsent/ExtensionPanel/Panel/VBox"]
+margin_top = 78.0
+margin_right = 383.0
+margin_bottom = 113.0
+custom_constants/separation = 6
+
+[node name="Label" type="Label" parent="SidePanel/Rules/InterslaveConsent/ExtensionPanel/Panel/VBox/ResistingAdvances"]
+margin_top = 3.0
+margin_right = 219.0
+margin_bottom = 32.0
+custom_fonts/font = ExtResource( 25 )
+text = "Resisting Advances:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Selection" type="OptionButton" parent="SidePanel/Rules/InterslaveConsent/ExtensionPanel/Panel/VBox/ResistingAdvances"]
+margin_left = 225.0
+margin_right = 383.0
+margin_bottom = 35.0
+size_flags_horizontal = 3
+custom_fonts/font = ExtResource( 25 )
+text = "Restricted"
+items = [ "Permitted", null, false, 0, null, "Restricted", null, false, 1, null ]
+selected = 1
 
 [node name="Wardrobe" type="VBoxContainer" parent="SidePanel"]
 visible = false
@@ -2411,7 +2602,7 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.655556
 custom_constants/separation = 18
-script = SubResource( 5 )
+script = SubResource( 6 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2506,13 +2697,13 @@ __meta__ = {
 margin_right = 377.0
 margin_bottom = 35.0
 custom_constants/separation = 6
-script = SubResource( 6 )
+script = SubResource( 7 )
 
 [node name="Label" type="Label" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Outfit"]
 margin_top = 3.0
 margin_right = 68.0
 margin_bottom = 32.0
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 8 )
 text = "Outfit:"
 __meta__ = {
 "_edit_use_anchors_": true
@@ -2523,7 +2714,7 @@ margin_left = 74.0
 margin_right = 341.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 9 )
 text = "Custom"
 items = [ "Custom", null, false, 0, null, "Nude", null, false, 1, null, "Lingerie", null, false, 2, null, "Mesh Bodysuit", null, false, 3, null, "Leotard", null, false, 4, null, "String Bikini", null, false, 5, null, "Latex Catsuit", null, false, 6, null, "Restrictive Latex", null, false, 7, null, "Harsh Shibari Ropes", null, false, 8, null, "Uncomfortable Straps", null, false, 9, null, "Chains", null, false, 10, null, "Maid", null, false, 11, null, "Slutty Maid", null, false, 12, null, "Nurse", null, false, 13, null, "Slutty Nurse", null, false, 14, null, "Nun's Habit", null, false, 15, null, "Slutty Nun's Habit", null, false, 16, null, "Penitent Nun's Habit", null, false, 17, null, "Business Suit", null, false, 18, null, "Slutty Business Suit", null, false, 19, null, "Military Uniform", null, false, 20, null, "Combat Fatigues", null, false, 21, null, "Slutty Combat Fatigues", null, false, 22, null, "Schoolgirl", null, false, 23, null, "Cheerleader", null, false, 24, null, "Frilly Dress", null, false, 25, null, "Mini Dress", null, false, 26, null, "Halterneck Dress", null, false, 27, null, "Evening Gown", null, false, 28, null, "Ball Gown", null, false, 29, null, "Kimono", null, false, 30, null, "Qipao", null, false, 31, null, "Huipil", null, false, 32, null, "Toga", null, false, 33, null, "Hijab and Abaya", null, false, 34, null, "Cat Costume", null, false, 35, null, "Dog Costume", null, false, 36, null, "Bunny Costume", null, false, 37, null, "Mouse Costume", null, false, 38, null, "Angel Costume", null, false, 39, null, "Demon Costume", null, false, 40, null, "Western Costume", null, false, 41, null, "Cop Costume", null, false, 42, null ]
 selected = 0
@@ -2549,13 +2740,13 @@ margin_top = 44.0
 margin_right = 377.0
 margin_bottom = 79.0
 custom_constants/separation = 6
-script = SubResource( 9 )
+script = SubResource( 10 )
 
 [node name="Label" type="Label" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shirt"]
 margin_top = 3.0
 margin_right = 57.0
 margin_bottom = 32.0
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 8 )
 text = "Shirt:"
 __meta__ = {
 "_edit_use_anchors_": true
@@ -2566,7 +2757,7 @@ margin_left = 63.0
 margin_right = 341.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 9 )
 text = "None"
 items = [ "None", null, false, 1, null, "T-Shirt", null, false, 2, null, "Long Sleeve Shirt", null, false, 3, null, "Belly Shirt", null, false, 4, null, "Tank Top", null, false, 5, null, "Tube Top", null, false, 6, null, "Hoodie", null, false, 7, null, "Sports Bra", null, false, 8, null, "Bra", null, false, 9, null ]
 selected = 0
@@ -2582,13 +2773,13 @@ margin_top = 88.0
 margin_right = 377.0
 margin_bottom = 123.0
 custom_constants/separation = 6
-script = SubResource( 10 )
+script = SubResource( 11 )
 
 [node name="Label" type="Label" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Pants"]
 margin_top = 3.0
 margin_right = 69.0
 margin_bottom = 32.0
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 8 )
 text = "Pants:"
 __meta__ = {
 "_edit_use_anchors_": true
@@ -2596,19 +2787,18 @@ __meta__ = {
 
 [node name="Selection" type="OptionButton" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Pants"]
 margin_left = 75.0
-margin_right = 377.0
+margin_right = 341.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 9 )
 text = "None"
 items = [ "None", null, false, 1, null, "Jeans", null, false, 2, null, "Capris", null, false, 3, null, "Shorts", null, false, 4, null, "Cutoff Shorts", null, false, 5, null, "Skirt", null, false, 6, null, "Short Skirt", null, false, 7, null, "Panties", null, false, 8, null ]
 selected = 0
 
 [node name="Edit" type="Button" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Pants"]
-margin_left = -76.0
-margin_top = -34.0
-margin_right = -46.0
-margin_bottom = 1.0
+margin_left = 347.0
+margin_right = 377.0
+margin_bottom = 35.0
 icon = ExtResource( 40 )
 
 [node name="Shoes" type="HBoxContainer" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox"]
@@ -2616,13 +2806,13 @@ margin_top = 132.0
 margin_right = 377.0
 margin_bottom = 167.0
 custom_constants/separation = 6
-script = SubResource( 11 )
+script = SubResource( 12 )
 
 [node name="Label" type="Label" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shoes"]
 margin_top = 3.0
 margin_right = 73.0
 margin_bottom = 32.0
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 8 )
 text = "Shoes:"
 __meta__ = {
 "_edit_use_anchors_": true
@@ -2630,19 +2820,18 @@ __meta__ = {
 
 [node name="Selection" type="OptionButton" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shoes"]
 margin_left = 79.0
-margin_right = 377.0
+margin_right = 341.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 9 )
 text = "None"
 items = [ "None", null, false, 1, null, "Flats", null, false, 2, null, "Sneakers", null, false, 3, null, "Simple Sandals", null, false, 4, null, "Elegant Sandals", null, false, 5, null, "High Heels", null, false, 6, null, "Extreme High Heels", null, false, 7, null, "Platform Boots", null, false, 8, null, "Stiletto Boots", null, false, 9, null, "Latex Thigh Boots", null, false, 10, null, "Combat Boots", null, false, 11, null ]
 selected = 0
 
 [node name="Edit" type="Button" parent="SidePanel/Wardrobe/Clothing/ExtensionPanel/Panel/VBox/Shoes"]
-margin_left = -76.0
-margin_top = -78.0
-margin_right = -46.0
-margin_bottom = -43.0
+margin_left = 347.0
+margin_right = 377.0
+margin_bottom = 35.0
 icon = ExtResource( 40 )
 
 [node name="Accessories" type="Button" parent="SidePanel/Wardrobe"]
@@ -2690,7 +2879,7 @@ custom_constants/separation = 6
 margin_top = 3.0
 margin_right = 63.0
 margin_bottom = 32.0
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "Head:"
 __meta__ = {
 "_edit_use_anchors_": true
@@ -2701,7 +2890,7 @@ margin_left = 69.0
 margin_right = 351.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "None"
 items = [ "None", null, false, 0, null, "Fedora", null, false, 1, null, "Cloche", null, false, 2, null, "Cabbie Hat", null, false, 4, null, "Beret", null, false, 5, null, "Military Beret", null, false, 6, null, "Beanie", null, false, 7, null, "Straw Hat", null, false, 8, null, "Western Hat", null, false, 9, null, "Kentucky Derby Hat", null, false, 10, null, "Hair Pin", null, false, 11, null, "Hair Ribbon", null, false, 12, null, "Hair Bow", null, false, 13, null ]
 selected = 0
@@ -2723,7 +2912,7 @@ custom_constants/separation = 6
 margin_top = 3.0
 margin_right = 59.0
 margin_bottom = 32.0
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "Face:"
 __meta__ = {
 "_edit_use_anchors_": true
@@ -2734,7 +2923,7 @@ margin_left = 65.0
 margin_right = 351.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "None"
 items = [ "None", null, false, 0, null, "Basic Glasses", null, false, 1, null, "Stylish Glasses", null, false, 2, null, "Sunglasses", null, false, 3, null, "Contacts", null, false, 4, null, "Ball Gag", null, false, 5, null, "Bit Gag", null, false, 6, null, "Dildo Gag", null, false, 7, null ]
 selected = 0
@@ -2756,7 +2945,7 @@ custom_constants/separation = 6
 margin_top = 3.0
 margin_right = 60.0
 margin_bottom = 32.0
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "Neck:"
 __meta__ = {
 "_edit_use_anchors_": true
@@ -2767,7 +2956,7 @@ margin_left = 66.0
 margin_right = 351.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "None"
 items = [ "None", null, false, 0, null, "Stylish Leather", null, false, 1, null, "Uncomfortable Leather", null, false, 2, null, "Heavy Gold", null, false, 3, null, "Pretty Jewelry", null, false, 4, null, "Satin Choker", null, false, 5, null, "Cowbell", null, false, 6, null, "Tight Steel", null, false, 7, null, "Shock Punishment", null, false, 8, null, "Nice Retirement Counter", null, false, 9, null, "Cruel Retirement Counter", null, false, 10, null, "Neck Corset", null, false, 11, null ]
 selected = 0
@@ -2789,7 +2978,7 @@ custom_constants/separation = 6
 margin_top = 3.0
 margin_right = 63.0
 margin_bottom = 32.0
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "Arms:"
 __meta__ = {
 "_edit_use_anchors_": true
@@ -2800,7 +2989,7 @@ margin_left = 69.0
 margin_right = 351.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "None"
 items = [ "None", null, false, 0, null, "Fishnet Gloves", null, false, 1, null, "Striped Gloves", null, false, 2, null, "Lace Gloves", null, false, 3, null, "Chains", null, false, 4, null ]
 selected = 0
@@ -2822,7 +3011,7 @@ custom_constants/separation = 6
 margin_top = 3.0
 margin_right = 65.0
 margin_bottom = 32.0
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "Torso:"
 __meta__ = {
 "_edit_use_anchors_": true
@@ -2833,7 +3022,7 @@ margin_left = 71.0
 margin_right = 351.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "None"
 items = [ "None", null, false, 0, null, "Tight Corset", null, false, 1, null, "Extreme Corset", null, false, 2, null ]
 selected = 0
@@ -2846,16 +3035,16 @@ margin_bottom = 35.0
 icon = ExtResource( 40 )
 
 [node name="Genitals" type="HBoxContainer" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox"]
-margin_top = 264.0
+margin_top = 220.0
 margin_right = 351.0
-margin_bottom = 299.0
+margin_bottom = 255.0
 custom_constants/separation = 6
 
 [node name="Label" type="Label" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Genitals"]
 margin_top = 3.0
 margin_right = 93.0
 margin_bottom = 32.0
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "Genitals:"
 __meta__ = {
 "_edit_use_anchors_": true
@@ -2866,7 +3055,7 @@ margin_left = 99.0
 margin_right = 351.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "None"
 items = [ "None", null, false, 0, null ]
 selected = 0
@@ -2879,16 +3068,16 @@ margin_bottom = 35.0
 icon = ExtResource( 40 )
 
 [node name="Legs" type="HBoxContainer" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox"]
-margin_top = 220.0
+margin_top = 264.0
 margin_right = 351.0
-margin_bottom = 255.0
+margin_bottom = 299.0
 custom_constants/separation = 6
 
 [node name="Label" type="Label" parent="SidePanel/Wardrobe/Accessories/ExtensionPanel/Panel/VBox/Legs"]
 margin_top = 3.0
 margin_right = 58.0
 margin_bottom = 32.0
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "Legs:"
 __meta__ = {
 "_edit_use_anchors_": true
@@ -2899,7 +3088,7 @@ margin_left = 64.0
 margin_right = 351.0
 margin_bottom = 35.0
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 12 )
+custom_fonts/font = SubResource( 13 )
 text = "None"
 items = [ "None", null, false, 0, null ]
 selected = 0
@@ -2939,7 +3128,7 @@ __meta__ = {
 margin_top = 3.0
 margin_right = 87.0
 margin_bottom = 32.0
-custom_fonts/font = SubResource( 13 )
+custom_fonts/font = SubResource( 14 )
 text = "Option1:"
 __meta__ = {
 "_edit_use_anchors_": true
@@ -2966,7 +3155,7 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.452778
 custom_constants/separation = 18
-script = SubResource( 14 )
+script = SubResource( 15 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -3148,7 +3337,7 @@ anchor_right = 0.956522
 anchor_bottom = 0.408333
 margin_bottom = -151.999
 custom_constants/separation = 18
-script = SubResource( 15 )
+script = SubResource( 16 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -3212,7 +3401,7 @@ custom_fonts/font = ExtResource( 25 )
 text = "Hide"
 align = 0
 expand_icon = true
-script = SubResource( 16 )
+script = SubResource( 17 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -3235,7 +3424,7 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.399074
 custom_constants/separation = 18
-script = SubResource( 17 )
+script = SubResource( 18 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -3321,7 +3510,7 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.494444
 custom_constants/separation = 18
-script = SubResource( 18 )
+script = SubResource( 19 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -3499,7 +3688,7 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.494444
 custom_constants/separation = 18
-script = SubResource( 19 )
+script = SubResource( 20 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -3598,7 +3787,7 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.443519
 custom_constants/separation = 18
-script = SubResource( 20 )
+script = SubResource( 21 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -3728,7 +3917,7 @@ anchor_top = 0.446296
 anchor_right = 1.13044
 anchor_bottom = 0.553704
 texture = ExtResource( 38 )
-script = SubResource( 21 )
+script = SubResource( 22 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -3802,7 +3991,7 @@ visible = false
 margin_left = 202.0
 margin_right = 313.0
 margin_bottom = 38.0
-custom_fonts/font = SubResource( 22 )
+custom_fonts/font = SubResource( 23 )
 text = "Full View"
 items = [ "Full View", null, false, 0, null, "List View", null, false, 1, null ]
 selected = 0
@@ -3831,7 +4020,7 @@ visible = false
 margin_left = 294.0
 margin_right = 405.0
 margin_bottom = 43.0
-custom_fonts/font = SubResource( 22 )
+custom_fonts/font = SubResource( 23 )
 text = "Full View"
 items = [ "Full View", null, false, 0, null, "List View", null, false, 1, null ]
 selected = 0
@@ -3843,7 +4032,7 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 margin_top = -110.0
 margin_right = 430.0
-script = SubResource( 23 )
+script = SubResource( 24 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -3938,7 +4127,7 @@ anchor_top = 0.0930229
 anchor_right = 0.979381
 anchor_bottom = 0.906976
 margin_top = 2.38419e-07
-custom_fonts/font = SubResource( 24 )
+custom_fonts/font = SubResource( 25 )
 text = "Close"
 align = 0
 expand_icon = true
@@ -3977,7 +4166,7 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 margin_top = -110.0
 margin_right = 110.0
-script = SubResource( 25 )
+script = SubResource( 26 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -4036,7 +4225,7 @@ anchor_bottom = 1.0
 margin_left = -0.100037
 margin_top = -199.0
 margin_right = 193.9
-script = SubResource( 26 )
+script = SubResource( 27 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -4046,7 +4235,7 @@ anchor_left = 0.0206186
 anchor_top = 0.0201005
 anchor_right = 0.979381
 anchor_bottom = 0.19598
-custom_fonts/font = SubResource( 24 )
+custom_fonts/font = SubResource( 25 )
 text = "Communication"
 align = 0
 expand_icon = true
@@ -4059,7 +4248,7 @@ anchor_left = 0.0206186
 anchor_top = 0.21608
 anchor_right = 0.979381
 anchor_bottom = 0.39196
-custom_fonts/font = SubResource( 24 )
+custom_fonts/font = SubResource( 25 )
 disabled = true
 text = "Set Notification"
 align = 0
@@ -4074,7 +4263,7 @@ anchor_top = 0.41206
 anchor_right = 0.979381
 anchor_bottom = 0.58794
 margin_bottom = -7.62939e-06
-custom_fonts/font = SubResource( 24 )
+custom_fonts/font = SubResource( 25 )
 disabled = true
 text = "Manage Navi"
 align = 0
@@ -4088,7 +4277,7 @@ anchor_left = 0.0206186
 anchor_top = 0.60804
 anchor_right = 0.979381
 anchor_bottom = 0.78392
-custom_fonts/font = SubResource( 24 )
+custom_fonts/font = SubResource( 25 )
 disabled = true
 text = "Directives"
 align = 0
@@ -4102,7 +4291,7 @@ anchor_left = 0.0206186
 anchor_top = 0.80402
 anchor_right = 0.979381
 anchor_bottom = 0.979899
-custom_fonts/font = SubResource( 24 )
+custom_fonts/font = SubResource( 25 )
 disabled = true
 text = "Help"
 align = 0
@@ -4194,7 +4383,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -350.0
 margin_top = -110.0
-script = SubResource( 27 )
+script = SubResource( 28 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -4208,7 +4397,7 @@ anchor_bottom = 1.0
 margin_bottom = -7.62939e-06
 texture = ExtResource( 19 )
 expand = true
-script = SubResource( 28 )
+script = SubResource( 29 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -4236,7 +4425,7 @@ anchor_bottom = 1.0
 margin_bottom = -7.62939e-06
 texture = ExtResource( 19 )
 expand = true
-script = SubResource( 29 )
+script = SubResource( 30 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -4268,7 +4457,7 @@ anchor_bottom = 1.0
 margin_bottom = -7.62939e-06
 texture = ExtResource( 19 )
 expand = true
-script = SubResource( 30 )
+script = SubResource( 31 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -4356,7 +4545,7 @@ margin_left = -148.0
 margin_top = 100.0
 margin_right = 150.0
 margin_bottom = 143.0
-custom_fonts/font = SubResource( 31 )
+custom_fonts/font = SubResource( 32 )
 text = "Week XX"
 script = ExtResource( 34 )
 __meta__ = {
@@ -4383,7 +4572,7 @@ __meta__ = {
 margin_right = 138.0
 margin_bottom = 43.0
 mouse_filter = 2
-custom_fonts/font = SubResource( 32 )
+custom_fonts/font = SubResource( 33 )
 text = "END DAY"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -4394,7 +4583,7 @@ margin_left = 142.0
 margin_right = 298.0
 margin_bottom = 43.0
 mouse_filter = 2
-custom_fonts/font = SubResource( 32 )
+custom_fonts/font = SubResource( 33 )
 text = "END WEEK"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -4413,7 +4602,7 @@ anchor_right = 0.141084
 anchor_bottom = 0.568849
 margin_bottom = 3.05176e-05
 custom_constants/separation = 30
-script = SubResource( 33 )
+script = SubResource( 34 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -4463,7 +4652,7 @@ margin_left = 23.0
 margin_top = -36.0
 margin_right = 86.0
 margin_bottom = 1.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "Date"
 valign = 1
 
@@ -4472,7 +4661,7 @@ margin_left = 509.0
 margin_top = -36.0
 margin_right = 575.0
 margin_bottom = 1.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "Time"
 align = 2
 valign = 1
@@ -4497,7 +4686,7 @@ __meta__ = {
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -4509,7 +4698,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "M"
 align = 1
 valign = 1
@@ -4521,7 +4710,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -4533,7 +4722,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "W"
 align = 1
 valign = 1
@@ -4545,7 +4734,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -4557,7 +4746,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "F"
 align = 1
 valign = 1
@@ -4569,7 +4758,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -4580,7 +4769,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "1"
 align = 1
 valign = 1
@@ -4596,7 +4785,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -4608,7 +4797,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "M"
 align = 1
 valign = 1
@@ -4620,7 +4809,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -4632,7 +4821,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "W"
 align = 1
 valign = 1
@@ -4644,7 +4833,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -4656,7 +4845,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "F"
 align = 1
 valign = 1
@@ -4668,7 +4857,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -4679,7 +4868,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "2"
 align = 1
 valign = 1
@@ -4695,7 +4884,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -4707,7 +4896,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "M"
 align = 1
 valign = 1
@@ -4719,7 +4908,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -4731,7 +4920,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "W"
 align = 1
 valign = 1
@@ -4743,7 +4932,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -4755,7 +4944,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "F"
 align = 1
 valign = 1
@@ -4767,7 +4956,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -4778,7 +4967,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "3"
 align = 1
 valign = 1
@@ -4794,7 +4983,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -4806,7 +4995,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "M"
 align = 1
 valign = 1
@@ -4818,7 +5007,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -4830,7 +5019,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "W"
 align = 1
 valign = 1
@@ -4842,7 +5031,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -4854,7 +5043,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "F"
 align = 1
 valign = 1
@@ -4866,7 +5055,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -4877,7 +5066,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "4"
 align = 1
 valign = 1
@@ -4893,7 +5082,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -4905,7 +5094,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "M"
 align = 1
 valign = 1
@@ -4917,7 +5106,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -4929,7 +5118,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "W"
 align = 1
 valign = 1
@@ -4941,7 +5130,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -4953,7 +5142,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "F"
 align = 1
 valign = 1
@@ -4965,7 +5154,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -4976,7 +5165,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "5"
 align = 1
 valign = 1
@@ -4992,7 +5181,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -5004,7 +5193,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "M"
 align = 1
 valign = 1
@@ -5016,7 +5205,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -5028,7 +5217,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "W"
 align = 1
 valign = 1
@@ -5040,7 +5229,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -5052,7 +5241,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "F"
 align = 1
 valign = 1
@@ -5064,7 +5253,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -5075,7 +5264,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "6"
 align = 1
 valign = 1
@@ -5091,7 +5280,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -5103,7 +5292,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "M"
 align = 1
 valign = 1
@@ -5115,7 +5304,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -5127,7 +5316,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "W"
 align = 1
 valign = 1
@@ -5139,7 +5328,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -5151,7 +5340,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "F"
 align = 1
 valign = 1
@@ -5163,7 +5352,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -5174,7 +5363,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "7"
 align = 1
 valign = 1
@@ -5190,7 +5379,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -5202,7 +5391,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "M"
 align = 1
 valign = 1
@@ -5214,7 +5403,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -5226,7 +5415,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "W"
 align = 1
 valign = 1
@@ -5238,7 +5427,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -5250,7 +5439,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "F"
 align = 1
 valign = 1
@@ -5262,7 +5451,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -5273,7 +5462,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "8"
 align = 1
 valign = 1
@@ -5289,7 +5478,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -5301,7 +5490,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "M"
 align = 1
 valign = 1
@@ -5313,7 +5502,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -5325,7 +5514,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "W"
 align = 1
 valign = 1
@@ -5337,7 +5526,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -5349,7 +5538,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "F"
 align = 1
 valign = 1
@@ -5361,7 +5550,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -5372,7 +5561,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "9"
 align = 1
 valign = 1
@@ -5388,7 +5577,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 30.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -5400,7 +5589,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 30.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "M"
 align = 1
 valign = 1
@@ -5412,7 +5601,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 30.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -5424,7 +5613,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 30.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "W"
 align = 1
 valign = 1
@@ -5436,7 +5625,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 30.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -5448,7 +5637,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 30.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "F"
 align = 1
 valign = 1
@@ -5460,7 +5649,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 30.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -5471,7 +5660,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 30.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "10"
 align = 1
 valign = 1
@@ -5487,7 +5676,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -5499,7 +5688,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "M"
 align = 1
 valign = 1
@@ -5511,7 +5700,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -5523,7 +5712,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "W"
 align = 1
 valign = 1
@@ -5535,7 +5724,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -5547,7 +5736,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "F"
 align = 1
 valign = 1
@@ -5559,7 +5748,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -5570,7 +5759,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "11"
 align = 1
 valign = 1
@@ -5586,7 +5775,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 29.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -5598,7 +5787,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 29.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "M"
 align = 1
 valign = 1
@@ -5610,7 +5799,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 29.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -5622,7 +5811,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 29.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "W"
 align = 1
 valign = 1
@@ -5634,7 +5823,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 29.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -5646,7 +5835,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 29.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "F"
 align = 1
 valign = 1
@@ -5658,7 +5847,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 29.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -5669,7 +5858,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 29.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "12"
 align = 1
 valign = 1
@@ -5685,7 +5874,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 29.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -5697,7 +5886,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 29.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "M"
 align = 1
 valign = 1
@@ -5709,7 +5898,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 29.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -5721,7 +5910,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 29.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "W"
 align = 1
 valign = 1
@@ -5733,7 +5922,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 29.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "T"
 align = 1
 valign = 1
@@ -5745,7 +5934,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 29.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "F"
 align = 1
 valign = 1
@@ -5757,7 +5946,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 29.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "S"
 align = 1
 valign = 1
@@ -5768,7 +5957,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 29.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 34 )
+custom_fonts/font = SubResource( 35 )
 text = "13"
 align = 1
 valign = 1
@@ -5778,7 +5967,7 @@ anchor_left = 0.231377
 anchor_top = 0.704289
 anchor_right = 0.702032
 anchor_bottom = 0.79684
-script = SubResource( 35 )
+script = SubResource( 36 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -5806,7 +5995,7 @@ __meta__ = {
 anchor_top = -1.4375
 anchor_right = 1.0
 anchor_bottom = 0.0625
-custom_fonts/font = SubResource( 36 )
+custom_fonts/font = SubResource( 37 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "Clock Speed:"
@@ -5830,7 +6019,7 @@ __meta__ = {
 anchor_top = -1.4375
 anchor_right = 1.0
 anchor_bottom = 0.0625
-custom_fonts/font = SubResource( 36 )
+custom_fonts/font = SubResource( 37 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "Time Scale:"
@@ -5922,7 +6111,7 @@ anchor_bottom = 0.490909
 margin_left = 2.38419e-07
 margin_top = -1.90735e-05
 margin_bottom = -1.90735e-05
-custom_fonts/font = SubResource( 37 )
+custom_fonts/font = SubResource( 38 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "24:00
@@ -5940,7 +6129,7 @@ anchor_bottom = 0.827273
 margin_left = 2.38419e-07
 margin_top = 3.8147e-06
 margin_bottom = 7.62939e-06
-custom_fonts/font = SubResource( 38 )
+custom_fonts/font = SubResource( 39 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "Week 1
@@ -6009,7 +6198,7 @@ margin_left = 13.0
 margin_top = 10.0
 margin_right = 43.0
 margin_bottom = 40.0
-script = SubResource( 39 )
+script = SubResource( 40 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -6059,7 +6248,7 @@ show_behind_parent = true
 margin_bottom = 24.0
 size_flags_horizontal = 2
 size_flags_vertical = 0
-custom_fonts/font = SubResource( 40 )
+custom_fonts/font = SubResource( 41 )
 
 [node name="Income" type="Label" parent="Money"]
 self_modulate = Color( 0.218887, 0.589844, 0.242072, 1 )
@@ -6068,7 +6257,7 @@ margin_right = 55.0
 margin_bottom = 24.0
 size_flags_horizontal = 2
 size_flags_vertical = 0
-custom_fonts/font = SubResource( 40 )
+custom_fonts/font = SubResource( 41 )
 
 [node name="Expenses" type="Label" parent="Money"]
 self_modulate = Color( 0.832031, 0.165756, 0.165756, 1 )
@@ -6077,7 +6266,7 @@ margin_right = 111.0
 margin_bottom = 24.0
 size_flags_horizontal = 2
 size_flags_vertical = 0
-custom_fonts/font = SubResource( 40 )
+custom_fonts/font = SubResource( 41 )
 
 [node name="Pause Menu" type="Panel" parent="."]
 pause_mode = 2
@@ -6085,7 +6274,7 @@ visible = false
 self_modulate = Color( 1, 1, 1, 0.862745 )
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = SubResource( 41 )
+script = SubResource( 42 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -6105,7 +6294,7 @@ custom_constants/separation = 10
 margin_right = 425.0
 margin_bottom = 80.0
 rect_min_size = Vector2( 0, 80 )
-custom_fonts/font = SubResource( 42 )
+custom_fonts/font = SubResource( 43 )
 text = "PAUSED"
 align = 1
 
@@ -6114,7 +6303,7 @@ margin_top = 90.0
 margin_right = 425.0
 margin_bottom = 150.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 43 )
+custom_fonts/font = SubResource( 44 )
 text = "Resume"
 
 [node name="Save-Load" type="Button" parent="Pause Menu/Menu"]
@@ -6122,7 +6311,7 @@ margin_top = 160.0
 margin_right = 425.0
 margin_bottom = 220.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 43 )
+custom_fonts/font = SubResource( 44 )
 text = "Save/Load"
 
 [node name="Options" type="Button" parent="Pause Menu/Menu"]
@@ -6130,7 +6319,7 @@ margin_top = 230.0
 margin_right = 425.0
 margin_bottom = 290.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 43 )
+custom_fonts/font = SubResource( 44 )
 text = "Options"
 
 [node name="Main Menu" type="Button" parent="Pause Menu/Menu"]
@@ -6138,7 +6327,7 @@ margin_top = 300.0
 margin_right = 425.0
 margin_bottom = 360.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 44 )
+custom_fonts/font = SubResource( 45 )
 text = "Main Menu"
 
 [node name="Saves" parent="Pause Menu" instance=ExtResource( 23 )]
@@ -6152,7 +6341,7 @@ margin_left = 18.0
 margin_top = 11.0
 margin_right = 328.0
 margin_bottom = 136.0
-custom_fonts/font = SubResource( 45 )
+custom_fonts/font = SubResource( 46 )
 text = "Controls:
 BACK: right click
 TOGGLE PAUSE: space
@@ -6173,7 +6362,7 @@ margin_top = -175.0
 margin_right = 250.0
 margin_bottom = 175.0
 window_title = "Communication"
-script = SubResource( 46 )
+script = SubResource( 47 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -6221,6 +6410,10 @@ autostart = true
 [connection signal="item_selected" from="SidePanel/Regimen/DietBase/Selection" to="SidePanel/Regimen" method="_on_DietBase_item_selected"]
 [connection signal="item_selected" from="SidePanel/Regimen/Hormones/Selection" to="SidePanel/Regimen" method="_on_Hormones_item_selected"]
 [connection signal="item_selected" from="SidePanel/Regimen/Aphrodisiacs/Selection" to="SidePanel/Regimen" method="_on_Aphrodisiacs_item_selected"]
+[connection signal="toggled" from="SidePanel/Rules/InterslaveConsent" to="SidePanel/Rules" method="_on_InterslaveConsent_toggled"]
+[connection signal="item_selected" from="SidePanel/Rules/InterslaveConsent/ExtensionPanel/Panel/VBox/GivingConsent/Selection" to="SidePanel/Rules" method="_on_GivingConsent_item_selected"]
+[connection signal="item_selected" from="SidePanel/Rules/InterslaveConsent/ExtensionPanel/Panel/VBox/ReceivingConsent/Selection" to="SidePanel/Rules" method="_on_ReceivingConsent_item_selected"]
+[connection signal="item_selected" from="SidePanel/Rules/InterslaveConsent/ExtensionPanel/Panel/VBox/ResistingAdvances/Selection" to="SidePanel/Rules" method="_on_ResistingAdvances_item_selected"]
 [connection signal="toggled" from="SidePanel/Wardrobe/ChoosingClothing/CheckBox" to="SidePanel/Wardrobe" method="_on_Choosing_CheckBox_toggled" binds= [ "clothing" ]]
 [connection signal="toggled" from="SidePanel/Wardrobe/ChoosingAccessories/CheckBox" to="SidePanel/Wardrobe" method="_on_Choosing_CheckBox_toggled" binds= [ "accessories" ]]
 [connection signal="toggled" from="SidePanel/Wardrobe/Clothing" to="SidePanel/Wardrobe" method="_on_Clothing_toggled"]

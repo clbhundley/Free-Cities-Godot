@@ -2,7 +2,6 @@ extends Node
 
 var region = "Asia"
 
-
 func new(preset=null,for_sale=false):
 	randomize()
 	
@@ -32,8 +31,14 @@ func new(preset=null,for_sale=false):
 	_slave.location = _slave.quarters
 	
 	if not _slave.age:
-		_slave.age = randi() %41+18
-
+		_slave.age = randi()%41+18
+	
+	if not _slave.birthday:
+		_slave.birthday = {
+			"quarter":randi()%4,
+			"week":randi()%13,
+			"day":randi()%7}
+	
 	if _slave.gender == "Male" or _slave.gender == "Trans female":
 		_slave.vagina = false
 		#_slave.penis = true
@@ -76,24 +81,33 @@ func new(preset=null,for_sale=false):
 		_slave.bathroom = math.gaussian(90,5)
 	if not _slave.intelligence:
 		_slave.intelligence = math.gaussian(100,25)
+	
+	if not _slave.personality:
+		_slave.personality = _personality()
+	if not _slave.dominance:
+		_slave.dominance = abs(math.gaussian(0,4))
+	if not _slave.submission:
+		_slave.submission = abs(math.gaussian(0,4))
 	if not _slave.libido:
 		_slave.libido = math.gaussian(100,25)
 	if not _slave.male_attraction:
 		_slave.male_attraction = math.gaussian(0,25)
 	if not _slave.female_attraction:
 		_slave.female_attraction = math.gaussian(0,25)
+	generate_sexual_preferences(_slave)
+	
 	if not _slave.devotion:
 		_slave.devotion = math.gaussian(-50,25)
 	if not _slave.trust:
 		_slave.trust = math.gaussian(-50,25)
 	if not _slave.happiness:
 		_slave.happiness = abs(math.gaussian(40,10))
-	if not _slave.social:
-		_slave.social = math.gaussian(5,10)
+#	if not _slave.social:
+#		_slave.social = math.gaussian(5,10)
 	if not _slave.face:
 		_slave.face = math.gaussian(5,3)
-	if not _slave.figure:
-		_slave.figure = null
+#	if not _slave.figure:
+#		_slave.figure = null
 	if not _slave.arousal:
 		_slave.arousal = abs(math.gaussian(10,5))
 	if not _slave.sexual_skill:
@@ -199,7 +213,53 @@ func _gender():
 		else:
 			return "Intersex"
 
-#aiming for 37 to 42 weeks
+func generate_sexual_preferences(_slave):
+	var libido_modifier = min(max(0,_slave.libido-100)/7,5)
+	for role in ['giving','recieving']:
+		for preference in ['oral','anal','vaginal','hands','feet']:
+			if not _slave.sexual_preferences.get(role).get(preference):
+				var value = int(math.gaussian(libido_modifier,4))
+				_slave.sexual_preferences.get(role).set(preference,value)
+	_slave.sexual_preferences.recieving.oral += 3
+	match _slave.gender:
+		"Male":
+			_slave.sexual_preferences.recieving.vaginal = 0
+			_slave.sexual_preferences.giving.vaginal += 4
+			_slave.sexual_preferences.giving.anal += 2
+		"Trans female":
+			_slave.sexual_preferences.recieving.vaginal = 0
+			_slave.sexual_preferences.giving.vaginal += 2
+			_slave.sexual_preferences.recieving.anal += 3
+			_slave.sexual_preferences.giving.anal += 2
+		"Trans male":
+			_slave.sexual_preferences.giving.vaginal += 3
+			_slave.sexual_preferences.recieving.vaginal += 2
+		"Female":
+			_slave.sexual_preferences.recieving.vaginal += 4
+
+enum {C,M,P,S}
+func _personality():
+	var new_personality = []
+	if randi()%100 == 0:
+		new_personality = [C,M,P,S]
+	elif randi()%50 == 0:
+		new_personality = [
+			[C,C,S,S],[P,P,S,S],
+			[M,M,C,C],[M,M,P,P]
+		][randi()%4]
+	else:
+		new_personality = [
+			[C,C,C,C],[C,C,C,S],[C,S,S,S],[S,S,S,S],
+			[C,C,C,M],[C,C,M,S],[C,P,S,S],[C,S,S,S],
+			[M,M,M,C],[M,M,C,P],[M,S,P,P],[C,P,P,P],
+			[M,M,M,M],[M,M,M,P],[M,P,P,P],[P,P,P,P]
+		][randi()%16]
+	var personality = []
+	var temperaments = ["C","M","P","S"]
+	for item in new_personality:
+		personality.append(temperaments[item])
+	return personality
+
 func _pregnancy(_slave):
 	if _slave.gender != "Female" and _slave.gender != "Trans male":
 		return

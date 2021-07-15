@@ -11,15 +11,20 @@ func _ready():
 		assignment = "Resting"
 	if health == 0:
 		die()
-	elif not for_sale:
+	if not for_sale:
 		activate()
 		yield(game.get_gui(),"ready")
 		game.get_gui().get_node("SidePanel/Regimen").load_settings(self)
-	$UI.set_level()
+	else:
+		ui.hide()
+	ui.set_level()
+	_load(_data())
+	model._ready()
 
 func activate():
 	if not time.is_connected("tick",self,"tick"):
 		time.connect('tick',self,'tick')
+	ui.get_node("Activity")._ready()
 
 func deactivate():
 	if time.is_connected("tick",self,"tick"):
@@ -68,119 +73,56 @@ func _action_ended():
 	get_node('UI/Activity/Action').set_text("")
 
 func _data():
-	var _queued_action
+	var slave_data = _get_properties(self)
+	var model_data = _get_properties(model)
+	var action_data = {action.name:_get_properties(action)}
+	slave_data.erase("flags")
+	model_data.erase("model_data")
 	if queued_action:
-		_queued_action = queued_action.name
+		slave_data['queued_action'] = queued_action.name
 	return {
-		slave_data = {
-			ethnicity = ethnicity,
-			skin_color = skin_color,
-			tissue_color = tissue_color,
-			hair_color_natural = hair_color_natural,
-			hair_color = hair_color,
-			hair_style = hair_style,
-			gender = gender,
-			age = age,
-			height = height,
-			weight = weight,
-			genitals = genitals,
-			penis_size = penis_size,
-			testicles_size = testicles_size,
-			vagina = vagina,
-			chest = chest,
-			fertility = fertility,
-			pregnancy = pregnancy,
-			pregnancy_history = pregnancy_history,
-			face = face,
-			figure = figure,
-			voice = voice,
-			health = health,
-			fatigue = fatigue,
-			happiness = happiness,
-			hunger = hunger,
-			bathroom = bathroom,
-			arousal = arousal,
-			libido = libido,
-			male_attraction = male_attraction,
-			female_attraction = female_attraction,
-			intelligence = intelligence,
-			devotion = devotion,
-			trust = trust,
-			sexual_skill = sexual_skill,
-			oral_skill = oral_skill,
-			anal_skill = anal_skill,
-			vaginal_skill = vaginal_skill,
-			penis_skill = penis_skill,
-			prostitution_skill = prostitution_skill,
-			entertainment_skill = entertainment_skill,
-			combat_skill = combat_skill,
-			is_awake = is_awake,
-			for_sale = for_sale,
-			acquired = acquired,
-			diet = diet,
-			diet_base = diet_base,
-			regimen = regimen,
-			rules = rules,
-			wardrobe = wardrobe,
-			assignment = assignment,
-			action = action.name,
-			current_time = action.current_time,
-			total_time = action.total_time,
-			queued_action = _queued_action,
-			quarters = quarters,
-			location = location,
-			destination = destination,
-			travel_mode = travel_mode},
-		model_data = {
-			masculinity = $Model.masculinity,
-			genitals_male_adjustment = $Model.genitals_male_adjustment,
-			weight = $Model.weight,
-			weight_round = $Model.weight_round,
-			weight_pear = $Model.weight_pear,
-			weight_fat = $Model.weight_fat,
-			waist_size = $Model.waist_size,
-			butt_size = $Model.butt_size,
-			body_size = $Model.body_size,
-			bodybuilder = $Model.bodybuilder,
-			voluptuous = $Model.voluptuous,
-			pregnant = $Model.pregnant,
-			breasts_growth = $Model.breasts_growth,
-			breasts_implants = $Model.breasts_implants,
-			breasts_small = $Model.breasts_small,
-			breasts_gone = $Model.breasts_gone,
-			testicles_size = $Model.testicles_size,
-			penis_length = $Model.penis_length,
-			penis_thickness = $Model.penis_thickness,
-			penis_micro = $Model.penis_micro}}
+		'slave_data':slave_data,
+		'model_data':model_data,
+		'action_data':action_data}
 
 func _load(_data):
 	var slave_data = _data["slave_data"]
 	for setting in slave_data:
-		if setting == "health":
+		if setting == "health": #prevents death notification when loading game
 			health = slave_data[setting]
-		elif setting == "action":
-			action = get_node('Actions/'+slave_data["action"])
 		elif setting == "queued_action" and slave_data["queued_action"]:
 			queued_action = get_node('Actions/'+slave_data["queued_action"])
 		else:
 			set(setting, slave_data[setting])
-	$Model.model_data = _data["model_data"]
-	action.current_time = _data["slave_data"]['current_time']
-	action.total_time = _data["slave_data"]['total_time']
+	$Model.model_data = _data['model_data']
+	var action_name = _data['action_data'].keys()[0]
+	action = get_node('Actions/'+action_name)
+	var action_data = _data['action_data'].values()[0]
+	for setting in action_data:
+		action.set(setting, action_data[setting])
 	if action.total_time:
 		get_node('UI/Activity/ProgressBar').max_value = action.total_time
 		get_node('UI/Activity/ProgressBar').value = action.current_time
 
-#func _get_properties(input):
-#	var properties = input.get_property_list()
-#	var array = []
-#	for i in properties.size():
-#		array.append(properties[i].name)
-#	var slice = array.find('Script Variables')+1
-#	var dict = {}
-#	for i in range(slice,array.size()):
-#		dict[array[i]] = input.get(array[i])
-#	return dict
+func _get_properties(object):
+	var properties_full = object.get_property_list()
+	var property_list = []
+	for index in properties_full.size():
+		property_list.append(properties_full[index].name)
+	var slice = property_list.find('Script Variables') + 1
+	var properties = {}
+	for index in range(slice,property_list.size()):
+		properties[property_list[index]] = object.get(property_list[index])
+	var nodes = []
+	for item in properties:
+		if typeof(properties[item]) == TYPE_OBJECT:
+			if properties[item].is_class("Node"):
+				nodes.append(item)
+			else:
+				properties[item] = _get_properties(properties[item])
+	for item in nodes:
+		properties.erase(item)
+	return properties
 
 #var breasts = Breasts.new()
 #class Breasts:

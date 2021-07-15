@@ -205,9 +205,9 @@ func _female_attraction():
 	elif _slave.female_attraction < 25:
 		return "[color=#ffbbdd]Likes women[/color]"
 	elif _slave.female_attraction < 50:
-		return "[color=ff69b4]Attracted to women[/color]"
+		return "[color=#ff69b4]Attracted to women[/color]"
 	elif _slave.female_attraction < 75:
-		return "[color=ff1493]Aroused by women[/color]"
+		return "[color=#ff1493]Aroused by women[/color]"
 	elif _slave.female_attraction >= 75:
 		return "[color=fuchsia]Passionate about women[/color]"
 

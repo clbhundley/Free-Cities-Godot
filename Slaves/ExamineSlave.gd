@@ -81,12 +81,14 @@ func uptate_display():
 	set_gauges()
 	set_activity()
 	set_stats_temp()
+	set_proximity_affinity()
+	
 
 func set_level():
 	get_node('Top/Level').set_text(str(_slave.stats._level()))
 
 func set_stats_temp():
-	$"Stats Display temp".set_text(JSON.print(_slave._data()," "))
+	$TabContainer/Stats.set_text(JSON.print(_slave._data(),"   "))
 
 func set_stats():
 	pass
@@ -145,10 +147,32 @@ func _on_Close_pressed():
 #	#get_node("Stats Display/Basic").get('custom_fonts/normal_font').size = clamp(scale_adjusted,12,20)
 #	#get_node("Gauges/Health/Value").get('custom_fonts/font').size = scale_adjusted*1.2
 
+func set_proximity_affinity():
+	var slaves_in_proximity = SlaveUtils.slaves_in_proximity(_slave)
+	var proximity_affinity = SlaveUtils.proximity_affinity(_slave)
+	var display_text = ""
+	for other_slave in proximity_affinity:
+		var other_slave_name = other_slave.keys()[0]
+		var affinity = other_slave.values()[0]
+		other_slave = SlaveUtils.get_slave(other_slave_name)
+		var desire = SlaveUtils.desire(_slave,other_slave)
+		var orientation = SlaveUtils.orientation_affinity(_slave,other_slave)
+		var social = SlaveUtils.personality_affinity(_slave,other_slave)
+		var ds = SlaveUtils.dominance_affinity(_slave,other_slave)
+		var dominant = SlaveUtils.dominance_interaction(_slave,other_slave)
+		display_text += "  "+"[b]"+other_slave_name+"[/b]"+"\n"
+		display_text += "   Dominant slave: "+[_slave,other_slave][dominant].name+"\n"
+		display_text += "   "+_slave.name+"'s opinion of "+other_slave.name+":"+"\n"
+		display_text += "    Affinity: "+str(affinity)+"\n"
+		#display_text += "    Desire: "+str(desire)+"\n"
+		display_text += "    Orientation: "+str(orientation)+"\n"
+		display_text += "    Social: "+str(social)+"\n"
+		display_text += "    D/s compatibility: "+str(ds)+"\n"
+		display_text += "\n"
+	$"TabContainer/Slaves in proximity".parse_bbcode(display_text)
 
 func _on_Button_pressed():
 	print("SLAVE HEALTH ", _slave.health)
 	_slave.health -= 10
 	print("hitting")
 	print("SLAVE HEALTH ", _slave.health)
-

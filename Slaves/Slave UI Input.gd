@@ -49,8 +49,8 @@ func _on_Buy_pressed():
 	parent_container.remove_child(_slave)
 	_slave.acquired = time.get_timestamp()
 	_slave.for_sale = false
-	_slave.activate()
 	SlaveUtils.get_owned_slaves().add_child(_slave,true)
+	_slave.activate()
 	slaves.update_collection(slaves.active_collection)
 	game.get_gui().get_node("SidePanel/ManageSlaves").update()
 	slaves.update_header()

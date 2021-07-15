@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=2]
+[gd_scene load_steps=40 format=2]
 
 [ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Fonts/Rubik-Light.tres" type="DynamicFont" id=2]
@@ -20,20 +20,42 @@
 [ext_resource path="res://Slaves/Textures/Gague/Icons/hunger.svg" type="Texture" id=18]
 [ext_resource path="res://Slaves/Textures/Gague/Icons/bathroom.svg" type="Texture" id=19]
 
-[sub_resource type="DynamicFont" id=1]
+[sub_resource type="GDScript" id=1]
+script/source = "extends Control
+
+onready var _slave = owner.owner
+
+func _ready():
+	if not _slave.for_sale:
+		var clock = get_tree().get_root().get_node('Game/Clock')
+		if not clock.is_connected(\"timeout\",self,\"update_activity_progress\"):
+			clock.connect('timeout',self,'update_activity_progress')
+			update_activity_progress()
+
+func update_activity_progress():
+	if _slave.action:
+		var current_time = _slave.action.current_time
+		var total_time = _slave.action.total_time
+		if current_time and total_time:
+			$ProgressBar.max_value = total_time
+			$ProgressBar.value = current_time
+			$Time.set_text(math.time_remaining(current_time,total_time))
+"
+
+[sub_resource type="DynamicFont" id=2]
 size = 50
 font_data = ExtResource( 1 )
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="DynamicFont" id=3]
 size = 40
 font_data = ExtResource( 1 )
 
-[sub_resource type="DynamicFont" id=3]
+[sub_resource type="DynamicFont" id=4]
 size = 25
 use_mipmaps = true
 font_data = ExtResource( 1 )
 
-[sub_resource type="GDScript" id=4]
+[sub_resource type="GDScript" id=5]
 script/source = "extends Control
 
 func refresh():
@@ -42,7 +64,7 @@ func refresh():
 			gauge._set_gauge()
 "
 
-[sub_resource type="GDScript" id=5]
+[sub_resource type="GDScript" id=6]
 script/source = "extends Control
 
 onready var _slave = owner.owner
@@ -125,11 +147,11 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="DynamicFont" id=6]
+[sub_resource type="DynamicFont" id=7]
 size = 25
 font_data = ExtResource( 1 )
 
-[sub_resource type="GDScript" id=7]
+[sub_resource type="GDScript" id=8]
 script/source = "extends Control
 
 onready var _slave = owner.owner
@@ -183,7 +205,7 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="GDScript" id=8]
+[sub_resource type="GDScript" id=9]
 script/source = "extends Control
 
 onready var _slave = owner.owner
@@ -241,7 +263,7 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="GDScript" id=9]
+[sub_resource type="GDScript" id=10]
 script/source = "extends Control
 
 onready var _slave = owner.owner
@@ -295,7 +317,7 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="GDScript" id=10]
+[sub_resource type="GDScript" id=11]
 script/source = "extends Control
 
 onready var _slave = owner.owner
@@ -355,7 +377,7 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="GDScript" id=11]
+[sub_resource type="GDScript" id=12]
 script/source = "extends Control
 
 onready var _slave = owner.owner
@@ -411,7 +433,7 @@ func _color():
 	return(color)
 "
 
-[sub_resource type="GDScript" id=12]
+[sub_resource type="GDScript" id=13]
 script/source = "extends Control
 
 func _ready():
@@ -427,11 +449,11 @@ func auto_refresh():
 	refresh()
 "
 
-[sub_resource type="DynamicFont" id=13]
+[sub_resource type="DynamicFont" id=14]
 size = 20
 font_data = ExtResource( 1 )
 
-[sub_resource type="GDScript" id=14]
+[sub_resource type="GDScript" id=15]
 script/source = "extends RichTextLabel
 
 onready var _slave = owner.owner
@@ -469,7 +491,7 @@ func set_stats():
 		remove_lines(1)
 "
 
-[sub_resource type="GDScript" id=15]
+[sub_resource type="GDScript" id=16]
 script/source = "extends RichTextLabel
 
 onready var _slave = owner.owner
@@ -574,7 +596,7 @@ func set_stats():
 	parse_bbcode(string)
 "
 
-[sub_resource type="GDScript" id=16]
+[sub_resource type="GDScript" id=17]
 script/source = "extends RichTextLabel
 
 onready var _slave = owner.owner
@@ -591,7 +613,7 @@ func set_stats():
 	\"#Fetishes\")
 "
 
-[sub_resource type="GDScript" id=17]
+[sub_resource type="GDScript" id=18]
 script/source = "extends RichTextLabel
 
 onready var _slave = owner.owner
@@ -608,7 +630,7 @@ func set_stats():
 	_slave.stats._combat_skill())
 "
 
-[sub_resource type="GDScript" id=18]
+[sub_resource type="GDScript" id=19]
 script/source = "extends RichTextLabel
 
 onready var _slave = owner.owner
@@ -624,7 +646,7 @@ func set_stats():
 	\"#Relationships\")
 "
 
-[sub_resource type="DynamicFont" id=19]
+[sub_resource type="DynamicFont" id=20]
 size = 20
 font_data = ExtResource( 1 )
 
@@ -646,6 +668,7 @@ anchor_right = 0.976923
 anchor_bottom = 0.147222
 margin_left = 12.0
 margin_right = 12.0
+script = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -710,7 +733,7 @@ margin_right = 1.0
 margin_bottom = -5.00001
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "345"
 valign = 2
@@ -729,7 +752,7 @@ margin_right = 1.0
 margin_bottom = -5.00001
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "|"
 valign = 2
@@ -746,7 +769,7 @@ margin_left = 1.0
 margin_top = -5.0
 margin_right = 0.999969
 margin_bottom = -5.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Name Here"
 valign = 2
@@ -763,7 +786,7 @@ margin_left = 1.0
 margin_top = -5.0
 margin_right = 1.0
 margin_bottom = -5.0
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 4 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Public Servant"
 valign = 2
@@ -781,7 +804,7 @@ margin_left = -4.0
 margin_top = 2.0
 margin_right = -4.0
 margin_bottom = 2.0
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 4 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "¤20,000"
 valign = 1
@@ -795,7 +818,7 @@ anchor_right = 1.0
 anchor_bottom = 0.180556
 margin_left = 12.0
 margin_right = 12.0
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 4 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "P11: Slave Dorm  >>>  A13: Commercial"
 align = 1
@@ -812,7 +835,7 @@ margin_left = 12.0
 margin_top = -5.0
 margin_right = 12.0
 margin_bottom = -5.0
-script = SubResource( 4 )
+script = SubResource( 5 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -828,7 +851,7 @@ __meta__ = {
 anchor_right = 0.319999
 anchor_bottom = 1.0
 margin_right = -3.8147e-06
-script = SubResource( 5 )
+script = SubResource( 6 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1013,7 +1036,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 7 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -1032,7 +1055,7 @@ __meta__ = {
 anchor_left = 0.339999
 anchor_right = 0.66
 anchor_bottom = 1.0
-script = SubResource( 7 )
+script = SubResource( 8 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1202,7 +1225,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 7 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -1221,7 +1244,7 @@ __meta__ = {
 anchor_left = 0.68
 anchor_right = 0.999999
 anchor_bottom = 1.0
-script = SubResource( 8 )
+script = SubResource( 9 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1391,7 +1414,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 7 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -1417,7 +1440,7 @@ __meta__ = {
 [node name="Fatigue" type="Control" parent="Gauges/Lower"]
 anchor_right = 0.32
 anchor_bottom = 1.0
-script = SubResource( 9 )
+script = SubResource( 10 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1587,7 +1610,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 7 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -1606,7 +1629,7 @@ __meta__ = {
 anchor_left = 0.339999
 anchor_right = 0.659999
 anchor_bottom = 1.0
-script = SubResource( 10 )
+script = SubResource( 11 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1776,7 +1799,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 7 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -1795,7 +1818,7 @@ __meta__ = {
 anchor_left = 0.68
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = SubResource( 11 )
+script = SubResource( 12 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -1965,7 +1988,7 @@ margin_right = 21.0
 margin_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 7 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 align = 1
 valign = 1
@@ -1986,7 +2009,7 @@ anchor_right = 0.578526
 anchor_bottom = 1.00093
 margin_left = 12.0
 margin_right = 12.0
-script = SubResource( 12 )
+script = SubResource( 13 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -1994,13 +2017,13 @@ __meta__ = {
 [node name="Basic" type="RichTextLabel" parent="StatsDisplay"]
 anchor_right = 1.10385
 anchor_bottom = 0.1675
-custom_fonts/normal_font = SubResource( 13 )
+custom_fonts/normal_font = SubResource( 14 )
 custom_constants/line_separation = -3
 text = "str(age), ethnicity, gender
 stats._intelligence(), #Education
 stats._devotion(), stats._trust()"
 scroll_active = false
-script = SubResource( 14 )
+script = SubResource( 15 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2010,14 +2033,14 @@ anchor_top = 0.18
 anchor_right = 1.10385
 anchor_bottom = 0.397416
 margin_right = -3.05176e-05
-custom_fonts/normal_font = SubResource( 13 )
+custom_fonts/normal_font = SubResource( 14 )
 custom_constants/line_separation = -3
 text = "stats._face()
 flags[\"gender\"]
 flags[\"weight\"]
 voice()"
 scroll_active = false
-script = SubResource( 15 )
+script = SubResource( 16 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2026,14 +2049,14 @@ __meta__ = {
 anchor_top = 0.36
 anchor_right = 1.10385
 anchor_bottom = 0.58
-custom_fonts/normal_font = SubResource( 13 )
+custom_fonts/normal_font = SubResource( 14 )
 custom_constants/line_separation = -3
 text = "stats._libido()
 stats._male_attraction()
 stats._female_attraction()
 #Fetishes()"
 scroll_active = false
-script = SubResource( 16 )
+script = SubResource( 17 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2042,14 +2065,14 @@ __meta__ = {
 anchor_top = 0.5925
 anchor_right = 1.10385
 anchor_bottom = 0.8125
-custom_fonts/normal_font = SubResource( 13 )
+custom_fonts/normal_font = SubResource( 14 )
 custom_constants/line_separation = -3
 text = "stats._sexual_skill()
 stats._prostitution_skill()
 stats._entertainment_skill()
 stats._combat_skill()"
 scroll_active = false
-script = SubResource( 17 )
+script = SubResource( 18 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2058,13 +2081,13 @@ __meta__ = {
 anchor_top = 0.825
 anchor_right = 1.10385
 anchor_bottom = 0.9925
-custom_fonts/normal_font = SubResource( 13 )
+custom_fonts/normal_font = SubResource( 14 )
 custom_constants/line_separation = -3
 text = "#Behavioral trait
 #Sexual trait
 #Relationships()"
 scroll_active = false
-script = SubResource( 18 )
+script = SubResource( 19 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2083,13 +2106,13 @@ __meta__ = {
 [node name="Basic" type="RichTextLabel" parent="Stats Display orig"]
 anchor_right = 1.10385
 anchor_bottom = 0.1675
-custom_fonts/normal_font = SubResource( 13 )
+custom_fonts/normal_font = SubResource( 14 )
 custom_constants/line_separation = -3
 text = "str(age), ethnicity, gender
 stats._intelligence()
 stats._devotion(), stats._trust()"
 scroll_active = false
-script = SubResource( 14 )
+script = SubResource( 15 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2098,13 +2121,13 @@ __meta__ = {
 anchor_top = 0.18
 anchor_right = 1.10385
 anchor_bottom = 0.3475
-custom_fonts/normal_font = SubResource( 13 )
+custom_fonts/normal_font = SubResource( 14 )
 custom_constants/line_separation = -3
 text = "stats._face()
 stats._figure()
 voice()"
 scroll_active = false
-script = SubResource( 15 )
+script = SubResource( 16 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2113,14 +2136,14 @@ __meta__ = {
 anchor_top = 0.36
 anchor_right = 1.10385
 anchor_bottom = 0.58
-custom_fonts/normal_font = SubResource( 13 )
+custom_fonts/normal_font = SubResource( 14 )
 custom_constants/line_separation = -3
 text = "stats._libido()
 stats._male_attraction()
 stats._female_attraction()
 #Fetishes()"
 scroll_active = false
-script = SubResource( 16 )
+script = SubResource( 17 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2129,14 +2152,14 @@ __meta__ = {
 anchor_top = 0.5925
 anchor_right = 1.10385
 anchor_bottom = 0.8125
-custom_fonts/normal_font = SubResource( 13 )
+custom_fonts/normal_font = SubResource( 14 )
 custom_constants/line_separation = -3
 text = "stats._sexual_skill()
 stats._prostitution_skill()
 stats._entertainment_skill()
 stats._combat_skill()"
 scroll_active = false
-script = SubResource( 17 )
+script = SubResource( 18 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2145,13 +2168,13 @@ __meta__ = {
 anchor_top = 0.825
 anchor_right = 1.10385
 anchor_bottom = 0.9925
-custom_fonts/normal_font = SubResource( 13 )
+custom_fonts/normal_font = SubResource( 14 )
 custom_constants/line_separation = -3
 text = "#Behavioral trait
 #Sexual trait
 #Relationships()"
 scroll_active = false
-script = SubResource( 18 )
+script = SubResource( 19 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -2185,7 +2208,7 @@ __meta__ = {
 margin_right = 147.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 120, 40 )
-custom_fonts/font = SubResource( 19 )
+custom_fonts/font = SubResource( 20 )
 text = "Rest"
 items = [ "Rest", null, false, 0, null, "Prostitute", null, false, 1, null ]
 selected = 0
@@ -2195,7 +2218,7 @@ margin_top = 60.0
 margin_right = 147.0
 margin_bottom = 100.0
 rect_min_size = Vector2( 120, 40 )
-custom_fonts/font = SubResource( 19 )
+custom_fonts/font = SubResource( 20 )
 text = "Examine"
 
 [node name="Summon" type="Button" parent="Panel/Buttons"]
@@ -2204,14 +2227,14 @@ margin_top = 120.0
 margin_right = 147.0
 margin_bottom = 160.0
 rect_min_size = Vector2( 120, 40 )
-custom_fonts/font = SubResource( 19 )
+custom_fonts/font = SubResource( 20 )
 
 [node name="Sell" type="Button" parent="Panel/Buttons"]
 margin_top = 120.0
 margin_right = 147.0
 margin_bottom = 160.0
 rect_min_size = Vector2( 120, 40 )
-custom_fonts/font = SubResource( 19 )
+custom_fonts/font = SubResource( 20 )
 text = "Sell"
 
 [node name="SellingButtons" type="VBoxContainer" parent="Panel"]

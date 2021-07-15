@@ -41,12 +41,3 @@ func delivery():
 	get_node('../../').update_collection(self)
 	active_phase = "tba"
 	current_time = 0
-
-func _input(event):
-	return
-	if event.is_action_pressed('ui_back'):
-		if self.is_visible_in_tree():
-			get_tree().get_root().get_node('Game/Background').color_filter('82000000')
-			get_node('../Header').show()
-			get_node('../Slider').show()
-			self.hide()

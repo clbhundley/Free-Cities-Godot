@@ -1,6 +1,6 @@
 extends Node
 
-onready var _slave = owner
+onready var _slave = get_parent().get_parent()
 
 var current_time = 0
 var total_time
@@ -47,7 +47,7 @@ func update_travel_mode():
 func waiting():
 	if not total_time:
 		total_time = math.gaussian(45,6)
-		_slave.get_node('UI/Activity/ProgressBar').max_value = total_time
+		#_slave.get_node('UI/Activity/ProgressBar').max_value = total_time
 	if current_time < total_time:
 		step("Waiting on Elevator")
 	else:
@@ -59,7 +59,7 @@ func elevator():
 	if not total_time:
 		var distance = abs(location("terra") - destination("terra"))
 		total_time = distance * TRAVEL_SPEED
-		_slave.get_node('UI/Activity/ProgressBar').max_value = total_time
+		#_slave.get_node('UI/Activity/ProgressBar').max_value = total_time
 	elif current_time < total_time:
 		step("Using Elevator")
 	else:
@@ -72,7 +72,7 @@ func lateral():
 	var new_address = ArcUtils.to_address(location("terra"),abs(location("ring")-1),location("sector"))
 	if not total_time:
 		total_time = TRAVEL_SPEED
-		_slave.get_node('UI/Activity/ProgressBar').max_value = total_time
+		#_slave.get_node('UI/Activity/ProgressBar').max_value = total_time
 	if current_time < total_time:
 		step("Traveling")
 	else:
@@ -86,7 +86,7 @@ func radial():
 	if not total_time:
 		var distance = 6-abs(6-abs(location("sector")-destination("sector")))
 		total_time = distance * TRAVEL_SPEED
-		_slave.get_node('UI/Activity/ProgressBar').max_value = total_time
+		#_slave.get_node('UI/Activity/ProgressBar').max_value = total_time
 	if current_time < total_time:
 		step("Traveling")
 	else:
@@ -106,5 +106,5 @@ func step(action_text):
 	current_time += 1 * time.scale
 	if action_text:
 		_slave.get_node('UI/Activity/Action').set_text(action_text)
-	_slave.get_node('UI/Activity/ProgressBar').set("value",current_time)
-	_slave.get_node('UI/Activity/Time').set_text(math.time_remaining(current_time,total_time))
+	#_slave.get_node('UI/Activity/ProgressBar').set("value",current_time)
+	#_slave.get_node('UI/Activity/Time').set_text(math.time_remaining(current_time,total_time))

@@ -1,6 +1,7 @@
 extends Spatial
 
 var age
+var birthday
 
 var ethnicity
 
@@ -12,11 +13,9 @@ var hair_color
 var hair_style
 
 var gender
-var genitals #use model?
 
-
-
-#use model
+###use model for these
+#var genitals
 var penis_size
 var testicles_size
 var vagina 
@@ -25,8 +24,6 @@ var chest
 var fertility
 var pregnancy
 var pregnancy_history
-
-
 
 var height
 var weight
@@ -38,6 +35,38 @@ var hunger
 var bathroom
 var arousal
 
+var personality
+var dominance
+var submission
+
+var sexual_preferences = SexualPreferences.new()
+class SexualPreferences:
+	var slave_choice setget ,get_slave_choice
+	func get_slave_choice():
+		var ranked_choices = []
+		for role in ['giving','recieving']:
+			for type in ['oral','anal','vaginal','hands','feet']:
+				var pair = {role+"/"+type:get(role).get(type)}
+				ranked_choices.append(pair)
+		ranked_choices.sort_custom(SlaveUtils.SortByValue,"sort_descending")
+		var roll = clamp(math.gaussian(0,1),0,ranked_choices.size())
+		var choice = ranked_choices[roll].keys()[0].split("/")
+		return {'role':choice[0],'type':choice[1]}
+	var giving = Giving.new()
+	class Giving:
+		var oral
+		var anal
+		var vaginal
+		var hands
+		var feet
+	var recieving = Recieving.new()
+	class Recieving:
+		var oral
+		var anal
+		var vaginal
+		var hands
+		var feet
+
 var libido
 var male_attraction
 var female_attraction
@@ -48,13 +77,11 @@ var devotion = 0 setget set_devotion
 var trust = 0 setget set_trust
 var happiness = 0 setget set_happiness
 
-var social #in use?
+#var social
+#var figure
+#var hips
 
 var face
-
-var figure#add to flags?
-var hips #use model
-
 var voice
 
 var sexual_skill
@@ -74,7 +101,7 @@ var diet
 var diet_base
 var regimen = []
 
-var rules = []
+var rules = {}
 
 var wardrobe = {}
 

@@ -198,6 +198,7 @@ text = "Back"
 __meta__ = {
 "_edit_use_anchors_": true
 }
+
 [connection signal="pressed" from="TabContainer/Options/VBoxContainer/Open User Folder/Button" to="." method="_on_open_game_folder"]
 [connection signal="item_selected" from="TabContainer/Options/VBoxContainer/Autosave/autosave interval" to="." method="_on_autosave_interval_item_selected"]
 [connection signal="item_selected" from="TabContainer/Options/VBoxContainer/Display Mode/display mode" to="." method="_on_display_mode_item_selected"]
