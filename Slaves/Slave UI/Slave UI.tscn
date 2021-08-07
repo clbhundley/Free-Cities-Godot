@@ -1,0 +1,1083 @@
+[gd_scene load_steps=25 format=2]
+
+[ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://Fonts/Rubik-Light.tres" type="DynamicFont" id=2]
+[ext_resource path="res://Slaves/Slave UI/Gauges/Arousal.gd" type="Script" id=3]
+[ext_resource path="res://Slaves/Slave UI/Gauges/Bathroom.gd" type="Script" id=4]
+[ext_resource path="res://Slaves/Slave UI/Gauges/Fatigue.gd" type="Script" id=5]
+[ext_resource path="res://Slaves/Slave UI/Gauges/Happiness.gd" type="Script" id=6]
+[ext_resource path="res://Slaves/Slave UI/Gauges/Health.gd" type="Script" id=7]
+[ext_resource path="res://Slaves/Slave UI/Gauges/Hunger.gd" type="Script" id=8]
+[ext_resource path="res://Slaves/Slave UI/Slave UI.gd" type="Script" id=9]
+[ext_resource path="res://Textures/square.png" type="Texture" id=10]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Control
+
+onready var _slave = owner.owner
+
+func _ready():
+	if not _slave.for_sale:
+		var clock = get_tree().get_root().get_node('Game/Clock')
+		if not clock.is_connected(\"timeout\",self,\"update_activity_progress\"):
+			clock.connect('timeout',self,'update_activity_progress')
+			update_activity_progress()
+
+func update_activity_progress():
+	if _slave.action:
+		var current_time = _slave.action.current_time
+		var total_time = _slave.action.total_time
+		if current_time and total_time:
+			$ProgressBar.max_value = total_time
+			$ProgressBar.value = current_time
+			$Time.set_text(math.time_remaining(current_time,total_time))
+"
+
+[sub_resource type="DynamicFont" id=2]
+size = 50
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=3]
+size = 40
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=4]
+size = 25
+use_mipmaps = true
+font_data = ExtResource( 1 )
+
+[sub_resource type="GDScript" id=5]
+script/source = "extends Control
+
+func _ready():
+	var clock = get_tree().get_root().get_node('Game/Clock')
+	clock.connect('timeout',self,'refresh')
+
+func refresh():
+	for gauge in get_children():
+		gauge.set_gauge()
+"
+
+[sub_resource type="DynamicFont" id=6]
+size = 14
+font_data = ExtResource( 1 )
+
+[sub_resource type="GDScript" id=7]
+script/source = "extends VBoxContainer
+
+func _ready():
+	var clock = get_tree().get_root().get_node('Game/Clock')
+	clock.connect('timeout',self,'refresh')
+
+func refresh():
+	for stat_display in get_children():
+		stat_display.set_stats()
+"
+
+[sub_resource type="GDScript" id=8]
+script/source = "extends VBoxContainer
+
+onready var _slave = owner.owner
+
+func set_stats():
+	$Line1.set_bbcode(str(_slave.age)+\", \"+_slave.ethnicity+\", \"+_slave.gender)
+	
+	var intelligence_text = _slave.stats._intelligence()
+	if intelligence_text:
+		$Line2.set_bbcode(intelligence_text)
+	else:
+		$Line2.set_bbcode(\"\")
+		$Line2.hide()
+	
+	$Line3.set_bbcode(_slave.stats._devotion()+\", \"+_slave.stats._trust())
+"
+
+[sub_resource type="DynamicFont" id=9]
+size = 20
+font_data = ExtResource( 1 )
+
+[sub_resource type="GDScript" id=10]
+script/source = "extends VBoxContainer
+
+onready var _slave = owner.owner
+
+func set_stats():
+	var pregnancy_text = pregnancy_text()
+	if pregnancy_text:
+		$Line1.set_bbcode(pregnancy_text)
+	else:
+		$Line1.set_bbcode(\"\")
+	
+	var face_text = _slave.stats._face()
+	var weight_text
+	if _slave.flags.has('weight'):
+		weight_text = _slave.flags['weight']
+	if face_text and weight_text:
+		$Line2.set_bbcode(face_text+\", \"+weight_text)
+	elif face_text:
+		$Line2.set_bbcode(face_text)
+	elif weight_text:
+		$Line2.set_bbcode(weight_text)
+	else:
+		$Line2.set_bbcode(\"\")
+	
+	var body_text
+	if _slave.flags.has('body'):
+		body_text = _slave.flags['body']
+	var physique_text
+	if _slave.flags.has('physique'):
+		physique_text = _slave.flags['physique']
+	if body_text and physique_text:
+		$Line3.set_bbcode(body_text+\", \"+physique_text)
+	elif body_text:
+		$Line3.set_bbcode(body_text)
+	elif physique_text:
+		$Line3.set_bbcode(physique_text)
+	else:
+		$Line3.set_bbcode(\"\")
+	
+	if _slave.flags.has('gender'):
+		$Line4.set_bbcode(_slave.flags['gender'])
+	else:
+		$Line4.set_bbcode(\"\")
+	
+	if _slave.voice != \"normal\":
+		var voice_string = _slave.voice
+		voice_string[0] = voice_string[0].capitalize()
+		if voice_string != \"Mute\":
+			voice_string += \"voice\"
+		$Line5.set_bbcode(voice_string)
+	else:
+		$Line5.set_bbcode(\"\")
+	
+	for line in get_children():
+		if line.bbcode_text.empty():
+			line.hide()
+
+func pregnancy_text():
+	var weeks_pregnant = SlaveUtils.get_weeks_pregnant(_slave)
+	if _slave.pregnancy and weeks_pregnant > 0:
+		var babies = _slave.pregnancy['babies']
+		if babies > 1:
+			babies = \" (\"+str(babies)+\")\"
+		else:
+			babies = \"\"
+		var weeks_pregnant_string = str(weeks_pregnant)
+		if weeks_pregnant < 2:
+			weeks_pregnant_string += \" week pregnant\"
+		else:
+			weeks_pregnant_string += \" weeks pregnant\"
+		return \"[color=#ff69b4]\"+weeks_pregnant_string+babies+\"[/color]\"
+"
+
+[sub_resource type="GDScript" id=11]
+script/source = "extends VBoxContainer
+
+onready var _slave = owner.owner
+
+func set_stats():
+	var libido_text = _slave.stats._libido()
+	if libido_text:
+		$Line1.set_bbcode(libido_text)
+	else:
+		$Line1.set_bbcode(\"\")
+		$Line1.hide()
+	
+	$Line2.set_bbcode(_slave.stats._male_attraction())
+	
+	$Line3.set_bbcode(_slave.stats._female_attraction())
+	
+	$Line4.set_bbcode(\"#Fetishes\")
+"
+
+[sub_resource type="GDScript" id=12]
+script/source = "extends VBoxContainer
+
+onready var _slave = owner.owner
+
+func set_stats():
+	$Line1.set_bbcode(_slave.stats._sexual_skill())
+	
+	$Line2.set_bbcode(_slave.stats._prostitution_skill())
+	
+	$Line3.set_bbcode(_slave.stats._entertainment_skill())
+	
+	var cooking_skill_text = _slave.stats._cooking_skill()
+	if cooking_skill_text:
+		$Line4.set_bbcode(cooking_skill_text)
+	else:
+		$Line4.set_bbcode(\"\")
+		$Line4.hide()
+
+	var medical_skill_text = _slave.stats._medical_skill()
+	if medical_skill_text:
+		$Line5.set_bbcode(medical_skill_text)
+	else:
+		$Line5.set_bbcode(\"\")
+		$Line5.hide()
+
+	var combat_skill_text = _slave.stats._combat_skill()
+	if combat_skill_text:
+		$Line6.set_bbcode(combat_skill_text)
+	else:
+		$Line6.set_bbcode(\"\")
+		$Line6.hide()
+
+	var music_skill_text = _slave.stats._music_skill()
+	if music_skill_text:
+		$Line7.set_bbcode(music_skill_text)
+	else:
+		$Line7.set_bbcode(\"\")
+		$Line7.hide()
+"
+
+[sub_resource type="GDScript" id=13]
+script/source = "extends VBoxContainer
+
+onready var _slave = owner.owner
+
+func set_stats():
+	$Line1.set_bbcode(\"#Behavioral trait\")
+	
+	$Line2.set_bbcode(\"#Sexual trait\")
+	
+	$Line3.set_bbcode(\"#Relationships\")
+"
+
+[sub_resource type="DynamicFont" id=14]
+size = 20
+font_data = ExtResource( 1 )
+
+[node name="Slave UI" type="Control" groups=[
+"Intercept Mouse",
+"Slave UI",
+]]
+margin_right = 666.0
+margin_bottom = 1080.0
+script = ExtResource( 9 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Activity" type="Control" parent="."]
+anchor_left = 0.0230769
+anchor_top = 0.106481
+anchor_right = 0.976923
+anchor_bottom = 0.147222
+margin_left = 12.0
+margin_right = 12.0
+script = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ProgressBar" type="ProgressBar" parent="Activity"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+step = 1.0
+percent_visible = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Action" type="Label" parent="Activity"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -63.0
+margin_top = -12.0
+margin_right = -5.0
+margin_bottom = 12.0
+grow_horizontal = 0
+custom_fonts/font = ExtResource( 2 )
+text = "Action"
+align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Time" type="Label" parent="Activity"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 5.0
+margin_top = -12.0
+margin_right = 75.0
+margin_bottom = 12.0
+custom_fonts/font = ExtResource( 2 )
+text = "0:00:00"
+align = 3
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Top" type="TextureButton" parent="."]
+anchor_right = 1.0
+anchor_bottom = 0.151278
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Level" type="Label" parent="Top"]
+anchor_left = 0.0222222
+anchor_top = 0.0754717
+anchor_right = 0.217778
+anchor_bottom = 0.641509
+margin_left = 1.0
+margin_top = -5.0
+margin_right = 1.0
+margin_bottom = -5.00001
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "345"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Line" type="Label" parent="Top"]
+anchor_left = 0.208889
+anchor_top = 0.0754717
+anchor_right = 0.233334
+anchor_bottom = 0.64151
+margin_left = 1.0
+margin_top = -5.0
+margin_right = 1.0
+margin_bottom = -5.00001
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "|"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Name" type="Label" parent="Top"]
+anchor_left = 0.26
+anchor_top = 0.00943396
+anchor_right = 0.706667
+anchor_bottom = 0.462264
+margin_left = 1.0
+margin_top = -5.0
+margin_right = 0.999969
+margin_bottom = -5.0
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "Name Here"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Status" type="Label" parent="Top"]
+anchor_left = 0.264445
+anchor_top = 0.386792
+anchor_right = 0.631112
+anchor_bottom = 0.679245
+margin_left = 1.0
+margin_top = -5.0
+margin_right = 1.0
+margin_bottom = -5.0
+custom_fonts/font = SubResource( 4 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "Public Servant"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Price" type="Label" parent="Top"]
+visible = false
+anchor_left = 0.272507
+anchor_top = 0.38972
+anchor_right = 0.481396
+anchor_bottom = 0.682173
+margin_left = -4.0
+margin_top = 2.0
+margin_right = -4.0
+margin_bottom = 2.0
+custom_fonts/font = SubResource( 4 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "¤20,000"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Location" type="Label" parent="."]
+anchor_top = 0.151852
+anchor_right = 1.0
+anchor_bottom = 0.180556
+margin_left = 12.0
+margin_right = 12.0
+custom_fonts/font = SubResource( 4 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "P11: Slave Dorm  >>>  A13: Commercial"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Gauges" type="Control" parent="."]
+anchor_left = 0.0285285
+anchor_top = 0.190741
+anchor_right = 0.554054
+anchor_bottom = 0.385185
+script = SubResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Health" type="TextureProgress" parent="Gauges"]
+anchor_right = 1.0
+anchor_bottom = 0.142857
+margin_bottom = -1.90735e-06
+texture_under = ExtResource( 10 )
+texture_progress = ExtResource( 10 )
+tint_under = Color( 0, 0, 0, 0.0980392 )
+nine_patch_stretch = true
+script = ExtResource( 7 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Excess" type="TextureProgress" parent="Gauges/Health"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+min_value = 100.0
+max_value = 200.0
+value = 100.0
+texture_progress = ExtResource( 10 )
+nine_patch_stretch = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="Label" parent="Gauges/Health"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 2.0
+margin_top = -9.0
+margin_right = 44.0
+margin_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 6 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "Health"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Value" type="Label" parent="Gauges/Health"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -39.0
+margin_top = -9.0
+margin_right = -2.0
+margin_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 6 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "XXX%"
+align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Happiness" type="TextureProgress" parent="Gauges"]
+anchor_top = 0.171429
+anchor_right = 1.0
+anchor_bottom = 0.314286
+texture_under = ExtResource( 10 )
+texture_progress = ExtResource( 10 )
+tint_under = Color( 0, 0, 0, 0.0980392 )
+tint_progress = Color( 0.0784314, 0.294118, 0.94902, 1 )
+nine_patch_stretch = true
+script = ExtResource( 6 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Title" type="Label" parent="Gauges/Happiness"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 2.0
+margin_top = -9.0
+margin_right = 69.0
+margin_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 6 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "Happiness"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Value" type="Label" parent="Gauges/Happiness"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -39.0
+margin_top = -9.0
+margin_right = -2.0
+margin_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 6 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "XXX%"
+align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Arousal" type="TextureProgress" parent="Gauges"]
+anchor_top = 0.342857
+anchor_right = 1.0
+anchor_bottom = 0.485714
+texture_under = ExtResource( 10 )
+texture_progress = ExtResource( 10 )
+tint_under = Color( 0, 0, 0, 0.0980392 )
+tint_progress = Color( 0.0784314, 0.294118, 0.94902, 1 )
+nine_patch_stretch = true
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Title" type="Label" parent="Gauges/Arousal"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 2.0
+margin_top = -9.0
+margin_right = 50.0
+margin_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 6 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "Arousal"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Value" type="Label" parent="Gauges/Arousal"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -39.0
+margin_top = -9.0
+margin_right = -2.0
+margin_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 6 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "XXX%"
+align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Fatigue" type="TextureProgress" parent="Gauges"]
+anchor_top = 0.514286
+anchor_right = 1.0
+anchor_bottom = 0.657143
+margin_top = -7.62939e-06
+texture_under = ExtResource( 10 )
+texture_progress = ExtResource( 10 )
+tint_under = Color( 0, 0, 0, 0.0980392 )
+tint_progress = Color( 0.0784314, 0.294118, 0.94902, 1 )
+nine_patch_stretch = true
+script = ExtResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Title" type="Label" parent="Gauges/Fatigue"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 2.0
+margin_top = -9.0
+margin_right = 50.0
+margin_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 6 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "Fatigue"
+valign = 1
+
+[node name="Value" type="Label" parent="Gauges/Fatigue"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -39.0
+margin_top = -9.0
+margin_right = -2.0
+margin_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 6 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "XXX%"
+align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Hunger" type="TextureProgress" parent="Gauges"]
+anchor_top = 0.685714
+anchor_right = 1.0
+anchor_bottom = 0.828571
+texture_under = ExtResource( 10 )
+texture_progress = ExtResource( 10 )
+tint_under = Color( 0, 0, 0, 0.0980392 )
+tint_progress = Color( 0.0784314, 0.294118, 0.94902, 1 )
+nine_patch_stretch = true
+script = ExtResource( 8 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Title" type="Label" parent="Gauges/Hunger"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 2.0
+margin_top = -9.0
+margin_right = 49.0
+margin_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 6 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "Hunger"
+valign = 1
+
+[node name="Value" type="Label" parent="Gauges/Hunger"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -39.0
+margin_top = -9.0
+margin_right = -2.0
+margin_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 6 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "XXX%"
+align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Bathroom" type="TextureProgress" parent="Gauges"]
+anchor_top = 0.857143
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture_under = ExtResource( 10 )
+texture_progress = ExtResource( 10 )
+tint_under = Color( 0, 0, 0, 0.0980392 )
+tint_progress = Color( 0.0784314, 0.294118, 0.94902, 1 )
+nine_patch_stretch = true
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Title" type="Label" parent="Gauges/Bathroom"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 2.0
+margin_top = -9.0
+margin_right = 65.0
+margin_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 6 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "Bathroom"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Value" type="Label" parent="Gauges/Bathroom"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -39.0
+margin_top = -9.0
+margin_right = -2.0
+margin_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 6 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "XXX%"
+align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="StatsDisplay" type="VBoxContainer" parent="."]
+anchor_left = 0.0285285
+anchor_top = 0.39537
+anchor_right = 0.692192
+anchor_bottom = 0.832407
+margin_right = -3.05176e-05
+custom_constants/separation = 2
+script = SubResource( 7 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Basic" type="VBoxContainer" parent="StatsDisplay"]
+margin_right = 441.0
+margin_bottom = 67.0
+custom_constants/separation = -4
+script = SubResource( 8 )
+
+[node name="Line1" type="RichTextLabel" parent="StatsDisplay/Basic"]
+margin_right = 441.0
+margin_bottom = 25.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Age, Ethnicity, Gender"
+fit_content_height = true
+
+[node name="Line2" type="RichTextLabel" parent="StatsDisplay/Basic"]
+margin_top = 21.0
+margin_right = 441.0
+margin_bottom = 46.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Intelligence"
+fit_content_height = true
+
+[node name="Line3" type="RichTextLabel" parent="StatsDisplay/Basic"]
+margin_top = 42.0
+margin_right = 441.0
+margin_bottom = 67.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Devotion, Trust"
+fit_content_height = true
+
+[node name="Appearance" type="VBoxContainer" parent="StatsDisplay"]
+margin_top = 69.0
+margin_right = 441.0
+margin_bottom = 178.0
+custom_constants/separation = -4
+script = SubResource( 10 )
+
+[node name="Line1" type="RichTextLabel" parent="StatsDisplay/Appearance"]
+margin_right = 441.0
+margin_bottom = 25.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Pregnancy"
+fit_content_height = true
+
+[node name="Line2" type="RichTextLabel" parent="StatsDisplay/Appearance"]
+margin_top = 21.0
+margin_right = 441.0
+margin_bottom = 46.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Weight, Face"
+fit_content_height = true
+
+[node name="Line3" type="RichTextLabel" parent="StatsDisplay/Appearance"]
+margin_top = 42.0
+margin_right = 441.0
+margin_bottom = 67.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Body, Physique"
+fit_content_height = true
+
+[node name="Line4" type="RichTextLabel" parent="StatsDisplay/Appearance"]
+margin_top = 63.0
+margin_right = 441.0
+margin_bottom = 88.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Gender"
+fit_content_height = true
+
+[node name="Line5" type="RichTextLabel" parent="StatsDisplay/Appearance"]
+margin_top = 84.0
+margin_right = 441.0
+margin_bottom = 109.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Voice"
+fit_content_height = true
+
+[node name="Sexuality" type="VBoxContainer" parent="StatsDisplay"]
+margin_top = 180.0
+margin_right = 441.0
+margin_bottom = 268.0
+custom_constants/separation = -4
+script = SubResource( 11 )
+
+[node name="Line1" type="RichTextLabel" parent="StatsDisplay/Sexuality"]
+margin_right = 441.0
+margin_bottom = 25.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Libido"
+fit_content_height = true
+
+[node name="Line2" type="RichTextLabel" parent="StatsDisplay/Sexuality"]
+margin_top = 21.0
+margin_right = 441.0
+margin_bottom = 46.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Male attraction"
+fit_content_height = true
+
+[node name="Line3" type="RichTextLabel" parent="StatsDisplay/Sexuality"]
+margin_top = 42.0
+margin_right = 441.0
+margin_bottom = 67.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Female attraction"
+fit_content_height = true
+
+[node name="Line4" type="RichTextLabel" parent="StatsDisplay/Sexuality"]
+margin_top = 63.0
+margin_right = 441.0
+margin_bottom = 88.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "#Fetishes"
+fit_content_height = true
+
+[node name="Skills" type="VBoxContainer" parent="StatsDisplay"]
+margin_top = 270.0
+margin_right = 441.0
+margin_bottom = 421.0
+custom_constants/separation = -4
+script = SubResource( 12 )
+
+[node name="Line1" type="RichTextLabel" parent="StatsDisplay/Skills"]
+margin_right = 441.0
+margin_bottom = 25.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Sexual skill"
+fit_content_height = true
+
+[node name="Line2" type="RichTextLabel" parent="StatsDisplay/Skills"]
+margin_top = 21.0
+margin_right = 441.0
+margin_bottom = 46.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Prostitution skill"
+fit_content_height = true
+
+[node name="Line3" type="RichTextLabel" parent="StatsDisplay/Skills"]
+margin_top = 42.0
+margin_right = 441.0
+margin_bottom = 67.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Entertainment skill"
+fit_content_height = true
+
+[node name="Line4" type="RichTextLabel" parent="StatsDisplay/Skills"]
+margin_top = 63.0
+margin_right = 441.0
+margin_bottom = 88.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Other skills 1"
+fit_content_height = true
+
+[node name="Line5" type="RichTextLabel" parent="StatsDisplay/Skills"]
+margin_top = 84.0
+margin_right = 441.0
+margin_bottom = 109.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Other skills 2"
+fit_content_height = true
+
+[node name="Line6" type="RichTextLabel" parent="StatsDisplay/Skills"]
+margin_top = 105.0
+margin_right = 441.0
+margin_bottom = 130.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Other skills 3"
+fit_content_height = true
+
+[node name="Line7" type="RichTextLabel" parent="StatsDisplay/Skills"]
+margin_top = 126.0
+margin_right = 441.0
+margin_bottom = 151.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "Other skills 3"
+fit_content_height = true
+
+[node name="Traits" type="VBoxContainer" parent="StatsDisplay"]
+margin_top = 423.0
+margin_right = 441.0
+margin_bottom = 490.0
+custom_constants/separation = -4
+script = SubResource( 13 )
+
+[node name="Line1" type="RichTextLabel" parent="StatsDisplay/Traits"]
+margin_right = 441.0
+margin_bottom = 25.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "#Behavioral trait"
+fit_content_height = true
+
+[node name="Line2" type="RichTextLabel" parent="StatsDisplay/Traits"]
+margin_top = 21.0
+margin_right = 441.0
+margin_bottom = 46.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "#Sexual trait"
+fit_content_height = true
+
+[node name="Line3" type="RichTextLabel" parent="StatsDisplay/Traits"]
+margin_top = 42.0
+margin_right = 441.0
+margin_bottom = 67.0
+custom_fonts/normal_font = SubResource( 9 )
+bbcode_enabled = true
+text = "#Relationships"
+fit_content_height = true
+
+[node name="Panel" type="Panel" parent="."]
+visible = false
+self_modulate = Color( 0.242798, 0.68877, 0.863281, 0.745098 )
+anchor_right = 1.06456
+anchor_bottom = 1.07685
+margin_right = 0.00305176
+margin_bottom = 0.00195313
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Buttons" type="VBoxContainer" parent="Panel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -73.5
+margin_top = -110.0
+margin_right = 73.5
+margin_bottom = 110.0
+custom_constants/separation = 20
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Assignment" type="OptionButton" parent="Panel/Buttons"]
+margin_right = 147.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 120, 40 )
+custom_fonts/font = SubResource( 14 )
+text = "Rest"
+items = [ "Rest", null, false, 0, null, "Prostitute", null, false, 1, null ]
+selected = 0
+
+[node name="Examine" type="Button" parent="Panel/Buttons"]
+margin_top = 60.0
+margin_right = 147.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 120, 40 )
+custom_fonts/font = SubResource( 14 )
+text = "Examine"
+
+[node name="Summon" type="Button" parent="Panel/Buttons"]
+visible = false
+margin_top = 120.0
+margin_right = 147.0
+margin_bottom = 160.0
+rect_min_size = Vector2( 120, 40 )
+custom_fonts/font = SubResource( 14 )
+
+[node name="Sell" type="Button" parent="Panel/Buttons"]
+margin_top = 120.0
+margin_right = 147.0
+margin_bottom = 160.0
+rect_min_size = Vector2( 120, 40 )
+custom_fonts/font = SubResource( 14 )
+text = "Sell"
+
+[node name="SellingButtons" type="VBoxContainer" parent="Panel"]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -73.5
+margin_top = -50.0
+margin_right = 73.5
+margin_bottom = 50.0
+custom_constants/separation = 20
+
+[node name="Buy" type="Button" parent="Panel/SellingButtons"]
+margin_right = 147.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 120, 40 )
+mouse_filter = 1
+custom_fonts/font = ExtResource( 2 )
+text = "Buy"
+
+[node name="Examine" type="Button" parent="Panel/SellingButtons"]
+margin_top = 60.0
+margin_right = 147.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 120, 40 )
+mouse_filter = 1
+custom_fonts/font = ExtResource( 2 )
+text = "Examine"
+
+[connection signal="mouse_entered" from="Top" to="." method="_on_Top_mouse_entered"]
+[connection signal="mouse_exited" from="Top" to="." method="_on_Top_mouse_exited"]
+[connection signal="pressed" from="Top" to="." method="_on_Top_pressed"]
+[connection signal="item_selected" from="Panel/Buttons/Assignment" to="." method="_on_Assignment_item_selected"]
+[connection signal="pressed" from="Panel/Buttons/Examine" to="." method="_on_Examine_pressed"]
+[connection signal="pressed" from="Panel/Buttons/Sell" to="." method="_on_Sell_pressed"]
+[connection signal="pressed" from="Panel/SellingButtons/Buy" to="." method="_on_Buy_pressed"]
+[connection signal="pressed" from="Panel/SellingButtons/Examine" to="." method="_on_Examine_pressed"]

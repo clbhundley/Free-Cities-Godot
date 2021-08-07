@@ -13,6 +13,7 @@ func reset():
 	time.week = 0
 	time.quarter = 0
 	time.year = 2119
+	time.total_weeks = 1
 
 func _ready():
 	randomize()

@@ -4,6 +4,10 @@ onready var _slave = owner
 
 func _ready():
 	if not _slave.for_sale:
+		activate()
+
+func activate():
+	if not time.is_connected("tick",self,"tick"):
 		time.connect("tick",self,"tick")
 
 func deactivate():

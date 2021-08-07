@@ -53,12 +53,9 @@ func activate(selected_slave):
 
 func deactivate(reset_dock_mode=true):
 	active = false
-	#gui.get_node("Dock").set_mode("ManageSlaves")
 	for node in get_tree().get_nodes_in_group("Active Slaves"):
 		if node.has_method("resize"):
 			node.resize(true)
-#		if node.has_method("tracking"):
-#			node.tracking(true)
 	if _slave:
 		root.get_node('Game/Clock').disconnect('timeout',self,'uptate_display')
 		_slave.get_node("Model").set_rotation(Vector3(0,0,0))
@@ -68,9 +65,12 @@ func deactivate(reset_dock_mode=true):
 	for node in $Gauges.get_children():
 		node._slave = null
 	_slave = null
-	if previous_dock_mode != "ManageSlaves" and reset_dock_mode:
-		gui.get_node("SidePanel").open()
 	if reset_dock_mode:
+		if previous_dock_mode != "ManageSlaves":
+			if previous_dock_mode != "PurchaseSlaves":
+				gui.get_node("SidePanel").open()
+			else:
+				previous_dock_mode = "ManageSlaves"
 		gui.get_node("Dock").set_mode(previous_dock_mode,true,false)
 	hide()
 
@@ -82,7 +82,6 @@ func uptate_display():
 	set_activity()
 	set_stats_temp()
 	set_proximity_affinity()
-	
 
 func set_level():
 	get_node('Top/Level').set_text(str(_slave.stats._level()))
@@ -124,9 +123,6 @@ func _on_Close_pressed():
 	get_viewport().get_camera().deactivate()
 	gui.get_node("Dock/ActionButton/Tag").hide()
 	slaves.slide_camera()
-#	var gui = gui
-#	gui.get_node("Dock").resize()
-#	gui.get_node("SidePanel").close()
 
 #func resize():
 #	#gui.get_node("Dock").resize()

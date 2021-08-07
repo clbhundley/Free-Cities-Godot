@@ -8,7 +8,6 @@ var arrow_right_icon = load("res://GUI/Textures/arrow_right.svg")
 var is_open = false
 var is_hidden = false
 
-var force = false
 func open():
 	self.show()
 	if is_hidden or get_node("../Dock").mode == "PurchaseSlave":

@@ -1,4 +1,4 @@
-extends "res://Slaves/Slave UI Input.gd"
+extends "res://Slaves/Slave UI/Slave UI Input.gd"
 
 func _ready():
 	yield(_slave,"ready")
@@ -10,8 +10,10 @@ func _ready():
 	if _slave.for_sale:
 		$Panel/Buttons.hide()
 		$Panel/SellingButtons.show()
-	for text in $StatsDisplay.get_children():
-		text.set_stats()
+	
+	$Gauges.refresh()
+	$StatsDisplay.refresh()
+	
 	$Top/Name.set_text(_slave.name)
 	if _slave.health > 0:
 		$Top/Status.set_text(_slave.assignment)
@@ -80,6 +82,9 @@ func resize(force=false):
 	$Top/Line.get('custom_fonts/font').size = max(scale_adjusted*2,24)
 	$Top/Name.get('custom_fonts/font').size = max(scale_adjusted*1.5,18)
 	$Top/Status.get('custom_fonts/font').size = max(scale_adjusted,12)
-	$StatsDisplay/Basic.get('custom_fonts/normal_font').size = clamp(scale_adjusted,12,20)
-	$Gauges/Upper/Health/Value.get('custom_fonts/font').size = scale_adjusted*1.2
+	$StatsDisplay/Basic/Line1.get('custom_fonts/normal_font').size = clamp(scale_adjusted,12,20)
+	if rect_size < Vector2(312.5,485.1):
+		$Gauges/Arousal/Title.get('custom_fonts/font').size = 13
+	else:
+		$Gauges/Arousal/Title.get('custom_fonts/font').size = 14
 	tracking()

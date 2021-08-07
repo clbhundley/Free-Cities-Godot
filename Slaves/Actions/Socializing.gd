@@ -12,22 +12,20 @@ func display_action():
 
 func tick():
 	if current_time == 0:
-		begin()
+		start()
 	elif current_time < total_time:
 		step()
 	else:
-		end()
+		finish()
 
-func begin():
-	total_time = abs(math.gaussian(100,10))
+func start():
+	total_time = abs(math.gaussian(160,10))
 	display_action()
 	step()
 
 func step():
 	current_time += 1 * time.scale
 
-func end():
+func finish():
 	current_time = 0
-	_slave.get_node('Assignments/'+_slave.assignment).next_action()
-	_slave.get_node('UI/Activity/Time').set_text("Done")
-	_slave.get_node('UI/Activity/Action').set_text("")
+	_slave.activity.action_end()

@@ -12,7 +12,16 @@ enum {
 	INTENSIVE_MALE}
 
 func _ready():
-	load_hormones()
+	if not _slave.for_sale:
+		load_hormones()
+
+func activate():
+	if not time.is_connected("hour",self,"hour"):
+		time.connect("hour",self,"hour")
+
+func deactivate():
+	if time.is_connected("hour",self,"hour"):
+		time.disconnect("hour",self,"hour")
 
 func load_hormones():
 	if _slave.regimen.has("HormonesFemale"):
@@ -25,8 +34,10 @@ func load_hormones():
 		selected = INTENSIVE_MALE
 	else:
 		selected = NONE
-	var effects = get_node("../../")
-	effects.activate(self,"hour")
+	if selected != NONE:
+		activate()
+#	var effects = get_node("../../")
+#	effects.activate(self,"hour")
 
 func hour():
 	var masculinity_change := 0.0

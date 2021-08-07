@@ -5,9 +5,9 @@ static func presets():
 #		ethnicity = ethnicity(),
 		age = randi() %41+18,
 		health = abs(math.gaussian(40,12)),
-		fatigue = abs(math.gaussian(40,15)), #changed from 80 for testing
+		fatigue = abs(math.gaussian(40,20)),
 		happiness = abs(math.gaussian(5,5)),
-		arousal = abs(math.gaussian(15,6)),
+		arousal = abs(math.gaussian(10,8)),
 		devotion = math.gaussian(-50,25),
 		trust = math.gaussian(-50,25),
 		intelligence = math.gaussian(100,25),

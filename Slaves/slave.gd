@@ -1,5 +1,6 @@
 extends "res://Slaves/Slave Properties.gd"
 
+onready var activity = $Activity
 onready var model = $Model
 onready var stats = $Stats
 onready var ui = $UI
@@ -24,11 +25,13 @@ func _ready():
 func activate():
 	if not time.is_connected("tick",self,"tick"):
 		time.connect('tick',self,'tick')
+	$Effects.activate_primary_effects()
 	ui.get_node("Activity")._ready()
 
 func deactivate():
 	if time.is_connected("tick",self,"tick"):
 		time.disconnect('tick',self,'tick')
+	$Effects.deactivate_all()
 
 func tick():
 	action.tick()
@@ -53,7 +56,7 @@ func inseminate():
 		babies = 3
 	elif randi()%50 == 0:
 		babies = 2
-	pregnancy = {
+	self.pregnancy = {
 		"conceived":time.get_timestamp(),
 		"due":due,
 		"babies":babies}
@@ -61,21 +64,15 @@ func inseminate():
 
 func die():
 	pregnancy = null
-	$Effects.deactivate_all()
 	deactivate()
 	$UI/Top/Status.set_text("Deceased")
 	$UI/Top/Status.set_modulate("860000")
 	$UI/Panel/Buttons/Assignment.disabled = true
 
-func _action_ended():
-	get_node('Assignments/'+assignment).next_action()
-	get_node('UI/Activity/Time').set_text("Done")
-	get_node('UI/Activity/Action').set_text("")
-
 func _data():
-	var slave_data = _get_properties(self)
-	var model_data = _get_properties(model)
-	var action_data = {action.name:_get_properties(action)}
+	var slave_data = data.obj_to_dict(self)
+	var model_data = data.obj_to_dict(model)
+	var action_data = {action.name:data.obj_to_dict(action)}
 	slave_data.erase("flags")
 	model_data.erase("model_data")
 	if queued_action:
@@ -92,8 +89,10 @@ func _load(_data):
 			health = slave_data[setting]
 		elif setting == "queued_action" and slave_data["queued_action"]:
 			queued_action = get_node('Actions/'+slave_data["queued_action"])
+		elif get(setting) is Object:
+			data.dict_to_obj(slave_data[setting],get(setting))
 		else:
-			set(setting, slave_data[setting])
+			set(setting,slave_data[setting])
 	$Model.model_data = _data['model_data']
 	var action_name = _data['action_data'].keys()[0]
 	action = get_node('Actions/'+action_name)
@@ -103,26 +102,6 @@ func _load(_data):
 	if action.total_time:
 		get_node('UI/Activity/ProgressBar').max_value = action.total_time
 		get_node('UI/Activity/ProgressBar').value = action.current_time
-
-func _get_properties(object):
-	var properties_full = object.get_property_list()
-	var property_list = []
-	for index in properties_full.size():
-		property_list.append(properties_full[index].name)
-	var slice = property_list.find('Script Variables') + 1
-	var properties = {}
-	for index in range(slice,property_list.size()):
-		properties[property_list[index]] = object.get(property_list[index])
-	var nodes = []
-	for item in properties:
-		if typeof(properties[item]) == TYPE_OBJECT:
-			if properties[item].is_class("Node"):
-				nodes.append(item)
-			else:
-				properties[item] = _get_properties(properties[item])
-	for item in nodes:
-		properties.erase(item)
-	return properties
 
 #var breasts = Breasts.new()
 #class Breasts:

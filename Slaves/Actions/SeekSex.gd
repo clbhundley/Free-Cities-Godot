@@ -10,19 +10,12 @@ var interacting_with
 func display_action():
 	_slave.get_node('UI/Activity/Action').set_text("Seeking sex")
 
-func reset():
-	current_time = 0
-	total_time = null
-	if get('interacting_with'):
-		interacting_with = null
-
 func tick():
 	if current_time == 0:
 		start()
 	elif current_time < total_time:
 		step()
 	else:
-		current_time = 0
 		finish()
 
 func start():
@@ -31,9 +24,26 @@ func start():
 	interacting_with = null
 	find_sex_partner()
 	if interacting_with:
-		freeze_target_slave(interacting_with)
+		seize_target_slave(interacting_with)
 	display_action()
 	step()
+
+func step():
+	current_time += 1 * time.scale
+	_slave.arousal = min(_slave.arousal + 0.2*time.scale,100)
+
+func finish():
+	current_time = 0
+	if interacting_with:
+		initiate_sex(interacting_with)
+	else:
+		_slave.action = _slave.get_node('Actions/Masturbation')
+
+func reset():
+	current_time = 0
+	total_time = null
+	if get('interacting_with'):
+		interacting_with = null
 
 func find_sex_partner():
 	var ranked_slaves = SlaveUtils.proximity_affinity(_slave)
@@ -62,20 +72,11 @@ func find_sex_partner():
 				if roll <= 25:
 					interacting_with = target_slave_name
 
-func freeze_target_slave(target_slave_name):
+func seize_target_slave(target_slave_name):
 	var target_slave = SlaveUtils.get_slave(target_slave_name)
 	target_slave.action = target_slave.get_node("Actions/Idle")
 	target_slave.action.total_time = total_time + 1
-
-func step():
-	current_time += 1 * time.scale
-	_slave.arousal = min(_slave.arousal + 0.2*time.scale,100)
-
-func finish():
-	if interacting_with:
-		initiate_sex(interacting_with)
-	else:
-		_slave.action = _slave.get_node('Actions/Masturbation')
+	target_slave.is_awake = true
 
 func initiate_sex(target_slave_name):
 	var target_slave = SlaveUtils.get_slave(target_slave_name)
@@ -97,6 +98,6 @@ func initiate_sex(target_slave_name):
 	dominant_slave.action.role = dominant_slave_choice['role']
 	submissive_slave.action.interacting_with = dominant_slave.name
 	if dominant_slave_choice['role'] == "giving":
-		submissive_slave.action.role = "recieving"
+		submissive_slave.action.role = "receiving"
 	else:
 		submissive_slave.action.role = "giving"

@@ -1,6 +1,6 @@
 extends Node
 
-onready var _slave = owner
+onready var _slave = get_parent()
 
 func _level():
 	var level = 0
@@ -17,15 +17,15 @@ func _level():
 	level += _slave.libido
 	level += _slave.male_attraction
 	level += _slave.female_attraction
-	level += _slave.sexual_skill
-	level += _slave.oral_skill
-	level += _slave.anal_skill
-	level += _slave.vaginal_skill
-	level += _slave.penis_skill
-	level += _slave.anal_skill
-	level += _slave.prostitution_skill
-	level += _slave.entertainment_skill
-	level += _slave.combat_skill
+	#level += _slave.sexual_skill
+	level += _slave.skills.oral
+	level += _slave.skills.anal
+	level += _slave.skills.vaginal
+	level += _slave.skills.penetration
+	level += _slave.skills.anal
+	level += _slave.skills.prostitution
+	level += _slave.skills.entertainment
+	level += _slave.skills.combat
 	return(floor(level))
 
 #func _health():
@@ -87,7 +87,7 @@ func _intelligence():
 	elif _slave.intelligence < 75:
 		return "[color=#c89600]Stupid[/color]"
 	elif _slave.intelligence < 125:
-		return ""
+		return
 	elif _slave.intelligence < 150:
 		return "[color=#00aa0a]Smart[/color]"
 	elif _slave.intelligence < 175:
@@ -133,7 +133,7 @@ func _face():
 	elif _slave.face < 2:
 		return "[color=#c88c00]Ugly face[/color]"
 	elif _slave.face < 6:
-		return ""
+		return
 	elif _slave.face <= 8:
 		return "[color=#3c8c00]Pretty face[/color]"
 	elif _slave.face > 8:
@@ -163,7 +163,7 @@ func _libido():
 	elif _slave.libido < 75:
 		return "[color=#ffd100]Chaste[/color]"
 	elif _slave.libido < 125:
-		return "[color=#ffbbdd]Average libido[/color]"
+		return
 	elif _slave.libido < 150:
 		return "[color=#ff69b4]Lustful[/color]"
 	elif _slave.libido < 175:
@@ -212,101 +212,137 @@ func _female_attraction():
 		return "[color=fuchsia]Passionate about women[/color]"
 
 func _sexual_skill():
-	if _slave.sexual_skill < 25:
+	var sexual_skill = int(round(_slave.skills.sexual_total*0.5))
+	if sexual_skill < 25:
 		return "[color=#c89600]Unskilled at sex[/color]"
-	elif _slave.sexual_skill < 50:
+	elif sexual_skill < 50:
 		return "[color=#ffffff]Basic sexual skills[/color]"
-	elif _slave.sexual_skill < 150:
+	elif sexual_skill < 150:
 		return "[color=#00aa0a]Skilled at sex[/color]"
-	elif _slave.sexual_skill < 200:
+	elif sexual_skill < 200:
 		return "[color=#00afb4]Sexual expert[/color]"
-	elif _slave.sexual_skill >= 200:
+	elif sexual_skill >= 200:
 		return "[color=aqua]Sexual master[/color]"
 
 func _oral_skill():
-	if _slave.oral_skill < 25:
+	if _slave.skills.oral < 25:
 		return "[color=#c89600]Unskilled at oral[/color]"
-	elif _slave.oral_skill < 50:
+	elif _slave.skills.oral < 50:
 		return "[color=#ffffff]Basic oral skills[/color]"
-	elif _slave.oral_skill < 150:
+	elif _slave.skills.oral < 150:
 		return "[color=#00aa0a]Skilled at oral[/color]"
-	elif _slave.oral_skill < 200:
+	elif _slave.skills.oral < 200:
 		return "[color=#00afb4]Oral expert[/color]"
-	elif _slave.oral_skill >= 200:
+	elif _slave.skills.oral >= 200:
 		return "[color=aqua]Oral master[/color]"
 
 func _anal_skill():
-	if _slave.anal_skill < 25:
+	if _slave.skills.anal < 25:
 		return "[color=#c89600]Unskilled at anal[/color]"
-	elif _slave.anal_skill < 50:
+	elif _slave.skills.anal < 50:
 		return "[color=#ffffff]Basic anal skills[/color]"
-	elif _slave.anal_skill < 150:
+	elif _slave.skills.anal < 150:
 		return "[color=#00aa0a]Skilled at anal sex[/color]"
-	elif _slave.anal_skill < 200:
+	elif _slave.skills.anal < 200:
 		return "[color=#00afb4]Anal expert[/color]"
-	elif _slave.anal_skill >= 200:
+	elif _slave.skills.anal >= 200:
 		return "[color=aqua]Anal master[/color]"
 
 func _vaginal_skill():
-	if _slave.vaginal_skill < 25:
+	if _slave.skills.vaginal < 25:
 		return "[color=#c89600]Unskilled at vaginal[/color]"
-	elif _slave.vaginal_skill < 50:
+	elif _slave.skills.vaginal < 50:
 		return "[color=#ffffff]Basic vaginal skills[/color]"
-	elif _slave.vaginal_skill < 150:
+	elif _slave.skills.vaginal < 150:
 		return "[color=#00aa0a]Skilled at vaginal sex[/color]"
-	elif _slave.vaginal_skill < 200:
+	elif _slave.skills.vaginal < 200:
 		return "[color=#00afb4]Vaginal expert[/color]"
-	elif _slave.vaginal_skill >= 200:
+	elif _slave.skills.vaginal >= 200:
 		return "[color=aqua]Vaginal master[/color]"
 
-func _penis_skill():
-	if _slave.penis_skill < 25:
-		return "[color=#c89600]Unskilled stud[/color]"
-	elif _slave.penis_skill < 50:
-		return "[color=#ffffff]Basic stud[/color]"
-	elif _slave.penis_skill < 150:
-		return "[color=#00aa0a]Skilled stud[/color]"
-	elif _slave.penis_skill < 200:
-		return "[color=#00afb4]Expert stud[/color]"
-	elif _slave.penis_skill >= 200:
-		return "[color=aqua]Master stud[/color]"
+func _penetration_skill():
+	if _slave.skills.penetration < 25:
+		return "[color=#c89600]Unskilled at penetration[/color]"
+	elif _slave.skills.penetration < 50:
+		return "[color=#ffffff]Basic penetration skills[/color]"
+	elif _slave.skills.penetration < 150:
+		return "[color=#00aa0a]Skilled at penetration[/color]"
+	elif _slave.skills.penetration < 200:
+		return "[color=#00afb4]Penetration expert[/color]"
+	elif _slave.skills.penetration >= 200:
+		return "[color=aqua]Penetration master[/color]"
 
 func _prostitution_skill():
-	if _slave.prostitution_skill < 25:
+	if _slave.skills.prostitution < 25:
 		return "[color=#c89600]Unskilled at prostitution[/color]"
-	elif _slave.prostitution_skill < 50:
+	elif _slave.skills.prostitution < 50:
 		return "[color=#ffffff]Basic prostitution skills[/color]"
-	elif _slave.prostitution_skill < 150:
+	elif _slave.skills.prostitution < 150:
 		return "[color=#00aa0a]Skilled prostitute[/color]"
-	elif _slave.prostitution_skill < 200:
+	elif _slave.skills.prostitution < 200:
 		return "[color=#00afb4]Expert prostitute[/color]"
-	elif _slave.prostitution_skill >= 200:
+	elif _slave.skills.prostitution >= 200:
 		return "[color=aqua]Masterful prostitute[/color]"
 
 func _entertainment_skill():
-	if _slave.entertainment_skill < 25:
+	if _slave.skills.entertainment < 25:
 		return "[color=#c89600]Unskilled at entertainment[/color]"
-	elif _slave.entertainment_skill < 50:
+	elif _slave.skills.entertainment < 50:
 		return "[color=#ffffff]Basic entertainment skills[/color]"
-	elif _slave.entertainment_skill < 150:
+	elif _slave.skills.entertainment < 150:
 		return "[color=#00aa0a]Skilled entertainer[/color]"
-	elif _slave.entertainment_skill < 200:
+	elif _slave.skills.entertainment < 200:
 		return "[color=#00afb4]Expert entertainer[/color]"
-	elif _slave.entertainment_skill >= 200:
+	elif _slave.skills.entertainment >= 200:
 		return "[color=aqua]Masterful entertainer[/color]"
 
+func _cooking_skill():
+	if _slave.skills.cooking < 25:
+		return
+	elif _slave.skills.cooking < 50:
+		return "[color=#ffffff]Basic cooking skills[/color]"
+	elif _slave.skills.cooking < 150:
+		return "[color=#00aa0a]Skilled chef[/color]"
+	elif _slave.skills.cooking < 200:
+		return "[color=#00afb4]Expert chef[/color]"
+	elif _slave.skills.cooking >= 200:
+		return "[color=aqua]Master chef[/color]"
+
+func _medical_skill():
+	if _slave.skills.medical < 25:
+		return
+	elif _slave.skills.medical < 50:
+		return "[color=#ffffff]Basic medical skills[/color]"
+	elif _slave.skills.medical < 150:
+		return "[color=#00aa0a]Medically skilled[/color]"
+	elif _slave.skills.medical < 200:
+		return "[color=#00afb4]Medical expert[/color]"
+	elif _slave.skills.medical >= 200:
+		return "[color=aqua]Master of medicine[/color]"
+
 func _combat_skill():
-	if _slave.combat_skill < 25:
-		return "[color=#c89600]Unskilled at combat[/color]"
-	elif _slave.combat_skill < 50:
+	if _slave.skills.combat < 25:
+		return
+	elif _slave.skills.combat < 50:
 		return "[color=#ffffff]Basic combat skills[/color]"
-	elif _slave.combat_skill < 150:
+	elif _slave.skills.combat < 150:
 		return "[color=#00aa0a]Skilled fighter[/color]"
-	elif _slave.combat_skill < 200:
+	elif _slave.skills.combat < 200:
 		return "[color=#00afb4]Expert fighter[/color]"
-	elif _slave.combat_skill >= 200:
+	elif _slave.skills.combat >= 200:
 		return "[color=aqua]Masterful fighter[/color]"
 
+func _music_skill():
+	if _slave.skills.music < 25:
+		return
+	elif _slave.skills.music < 50:
+		return "[color=#ffffff]Basic musical skills[/color]"
+	elif _slave.skills.music < 150:
+		return "[color=#00aa0a]Skilled musician[/color]"
+	elif _slave.skills.music < 200:
+		return "[color=#00afb4]Expert musician[/color]"
+	elif _slave.skills.music >= 200:
+		return "[color=aqua]Master musician[/color]"
 
 #Devotion: Ambivalent. Utterly hateful | Hateful | Resistant | Ambivalent | Accepting | Devoted | Worshipful 
 #0
@@ -381,4 +417,3 @@ func _combat_skill():
 #     Head Girl Prospect Inexpensive potential to become a great right hand woman 
 #
 #Start over by selecting a nationality: Afghan | Albanian | Algerian | American | Andorran | Argentinian | Armenian | Australian | Austrian | Bangladeshi | Belgian | Belizean | Bermudian | Bolivian | Bosnian | Brazilian | British | Bruneian | Bulgarian | Burmese | Cambodian | Cameroonian | Canadian | Chilean | Chinese | Colombian | Congolese | Costa Rican | Croatian | Cuban | Czech | Danish | Djiboutian | Dutch | Egyptian | Emirati | Estonian | Ethiopian | Filipina | Finnish | French | Gabonese | German | Ghanan | Greek | Greenlandic | Grenadian | Guatemalan | Haitian | Honduran | Hungarian | I-Kiribati | Icelandic | Indian | Indonesian | Iranian | Iraqi | Irish | Israeli | Italian | Jamaican | Japanese | Jordanian | Kazakh | Kenyan | Korean | Kosovan | Laotian | Lebanese | Libyan | Lithuanian | Luxembourgian | Macedonian | Malagasy | Malaysian | Maldivian | Malian | Maltese | Marshallese | Mexican | Micronesian | Moldovan | Monégasque | Mongolian | Montenegrin | Moroccan | Nauruan | Nepalese | a New Zealander | Nicaraguan | Nigerian | Nigerien | Norwegian | Omani | Pakistani | Panamanian | Peruvian | Polish | Portuguese | Puerto Rican | Romanian | Russian | Salvadoran | Sammarinese | Saudi | Serbian | Singaporean | Slovak | South African | Spanish | Sudanese | Swedish | Swiss | Syrian | Taiwanese | Tanzanian | Thai | Tunisian | Turkish | Tuvaluan | Ugandan | Ukrainian | Uruguayan | Uzbek | Venezuelan | Vietnamese | Yemeni | Zambian | Zimbabwean
-

@@ -76,6 +76,34 @@ func json_parse(path):
 		var parsed = JSON.parse(_data)
 		return parsed.result
 
+func obj_to_dict(object):
+	var properties_full = object.get_property_list()
+	var property_list = []
+	for index in properties_full.size():
+		property_list.append(properties_full[index].name)
+	var slice = property_list.find('Script Variables') + 1
+	var properties = {}
+	for index in range(slice,property_list.size()):
+		properties[property_list[index]] = object.get(property_list[index])
+	var nodes = []
+	for item in properties:
+		if typeof(properties[item]) == TYPE_OBJECT:
+			if properties[item].is_class("Node"):
+				nodes.append(item)
+			else:
+				properties[item] = obj_to_dict(properties[item])
+	for item in nodes:
+		properties.erase(item)
+	return properties
+
+func dict_to_obj(dictionary,object):
+	for item in dictionary:
+		if item in object:
+			if dictionary[item] is Dictionary and object[item] is Object:
+				dict_to_obj(dictionary[item],object[item])
+			else:
+				object[item] = dictionary[item]
+
 func check_save(arcology,player,index):
 	#check folder structure
 	#check index

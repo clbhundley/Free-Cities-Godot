@@ -21,6 +21,14 @@ func update_owned_slaves():
 func uptate_examine_slave():
 	get_slave_scene().get_node("ExamineSlave").uptate_display()
 
+func get_weeks_pregnant(_slave):
+	if not _slave.pregnancy:
+		return
+	var time_pregnant = time.get_total_time(
+		_slave.pregnancy['conceived'],
+		time.get_timestamp())
+	return time_pregnant['weeks']+time_pregnant['quarters']*13
+
 func slaves_in_proximity(_slave):
 	var slaves_in_proximity = []
 	for other_slave in get_owned_slaves().get_children():

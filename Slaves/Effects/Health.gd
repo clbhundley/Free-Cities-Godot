@@ -4,17 +4,20 @@ onready var _slave = owner
 
 func _ready():
 	if not _slave.for_sale:
+		activate()
+
+func activate():
+	if not time.is_connected("minute",self,"minute"):
 		time.connect("minute",self,"minute")
 
 func deactivate():
-	if time.is_connected("tick",self,"tick"):
-		time.disconnect("tick",self,"tick")
+	if time.is_connected("minute",self,"minute"):
+		time.disconnect("minute",self,"minute")
 
 func minute():
 	if _slave.health > 100:
 		if not _slave.regimen.has("Preventatives"):
 			_slave.health -= 0.0002
-	
 	
 	
 #	if s.health < 200:

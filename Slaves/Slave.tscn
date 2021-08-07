@@ -1,6 +1,6 @@
-[gd_scene load_steps=42 format=2]
+[gd_scene load_steps=36 format=2]
 
-[ext_resource path="res://Slaves/Slave UI.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Slaves/Slave UI/Slave UI.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Slaves/slave.gd" type="Script" id=2]
 [ext_resource path="res://Slaves/Model.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Slaves/stats.gd" type="Script" id=4]
@@ -14,9 +14,12 @@
 [ext_resource path="res://Slaves/Effects/Hunger.gd" type="Script" id=12]
 [ext_resource path="res://Slaves/Effects/Bathroom.gd" type="Script" id=13]
 [ext_resource path="res://Slaves/Effects/Arousal.gd" type="Script" id=14]
+[ext_resource path="res://Slaves/Activity.gd" type="Script" id=15]
 [ext_resource path="res://Slaves/Actions/SeekSex.gd" type="Script" id=16]
 [ext_resource path="res://Slaves/Actions/Sex.gd" type="Script" id=17]
 [ext_resource path="res://Slaves/Actions/Socializing.gd" type="Script" id=18]
+[ext_resource path="res://Slaves/Effects/Curatives.gd" type="Script" id=19]
+[ext_resource path="res://Slaves/Effects/Aphrodisiacs.gd" type="Script" id=20]
 [ext_resource path="res://Slaves/Actions/travel.gd" type="Script" id=74]
 
 [sub_resource type="GDScript" id=1]
@@ -27,52 +30,52 @@ onready var _slave = owner
 func begin():
 	_slave.get_node('UI/Top/Status').set_text(\"Resting\")
 
-func next_action():
-	var new_action
-	var new_queued_action
-	
-	if _slave.queued_action:
-		_slave.action = _slave.queued_action
-		_slave.queued_action = null
-	if _slave.bathroom > 50:
-		if _slave.location == _slave.quarters:
-			new_action = \"Bathroom\"
-		else:
-			_slave.destination = _slave.quarters
-			new_action = \"Travel\"
-			new_queued_action = \"Bathroom\"
-	elif _slave.hunger > 40:
-		var nutrition_system = ArcUtils.get_nutrition_system()
-		if _slave.location == nutrition_system:
-			new_action = \"Eating\"
-		else:
-			_slave.destination = nutrition_system
-			new_action = \"Travel\"
-			new_queued_action = \"Eating\"
-	elif _slave.fatigue > 70:
-		if _slave.location == _slave.quarters:
-			new_action = \"Sleeping\"
-		else:
-			_slave.destination = _slave.quarters
-			new_action = \"Travel\"
-			new_queued_action = \"Sleeping\"
-	elif _slave.arousal > 16:
-		#chance for masturbation
-		#in a relationship?
-		#Emotionally bonded to player?
-		#Emotional slut?
-		#check devotion
-		# if devotion <
-		#chance for consensual interaction
-		#chance for nonconsensual interaction
-		new_action = \"SeekSex\"
-	else:
-		new_action = \"Idle\"
-	
-	if new_action:
-		_slave.action = _slave.get_node('Actions/'+new_action)
-	if new_queued_action:
-		_slave.queued_action = _slave.get_node('Actions/'+new_queued_action)
+#func next_action():
+#	var new_action
+#	var new_queued_action
+#
+#	if _slave.queued_action:
+#		_slave.action = _slave.queued_action
+#		_slave.queued_action = null
+#	if _slave.bathroom > 50:
+#		if _slave.location == _slave.quarters:
+#			new_action = \"Bathroom\"
+#		else:
+#			_slave.destination = _slave.quarters
+#			new_action = \"Travel\"
+#			new_queued_action = \"Bathroom\"
+#	elif _slave.hunger > 40:
+#		var nutrition_system = ArcUtils.get_nutrition_system()
+#		if _slave.location == nutrition_system:
+#			new_action = \"Eating\"
+#		else:
+#			_slave.destination = nutrition_system
+#			new_action = \"Travel\"
+#			new_queued_action = \"Eating\"
+#	elif _slave.fatigue > 70:
+#		if _slave.location == _slave.quarters:
+#			new_action = \"Sleeping\"
+#		else:
+#			_slave.destination = _slave.quarters
+#			new_action = \"Travel\"
+#			new_queued_action = \"Sleeping\"
+#	elif _slave.arousal > 16:
+#		#chance for masturbation
+#		#in a relationship?
+#		#Emotionally bonded to player?
+#		#Emotional slut?
+#		#check devotion
+#		# if devotion <
+#		#chance for consensual interaction
+#		#chance for nonconsensual interaction
+#		new_action = \"SeekSex\"
+#	else:
+#		new_action = \"Idle\"
+#
+#	if new_action:
+#		_slave.action = _slave.get_node('Actions/'+new_action)
+#	if new_queued_action:
+#		_slave.queued_action = _slave.get_node('Actions/'+new_queued_action)
 "
 
 [sub_resource type="GDScript" id=2]
@@ -83,45 +86,45 @@ onready var _slave = owner
 func begin():
 	_slave.get_node('UI/Top/Status').set_text(\"Prostitute\")
 
-func next_action():
-	var new_action
-	var new_queued_action
-	
-	if _slave.queued_action:
-		_slave.action = _slave.queued_action
-		_slave.queued_action = null
-	elif _slave.bathroom > 60:
-		if _slave.location == _slave.quarters:
-			new_action = \"Bathroom\"
-		else:
-			_slave.destination = _slave.quarters
-			new_action = \"Travel\"
-			new_queued_action = \"Bathroom\"
-	elif _slave.hunger > 50:
-		var nutrition_system = ArcUtils.get_nutrition_system()
-		if _slave.location == nutrition_system:
-			new_action = \"Eating\"
-		else:
-			_slave.destination = nutrition_system
-			new_action = \"Travel\"
-			new_queued_action = \"Eating\"
-	elif _slave.fatigue > 70:
-		if _slave.location == _slave.quarters:
-			new_action = \"Sleeping\"
-		else:
-			_slave.destination = _slave.quarters
-			new_action = \"Travel\"
-			new_queued_action = \"Sleeping\"
-	elif _slave.arousal > 90:
-		new_action = \"Masturbation\"
-	else:
-		new_action = \"Soliciting\"
-		new_queued_action = \"ServicingCustomer\"
-	
-	if new_action:
-		_slave.action = _slave.get_node('Actions/'+new_action)
-	if new_queued_action:
-		_slave.queued_action = _slave.get_node('Actions/'+new_queued_action)
+#func next_action():
+#	var new_action
+#	var new_queued_action
+#
+#	if _slave.queued_action:
+#		_slave.action = _slave.queued_action
+#		_slave.queued_action = null
+#	elif _slave.bathroom > 60:
+#		if _slave.location == _slave.quarters:
+#			new_action = \"Bathroom\"
+#		else:
+#			_slave.destination = _slave.quarters
+#			new_action = \"Travel\"
+#			new_queued_action = \"Bathroom\"
+#	elif _slave.hunger > 50:
+#		var nutrition_system = ArcUtils.get_nutrition_system()
+#		if _slave.location == nutrition_system:
+#			new_action = \"Eating\"
+#		else:
+#			_slave.destination = nutrition_system
+#			new_action = \"Travel\"
+#			new_queued_action = \"Eating\"
+#	elif _slave.fatigue > 70:
+#		if _slave.location == _slave.quarters:
+#			new_action = \"Sleeping\"
+#		else:
+#			_slave.destination = _slave.quarters
+#			new_action = \"Travel\"
+#			new_queued_action = \"Sleeping\"
+#	elif _slave.arousal > 90:
+#		new_action = \"Masturbation\"
+#	else:
+#		new_action = \"Soliciting\"
+#		new_queued_action = \"ServicingCustomer\"
+#
+#	if new_action:
+#		_slave.action = _slave.get_node('Actions/'+new_action)
+#	if new_queued_action:
+#		_slave.queued_action = _slave.get_node('Actions/'+new_queued_action)
 "
 
 [sub_resource type="GDScript" id=3]
@@ -137,13 +140,13 @@ func display_action():
 
 func tick():
 	if current_time == 0:
-		begin()
+		start()
 	elif current_time < total_time:
 		step()
 	else:
-		end()
+		finish()
 
-func begin():
+func start():
 	total_time = abs(math.gaussian(100,10))
 	display_action()
 	step()
@@ -151,11 +154,9 @@ func begin():
 func step():
 	current_time += 1 * time.scale
 
-func end():
+func finish():
 	current_time = 0
-	_slave.get_node('Assignments/'+_slave.assignment).next_action()
-	_slave.get_node('UI/Activity/Time').set_text(\"Done\")
-	_slave.get_node('UI/Activity/Action').set_text(\"\")
+	_slave.activity.action_end()
 "
 
 [sub_resource type="GDScript" id=4]
@@ -171,19 +172,18 @@ func display_action():
 
 func tick():
 	if current_time == 0:
-		begin()
+		start()
 	elif current_time < total_time:
 		step()
 	else:
-		end()
+		finish()
 
-func begin():
+func start():
 	_slave.is_awake = false
 	var fatigue = round(_slave.fatigue/10)
 	if fatigue == 0:
 		fatigue = 1
 	total_time = abs(math.gaussian(3600,200))*fatigue
-	#_slave.get_node('UI/Activity/ProgressBar').max_value = total_time
 	display_action()
 	step()
 
@@ -194,8 +194,6 @@ func step():
 		if total_time - current_time < 0:
 			overstep = time.scale / abs(total_time-current_time)
 		_slave.fatigue = max(_slave.fatigue - 0.0028 * time.scale / overstep, 0)
-	#_slave.get_node('UI/Activity/ProgressBar').set(\"value\",current_time)
-	#_slave.get_node('UI/Activity/Time').set_text(math.time_remaining(current_time,total_time))
 		
 #		if s.health <= 0: #Deceased
 #			pass
@@ -236,12 +234,10 @@ func step():
 #		if s.fatigue < 100: #Very energetic
 #			s.fatigue += 0.0001
 
-func end():
+func finish():
 	current_time = 0
 	_slave.is_awake = true
-	_slave.get_node('Assignments/'+_slave.assignment).next_action()
-	_slave.get_node('UI/Activity/Time').set_text(\"Done\")
-	_slave.get_node('UI/Activity/Action').set_text(\"\")
+	_slave.activity.action_end()
 "
 
 [sub_resource type="GDScript" id=5]
@@ -257,15 +253,14 @@ func display_action():
 
 func tick():
 	if current_time == 0:
-		game.update_money(-5)
 		start()
 	elif current_time < total_time:
 		step()
 	else:
-		current_time = 0
-		_slave._action_ended()
+		finish()
 
 func start():
+	game.update_money(-5) # cost of meal
 	var hunger = max(round(_slave.hunger/10),1)
 	total_time = abs(math.gaussian(55,11))*hunger
 	display_action()
@@ -278,6 +273,10 @@ func step():
 		if total_time - current_time < 0:
 			overstep = time.scale / abs(total_time-current_time)
 		_slave.hunger = max(_slave.hunger - 0.2 * time.scale / overstep, 0)
+
+func finish():
+	current_time = 0
+	_slave.activity.action_end()
 "
 
 [sub_resource type="GDScript" id=6]
@@ -291,12 +290,19 @@ var total_time
 func display_action():
 	_slave.get_node('UI/Activity/Action').set_text(\"Using bathroom\")
 
+func tick():
+	if current_time == 0:
+		start()
+	elif current_time < total_time:
+		step()
+	else:
+		finish()
+
 func start():
 	var bathroom = round(_slave.bathroom/10)
 	if bathroom == 0:
 		bathroom = 1
 	total_time = abs(math.gaussian(45,8))*bathroom
-	#_slave.get_node('UI/Activity/ProgressBar').max_value = total_time
 	display_action()
 	step()
 
@@ -307,17 +313,10 @@ func step():
 		if total_time - current_time < 0:
 			overstep = time.scale / abs(total_time-current_time)
 		_slave.bathroom = max(_slave.bathroom - 0.3 * time.scale / overstep, 0)
-	#_slave.get_node('UI/Activity/ProgressBar').set(\"value\",current_time)
-	#_slave.get_node('UI/Activity/Time').set_text(math.time_remaining(current_time,total_time))
 
-func tick():
-	if current_time == 0:
-		start()
-	elif current_time < total_time:
-		step()
-	else:
-		current_time = 0
-		_slave._action_ended()
+func finish():
+	current_time = 0
+	_slave.activity.action_end()
 "
 
 [sub_resource type="GDScript" id=7]
@@ -329,15 +328,19 @@ var current_time = 0
 var total_time
 
 func display_action():
-	_slave.get_node('UI/Activity/Action').set_text(\"Waiting for Customer\")
+	_slave.get_node('UI/Activity/Action').set_text(\"Soliciting\")
+
+func tick():
+	if current_time == 0:
+		start()
+	elif current_time < total_time:
+		step()
+	else:
+		finish()
 
 func start():
 	#time to acquire customer based on...?
-	var arousal = round(_slave.arousal/10)
-	if arousal == 0:
-		arousal = 1
-	total_time = abs(math.gaussian(230,21))*arousal
-	#_slave.get_node('UI/Activity/ProgressBar').max_value = total_time
+	total_time = abs(math.gaussian(530,21))
 	display_action()
 	step()
 
@@ -347,19 +350,12 @@ func step():
 		var overstep = 1
 		if total_time - current_time < 0:
 			overstep = time.scale / abs(total_time-current_time)
-		_slave.arousal = max(_slave.arousal + 0.1 * time.scale / overstep, 0)
-	#_slave.get_node('UI/Activity/ProgressBar').set(\"value\",current_time)
-	#_slave.get_node('UI/Activity/Time').set_text(math.time_remaining(current_time,total_time))
+		_slave.arousal = max(_slave.arousal + 0.06 * time.scale / overstep, 0)
 
-func tick():
-	if current_time == 0:
-		start()
-	elif current_time < total_time:
-		step()
-	else:
-		current_time = 0
-		_slave.destination = random_sector_test()
-		_slave.action = _slave.get_node('Actions/Travel')
+func finish():
+	current_time = 0
+	_slave.destination = random_sector_test()
+	_slave.action = _slave.get_node('Actions/Travel')
 
 func random_sector_test():
 	var terras = [\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\",\"H\",\"I\",\"J\",\"K\",\"L\"]
@@ -396,17 +392,29 @@ var interacting_with = \"random citizen\"
 func display_action():
 	_slave.get_node('UI/Activity/Action').set_text(\"Servicing Customer\")
 
+func tick():
+	if current_time == 0:
+		start()
+	elif current_time < total_time:
+		step()
+	else:
+		finish()
+
 func start():
-	#time to satisfy customer based on slave arousal?
-	var arousal = round(_slave.arousal/10)
-	if arousal == 0:
-		arousal = 1
-	total_time = abs(math.gaussian(2300,210))*arousal
-	#_slave.get_node('UI/Activity/ProgressBar').max_value = total_time
+	#time to satisfy customer should be based on slave skills
+	total_time = abs(math.gaussian(2000,210))
 	display_action()
 	step()
 
-func end():
+func step():
+	current_time += 1 * time.scale
+	if _slave.arousal > 0:
+		var overstep = 1
+		if total_time - current_time < 0:
+			overstep = time.scale / abs(total_time-current_time)
+		_slave.arousal = max(_slave.arousal - 0.1 * time.scale / overstep, 0)
+
+func finish():
 	current_time = 0
 	game.update_money(abs(math.gaussian(50,20)))
 	if dice.roll(3) == 0:
@@ -420,25 +428,7 @@ func end():
 			_slave.name+
 			\" took \"+str(damage_actual)+\" damage\"+
 			\" while servicing a customer\")
-	_slave._action_ended()
-
-func step():
-	current_time += 1 * time.scale
-	if _slave.arousal > 0:    #satisfaction
-		var overstep = 1
-		if total_time - current_time < 0:
-			overstep = time.scale / abs(total_time-current_time)
-		_slave.arousal = max(_slave.arousal - 0.1 * time.scale / overstep, 0)
-	#_slave.get_node('UI/Activity/ProgressBar').set(\"value\",current_time)
-	#_slave.get_node('UI/Activity/Time').set_text(math.time_remaining(current_time,total_time))
-
-func tick():
-	if current_time == 0:
-		start()
-	elif current_time < total_time:
-		step()
-	else:
-		end()
+	_slave.activity.action_end()
 "
 
 [sub_resource type="GDScript" id=9]
@@ -451,6 +441,14 @@ var total_time
 
 func display_action():
 	_slave.get_node('UI/Activity/Action').set_text(\"Masturbating\")
+
+func tick():
+	if current_time == 0:
+		start()
+	elif current_time < total_time:
+		step()
+	else:
+		finish()
 
 func start():
 	var arousal = round(_slave.arousal/10)
@@ -467,29 +465,18 @@ func step():
 		if total_time - current_time < 0:
 			overstep = time.scale / abs(total_time-current_time)
 		_slave.arousal = max(_slave.arousal - 0.1 * time.scale / overstep, 0)
-	#_slave.get_node('UI/Activity/ProgressBar').set(\"value\",current_time)
-	#_slave.get_node('UI/Activity/Time').set_text(math.time_remaining(current_time,total_time))
 
-func tick():
-	if current_time == 0:
-		start()
-	elif current_time < total_time:
-		step()
-	else:
-		current_time = 0
-		_slave._action_ended()
+func finish():
+	current_time = 0
+	_slave.activity.action_end()
 "
 
 [sub_resource type="GDScript" id=10]
 script/source = "extends Node
 
-func activate(node,_signal=\"minute\"):
-	if not time.is_connected(_signal,node,_signal):
-		time.connect(_signal,node,_signal)
-
-func deactivate(node,_signal=\"minute\"):
-	if time.is_connected(_signal,node,_signal):
-		time.disconnect(_signal,node,_signal)
+func activate_primary_effects():
+	for effect in [$Health,$Fatigue,$Hunger,$Bathroom,$Arousal]:
+		effect.activate()
 
 func deactivate_all():
 	for node in get_children():
@@ -498,16 +485,10 @@ func deactivate_all():
 "
 
 [sub_resource type="Curve" id=11]
+_data = [ Vector2( 0, 1 ), 0.0, -0.401515, 0, 0, Vector2( 0.25, 0.6 ), -2.96503, -2.96503, 0, 0, Vector2( 1, 0.01 ), -0.310646, 0.0, 0, 0 ]
+
+[sub_resource type="Curve" id=12]
 _data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 1, 1 ), 0.0, 0.0, 0, 0 ]
-
-[sub_resource type="GDScript" id=12]
-script/source = "extends Node
-
-func deactivate():
-	for node in get_children():
-		if node.has_method(\"deactivate\"):
-			node.deactivate()
-"
 
 [sub_resource type="GDScript" id=13]
 script/source = "extends Node
@@ -521,105 +502,10 @@ func deactivate():
 [sub_resource type="GDScript" id=14]
 script/source = "extends Node
 
-func tick():
-	print(\"ticking \",name)
-
-func minute():
-	pass
-"
-
-[sub_resource type="GDScript" id=15]
-script/source = "extends Node
-
-func tick():
-	print(\"ticking \",name)
-
-func minute():
-	pass
-"
-
-[sub_resource type="GDScript" id=16]
-script/source = "extends Node
-
-func tick():
-	print(\"ticking \",name)
-
-func minute():
-	pass
-"
-
-[sub_resource type="GDScript" id=17]
-script/source = "extends Node
-
-func tick():
-	print(\"ticking \",name)
-
-func minute():
-	pass
-"
-
-[sub_resource type="GDScript" id=18]
-script/source = "extends Node
-
-func tick():
-	print(\"ticking \",name)
-
-func minute():
-	pass
-"
-
-[sub_resource type="GDScript" id=19]
-script/source = "extends Node
-
-func tick():
-	print(\"ticking \",name)
-
-func minute():
-	pass
-"
-
-[sub_resource type="GDScript" id=20]
-script/source = "extends Node
-
-func tick():
-	print(\"ticking \",name)
-
-func minute():
-	pass
-"
-
-[sub_resource type="GDScript" id=21]
-script/source = "extends Node
-
-func tick():
-	print(\"ticking \",name)
-
-func minute():
-	return
-	print(\"MINUTE!!1 - \",name)
-"
-
-[sub_resource type="GDScript" id=22]
-script/source = "extends Node
-
-onready var _slave = owner
-
-func minute():
-	if _slave.regimen.has(\"Curatives\"):
-		if _slave.assignment == \"Resting\":
-			_slave.health += 0.002
-		else:
-			_slave.health += 0.0006
-"
-
-[sub_resource type="GDScript" id=23]
-script/source = "extends Node
-
-func tick():
-	print(\"ticking \",name)
-
-func minute():
-	print(\"MINUTE!!1 - \",name)
+func deactivate():
+	for node in get_children():
+		if node.has_method(\"deactivate\"):
+			node.deactivate()
 "
 
 [node name="Slave" type="Spatial" groups=[
@@ -644,6 +530,9 @@ script = ExtResource( 5 )
 
 [node name="Stats" type="Node" parent="."]
 script = ExtResource( 4 )
+
+[node name="Activity" type="Node" parent="."]
+script = ExtResource( 15 )
 
 [node name="Assignments" type="Node" parent="."]
 
@@ -725,6 +614,7 @@ script = SubResource( 10 )
 
 [node name="Age" type="Node" parent="Effects"]
 script = ExtResource( 9 )
+fertility_decline = SubResource( 11 )
 
 [node name="Health" type="Node" parent="Effects"]
 script = ExtResource( 10 )
@@ -743,43 +633,34 @@ script = ExtResource( 14 )
 
 [node name="Pregnancy" type="Node" parent="Effects"]
 script = ExtResource( 6 )
-belly_size = SubResource( 11 )
+belly_size = SubResource( 12 )
 
 [node name="Regimen" type="Node" parent="Effects"]
-script = SubResource( 12 )
-
-[node name="Pharmaceuticals" type="Node" parent="Effects/Regimen"]
 script = SubResource( 13 )
 
-[node name="Psychosuppressants" type="Node" parent="Effects/Regimen/Pharmaceuticals"]
+[node name="Pharmaceuticals" type="Node" parent="Effects/Regimen"]
 script = SubResource( 14 )
 
+[node name="Psychosuppressants" type="Node" parent="Effects/Regimen/Pharmaceuticals"]
+
 [node name="BreastGrowth" type="Node" parent="Effects/Regimen/Pharmaceuticals"]
-script = SubResource( 15 )
 
 [node name="ButtocksGrowth" type="Node" parent="Effects/Regimen/Pharmaceuticals"]
-script = SubResource( 16 )
 
 [node name="PenisClitGrowth" type="Node" parent="Effects/Regimen/Pharmaceuticals"]
-script = SubResource( 17 )
 
 [node name="LipGrowth" type="Node" parent="Effects/Regimen/Pharmaceuticals"]
-script = SubResource( 18 )
 
 [node name="Steroids" type="Node" parent="Effects/Regimen/Pharmaceuticals"]
-script = SubResource( 19 )
 
 [node name="FertilityEnhancers" type="Node" parent="Effects/Regimen/Pharmaceuticals"]
-script = SubResource( 20 )
 
 [node name="Preventatives" type="Node" parent="Effects/Regimen"]
-script = SubResource( 21 )
 
 [node name="Curatives" type="Node" parent="Effects/Regimen"]
-script = SubResource( 22 )
+script = ExtResource( 19 )
 
 [node name="Contraception" type="Node" parent="Effects/Regimen"]
-script = SubResource( 22 )
 
 [node name="Diet" type="Node" parent="Effects/Regimen"]
 script = ExtResource( 7 )
@@ -788,7 +669,7 @@ script = ExtResource( 7 )
 script = ExtResource( 8 )
 
 [node name="Aphrodisiacs" type="Node" parent="Effects/Regimen"]
-script = SubResource( 23 )
+script = ExtResource( 20 )
 
 [node name="Living Standard" type="Node" parent="Effects"]
 

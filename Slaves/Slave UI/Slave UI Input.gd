@@ -2,7 +2,7 @@ extends Control
 
 onready var slaves = SlaveUtils.get_slave_scene()
 onready var panel = get_node("Panel")
-onready var _slave = owner
+onready var _slave = get_parent()
 
 func _input(event):
 	if event.is_action_pressed('ui_back'):
@@ -62,9 +62,10 @@ func _on_Buy_pressed():
 	hide()
 
 func _on_Sell_pressed():
-	var dir = Directory.new()
 	if SlaveUtils.slave_count("Owned") <= 1:
 		return
+	_slave.deactivate()
+	var dir = Directory.new()
 	dir.remove('user://Data/Slot %s/Slaves/Owned/%s.json'%[data.save_slot,_slave.name])
 	game.update_money(200 * _slave.stats._level())
 	get_node("../../").remove_child(_slave)

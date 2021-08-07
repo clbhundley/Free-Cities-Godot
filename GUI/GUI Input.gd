@@ -1,6 +1,5 @@
 extends Control
 
-
 onready var time_display = $Navigation/Time
 onready var clock_speed_slider = $Navigation/Time/TimePanel/Controls/Sliders/ClockSpeed
 onready var time_panel = $Navigation/Time/TimePanel

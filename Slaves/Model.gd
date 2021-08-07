@@ -1,6 +1,6 @@
 extends Spatial
 
-onready var _slave = owner
+onready var _slave = get_parent()
 onready var body = get_node("Salmacis/SalmacisSkeleton/Salmacis")
 onready var genitals_male = get_node("Salmacis/SalmacisSkeleton/MaleGenitals")
 onready var genitals_female = get_node("Salmacis/SalmacisSkeleton/FemaleGenitals")
@@ -35,7 +35,7 @@ func _ready():
 	set_genitals()
 	if model_data:
 		for setting in model_data:
-			set(setting, model_data[setting])
+			set(setting,model_data[setting])
 		model_data = null
 	else:
 		set_default_values()
@@ -172,10 +172,6 @@ func make_resources_unique():
 	genitals_male.mesh = genitals_male.mesh.duplicate()
 	genitals_female.mesh = genitals_female.mesh.duplicate()
 
-func reset_weight(value):
-	if value > 0:
-		set_weight(1)
-
 func set_masculinity(value):
 	set_bodybuilder(bodybuilder)
 	set_weight_fat(weight_fat)
@@ -208,6 +204,10 @@ func set_genitals_male_adjustment(value):
 	genitals_female.set("blend_shapes/Genitals Male",value)
 	genitals_male_adjustment = value
 
+func reset_weight(value):
+	if value > 0:
+		set_weight(1)
+
 func set_weight(value):
 	if value < 1:
 		set_weight_fat(0)
@@ -234,6 +234,8 @@ func set_weight(value):
 		_slave.flags.erase("weight")
 
 func set_overweight_flags():
+	if weight < 1:
+		return
 	var weight_total = weight + weight_fat + weight_pear + weight_round/2
 	if weight_total >= 1.5:
 		_slave.flags["weight"] = "[color=#ffa500]Obese[/color]"

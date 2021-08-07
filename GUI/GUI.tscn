@@ -105,9 +105,11 @@ func pharmaceutical_checked(button_pressed,button):
 		\"Preventatives\",\"Curatives\",\"Contraception\":
 			var drug = effects.get_node(\"Regimen/\"+selected_drug)
 			if button_pressed:
-				effects.activate(drug)
+				if drug.has_method('activate'):
+					drug.activate()
 			else:
-				effects.deactivate(drug)
+				if drug.has_method('deactivate'):
+					drug.deactivate()
 		_:
 			var pharma = effects.get_node(\"Regimen/Pharmaceuticals\")
 			var selected_pharma
@@ -115,10 +117,12 @@ func pharmaceutical_checked(button_pressed,button):
 				selected_pharma = pharma.get_node(selected_drug)
 			if button_pressed:
 				if selected_pharma:
-					effects.activate(selected_pharma)
+					if selected_pharma.has_method('activate'):
+						selected_pharma.activate()
 			else:
 				if selected_pharma:
-					effects.deactivate(selected_pharma)
+					if selected_pharma.has_method('deactivate'):
+						selected_pharma.deactivate()
 	set_side_effect_text(side_effect_risk())
 
 func _on_Diet_item_selected(index):
@@ -149,10 +153,10 @@ func _on_Hormones_item_selected(index):
 		4:
 			drug = \"HormonesMaleIntensive\"
 	if index > 0:
-		effects.activate(hormones,\"hour\")
+		hormones.activate()
 		_slave.regimen.append(drug)
 	else:
-		effects.deactivate(hormones)
+		hormones.deactivate()
 	set_side_effect_text(side_effect_risk())
 	_slave.get_node(\"Effects/Regimen/Hormones\").selected = index
 
@@ -170,10 +174,10 @@ func _on_Aphrodisiacs_item_selected(index):
 		3:
 			drug = \"AphrodisiacsExtreme\"
 	if index > 0:
-		effects.activate(aphrodisiacs)
+		aphrodisiacs.activate()
 		_slave.regimen.append(drug)
 	else:
-		effects.deactivate(aphrodisiacs)
+		aphrodisiacs.deactivate()
 	set_side_effect_text(side_effect_risk())
 
 func side_effect_risk():
