@@ -10,55 +10,37 @@ func _ready():
 	if _slave.for_sale:
 		$Panel/Buttons.hide()
 		$Panel/SellingButtons.show()
-	
-	$Gauges.refresh()
-	$StatsDisplay.refresh()
-	
+	$Gauges.refresh_all()
+	$StatsDisplay.refresh_all()
+	set_refresh_mode('timeout')
 	$Top/Name.set_text(_slave.name)
-	if _slave.health > 0:
+	if _slave.for_sale:
+		$Top/Status.set_text("¤"+str(_slave.market_price()))
+	elif _slave.health > 0:
 		$Top/Status.set_text(_slave.assignment)
 	_slave.action.display_action()
-	display_location()
+	$Location.refresh()
 	set_level()
 	tracking()
 	resize()
 
+func set_refresh_mode(mode:String):
+	match mode:
+		'timeout':
+			$Gauges.set_refresh_mode('timeout')
+			$StatsDisplay.set_refresh_mode('timeout')
+		'minute':
+			$Gauges.set_refresh_mode('timeout')
+			$StatsDisplay.set_refresh_mode('minute')
+		'hour':
+			$Gauges.set_refresh_mode('minute')
+			$StatsDisplay.set_refresh_mode('hour')
+		'none':
+			$Gauges.disconnect_all_signals()
+			$StatsDisplay.disconnect_all_signals()
+
 func set_level():
-	$Top/Level.set_text(str(_slave.stats._level()))
-
-func display_location():
-	var loc = _slave.location
-	var des = _slave.destination
-	var location_address = ArcUtils.parse_address(loc)["address"]
-	var location_name = ArcUtils.parse_address(loc)["name"]
-	if _slave.destination:
-		var destination_address = ArcUtils.parse_address(des)["address"]
-		var destination_name = ArcUtils.parse_address(des)["name"]
-		var format = [
-			location_address,
-			get_display_name(location_name),
-			destination_address,
-			get_display_name(destination_name)]
-		$Location.set_text("%s: %s  >>>  %s: %s"%format)
-	else:
-		var string = "%s - %s"%[location_address,get_display_name(location_name,true)]
-		$Location.set_text(string)
-
-func get_display_name(sector,full=false):
-	var _name = ArcUtils.sector_name(sector).to_lower()
-	var suffixes = ["_a","_b","_c"]
-	for suffix in suffixes:
-		_name = _name.trim_suffix(suffix)
-	if "park" in _name:
-		_name = "Public Park"
-	if full:
-		return _name.capitalize()
-	if "residential" in _name:
-		return("Residential")
-	elif "commercial" in _name:
-		return("Commercial")
-	else:
-		return _name.capitalize()
+	$Top/Level.set_text(str(_slave.level))
 
 func tracking(force=false):
 	if not is_visible_in_tree() and not force:

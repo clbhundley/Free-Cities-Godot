@@ -144,7 +144,7 @@ var size = 2
 
 var upgrades = [\"something\",\"another\"]
 
-func tick():
+func second():
 	pass
 
 func minute():

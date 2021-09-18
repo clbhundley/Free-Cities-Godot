@@ -3,8 +3,8 @@ static func presets():
 	return {
 #		gender = gender(),
 #		ethnicity = ethnicity(),
-		age = randi() %41+18,
-		health = abs(math.gaussian(40,12)),
+		age = randi()%41+18,
+		health = max(math.gaussian(40,12),1),
 		fatigue = abs(math.gaussian(40,20)),
 		happiness = abs(math.gaussian(5,5)),
 		arousal = abs(math.gaussian(10,8)),
@@ -28,7 +28,7 @@ static func presets():
 #	return "dark"
 
 static func hair_type():
-	return dice.roll(4)
+	return randi()%4
 
 #static func hair_color():
 #	return "black"

@@ -1,10 +1,8 @@
 extends Node
 
-var save_slot # currently active save slot
+var save_slot
 var config = ConfigFile.new()
 var autosave_interval
-
-# add proper error handling for these functions!
 
 func set_autosave():
 	if not config.has_section_key("autosave", "interval"):
@@ -47,15 +45,11 @@ func check_config():
 		config.set_value("confirmation", "skip", false)
 		config.save('user://config.cfg')
 
-func check_dir(path,directory_name):
+func list_contents(path:String):
 	var dir = Directory.new()
 	if not dir.dir_exists(path):
-		dir.open(path.get_base_dir())
-		dir.make_dir(directory_name)
-
-func list_files(path):
+		return
 	var files = []
-	var dir = Directory.new()
 	dir.open(path)
 	dir.list_dir_begin()
 	while true:
@@ -67,7 +61,36 @@ func list_files(path):
 	dir.list_dir_end()
 	return files
 
-func json_parse(path):
+func create_directory(path):
+	var dir = Directory.new()
+	if not dir.dir_exists(path):
+		dir.make_dir_recursive(path)
+
+func copy_directory(source_path:String,destination_path:String):
+	var dir = Directory.new()
+	create_directory(destination_path)
+	for item in list_contents(source_path):
+		var source_item = source_path+"/"+item
+		var destination_item = destination_path+"/"+item
+		if dir.file_exists(source_item):
+			dir.copy(source_item,destination_item)
+		elif dir.dir_exists(source_item):
+			copy_directory(source_item,destination_item)
+
+func delete(path:String):
+	var dir = Directory.new()
+	if !dir.file_exists(path) and !dir.dir_exists(path):
+		return
+	if dir.dir_exists(path):
+		for item in list_contents(path):
+			var item_path = path+"/"+item
+			if dir.file_exists(item_path):
+				dir.remove(item_path)
+			elif dir.dir_exists(item_path):
+				delete(item_path)
+	dir.remove(path)
+
+func json_parse(path:String):
 	var file = File.new()
 	if file.file_exists(path):
 		file.open(path,File.READ)
@@ -153,96 +176,89 @@ func index():
 		year = time.year,
 		total_weeks = time.total_weeks}
 
-func quick_save(): #!needs repurpose!
+func save_game(slot):
 	var file = File.new()
-	var index = 'user://Data/Slot %s/Index.json'%save_slot
-	file.open(index,File.WRITE)
+	var data_slot = 'user://Data/Slot %s'%slot
+#	check_dir('user://Data/Slot %s/Finance'%slot,"Finance")
+#	check_dir('user://Data/Slot %s/Market'%slot,"Market")
+#	create_directory(data_slot+'/Slaves/Owned')
+#	create_directory(data_slot+'/Slaves/Markets/Kidnappers Market')
+#	create_directory(data_slot+'/Slaves/Markets/Neighboring Arcologies')
+
+	create_directory(data_slot)
+
+	file.open(data_slot+'/Index.json',File.WRITE)
 	file.store_line(JSON.print(index()," "))
 	file.close()
 
-func save_game(slot): #only used on new game creation?
-	var file = File.new()
-	check_dir('user://Data/Slot %s',"Slot %s"%slot)
-#	check_dir('user://Data/Slot %s/Finance'%slot,"Finance")
-#	check_dir('user://Data/Slot %s/Market'%slot,"Market")
-	check_dir('user://Data/Slot %s/Slaves'%slot,"Slaves")
-	check_dir('user://Data/Slot %s/Slaves/Owned'%slot,"Owned")
-	check_dir('user://Data/Slot %s/Slaves/Available'%slot,"Available")
-	check_dir("user://Data/Slot %s/Slaves/Available/Kidnappers' Market"%slot,"Kidnappers' Market")
-	check_dir('user://Data/Slot %s/Slaves/Available/Neighboring Arcologies'%slot,"Neighboring Arcologies")
-	
-	file.open('user://Data/Slot %s/Index.json'%slot,File.WRITE)
-	file.store_line(JSON.print(index()," "))
-	file.close()
-	
 	var player_data = {money = game.money}
-	file.open('user://Data/Slot %s/Player.json'%slot,File.WRITE)
+	file.open(data_slot+'/Player.json',File.WRITE)
 	file.store_line(JSON.print(player_data," "))
 	file.close()
-	
-	var arcology_data
-	if get_tree().get_root().get_node('Game/Arcology'):
-		arcology_data = get_tree().get_root().get_node('Game/Arcology')._data()
-	file.open('user://Data/Slot %s/Arcology.json'%slot,File.WRITE)
+
+	var arcology_data = game.arcology._data()
+	file.open(data_slot+'/Arcology.json',File.WRITE)
 	file.store_line(JSON.print(arcology_data," "))
 	file.close()
-	
+
 #	var finance_data
 #	if get_tree().get_root().get_node('Game/Finance'):
 #		finance_data = get_tree().get_root().get_node('Game/Finance')._save()
 #	file.open('user://Data/Slot %s/Finance/Index.json'%slot,File.WRITE)
 #	file.store_line(to_json(finance_data))
 #	file.close()
-	
-	var owned_slaves = get_tree().get_root().get_node('Game/Slaves/Collections/Owned')
-	if owned_slaves:
-		for _slave in owned_slaves.get_children():
-			file.open('user://Data/Slot %s/Slaves/Owned/%s.json'%[slot,_slave.name],File.WRITE)
-			file.store_line(JSON.print(_slave._data()," "))
-			file.close()
-	
-	var kidnappers_market = get_tree().get_root().get_node('Game/Slaves/Collections/Kidnappers Market')
-	if kidnappers_market:
-		for _slave in kidnappers_market.get_children():
-			file.open("user://Data/Slot %s/Slaves/Available/Kidnappers' Market/%s.json"%[slot,_slave.name],File.WRITE)
-			file.store_line(JSON.print(_slave._data()," "))
-			file.close()
-	
-	var neighboring_arcologies = get_tree().get_root().get_node('Game/Slaves/Collections/Neighboring Arcologies')
-	if neighboring_arcologies:
-		for _slave in neighboring_arcologies.get_children():
-			file.open('user://Data/Slot %s/Slaves/Available/Neighboring Arcologies/%s.json'%[slot,_slave.name],File.WRITE)
-			file.store_line(JSON.print(_slave._data()," "))
-			file.close()
+
+	create_directory(data_slot+'/Slaves/Owned')
+	var owned_slaves = game.slaves.get_node('Collections/Owned')
+	var file_path = data_slot+'/Slaves/Owned/%s.json'
+	for _slave in owned_slaves.get_children():
+		file.open(file_path%_slave.name,File.WRITE)
+		file.store_line(JSON.print(_slave._data()," "))
+		file.close()
+
+#	var kidnappers_market = collections.get_node('Kidnappers Market')
+#	slave_file_path = slaves_path+"/Available/Kidnappers Market/%s.json"
+#	if active_collection != 'Kidnappers Market':
+#		slaves.load_collection('Kidnappers Market')
+#	for _slave in kidnappers_market.get_children():
+#		file.open(slave_file_path%_slave.name,File.WRITE)
+#		file.store_line(JSON.print(_slave._data()," "))
+#		file.close()
+#	if active_collection != 'Kidnappers Market':
+#		slaves.unload_collection('Kidnappers Market')
+
+#	var neighboring_arcologies = collections.get_node('Neighboring Arcologies')
+#	slave_file_path = slaves_path+"/Available/Neighboring Arcologies/%s.json"
+#	if active_collection != 'Neighboring Arcologies':
+#		slaves.load_collection('Neighboring Arcologies')
+#	for _slave in neighboring_arcologies.get_children():
+#		file.open(slave_file_path%_slave.name,File.WRITE)
+#		file.store_line(JSON.print(_slave._data()," "))
+#		file.close()
+#	if active_collection != 'Neighboring Arcologies':
+#		slaves.unload_collection('Neighboring Arcologies')
 
 func load_game(slot,write=false):
-	var index = json_parse('user://Data/Slot %s/Index.json'%slot)
-	var player = json_parse('user://Data/Slot %s/Player.json'%slot)
-	var arcology = json_parse('user://Data/Slot %s/Arcology.json'%slot)
+	var data_slot = 'user://Data/Slot %s'%slot
+	var index = json_parse(data_slot+'/Index.json')
+	var player = json_parse(data_slot+'/Player.json')
+	var arcology = json_parse(data_slot+'/Arcology.json')
 	#var finance = json_parse('user://Data/Slot %s/Finance/Index.json'%slot)
-	
+
 	if not index or not player or not arcology:
 		return
-	
+
 	if not check_save(arcology,player,index):
 		print("FAILED TO LOAD GAME IN SLOT ",slot)
 		return
-	
+
 	var _data = {
 		arcology = arcology,
 		player = player,
 		index = index}
 		#finance = finance}
-	
+
 	if write:
-		var current_scene = get_tree().get_current_scene()
-		var main_scene = load('res://Game.tscn').instance()
-		current_scene.set_name("queued")
-		current_scene.queue_free()
-		get_tree().get_root().add_child(main_scene)
-		get_tree().set_current_scene(main_scene)
-		get_tree().set_pause(false)
-		
 		time.second = _data['index']['second']
 		time.minute = _data['index']['minute']
 		time.hour = _data['index']['hour']
@@ -251,82 +267,39 @@ func load_game(slot,write=false):
 		time.quarter = _data['index']['quarter']
 		time.year = _data['index']['year']
 		time.total_weeks = _data['index']['total_weeks']
-		get_tree().get_root().get_node('Game/GUI/Navigation/Time').update_time()
 		
+		var current_scene = get_tree().get_current_scene()
+		var main_scene = load('res://Game.tscn').instance()
+		current_scene.set_name("queued")
+		current_scene.queue_free()
+		get_tree().get_root().add_child(main_scene)
+		get_tree().set_current_scene(main_scene)
+		get_tree().set_pause(false)
+
+		game.set_bg_color(game.BG_COLOR_DEFAULT)
+		game.gui.get_node('Navigation/Time').update_time()
 		game.money = _data['player']['money']
 		game.update_money(0)                                                    #refresh money display
-		
-		get_tree().get_root().get_node('Game/Arcology').location = _data['arcology']['name']
-		get_tree().get_root().get_node('Game/Arcology').location = _data['arcology']['location']
-		get_tree().get_root().get_node('Game/Arcology')._load(_data['arcology']['structure'])
-		
+
+		game.arcology.location = _data['arcology']['name']
+		game.arcology.location = _data['arcology']['location']
+		game.arcology._load(_data['arcology']['structure'])
+
 #		get_tree().get_root().get_node('Game/Finance').capital = _data['finance']['capital']
 #		get_tree().get_root().get_node('Game/Finance').income = _data['finance']['income']
 #		get_tree().get_root().get_node('Game/Finance').expenses = _data['finance']['expenses']
-		
-		var slaves = get_tree().get_root().get_node('Game/Slaves')
-		var side_panel = game.get_gui().get_node("SidePanel")
-		
-		var owned_slaves = slaves.get_node('Collections/Owned')
-		for child in owned_slaves.get_children():
-			owned_slaves.remove_child(child)
-			child.queue_free()
-		for file in list_files('user://Data/Slot %s/Slaves/Owned'%slot):
-			var slave_data = json_parse('user://Data/Slot %s/Slaves/Owned/%s'%[slot,file])
+
+		var owned_slaves = game.slaves.get_node('Collections/Owned')
+		for _slave in owned_slaves.get_children():
+			owned_slaves.remove_child(_slave)
+			_slave.queue_free()
+		for file in list_contents(data_slot+'/Slaves/Owned'):
+			var slave_data = json_parse(data_slot+'/Slaves/Owned/%s'%file)
 			var _slave = load('res://Slaves/Slave.tscn').instance()
 			_slave.name = file.get_basename()
 			_slave._load(slave_data)
 			owned_slaves.add_child(_slave,true)
-		slaves.update_collection(owned_slaves)
-		side_panel.get_node("ManageSlaves").update()
-		
-		var kidnappers_market = slaves.get_node('Collections/Kidnappers Market')
-		for child in kidnappers_market.get_children():
-			kidnappers_market.remove_child(child)
-			child.queue_free()
-		for file in list_files("user://Data/Slot %s/Slaves/Available/Kidnappers' Market"%slot):
-			var slave_data = json_parse("user://Data/Slot %s/Slaves/Available/Kidnappers' Market/%s"%[slot,file])
-			var _slave = load('res://Slaves/Slave.tscn').instance()
-			_slave.name = file.get_basename()
-			_slave._load(slave_data)
-			kidnappers_market.add_child(_slave,true)
-		slaves.update_collection(kidnappers_market)
-		side_panel.get_node("KidnappersMarket").update()
-		
-		var neighboring_arcologies = slaves.get_node('Collections/Neighboring Arcologies')
-		for child in neighboring_arcologies.get_children():
-			neighboring_arcologies.remove_child(child)
-			child.queue_free()
-		for file in list_files('user://Data/Slot %s/Slaves/Available/Neighboring Arcologies'%slot):
-			var slave_data = json_parse('user://Data/Slot %s/Slaves/Available/Neighboring Arcologies/%s'%[slot,file])
-			if slave_data: #why check if slave data exists here?
-				var _slave = load('res://Slaves/Slave.tscn').instance()
-				_slave.name = file.get_basename()
-				_slave._load(slave_data)
-				neighboring_arcologies.add_child(_slave,true)
-			slaves.update_collection(neighboring_arcologies)
-			side_panel.get_node("NeighboringArcologies").update()
-		
-		slaves.set_active_collection("Owned")
-		game.set_bg_color(game.BG_COLOR_DEFAULT)
+		game.slaves.update_collection(owned_slaves)
+		game.slaves.set_active_collection("Owned")
+		game.gui.get_node("SidePanel/ManageSlaves").refresh()
 	return(_data)
-
-func delete_game(slot): #make recursive instead of listing each directory
-	var dir = Directory.new()
-	for i in list_files("user://Data/Slot %s/Slaves/Available/Kidnappers' Market"%slot):
-		dir.remove("user://Data/Slot %s/Slaves/Available/Kidnappers' Market/"%slot+i)
-	for i in list_files('user://Data/Slot %s/Slaves/Available/Neighboring Arcologies'%slot):
-		dir.remove('user://Data/Slot %s/Slaves/Available/Neighboring Arcologies/'%slot+i)
-	for i in list_files('user://Data/Slot %s/Slaves/Available'%slot):
-		dir.remove('user://Data/Slot %s/Slaves/Available/'%slot+i)
-	for i in list_files('user://Data/Slot %s/Slaves/Owned'%slot):
-		dir.remove('user://Data/Slot %s/Slaves/Owned/'%slot+i)
-	for i in list_files('user://Data/Slot %s/Slaves'%slot):
-		dir.remove('user://Data/Slot %s/Slaves/'%slot+i)
-#	for i in list_files('user://Data/Slot %s/Finance'%slot):
-#		dir.remove('user://Data/Slot %s/Finance/'%slot+i)
-#	for i in list_files('user://Data/Slot %s/Market'%slot):
-#		dir.remove('user://Data/Slot %s/Market/'%slot+i)
-	for i in list_files('user://Data/Slot %s'%slot):
-		dir.remove('user://Data/Slot %s/'%slot+i)
-	dir.remove('user://Data/Slot %s/'%slot)

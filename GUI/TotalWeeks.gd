@@ -53,6 +53,7 @@ func _on_EndWeek_pressed():
 		yield(get_tree(),"idle_frame")
 
 func begin_time_skip():
+	game.stopwatch(true)
 	get_tree().get_root().set_disable_input(true)
 	$ProgressBar.set_modulate("ffffff")
 	$HBox.hide()
@@ -63,12 +64,18 @@ func begin_time_skip():
 	starting_day = time.day
 	time.fast_forward = true
 	time.scale = 60
+	for _slave in SlaveUtils.get_owned_slaves().get_children():
+		_slave.ui.set_refresh_mode('none')
 
 func end_time_skip():
+	game.stopwatch(false)
 	time.scale = starting_time_scale
+	for _slave in SlaveUtils.get_owned_slaves().get_children():
+		_slave.ui.set_refresh_mode(get_slave_ui_refresh_mode())
 	yield(get_tree(),"idle_frame")
 	SlaveUtils.update_owned_slaves()
 	SlaveUtils.uptate_examine_slave()
+	game.gui.get_node("SidePanel").refresh_all()
 	$ProgressBar.set_modulate("00ffffff")
 	$HBox.show()
 	$HBox.set_modulate("00ffffff")
@@ -78,7 +85,7 @@ func end_time_skip():
 	for button in $HBox.get_children():
 		button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for _slave in SlaveUtils.get_owned_slaves().get_children():
-		_slave.get_node("UI/StatsDisplay").refresh()
+		_slave.get_node("UI/StatsDisplay").refresh_all()
 	time.fast_forward = false
 	time.emit_signal("ff_end")
 
@@ -105,3 +112,13 @@ func animate_end_week_buttons(node,opening:bool):
 		Tween.TRANS_SINE,
 		Tween.EASE_IN_OUT)
 	$Tween.start()
+
+func get_slave_ui_refresh_mode():
+	var clock_speed_slider = get_node("../Controls/Sliders/ClockSpeed")
+	var time_scale_slider = get_node("../Controls/Sliders/TimeScale")
+	if time_scale_slider.value >= 10:
+		return 'hour'
+	elif clock_speed_slider.value >= 90:
+		return 'minute'
+	else:
+		return 'timeout'

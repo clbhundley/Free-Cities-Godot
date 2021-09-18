@@ -2,7 +2,7 @@ extends TextureProgress
 
 onready var _slave = owner.owner
 
-func set_gauge():
+func refresh():
 	value = _slave.bathroom
 	$Value.set_text(str(round(_slave.bathroom))+"%")
 	tint_progress = match_color()

@@ -11,6 +11,9 @@ onready var camera = get_node('Cambase/Camera')
 onready var highlight_white = load('res://Arcology/Materials/white.material')
 onready var highlight_cyan = load('res://Arcology/Materials/cyan.material')
 
+func _init():
+	game.arcology = self
+
 func _ready():
 	get_tree().get_root().connect('size_changed',self,'resize')
 	var position = 0
@@ -144,7 +147,7 @@ func connect_sector_signals(sector):
 	sector.connect('input_event',self,'arc_input_event',[sector])
 	sector.connect('mouse_entered',self,'sector_mouse_entered',[sector])
 	sector.connect('mouse_exited',self,'sector_mouse_exited',[sector])
-	var methods = ["tick","minute","hour","day","week","quarter","year"]
+	var methods = ["second","minute","hour","day","week","quarter","year"]
 	for method in methods:
 		if sector.has_method(method):
 			time.connect(method,sector,method)

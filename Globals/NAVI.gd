@@ -1,6 +1,6 @@
 extends Node
 
-func say(text):
+func say(text:String):
 	var gui = get_tree().get_root().get_node("Game/GUI")
 	var navi_chat = gui.get_node("Dock/NaviChat")
 	navi_chat.say(text)

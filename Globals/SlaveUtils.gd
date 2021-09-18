@@ -1,25 +1,22 @@
 extends Node
 
-func get_slave_scene():
-	return get_tree().get_root().get_node("Game/Slaves")
-
 func get_owned_slaves():
-	return get_slave_scene().get_node("Collections/Owned")
+	return game.slaves.get_node("Collections/Owned")
 
 func get_slave(slave_name):
 	if get_owned_slaves().has_node(slave_name):
 		return get_owned_slaves().get_node(slave_name)
 
 func slave_count(collection):
-	return get_slave_scene().get_node("Collections/"+collection).get_child_count()
+	return game.slaves.get_node("Collections/"+collection).get_child_count()
 
 func update_owned_slaves():
 	for _slave in get_owned_slaves().get_children():
-		_slave.get_node("UI/StatsDisplay").refresh()
-		_slave.get_node("UI/Gauges").refresh()
+		_slave.get_node("UI/StatsDisplay").refresh_all()
+		_slave.get_node("UI/Gauges").refresh_all()
 
 func uptate_examine_slave():
-	get_slave_scene().get_node("ExamineSlave").uptate_display()
+	game.slaves.get_node("ExamineSlave").uptate_display()
 
 func get_weeks_pregnant(_slave):
 	if not _slave.pregnancy:
@@ -173,10 +170,10 @@ func _temperament_affinity(a_temperament,b_temperament):
 	return 0
 
 func reset_active_slaves_visibility():
-	var examine_slave = get_slave_scene().get_node("ExamineSlave")
+	var examine_slave = game.slaves.get_node("ExamineSlave")
 	if not examine_slave.active:
 		return
-	get_slave_scene().get_node("Camera").show()
+	game.slaves.get_node("Camera").show()
 	examine_slave.deactivate(false)
 	for node in get_tree().get_nodes_in_group("Active Slaves"):
 		if node.has_node("OmniLight"):
@@ -186,8 +183,21 @@ func reset_active_slaves_visibility():
 		node.remove_from_group("Active Slaves")
 		node.show()
 
+func decorated_slaves_price():
+	var slaves_price = game.slaves.price
+	if slaves_price <= 0.6:
+		return "[color=#005cff]Very Low[/color]"
+	elif slaves_price <= 0.8:
+		return "[color=#00cdff]Low[/color]"
+	elif slaves_price <= 1.25:
+		return "Average"
+	elif slaves_price <= 1.5:
+		return "[color=#ffdf00]High[/color]"
+	elif slaves_price > 1.5:
+		return "[color=#ff7000]Very High[/color]"
+
 func sort_slaves(collection,mode,order):
-	collection = get_slave_scene().get_node("Collections/"+collection)
+	collection = game.slaves.get_node("Collections/"+collection)
 	var list = []
 	for _slave in collection.get_children():
 		list.append(_slave)
@@ -209,7 +219,7 @@ func sort_slaves(collection,mode,order):
 		list.invert()
 	for index in list.size():
 		collection.move_child(list[index],index)
-	get_slave_scene().update_collection(collection)
+	game.slaves.update_collection(collection)
 
 class SortByValue:
 	static func sort_descending(a,b):
@@ -231,9 +241,9 @@ class SortByDevotion:
 
 class SortByLevel:
 	static func sort_ascending(a,b):
-		if a.stats._level() < b.stats._level():
+		if a.level < b.level:
 			return true
-		elif a.stats._level() == b.stats._level():
+		elif a.level == b.level:
 			if a.name < b.name:
 				return true
 		return false

@@ -1,21 +1,22 @@
 extends Node
 
-signal tick
+signal second
 signal minute
 signal hour
 signal day
 signal week
 signal quarter
 signal year
+signal time_updated
 
-var second
-var minute
-var hour
-var day
-var week
-var quarter
-var year
-var total_weeks = 1
+var second:int
+var minute:int
+var hour:int
+var day:int
+var week:int
+var quarter:int
+var year:int
+var total_weeks := 1
 
 signal ff_end
 var fast_forward := false
@@ -35,34 +36,34 @@ func _ready():
 	year = 2119
 
 func tick():
-	emit_signal("tick")
 	second += 1 * scale
+	emit_signal("second")
 	if second >= 60:
-		emit_signal("minute")
 		second = 0
 		minute += 1
+		emit_signal("minute")
 	if minute >= 60:
-		emit_signal("hour")
 		minute = 0
 		hour += 1
+		emit_signal("hour")
 	if hour >= 24:
-		emit_signal("day")
 		hour = 0
 		day += 1
+		emit_signal("day")
 	if day >= 7:
-		emit_signal("week")
 		day = 0
 		week += 1
 		total_weeks += 1
+		emit_signal("week")
 	if week  >= 13:
-		emit_signal("quarter")
 		week = 0
 		quarter += 1
+		emit_signal("quarter")
 	if quarter >= 4:
-		emit_signal("year")
 		quarter = 0
 		year += 1
-	data.quick_save()
+		emit_signal("year")
+	emit_signal("time_updated")
 
 #"%s Q%s Week %s Day %s %s:%s:%s"%[year,quarter,week,day,hour,minute,second]
 func get_timestamp():
@@ -75,14 +76,14 @@ func get_timestamp():
 		minute = minute,
 		second = second}
 
-func get_reversed_time(seconds=0,minutes=0,hours=0,days=0,weeks=0,quarters=0,years=0):
-	var reversed_second = second - seconds
-	var reversed_minute = minute - minutes
-	var reversed_hour = hour - hours
-	var reversed_day = day - days
-	var reversed_week = week - weeks
-	var reversed_quarter = quarter - quarters
-	var reversed_year = year - years
+func get_reversed_time(s=0,m=0,h=0,d=0,w=0,q=0,y=0):
+	var reversed_second:int = second - s
+	var reversed_minute:int = minute - m
+	var reversed_hour:int = hour - h
+	var reversed_day:int = day - d
+	var reversed_week:int = week - w
+	var reversed_quarter:int = quarter - q
+	var reversed_year:int = year - y
 	if reversed_second < 0:
 		var remainder = int(ceil(float(abs(reversed_second))/60))
 		reversed_second = (60*remainder)+reversed_second
@@ -116,14 +117,30 @@ func get_reversed_time(seconds=0,minutes=0,hours=0,days=0,weeks=0,quarters=0,yea
 		quarter = reversed_quarter,
 		year = reversed_year}
 
-func get_forward_time(seconds=0,minutes=0,hours=0,days=0,weeks=0,quarters=0,years=0):
-	var forward_second = int(second + seconds)
-	var forward_minute = int(minute + minutes)
-	var forward_hour = int(hour + hours)
-	var forward_day = int(day + days)
-	var forward_week = int(week + weeks)
-	var forward_quarter = int(quarter + quarters)
-	var forward_year = int(year + years)
+func get_forward_time(s=0,m=0,h=0,d=0,w=0,q=0,y=0,from=null):
+	var forward_second:int
+	var forward_minute:int
+	var forward_hour:int
+	var forward_day:int
+	var forward_week:int
+	var forward_quarter:int
+	var forward_year:int
+	if from:
+		forward_second = from['second'] + s
+		forward_minute = from['minute'] + m
+		forward_hour = from['hour'] + h
+		forward_day = from['day'] + d
+		forward_week = from['week'] + w
+		forward_quarter = from['quarter'] + q
+		forward_year = from['year'] + y
+	else:
+		forward_second = second + s
+		forward_minute = minute + m
+		forward_hour = hour + h
+		forward_day = day + d
+		forward_week = week + w
+		forward_quarter = quarter + q
+		forward_year = year + y
 	if forward_second >= 60:
 		var remainder = forward_second / 60
 		forward_second = forward_second % 60
@@ -157,14 +174,14 @@ func get_forward_time(seconds=0,minutes=0,hours=0,days=0,weeks=0,quarters=0,year
 		quarter = forward_quarter,
 		year = forward_year}
 
-func get_total_time(begin,end):
-	var total_seconds = end["second"] - begin["second"]
-	var total_minutes = end["minute"] - begin["minute"]
-	var total_hours = end["hour"] - begin["hour"]
-	var total_days = end["day"] - begin["day"]
-	var total_weeks = end["week"] - begin["week"]
-	var total_quarters = end["quarter"] - begin["quarter"]
-	var total_years = max(end["year"] - begin["year"],0)
+func get_total_time(begin:Dictionary,end:Dictionary):
+	var total_seconds = end['second'] - begin['second']
+	var total_minutes = end['minute'] - begin['minute']
+	var total_hours = end['hour'] - begin['hour']
+	var total_days = end['day'] - begin['day']
+	var total_weeks = end['week'] - begin['week']
+	var total_quarters = end['quarter'] - begin['quarter']
+	var total_years = max(end['year'] - begin['year'],0)
 	if total_seconds < 0:
 		total_seconds = 60 + total_seconds
 		total_minutes -= 1
@@ -191,3 +208,39 @@ func get_total_time(begin,end):
 		weeks = total_weeks,
 		quarters = total_quarters,
 		years = total_years}
+
+func is_due(date:Dictionary):
+	if year > date['year']:
+		return true
+	elif year < date['year']:
+		return false
+	else:
+		if quarter > date['quarter']:
+			return true
+		elif quarter < date['quarter']:
+			return false
+		else:
+			if week > date['week']:
+				return true
+			elif week < date['week']:
+				return false
+			else:
+				if day > date['day']:
+					return true
+				elif day < date['day']:
+					return false
+				else:
+					if hour > date['hour']:
+						return true
+					elif hour < date['hour']:
+						return false
+					else:
+						if minute > date['minute']:
+							return true
+						elif minute < date['minute']:
+							return false
+						else:
+							if second >= date['second']:
+								return true
+							else:
+								return false

@@ -18,23 +18,23 @@ func display_action():
 		'giving':
 			match type:
 				'oral':
-					display_text = "Giving oral to " + interacting_with
+					display_text = "Giving oral to "+interacting_with
 				'anal':
-					display_text = "Anally fucking " + interacting_with
+					display_text = "Anally fucking "+interacting_with
 				'vaginal':
-					display_text = "Fucking " + interacting_with
+					display_text = "Fucking "+interacting_with
 				'hands':
-					display_text = "Using hands on " + interacting_with
+					display_text = "Using hands on "+interacting_with
 				'feet':
-					display_text = "Using feet on " + interacting_with
+					display_text = "Using feet on "+interacting_with
 		'receiving':
 			match type:
 				'oral':
-					display_text = "Getting oral from " + interacting_with
+					display_text = "Receiving oral from "+interacting_with
 				'anal':
-					display_text = "Getting anally fucked by "+interacting_with
+					display_text = "Being anally fucked by "+interacting_with
 				'vaginal':
-					display_text = "Getting fucked by " + interacting_with
+					display_text = "Being fucked by "+interacting_with
 				'hands':
 					display_text = "Getting off with "+interacting_with+"'s hands"
 				'feet':

@@ -1,8 +1,5 @@
 extends Node
 
-func get_arcology():
-	return get_tree().get_root().get_node("Game/Arcology")
-
 func get_structure():
 	return get_tree().get_root().get_node("Game/Arcology/Structure")
 
@@ -20,7 +17,7 @@ func sector_name(input):
 	else:
 		return input
 
-func get_arcology_ownership_percent(structure):
+func arcology_ownership_percent(structure):
 	var sectors = []
 	var owned_buildings = []
 	for terra in structure.get_children():
@@ -45,7 +42,7 @@ func swap_sectors(old,new):
 	new.get_node('Collision').translation[2] = round(old.get_node('Collision').translation[2])
 	new.get_node('Mesh').translation[2] = round(old.get_node('Mesh').translation[2])
 	new.rotation_degrees[1] = round(old.rotation_degrees[1])
-	get_arcology().connect_sector_signals(new)
+	game.arcology.connect_sector_signals(new)
 	for children in old.get_children():
 		children.queue_free()
 	old.queue_free()
@@ -125,7 +122,7 @@ func parse_address(address):
 		terra = 0
 	else:
 		var enumerate = ["X","A","B","C","D","E","F","G","H","I","J","K","L"]
-		terra = get_arcology().size - enumerate.find(terra) - 1
+		terra = game.arcology.size - enumerate.find(terra) - 1
 	var ring
 	if sector > 12:
 		sector -= 13
@@ -146,7 +143,7 @@ func to_address(terra_index,ring_index,sector_index):
 	if terra_index == 0:
 		terra_index = "P"
 	else:
-		terra_index = enumerate[get_arcology().size - terra_index - 1]
+		terra_index = enumerate[game.arcology.size - terra_index - 1]
 	if ring_index == 1:
 		sector_index += 13
 	else:

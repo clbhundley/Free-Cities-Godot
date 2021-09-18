@@ -159,6 +159,8 @@ func seek_social_interaction():
 	elif _slave.location != _slave.quarters:
 		_slave.destination = _slave.quarters
 		set_action('Travel')
+	else:
+		set_action('Idle')
 
 #chance for masturbation
 #in a relationship?

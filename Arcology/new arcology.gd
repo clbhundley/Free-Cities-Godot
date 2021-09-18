@@ -85,7 +85,7 @@ func fill_top():
 	var layout_5 = [{"park_a":2}, {"residential_luxury":7}, {"commercial_luxury":1}]
 	var layout_6 = [{"park_a":1}, {"residential_luxury":7}, {"commercial_luxury":3}]
 	var layouts = [layout_1, layout_2, layout_3, layout_4, layout_5, layout_6]
-	var composition = layouts[dice.roll(6)]
+	var composition = layouts[randi()%6]
 	var terra = get_node('../Library/Terras/Fill').duplicate()
 	var ring = terra.get_node("Inner")
 	for sector in composition:
@@ -101,7 +101,7 @@ func fill():
 	var layout_5 = [{"residential_standard":9}, {"commercial_standard":3}]
 	var layout_6 = [{"residential_standard":8}, {"commercial_standard":4}]
 	var layouts = [layout_1, layout_2, layout_3, layout_4, layout_5, layout_6]
-	var composition = layouts[dice.roll(6)]
+	var composition = layouts[randi()%6]
 	var terra = get_node('../Library/Terras/Fill').duplicate()
 	var ring = terra.get_node("Inner")
 	for sector in composition:
@@ -117,7 +117,7 @@ func fill_bot():
 	var layout_5 = [{"park_a":2}, {"residential_standard":1}, {"residential_dense":5}, {"commercial_dense":2}]
 	var layout_6 = [{"park_a":2}, {"residential_dense":6}, {"commercial_dense":2}]
 	var layouts = [layout_1, layout_2, layout_3, layout_4, layout_5, layout_6]
-	var composition = layouts[dice.roll(6)]
+	var composition = layouts[randi()%6]
 	var terra = get_node('../Library/Terras/Fill').duplicate()
 	var ring = terra.get_node("Inner")
 	for sector in composition:
@@ -136,8 +136,8 @@ func t2():
 	var outer_layout_6 = [{"hydroponics_a":1}, {"laboratory":1}, {"residential_standard":7}, {"commercial_standard":1}]
 	var inner_layouts = [inner_layout_1, inner_layout_2]
 	var outer_layouts = [outer_layout_1, outer_layout_2, outer_layout_3, outer_layout_4, outer_layout_5, outer_layout_6]
-	var inner_composition = inner_layouts[dice.roll(2)]
-	var outer_composition = outer_layouts[dice.roll(6)]
+	var inner_composition = inner_layouts[randi()%2]
+	var outer_composition = outer_layouts[randi()%6]
 	var terra = get_node('../Library/Terras/Terra B').duplicate()
 	var inner_ring = terra.get_node('Inner')
 	for sector in inner_composition:
@@ -161,8 +161,8 @@ func t1():
 	var outer_layout_3 = [{"hydroponics_a":2}, {"laboratory":2}, {"manufacturing":4}]
 	var inner_layouts = [inner_layout_1, inner_layout_2, inner_layout_3, inner_layout_4, inner_layout_5, inner_layout_6]
 	var outer_layouts = [outer_layout_1, outer_layout_2, outer_layout_3]
-	var inner_composition = inner_layouts[dice.roll(6)]
-	var outer_composition = outer_layouts[dice.roll(3)]
+	var inner_composition = inner_layouts[randi()%6]
+	var outer_composition = outer_layouts[randi()%3]
 	var terra = get_node('../Library/Terras/Terra A').duplicate()
 	var inner_ring = terra.get_node('Inner')
 	for sector in inner_composition:
@@ -200,10 +200,10 @@ func place(terra, sector_name):
 	var size = 1
 	if sector.get('size') != null:
 		size = sector.get('size')
-	var roll = dice.roll(12)
+	var roll = randi()%12
 	if size == 1:
 		while not "nullsec" in terra.get_child(roll).name:
-			roll = dice.roll(12)
+			roll = randi()%12
 		ArcUtils.swap_sectors(terra.get_child(roll),sector)
 	elif size == 2:
 		var empty = false
@@ -213,7 +213,7 @@ func place(terra, sector_name):
 				ArcUtils.swap_sectors(terra.get_child(loop(roll+1)),get_sector(sector_name.rstrip("_a")+"_b"))
 				empty = true
 			else:
-				roll = dice.roll(12)
+				roll = randi()%12
 	elif size == 3:
 		var empty = false
 		while empty == false:
@@ -223,7 +223,7 @@ func place(terra, sector_name):
 				ArcUtils.swap_sectors(terra.get_child(loop(roll+2)),get_sector(sector_name.rstrip("_a")+"_c"))
 				empty = true
 			else:
-				roll = dice.roll(12)
+				roll = randi()%12
 	return terra
 
 func get_sector(name):

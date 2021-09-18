@@ -45,11 +45,11 @@ func set_default_values():
 	if weight == 1:
 		distribute_fat()
 	self.waist_size = clamp(math.gaussian(75,8),50,100)/100
-	if dice.roll(3) == 0:
+	if randi()%3 == 0:
 		self.butt_size = clamp(math.gaussian(0,5),0,20)/100
-	if dice.roll(4) == 0:
+	if randi()%4 == 0:
 		distribute_body_size()
-	if dice.roll(4) == 0:
+	if randi()%4 == 0:
 		distribute_muscles()
 	if _slave.gender == "Male":
 		self.masculinity = clamp(math.gaussian(97,4),90,100)/100
@@ -57,45 +57,45 @@ func set_default_values():
 		self.masculinity = clamp(math.gaussian(80,10),70,100)/100
 	elif _slave.gender == "Female":
 		distribute_breast_growth()
-		if dice.roll(4) == 0:
+		if randi()%4 == 0:
 			self.breasts_implants = clamp(math.gaussian(12,12),0,55)/100
-		if dice.roll(4) == 0:
+		if randi()%4 == 0:
 			self.voluptuous = clamp(math.gaussian(20,15),0,55)/100
 	elif _slave.gender == "Trans female":
 		self.masculinity = clamp(math.gaussian(50,24),30,90)/100
 		distribute_trans_breasts()
-		if dice.roll(4) == 0:
+		if randi()%4 == 0:
 			self.breasts_implants = clamp(math.gaussian(12,12),0,45)/100
-		if dice.roll(6) == 0:
+		if randi()%6 == 0:
 			self.voluptuous = clamp(math.gaussian(15,10),0,35)/100
 	self.penis_length = clamp(math.gaussian(16,9),10,50)/100
 	self.penis_thickness = clamp(math.gaussian(35,5),20,60)/100
 	self.testicles_size = clamp(math.gaussian(25,7),10,50)/100
 
 func distribute_breast_growth():
-	if dice.roll(12) <= 4:
+	if randi()%12 <= 4:
 		self.breasts_growth = clamp(math.gaussian(10,12),0,35)/100
-	elif dice.roll(12) <= 8:
+	elif randi()%12 <= 8:
 		self.breasts_growth = clamp(math.gaussian(30,12),10,60)/100
-	elif dice.roll(12) <= 11:
-		if dice.roll(2) == 0:
+	elif randi()%12 <= 11:
+		if randi()%2 == 0:
 			self.breasts_small = clamp(math.gaussian(60,12),30,90)/100
 		else:
 			self.breasts_growth = clamp(math.gaussian(60,12),30,90)/100
 
 func distribute_trans_breasts():
-	if dice.roll(12) <= 4:
+	if randi()%12 <= 4:
 		self.breasts_small = clamp(math.gaussian(50,22),0,100)/100
-	elif dice.roll(12) <= 8:
+	elif randi()%12 <= 8:
 		self.breasts_gone = clamp(math.gaussian(70,12),50,100)/100
-	elif dice.roll(12) <= 11:
+	elif randi()%12 <= 11:
 		self.breasts_growth = clamp(math.gaussian(10,12),0,35)/100
 
 func distribute_fat():
 	var average_fat = clamp(math.gaussian(35,25),0,80)/100
 	var fat_type = ["weight_round","weight_fat","weight_pear"]
 	fat_type.shuffle()
-	var fat_combination = dice.roll(3)
+	var fat_combination = randi()%3
 	if fat_combination == 0:
 		set(fat_type[0],average_fat)
 	elif fat_combination == 1:
@@ -109,19 +109,19 @@ func distribute_fat():
 		set(fat_type[2],split[2])
 
 func distribute_body_size():
-	if dice.roll(12) <= 5:
+	if randi()%12 <= 5:
 		self.body_size = clamp(math.gaussian(10,12),0,30)/100
-	elif dice.roll(12) <= 9:
+	elif randi()%12 <= 9:
 		self.body_size = clamp(math.gaussian(30,12),10,60)/100
-	elif dice.roll(12) <= 11:
+	elif randi()%12 <= 11:
 		self.body_size = clamp(math.gaussian(60,12),30,90)/100
 
 func distribute_muscles():
-	if dice.roll(12) <= 5:
+	if randi()%12 <= 5:
 		self.bodybuilder = clamp(math.gaussian(10,12),0,30)/100
-	elif dice.roll(12) <= 9:
+	elif randi()%12 <= 9:
 		self.bodybuilder = clamp(math.gaussian(30,12),10,60)/100
-	elif dice.roll(12) <= 11:
+	elif randi()%12 <= 11:
 		self.bodybuilder = clamp(math.gaussian(60,12),30,90)/100
 
 func set_skin_color():
@@ -140,7 +140,7 @@ func set_hair_color():
 func set_hairstyle():
 	var gender = _slave.gender.trim_prefix("Trans").capitalize()
 	if gender == "Intersex":
-		gender = ["Male","Female"][dice.roll(2)]
+		gender = ["Male","Female"][randi()%2]
 	if _slave.hair_style == "none":
 		$Hair.mesh = null
 		return

@@ -35,6 +35,7 @@ script/source = "extends Control
 var save_data
 
 func _new_game():
+	data.delete('user://Data/Slot %s'%name)
 	data.save_slot = name
 	game.queue_save = true
 	game.reset()
@@ -73,7 +74,7 @@ func _on_pressed():
 		_new_game()
 
 func _on_ConfirmationDialog_confirmed():
-	data.delete_game(name)
+	data.delete('user://Data/Slot %s'%name)
 	_new_game()
 
 func responsive_popup():
@@ -118,10 +119,10 @@ __meta__ = {
 }
 
 [node name="arcghost" type="TextureRect" parent="."]
-anchor_left = 0.0630208
-anchor_top = -0.00555556
-anchor_right = 1.11302
-anchor_bottom = 1.16111
+anchor_left = 0.0666666
+anchor_top = -0.00648149
+anchor_right = 1.11667
+anchor_bottom = 1.16018
 rect_pivot_offset = Vector2( 755.713, 578.17 )
 texture = ExtResource( 2 )
 expand = true
@@ -197,6 +198,7 @@ anchor_left = 0.829167
 anchor_top = 0.940741
 anchor_right = 0.994792
 anchor_bottom = 0.987963
+margin_top = -0.000183105
 grow_horizontal = 0
 grow_vertical = 0
 size_flags_vertical = 0
@@ -916,6 +918,14 @@ This is a work of fiction; any resemblance to actual persons, places, or events 
 
 Press \"OK\" only if you are 18 years of age or older."
 script = SubResource( 4 )
+
+[node name="Control" type="Control" parent="."]
+modulate = Color( 0, 0.0627451, 0.0745098, 1 )
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [connection signal="pressed" from="Buttons/New Game" to="." method="_on_New_Game_pressed"]
 [connection signal="pressed" from="Buttons/Load Game" to="." method="_on_Load_Game_pressed"]

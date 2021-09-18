@@ -5,6 +5,8 @@ onready var model = $Model
 onready var stats = $Stats
 onready var ui = $UI
 
+var temp_model_data
+
 func _ready():
 	if not action:
 		action = $Actions/Idle
@@ -12,25 +14,25 @@ func _ready():
 		assignment = "Resting"
 	if health == 0:
 		die()
-	if not for_sale:
+	if not for_sale and health > 0:
 		activate()
-		yield(game.get_gui(),"ready")
-		game.get_gui().get_node("SidePanel/Regimen").load_settings(self)
+		yield(game.gui,"ready")
+		game.gui.get_node("SidePanel/Regimen").load_settings(self)
 	else:
 		ui.hide()
 	ui.set_level()
-	_load(_data())
+	_load(_data()) #reloading all properties to fix model errors
 	model._ready()
 
 func activate():
-	if not time.is_connected("tick",self,"tick"):
-		time.connect('tick',self,'tick')
+	if not time.is_connected("second",self,"tick"):
+		time.connect('second',self,'tick')
 	$Effects.activate_primary_effects()
 	ui.get_node("Activity")._ready()
 
 func deactivate():
-	if time.is_connected("tick",self,"tick"):
-		time.disconnect('tick',self,'tick')
+	if time.is_connected("second",self,"tick"):
+		time.disconnect('second',self,'tick')
 	$Effects.deactivate_all()
 
 func tick():
@@ -69,12 +71,21 @@ func die():
 	$UI/Top/Status.set_modulate("860000")
 	$UI/Panel/Buttons/Assignment.disabled = true
 
-func _data():
+func _data(file_only=false):
 	var slave_data = data.obj_to_dict(self)
-	var model_data = data.obj_to_dict(model)
-	var action_data = {action.name:data.obj_to_dict(action)}
-	slave_data.erase("flags")
-	model_data.erase("model_data")
+	var model_data
+	if file_only:
+		model_data = temp_model_data
+	else:
+		model_data = data.obj_to_dict(model)
+	var action_data
+	if file_only:
+		action_data = {"Idle":{"current_time":0,"total_time":null}}
+	else:
+		action_data = {action.name:data.obj_to_dict(action)}
+	slave_data.erase('flags')
+	slave_data.erase('temp_model_data')
+	model_data.erase('model_data')
 	if queued_action:
 		slave_data['queued_action'] = queued_action.name
 	return {

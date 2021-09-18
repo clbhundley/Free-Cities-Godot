@@ -1,0 +1,570 @@
+[gd_scene load_steps=16 format=2]
+
+[ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://Fonts/Rubik-Light.tres" type="DynamicFont" id=2]
+[ext_resource path="res://Textures/square.png" type="Texture" id=3]
+[ext_resource path="res://Finance/Textures/line h.png" type="Texture" id=4]
+[ext_resource path="res://Finance/Textures/expand.png" type="Texture" id=5]
+[ext_resource path="res://Textures/circle.png" type="Texture" id=6]
+[ext_resource path="res://Finance/Textures/line v.png" type="Texture" id=7]
+[ext_resource path="res://Finance/Textures/visibility.png" type="Texture" id=8]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Container
+
+onready var g = get_tree().get_root().get_node('Game')
+onready var point = get_node('Point')
+var location = 'user://Data/Slot %s/Market/'%data.save_slot
+var time_shift
+var _symbol
+var day
+var hour
+var minute
+var second
+
+#intervals M: S 1  5   15  30   45   60   120  360   720   1440  10080  40320
+#intervals S: 1 60 300 900 1800 2700 3600 7200 21600 43200 86400 604800 2419200
+var interval = 900
+
+func _ready():
+	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'tick')
+
+func tick():
+	display(_symbol)
+
+# zoom works well between values of 0 and 20 with these settings
+var zoom = 0
+func display(symbol):
+	if is_visible_in_tree():
+		day = int(time.day)
+		hour = int(time.hour)
+		minute = int(time.minute)
+		second = int(time.second)
+		time_shift = time_shift()
+		_symbol = symbol
+		var width = get_node('Bottom').get_size().x
+		var height = get_node('Side').get_size().y
+		var h_separator = 30-zoom
+		var v_separator = round(height/12)
+		var fos = floor(width/h_separator)
+		var path = \"res://price_test.a32\"
+		var array = data_array(path,fos)
+		var sorted = array.duplicate()
+		sorted.sort()
+		var minv
+		var maxv
+		var spread
+		var top = v_separator
+		var bot = v_separator*11
+		var v_range = bot-top
+		if not array.empty():
+			get_node('Label').hide()
+			minv = _floor(sorted.front())
+			maxv = _ceiling(sorted.back())
+			spread = maxv - minv
+			get_node('../Title/Price').set_text(\"¤\"+str(array.front()))
+			set_bottom_nubs(fos,h_separator)
+			set_side_nubs(array,maxv,spread,v_separator,height)
+			for i in get_children():
+				if i.name != \"Side\" and i.name != \"Bottom\" and i.name != \"Line2D\" and i.name != \"Label\":
+					remove_child(i)
+			var index = 0
+			for value in array:
+				graph(value,minv,top,spread,v_range,h_positions[index],height)
+				index += 1
+			var points = []
+			for i in get_children():
+				if i.name != \"Side\" and i.name != \"Bottom\" and i.name != \"Line2D\" and i.name != \"Label\":
+						points.append(i)
+			var lines = []
+			for i in points:
+				var pos_x = i.get_position().x+3
+				var pos_y = i.get_position().y+3
+				var adjusted_pos = Vector2(pos_x,pos_y)
+				lines.append(adjusted_pos)
+			get_node('Line2D').set_points(lines)
+		else:
+			get_node('Label').show()
+
+var points = []
+func graph(value,minv,top,spread,v_range,h_placement,height):
+	var position
+	if spread == 0:
+		position = 0
+	else:
+		position = (value-minv)/spread
+	var v_placement = height-((position*v_range)+top)
+	var placement_point = point.duplicate()
+	placement_point.set_position(Vector2(h_placement,v_placement))
+	placement_point.get_node('Label').set_text(str(value))
+	add_child(placement_point)
+
+var h_positions = []
+func set_bottom_nubs(fos,h_separator):
+	var nub = get_node('Bottom/Nub')
+	var label = nub.get_node('Label')
+	var label2 = nub.get_node('Label2')
+	var position = 10
+	var step = 1
+	for i in get_node('Bottom').get_children():
+		get_node('Bottom').remove_child(i)
+	for frame in fos:
+		var shift = time_shift+(interval*frame)
+		var d = floor(floor(shift/60)/24)
+		var h = hour - floor(shift/3600)
+		var m = minute - floor(shift/60)
+		var s = second - frame
+		position -= h_separator
+		nub.set_position(Vector2(position,0))
+		step += 1
+		if interval == 1:
+			while s < 0:
+				s = 60-abs(s)
+				m -= 1
+		while m < 0:
+			m = 60-abs(m)
+			if interval == 1:
+				h -= 1
+		while h < 0:
+			h = 24-abs(h)
+		if h < 10:
+			h = str(\"0\",h)
+		if m < 10:
+			m = str(\"0\",m)
+		if step == 4:
+			if interval == 1:
+				label.set_text(str(h)+\":\"+str(m)+\":\"+str(s))
+			else:
+				label.set_text(str(h)+\":\"+str(m))
+			step = 0
+		else:
+			label.set_text(\"\")
+		if str(h) == \"00\" and str(m) == \"00\":
+			label2.set_text(_day(day-d))
+		else:
+			label2.set_text(\"\")
+		get_node('Bottom').add_child(nub.duplicate())
+	h_positions.clear()
+	for i in get_node('Bottom').get_children():
+		h_positions.append(i.get_position().x)
+
+func set_side_nubs(array,maxv,spread,v_separator,height):
+	var nub = get_node('Side/Nub')
+	var label = nub.get_node('Label')
+	var value = maxv
+	var distance = _round(spread)/10
+	var position = 0
+	for i in get_node('Side').get_children():
+		get_node('Side').remove_child(i)
+	for ticks in 11:
+		position += v_separator
+		nub.set_position(Vector2(0,position))
+		label.set_text(str(value))
+		value -= distance
+		get_node('Side').add_child(nub.duplicate())
+
+func time_shift():
+	var remainder = 0
+	if interval == 60:
+		remainder = second%interval
+	elif interval == 300:
+		remainder = (second%interval)+((minute%5)*60)
+	elif interval == 900:
+		remainder = (second%interval)+((minute%15)*60)
+	elif interval == 1800:
+		remainder = (second%interval)+((minute%30)*60)
+	elif interval == 2700:
+		remainder = (second%interval)+((minute%45)*60)
+#		if minute < 45:
+#			remainder += 3600 ???
+	elif interval == 3600:
+		remainder = (second%interval)+((minute%60)*60)
+	elif interval == 7200:
+		remainder = (second%interval)+((minute%60)*60)+((hour%2)*3600)
+	elif interval == 21600:
+		remainder = (second%interval)+((minute%60)*60)+((hour%6)*3600)
+	elif interval == 43200:
+		remainder = (second%interval)+((minute%60)*60)+((hour%12)*3600)
+	elif interval == 86400:
+		remainder = (second%interval)+((minute%60)*60)+((hour%24)*3600)
+	elif interval == 604800 or interval == 2419200:
+		remainder = (second%interval)+((minute%60)*60)+((hour%24)*3600)+((day%7)*86400) #UNTESTED
+	return remainder
+
+#noncumulative
+func data_array(path,fos):
+	var selection = fos*interval
+	var buffer = int(path.right(path.length()-2))/8
+	var file = File.new()
+	var set = []
+	var array = []
+	file.open(path,file.READ)
+	if file.get_len()/buffer < selection:
+		selection = file.get_len()/buffer
+	for i in selection:
+		file.seek_end(-(i+1)*buffer)
+		if buffer == 4:
+			set.append(file.get_32())
+		elif buffer == 8:
+			set.append(file.get_64())
+	file.close()
+	for i in fos:
+		if i == 0:
+			if i*interval < set.size():
+				array.append(set[i*interval])
+		else:
+			if i*interval+time_shift < set.size():
+				array.append(set[i*interval+time_shift])
+	return array
+
+func _day(value):
+	while value < 0:
+		value = 7-abs(value)
+	var days = {
+		0:\"S\",
+		1:\"M\",
+		2:\"T\",
+		3:\"W\",
+		4:\"T\",
+		5:\"F\",
+		6:\"S\"}
+	return days.values()[value]
+
+func _round(value):
+	if str(value).length() <= 4:
+		value = round(value*0.1)*10
+	elif str(value).length() <= 5:
+		value = round(value*0.01)*100
+	else:
+		value = round(value*0.001)*1000
+	return value
+
+func _ceiling(value):
+	if str(value).length() <= 4:
+		value = ceil(value*0.1)*10
+	elif str(value).length() <= 5:
+		value = ceil(value*0.01)*100
+	else:
+		value = ceil(value*0.001)*1000
+	return value
+
+func _floor(value):
+	if str(value).length() <= 4:
+		value = floor(value*0.1)*10
+	elif str(value).length() <= 5:
+		value = floor(value*0.01)*100
+	else:
+		value = floor(value*0.001)*1000
+	return value
+"
+
+[sub_resource type="DynamicFont" id=2]
+resource_name = "Rubik-Light"
+size = 20
+font_data = ExtResource( 1 )
+
+[sub_resource type="GDScript" id=3]
+script/source = "extends TextureRect
+
+func _on_Area_mouse_entered():
+	get_node('Label').show()
+
+func _on_Area_mouse_exited():
+	get_node('Label').hide()
+"
+
+[sub_resource type="DynamicFont" id=4]
+resource_name = "Rubik-Light"
+size = 20
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=5]
+size = 50
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=6]
+size = 30
+font_data = ExtResource( 1 )
+
+[sub_resource type="GDScript" id=7]
+script/source = "extends MenuButton
+
+onready var menu = get_popup()
+
+func _ready():
+	menu.connect('id_pressed',self,'selection')
+
+func set_interval(value):
+	get_node('../../Chart').interval = value
+
+func selection(ID):
+	var setting = menu.get_item_text(ID)
+	if setting == \"1 second\":
+		set_text(\"1s\")
+		set_interval(1)
+	if setting == \"1 minute\":
+		set_text(\"1m\")
+		set_interval(60)
+	elif setting == \"5 minute\":
+		set_text(\"5m\")
+		set_interval(300)
+	elif setting == \"15 minute\":
+		set_text(\"15m\")
+		set_interval(900)
+	elif setting == \"30 minute\":
+		set_text(\"30m\")
+		set_interval(1800)
+	elif setting == \"45 minute\":
+		set_text(\"45m\")
+		set_interval(2700)
+	elif setting == \"1 hour\":
+		set_text(\"1h\")
+		set_interval(3600)
+	elif setting == \"2 hour\":
+		set_text(\"2h\")
+		set_interval(7200)
+	elif setting == \"6 hour\":
+		set_text(\"6h\")
+		set_interval(21600)
+	elif setting == \"12 hour\":
+		set_text(\"12h\")
+		set_interval(43200)
+	elif setting == \"1 day\":
+		set_text(\"1D\")
+		set_interval(86400)
+	elif setting == \"1 week\":
+		set_text(\"1W\")
+		set_interval(604800)
+	elif setting == \"4 week\":
+		set_text(\"4W\")
+		set_interval(2419200)
+	get_node('../../Chart').display(get_node('../../Chart')._symbol)
+"
+
+[node name="Listing" type="NinePatchRect"]
+visible = false
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.192157 )
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -425.0
+margin_right = 1467.0
+margin_bottom = 425.0
+texture = ExtResource( 3 )
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 2
+
+[node name="Chart" type="Container" parent="."]
+margin_right = 1350.0
+margin_bottom = 800.0
+script = SubResource( 1 )
+
+[node name="Side" type="TextureRect" parent="Chart"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -2.0
+margin_bottom = -2.0
+texture = ExtResource( 7 )
+stretch_mode = 2
+
+[node name="Nub" type="TextureRect" parent="Chart/Side"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_right = 5.0
+margin_bottom = 2.0
+rect_min_size = Vector2( 5, 2 )
+texture = ExtResource( 4 )
+expand = true
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="Chart/Side/Nub"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 4.0
+margin_top = -12.0
+margin_right = 64.0
+margin_bottom = 12.0
+custom_fonts/font = SubResource( 2 )
+align = 1
+
+[node name="Bottom" type="TextureRect" parent="Chart"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -2.0
+texture = ExtResource( 4 )
+stretch_mode = 2
+
+[node name="Nub" type="TextureRect" parent="Chart/Bottom"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -2.0
+margin_bottom = 5.0
+rect_min_size = Vector2( 2, 5 )
+texture = ExtResource( 7 )
+expand = true
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="Chart/Bottom/Nub"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -36.0
+margin_top = 1.0
+margin_right = 36.0
+margin_bottom = 25.0
+custom_fonts/font = SubResource( 2 )
+align = 1
+
+[node name="Label2" type="Label" parent="Chart/Bottom/Nub"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -36.0
+margin_top = 22.0
+margin_right = 36.0
+margin_bottom = 46.0
+custom_fonts/font = SubResource( 2 )
+align = 1
+
+[node name="Point" type="TextureRect" parent="Chart"]
+self_modulate = Color( 1, 1, 1, 0 )
+margin_right = 20.0
+margin_bottom = 20.0
+texture = ExtResource( 6 )
+expand = true
+script = SubResource( 3 )
+
+[node name="Label" type="Label" parent="Chart/Point"]
+visible = false
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 10.0
+margin_top = -19.0
+margin_right = 53.0
+margin_bottom = 5.0
+custom_fonts/font = SubResource( 4 )
+valign = 1
+
+[node name="Area" type="TextureRect" parent="Chart/Point"]
+self_modulate = Color( 1, 1, 1, 0 )
+margin_left = -8.0
+margin_top = -7.0
+margin_right = 12.0
+margin_bottom = 13.0
+rect_pivot_offset = Vector2( -14, -14 )
+texture = ExtResource( 6 )
+expand = true
+
+[node name="Line2D" type="Line2D" parent="Chart"]
+width = 3.0
+texture_mode = -1
+
+[node name="Label" type="Label" parent="Chart"]
+visible = false
+show_behind_parent = true
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -231.0
+margin_top = -30.0
+margin_right = 231.0
+margin_bottom = 30.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 5 )
+text = "INSUFFICIENT DATA"
+align = 1
+valign = 1
+
+[node name="Title" type="HBoxContainer" parent="."]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 198.0
+margin_bottom = 41.0
+
+[node name="Label" type="Label" parent="Title"]
+show_behind_parent = true
+margin_right = 98.0
+margin_bottom = 37.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 6 )
+text = "Listing:"
+valign = 1
+
+[node name="Price" type="Label" parent="Title"]
+show_behind_parent = true
+margin_left = 102.0
+margin_right = 102.0
+margin_bottom = 37.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 6 )
+valign = 1
+
+[node name="Settings" type="VBoxContainer" parent="."]
+margin_left = 4.0
+margin_top = 46.0
+margin_right = 58.0
+margin_bottom = 76.0
+
+[node name="Expand" type="Button" parent="Settings"]
+visible = false
+margin_right = 54.0
+margin_bottom = 54.0
+rect_min_size = Vector2( 54, 54 )
+custom_fonts/font = ExtResource( 2 )
+
+[node name="TextureRect" type="TextureRect" parent="Settings/Expand"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -22.0
+margin_top = -22.0
+margin_right = 22.0
+margin_bottom = 22.0
+mouse_filter = 2
+texture = ExtResource( 5 )
+
+[node name="Visibility" type="Button" parent="Settings"]
+visible = false
+margin_right = 54.0
+margin_bottom = 54.0
+rect_min_size = Vector2( 54, 54 )
+custom_fonts/font = ExtResource( 2 )
+
+[node name="TextureRect" type="TextureRect" parent="Settings/Visibility"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -22.0
+margin_top = -15.0
+margin_right = 22.0
+margin_bottom = 15.0
+mouse_filter = 2
+texture = ExtResource( 8 )
+expand = true
+
+[node name="Time" type="MenuButton" parent="Settings"]
+margin_right = 54.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 54, 30 )
+focus_mode = 2
+custom_fonts/font = ExtResource( 2 )
+text = "15m"
+flat = false
+items = [ "1 second", null, 0, false, false, -1, 0, null, "", false, "1 minute", null, 0, false, false, -1, 0, null, "", false, "5 minute", null, 0, false, false, -1, 0, null, "", false, "15 minute", null, 0, false, false, -1, 0, null, "", false, "30 minute", null, 0, false, false, -1, 0, null, "", false, "45 minute", null, 0, false, false, -1, 0, null, "", false, "1 hour", null, 0, false, false, -1, 0, null, "", false, "2 hour", null, 0, false, false, -1, 0, null, "", false, "6 hour", null, 0, false, false, -1, 0, null, "", false, "12 hour", null, 0, false, false, -1, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "1 day", null, 0, false, false, -1, 0, null, "", false, "1 week", null, 0, false, false, -1, 0, null, "", false, "4 week", null, 0, false, false, -1, 0, null, "", false ]
+script = SubResource( 7 )
+
+[connection signal="mouse_entered" from="Chart/Point/Area" to="Chart/Point" method="_on_Area_mouse_entered"]
+[connection signal="mouse_exited" from="Chart/Point/Area" to="Chart/Point" method="_on_Area_mouse_exited"]

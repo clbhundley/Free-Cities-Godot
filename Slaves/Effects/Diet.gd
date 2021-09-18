@@ -51,7 +51,7 @@ func hour():
 			_slave.body_size += 0.00004
 	if weight_change == 0:
 		return
-	elif _slave.model.weight < 1:
+	elif _slave.model.weight <= 1:
 		_slave.model.weight += weight_change
 	else:
 		var body_fat_types = [

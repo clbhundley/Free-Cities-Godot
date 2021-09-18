@@ -29,7 +29,6 @@ func tick():
 		lateral()
 	elif _slave.travel_mode == RADIAL:
 		radial()
-	_slave.get_node("UI").display_location() #every tick?
 
 func step(action_text):
 	current_time += 1 * time.scale

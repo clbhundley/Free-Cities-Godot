@@ -16,7 +16,7 @@ static func traits(gender):
 
 static func skin_color():
 	var skin_colors = load('res://Slaves/New Slave/colors.gd').skin
-	var roll = (dice.roll(10)*10) + dice.roll(10) # 0-99
+	var roll = (randi()%10*10) + randi()%10 # 0-99
 	var choice
 	if roll <= 4:
 		choice = skin_colors['white']
@@ -24,11 +24,11 @@ static func skin_color():
 		choice = skin_colors['pale']
 	else:
 		choice = skin_colors['yellow']
-	return choice[dice.roll(choice.size())]
+	return choice[randi()%choice.size()]
 
 static func hair_color():
 	var hair_colors = load('res://Slaves/New Slave/colors.gd').hair_natural
-	var roll = (dice.roll(10)*10) + dice.roll(10) # 0-99
+	var roll = (randi()%10*10) + randi()%10 # 0-99
 	var choice
 	if roll <= 3:
 		choice = hair_colors['blond']
@@ -40,7 +40,7 @@ static func hair_color():
 		choice = hair_colors['dark_brown']
 	else:
 		choice = hair_colors['black']
-	return choice[dice.roll(choice.size())]
+	return choice[randi()%choice.size()]
 
 static func chest():
 	return {
@@ -183,7 +183,7 @@ const first_names_female = [
 	"Bo",
 	"Cai",
 	"Chang",
-	"Chao", 
+	"Chao",
 	"Chen",
 	"Cheng",
 	"Chin",

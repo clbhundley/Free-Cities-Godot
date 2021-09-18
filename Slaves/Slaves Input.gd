@@ -1,12 +1,14 @@
 extends Spatial
 
-onready var gui = game.get_gui()
+onready var gui = game.gui
 
 var active_input
 
 var cam_pos = 7.0
 var min_camera_pos = 7
 var max_camera_pos = 0.0
+
+var mouse_input_filter:int
 
 func _input(event):
 	if not is_visible_in_tree():
@@ -21,7 +23,7 @@ func _input(event):
 	for _event in active_events:
 		if event.is_action_pressed(_event):
 			active_input = true
-	var mouse_over_ui_panel = game.get_gui().mouse_over_ui_panel()
+	var mouse_over_ui_panel = game.gui.mouse_over_ui_panel()
 	if mouse_over_ui_panel and not active_input:
 		return
 	if Input.is_action_just_pressed("ui_accept") and not mouse_over_ui_panel:
@@ -33,6 +35,8 @@ func _input(event):
 		if gui.get_node("Navigation/Time/TimePanel").is_visible_in_tree():
 			gui.get_node("Navigation/Time")._on_Button_toggled(false)
 			gui.get_node("Navigation/Time/Button").set_pressed(false)
+		elif gui.get_node("SlavesPriceChart").is_visible_in_tree():
+			gui.get_node("Dock")._on_ActionButton_pressed()
 		elif gui.get_node("SidePanel").is_open or gui.get_node("SidePanel").is_hidden:
 			if gui.get_node("Dock").mode == "PurchaseSlave":
 				active_camera.deactivate()
@@ -41,10 +45,14 @@ func _input(event):
 		elif active_camera.get_parent().name != "Slaves":
 			gui.get_node("Dock/ActionButton/Tag").hide()
 			active_camera.deactivate()
+	if gui.get_node("SlavesPriceChart").is_visible_in_tree():
+		return
 	elif event.is_class("InputEventMouseMotion") and active_input: # add android swipe here?
 		if event.button_mask&(BUTTON_MASK_LEFT):
-			cam_pos -= event.relative.x * 0.015
-			slide = true
+			mouse_input_filter += 1
+			if mouse_input_filter%2 == 0:
+				cam_pos -= event.relative.x * 0.03
+				slide = true
 	elif event.is_action_pressed('ui_page_up'):# and not mouse_over_ui_panel:
 		if not mouse_over_ui_panel:
 			cam_pos -= 2

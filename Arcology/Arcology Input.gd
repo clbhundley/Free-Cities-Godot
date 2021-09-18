@@ -1,6 +1,6 @@
 extends Spatial
 
-onready var gui = game.get_gui()
+onready var gui = game.gui
 onready var dock = gui.get_node("Dock")
 
 var view = "arcology"
@@ -21,7 +21,7 @@ func _input(event):
 		return
 	if event.is_action_pressed('ui_back'):
 		active_input = true
-	var mouse_over_ui_panel = game.get_gui().mouse_over_ui_panel()
+	var mouse_over_ui_panel = game.gui.mouse_over_ui_panel()
 	if mouse_over_ui_panel and not active_input:
 		return
 	if Input.is_action_just_pressed("ui_accept") and not mouse_over_ui_panel:
@@ -74,7 +74,7 @@ func arc_input_event(camera,event,click_position,click_normal,shape_idx,sector):
 					call("outline_terra",terra,get("highlight_white"))
 					if selected_terra != terra.name:
 						selected_terra = terra.name
-						gui.get_node("SidePanel/ManageTerra").update()
+						gui.get_node("SidePanel/ManageTerra").refresh()
 						dock.set_mode("ManageTerra")
 						call("update_header",get("arcology_name")+"  -  "+selected_terra)
 						get_node("ChangeView").show()
@@ -93,7 +93,7 @@ func arc_input_event(camera,event,click_position,click_normal,shape_idx,sector):
 						call("update_header",address + "  -  " + sector_name)
 						selected_building = ArcUtils.get_building(sector)
 						sector.selected = true
-						gui.get_node("SidePanel/ManageBuilding").update()
+						gui.get_node("SidePanel/ManageBuilding").refresh()
 						if not dock.side_panel.is_open:
 							dock.set_mode("ManageBuilding",false)
 						else:

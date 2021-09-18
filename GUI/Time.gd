@@ -1,20 +1,20 @@
 extends Control
 
 func _ready():
-	time.connect('tick',self,'update_time')
-	get_tree().get_root().connect('size_changed',self,'resize')
+	time.connect('second',self,'update_time')
+	#get_tree().get_root().connect('size_changed',self,'resize')
 	update_time()
-	resize()
+	#resize()
 
-func resize():
-	return
-	var scale_small = display.scale*1.6
-	var scale_large = display.scale*22
-	margin_left = max(-110,-110 * scale_small)
-	margin_top = max(-110,-110 * scale_small)
-	#use font for both
-	get_node("Label Bot").get('custom_fonts/font').size = clamp(scale_large,10,16)
-	get_node("Label Top").get('custom_fonts/font').size = clamp(scale_large,10,16)
+#func resize():
+#	return
+#	var scale_small = display.scale*1.6
+#	var scale_large = display.scale*22
+#	margin_left = max(-110,-110 * scale_small)
+#	margin_top = max(-110,-110 * scale_small)
+#	#use font for both
+#	get_node("Label Bot").get('custom_fonts/font').size = clamp(scale_large,10,16)
+#	get_node("Label Top").get('custom_fonts/font').size = clamp(scale_large,10,16)
 
 func update_time():
 	yield(get_tree(),"idle_frame")
@@ -61,12 +61,11 @@ func week():
 func quarter():
 	return "Q"+str(time.quarter+1)
 
-onready var timer = get_tree().get_root().get_node('Game/Clock')
 func _on_HSlider_value_changed(value):
-	timer.stop()
+	game.clock.stop()
 	var t = value/100
-	timer.wait_time = 1-t
-	timer.start()
+	game.clock.wait_time = 1-t
+	game.clock.start()
 
 func animate_sml(node):
 	var h_pos = rect_size.y / 2
@@ -74,6 +73,8 @@ func animate_sml(node):
 		var s = display.scale*1.5
 		$rabbit.scale = Vector2(s,s)
 		$turtle.scale = Vector2(s*0.75,s*0.75)
+		$rabbit_orange.scale = Vector2(s,s)
+		$turtle_orange.scale = Vector2(s*0.75,s*0.75)
 		$play.scale = Vector2(s,s)
 		$pause.scale = Vector2(s,s)
 	else:

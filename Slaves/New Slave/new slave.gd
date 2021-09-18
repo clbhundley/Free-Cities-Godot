@@ -4,41 +4,41 @@ var region = "Asia"
 
 func new(preset=null,for_sale=false):
 	randomize()
-	
+
 	var _slave = load('res://Slaves/Slave.tscn').instance()
-	
+
 	if not _slave.ethnicity:
 		_slave.ethnicity = _ethnicity(region)
 	var presets = load('res://Slaves/New Slave/Presets/%s.gd'%preset).presets()
-	
+
 	_slave.for_sale = for_sale
-	
+
 	if preset:
 		for setting in presets.keys():
 			_slave.set(setting, presets[setting])
-	
+
 	if not _slave.gender:
 		_slave.gender = _gender()
-	
+
 	var path = 'res://Slaves/New Slave/Ethnicities/%s/%s.gd'
 	var ethnicity = _slave.ethnicity.to_lower()
 	var traits = load(path%[region,ethnicity]).traits(_slave.gender)
 	for trait in traits.keys():
 		_slave.set(trait, traits[trait])
-	
+
 	_slave.is_awake = true
-	
+
 	_slave.location = _slave.quarters
-	
+
 	if not _slave.age:
 		_slave.age = randi()%41+18
-	
+
 	if not _slave.birthday:
 		_slave.birthday = {
 			"quarter":randi()%4,
 			"week":randi()%13,
 			"day":randi()%7}
-	
+
 	if _slave.gender == "Male" or _slave.gender == "Trans female":
 		_slave.vagina = false
 		#_slave.penis = true
@@ -54,10 +54,10 @@ func new(preset=null,for_sale=false):
 		#_slave.penis = true
 		_slave.penis_size = traits['penis_size']
 		_slave.testicles_size = 1
-	
+
 	generate_fertility(_slave)
 	_pregnancy(_slave)
-	
+
 	if not _slave.skin_color:
 		_slave.skin_color = skin_color(traits)
 	hair_color(_slave)
@@ -68,7 +68,7 @@ func new(preset=null,for_sale=false):
 	if not _slave.voice:
 		_slave.voice = _voice(_slave.gender)
 	if not _slave.health:
-		_slave.health = math.gaussian(50,12)
+		_slave.health = max(math.gaussian(50,12),1)
 	if not _slave.fatigue:
 		_slave.fatigue = math.gaussian(40,12)
 	if not _slave.hunger:
@@ -97,28 +97,14 @@ func new(preset=null,for_sale=false):
 		_slave.face = math.gaussian(5,3)
 	if not _slave.arousal:
 		_slave.arousal = abs(math.gaussian(10,5))
-	
+
 	generate_skills(_slave)
-#	if not _slave.skills.oral:
-#		_slave.skills.oral = abs(math.gaussian(10,25))
-#	if not _slave.skills.anal:
-#		_slave.anal_skill = abs(math.gaussian(10,25))
-#	if not _slave.vaginal_skill:
-#		_slave.vaginal_skill = abs(math.gaussian(10,25))
-#	if not _slave.penis_skill:
-#		_slave.penis_skill = abs(math.gaussian(10,25))
-#	if not _slave.prostitution_skill:
-#		_slave.prostitution_skill = abs(math.gaussian(10,25))
-#	if not _slave.entertainment_skill:
-#		_slave.entertainment_skill = abs(math.gaussian(10,25))
-#	if not _slave.combat_skill:
-#		_slave.combat_skill = abs(math.gaussian(10,25))
-	
+
 	if _slave.gender == "Female" or _slave.gender == "Trans male":
 		_slave.regimen.append("Contraception")
 	_slave.diet = "Healthy"
 	_slave.diet_base = "Normal"
-	
+
 	_slave.wardrobe["choosing"] = "none"
 	_slave.wardrobe["clothing"] = {}
 	for i in ["outfit","shirt","pants","shoes"]:
@@ -127,12 +113,19 @@ func new(preset=null,for_sale=false):
 	_slave.wardrobe["accessories"] = {}
 	for i in ["head","face","neck","arms","torso","genitals","legs"]:
 		_slave.wardrobe["accessories"][i] = "None"
-	
+
 	#force gauged values to below 100. should not be needed if slave is generated properly
 	var gauges = ['happiness','arousal','fatigue','hunger','bathroom']
 	for value in gauges:
 		if _slave.get(value) > 100:
 			_slave.set(value,100)
+
+	$ModelData.set_default_values(_slave)
+	_slave.temp_model_data = data.obj_to_dict($ModelData)
+
+	if for_sale and not _slave.price:
+		set_price(_slave)
+
 	return _slave
 
 func _ethnicity(region):
@@ -166,20 +159,20 @@ func hair_color(_slave):
 	var dyed_colors = colors.hair_dyed
 	if _slave.age >= 54:
 		var selection = natural_colors['grey']
-		_slave.hair_color_natural = selection[dice.roll(selection.size())]
+		_slave.hair_color_natural = selection[randi()%selection.size()]
 		_slave.hair_color = _slave.hair_color_natural
 	elif not _slave.hair_color_natural:
 		_slave.hair_color_natural = '100C07'
 		_slave.hair_color = _slave.hair_color_natural
-	elif dice.roll(12) <= 2:
-		var selection = dyed_colors[dyed_colors.keys()[dice.roll(dyed_colors.size())]]
-		_slave.hair_color = selection[dice.roll(selection.size())]
+	elif randi()%12 <= 2:
+		var selection = dyed_colors[dyed_colors.keys()[randi()%dyed_colors.size()]]
+		_slave.hair_color = selection[randi()%selection.size()]
 	else:
 		_slave.hair_color = _slave.hair_color_natural
 
 func hair_style():
 	var styles = ["straight", "wavy", "curly", "none"]
-	return(styles[dice.roll(4)])
+	return(styles[randi()%4])
 
 func _gender():
 	var roll = math.gaussian(100,25)
@@ -319,7 +312,7 @@ func generate_skills(_slave):
 
 func generate_fertility(_slave):
 	if not _slave.fertility:
-		if dice.roll(12) == 0 and dice.roll(6) == 0:
+		if randi()%12 == 0 and randi()%6 == 0:
 			_slave.fertility = 0
 		else:
 			_slave.fertility = randf()
@@ -332,10 +325,10 @@ func generate_fertility(_slave):
 func _pregnancy(_slave):
 	match _slave.gender:
 		"Female":
-			if dice.roll(8) != 0:
+			if randi()%8 != 0:
 				return
 		"Trans male","Intersex":
-			if dice.roll(9) != 0 and dice.roll(3) != 0:
+			if randi()%9 != 0 and randi()%3 != 0:
 				return
 		_:
 			return
@@ -377,50 +370,50 @@ func _voice(gender):
 	if roll == 51:
 		return "mute"
 	elif gender == "Male":
-		roll = dice.roll(12)
+		roll = randi()%12
 		if roll <= 2:
 			voice += "deep "
 		elif roll >= 10:
 			voice += "high "
-		if dice.roll(12) == 11:
+		if randi()%12 == 11:
 			voice += "feminine "
 	elif gender == "Female":
-		roll = dice.roll(12)
+		roll = randi()%12
 		if roll <= 1:
 			voice += "deep "
 		elif roll >= 9:
 			voice += "high "
-		if dice.roll(12) == 0:
+		if randi()%12 == 0:
 			voice += "masculine "
 	if gender == "Trans male":
-		roll = dice.roll(12)
+		roll = randi()%12
 		if roll <= 1:
 			voice += "deep "
 		elif roll >= 9:
 			voice += "high "
-		roll = dice.roll(12)
+		roll = randi()%12
 		if roll <= 1:
 			voice += "masculine "
 		elif roll >= 8:
 			voice += "feminine "
 	elif gender == "Trans female":
-		roll = dice.roll(12)
+		roll = randi()%12
 		if roll <= 2:
 			voice += "deep "
 		elif roll >= 10:
 			voice += "high "
-		roll = dice.roll(12)
+		roll = randi()%12
 		if roll <= 3:
 			voice += "masculine "
 		elif roll >= 10:
 			voice += "feminine "
 	elif gender == "Intersex":
-		roll = dice.roll(12)
+		roll = randi()%12
 		if roll <= 2:
 			voice += "deep "
 		elif roll >= 9:
 			voice += "high "
-		roll = dice.roll(12)
+		roll = randi()%12
 		if roll <= 2:
 			voice += "masculine "
 		elif roll >= 9:
@@ -428,6 +421,21 @@ func _voice(gender):
 	if voice == "":
 		voice = "normal"
 	return voice
+
+func set_price(_slave):
+	var seller_price = clamp(math.gaussian_float(10,1),8,12)*_slave.level
+	match _slave.gender: #make adjustable values based on societal preferences
+		'Male':
+			seller_price *= 1
+		'Female':
+			seller_price *= 1.3
+		'Trans male':
+			seller_price *= 0.9
+		'Trans female':
+			seller_price *= 1.2
+		'Intersex':
+			seller_price *= 1.7
+	_slave.price = stepify(max(seller_price,1000),10)
 
 #func figure():
 #	var roll = math.gaussian(0,62)

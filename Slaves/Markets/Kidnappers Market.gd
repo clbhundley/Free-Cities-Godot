@@ -1,43 +1,84 @@
-extends Spatial
+extends "res://Slaves/Markets/MarketUtils.gd"
 
-var active_phase
-var total_time
-var current_time
+var last_delivery:Dictionary
+var next_delivery:Dictionary
+var next_depletion:Dictionary
 
 func _ready():
-	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'tick')
-	delivery()
+	data.create_directory(market_directory(name))
+	retrieve_index(name)
+	if not last_delivery:
+		delivery(true)
+	advance_delivery(self)
+	if not next_depletion:
+		schedule_next_depletion()
+	advance_depletion(self)
 
-func tick():
-	call(active_phase)
+func market_price_modifier():
+	var modifier := -500
+	var slaves_in_market = get_children().size()
+	if slaves_in_market > 10:
+		modifier -= slaves_in_market*10
+	return modifier
 
-func tba():
-	if current_time == 0:
-		total_time = 3600*abs(math.gaussian(2,2))
-		current_time += 1
-		#get_node('Header/Delivery').set_text("Delivery: TBA")
-	elif current_time < total_time:
-		current_time += 1
-		#get_node('Header/Delivery').set_text("Delivery: TBA")
-	else:
-		active_phase = "timer"
-		current_time = 0
+func delivery(initial=false):
+	var delivery_amount = abs(math.gaussian(7,2))
+	for _slave in delivery_amount:
+		create_new_slave(name,'kidnappers market')
+	if not initial:
+		NAVI.say(str(delivery_amount)+" slaves delivered to "+name)
+	if game.slaves.active_collection:
+		if game.slaves.active_collection.name == name:
+			game.slaves.set_active_collection(name)
+	last_delivery = time.get_timestamp()
+	schedule_next_delivery()
+	advance_delivery(self)
 
-func timer():
-	if current_time == 0:
-		total_time = 3600*abs(math.gaussian(32,4))
-		current_time += 1
-		#get_node('Header/Delivery').set_text("Delivery: "+math.time_remaining(current_time,total_time))
-	elif current_time < total_time:
-		current_time += 1
-		#get_node('Header/Delivery').set_text("Delivery: "+math.time_remaining(current_time,total_time))
-	else:
-		active_phase = "delivery"
-		current_time = 0
+func schedule_next_delivery():
+	var second:int = randi()%60
+	var minute:int = randi()%60
+	var hour:int = randi()%24
+	var day:int = abs(math.gaussian(1,2))
+	var week:int = clamp(math.gaussian(1,1),1,2)
+	var quarter:int = 0
+	var year:int = 0
+	next_delivery = time.get_forward_time(
+		second,
+		minute,
+		hour,
+		day,
+		week,
+		quarter,
+		year)
+	update_index(name)
 
-func delivery():
-	for n in range(abs(math.gaussian(7,3))):
-		add_child(get_node('../../New Slave').new("kidnappers market",true),true)
-	get_node('../../').update_collection(self)
-	active_phase = "tba"
-	current_time = 0
+func depletion():
+	var available_slaves = data.list_contents(market_directory(name))
+	var depletion_amount = min(available_slaves.size(),abs(math.gaussian(1,1)))
+	if depletion_amount != 0:
+		available_slaves.shuffle()
+		for _slave in depletion_amount:
+			data.delete(market_directory(name)+"/"+available_slaves[_slave])
+		if game.slaves.active_collection:
+			if game.slaves.active_collection.name == name:
+				game.slaves.set_active_collection(name)
+	schedule_next_depletion()
+	advance_depletion(self)
+
+func schedule_next_depletion():
+	var second:int = randi()%60
+	var minute:int = randi()%60
+	var hour:int = randi()%24
+	var day:int = abs(math.gaussian(0,1))
+	var week:int = 0
+	var quarter:int = 0
+	var year:int = 0
+	next_depletion = time.get_forward_time(
+		second,
+		minute,
+		hour,
+		day,
+		week,
+		quarter,
+		year)
+	update_index(name)

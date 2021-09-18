@@ -2,7 +2,7 @@ extends TextureProgress
 
 onready var _slave = owner.owner
 
-func set_gauge():
+func refresh():
 	if _slave.health <= 100:
 		$Excess.value = 0
 		value = _slave.health

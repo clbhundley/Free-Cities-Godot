@@ -19,7 +19,7 @@ var gender
 #var genitals
 var penis_size
 var testicles_size
-var vagina 
+var vagina
 var chest
 
 var fertility
@@ -161,6 +161,30 @@ class Skills:
 			sexual_skill += get(skill)
 		return sexual_skill
 
+var level:int setget ,get_level
+func get_level():
+	level = 0
+	level += health
+	level += intelligence
+	level += devotion
+	level += trust
+	level += face*10
+	level -= age*1.6
+	#add model/body modifiers
+	level += libido
+	level += male_attraction
+	level += female_attraction
+	level += skills.sexual_total
+	level += skills.prostitution*2
+	level += skills.entertainment*2.2
+	level += skills.seduction
+	level += skills.cleaning
+	level += skills.cooking
+	level += skills.medical*1.7
+	level += skills.combat*1.5
+	level += skills.music
+	return floor(level)
+
 var acquired
 
 var diet
@@ -175,13 +199,31 @@ var assignment
 var action
 var queued_action
 
-var for_sale = false
+var for_sale := false
+var price:int
+func market_price():
+	var slaves_price_modifier = game.slaves.price
+	var adjusted_price = stepify(price*slaves_price_modifier,10)
+	if get_parent() and get_parent().has_method('market_price_modifier'):
+		var market_price_modifier = get_parent().market_price_modifier()
+		return max(adjusted_price+market_price_modifier,1000)
+	else:
+		return adjusted_price
 
 var is_awake
 
 var flags = {}
 
 var quarters = "P5"
-var location
-var destination
+
 var travel_mode
+
+var location setget set_location
+func set_location(address):
+	location = address
+	get_node("UI/Location").refresh()
+
+var destination setget set_destination
+func set_destination(address):
+	destination = address
+	get_node("UI/Location").refresh()

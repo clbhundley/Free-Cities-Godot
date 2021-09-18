@@ -194,7 +194,7 @@ func step():
 		if total_time - current_time < 0:
 			overstep = time.scale / abs(total_time-current_time)
 		_slave.fatigue = max(_slave.fatigue - 0.0028 * time.scale / overstep, 0)
-		
+
 #		if s.health <= 0: #Deceased
 #			pass
 #		elif s.health < 10: #Near death
@@ -339,8 +339,10 @@ func tick():
 		finish()
 
 func start():
-	#time to acquire customer based on...?
-	total_time = abs(math.gaussian(530,21))
+	var seduction_skill = _slave.skills.seduction * 3
+	var prostitution_skill = _slave.skills.prostitution * 2
+	var total_skill = seduction_skill + prostitution_skill
+	total_time = max(math.gaussian(1500-total_skill,21),200)
 	display_action()
 	step()
 
@@ -360,27 +362,16 @@ func finish():
 func random_sector_test():
 	var terras = [\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\",\"H\",\"I\",\"J\",\"K\",\"L\"]
 	var arc_size = get_tree().get_root().get_node(\"Game/Arcology\").size
-	var terra = terras[dice.roll(arc_size-2)]
-	var sector = dice.roll(12)+1
+	var terra = terras[randi()%(arc_size-2)]
+	var sector = randi()%12+1
 	if terra == \"A\" or terra == \"B\":
-		if dice.roll(2) == 1:
+		if randi()%2 == 1:
 			sector += 12
 	return terra+str(sector)
 "
 
 [sub_resource type="GDScript" id=8]
 script/source = "extends Node
-
-#Escort
-#2-3 customers a day
-#2-4 hours each customer
-#
-#Prostitute
-#30m-1hr each customer
-#
-#
-#Gloryhole
-#5-10 mins each customer
 
 onready var _slave = owner
 
@@ -401,8 +392,8 @@ func tick():
 		finish()
 
 func start():
-	#time to satisfy customer should be based on slave skills
-	total_time = abs(math.gaussian(2000,210))
+	var prostitution_skill = _slave.skills.prostitution * 4
+	total_time = max(math.gaussian(4000-prostitution_skill,210),1000)
 	display_action()
 	step()
 
@@ -416,10 +407,38 @@ func step():
 
 func finish():
 	current_time = 0
-	game.update_money(abs(math.gaussian(50,20)))
-	if dice.roll(3) == 0:
+	var price = max(math.gaussian(value_of_services(),5),1)
+	game.update_money(price)
+	if randi()%3 == 0:
 		_slave.inseminate()
-	if dice.roll(12) == 0 and dice.roll(8) == 0:
+	chance_for_injury()
+	_slave.activity.action_end()
+
+func value_of_services():
+	var total:int
+	var total_skill:float
+	var skills = [
+		_slave.skills.entertainment * 0.5,
+		_slave.skills.prostitution * 0.7,
+		_slave.skills.seduction * 0.6,
+		_slave.skills.sexual_total]
+	for skill in skills:
+		total_skill += skill
+	total_skill /= 6
+	var attractiveness:int = _slave.face - 6
+	if sign(attractiveness) == 1:
+		total = total_skill * attractiveness
+	elif sign(attractiveness) == -1:
+		total = total_skill / abs(attractiveness)
+	else:
+		total = total_skill
+	return total
+
+func chance_for_injury():
+	if randi()%12 == 0 and randi()%8 == 0:
+		var prostitution_skill = _slave.skills.prostitution * 4
+		if randi()%1000 <= prostitution_skill:
+			return
 		var damage = clamp(abs(math.gaussian(1,2)),1,5)
 		var starting_health = _slave.health
 		_slave.health -= damage
@@ -428,7 +447,6 @@ func finish():
 			_slave.name+
 			\" took \"+str(damage_actual)+\" damage\"+
 			\" while servicing a customer\")
-	_slave.activity.action_end()
 "
 
 [sub_resource type="GDScript" id=9]

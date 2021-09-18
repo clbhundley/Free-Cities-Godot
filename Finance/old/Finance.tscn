@@ -1,0 +1,2663 @@
+[gd_scene load_steps=38 format=2]
+
+[ext_resource path="res://Finance/old/finance.gd" type="Script" id=1]
+[ext_resource path="res://Textures/square.png" type="Texture" id=2]
+[ext_resource path="res://Finance/Textures/line v.png" type="Texture" id=3]
+[ext_resource path="res://Finance/Textures/line h.png" type="Texture" id=4]
+[ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=5]
+[ext_resource path="res://Textures/circle.png" type="Texture" id=6]
+[ext_resource path="res://Fonts/Rubik-Light.tres" type="DynamicFont" id=7]
+[ext_resource path="res://Finance/Textures/expand.png" type="Texture" id=8]
+[ext_resource path="res://Finance/Textures/visibility.png" type="Texture" id=9]
+[ext_resource path="res://Finance/Textures/market.png" type="Texture" id=10]
+[ext_resource path="res://Finance/Textures/analytics.png" type="Texture" id=11]
+[ext_resource path="res://Finance/Textures/account.png" type="Texture" id=12]
+[ext_resource path="res://Textures/line.png" type="Texture" id=13]
+[ext_resource path="res://Finance/old/elliott.gd" type="Script" id=14]
+[ext_resource path="res://Finance/old/sine 6m.gd" type="Script" id=15]
+[ext_resource path="res://Finance/old/sine 2m.gd" type="Script" id=16]
+[ext_resource path="res://Finance/old/sine 1m.gd" type="Script" id=17]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Container
+
+onready var point = get_node('Point')
+var time_shift
+var day
+var hour
+var minute
+
+#intervals: 1 5 15 30 45 60 120 360 720 1440 10080 40320
+var interval = 15
+
+func _ready():
+	game.connect('minute',self,'display')
+	display(true)
+
+# zoom works well between values of 0 and 20 with these settings
+var zoom = 0
+func display(force=false):
+	if is_visible_in_tree() or force:
+		day = int(game.day)
+		hour = int(game.hour)
+		minute = int(game.minute)
+		time_shift = time_shift()
+		var width = get_node('Bottom').get_size().x
+		var height = get_node('Side').get_size().y
+		var h_separator = 30-zoom
+		var v_separator = round(height/12)
+		var fos = floor(width/h_separator)
+		var path = 'user://Data/Slot %s/Finance/Income.a64'%game.data_slot
+		var array = data_array(path,fos)
+		var sorted = array.duplicate()
+		sorted.sort()
+		var minv
+		var maxv
+		var spread
+		var top = v_separator
+		var bot = v_separator*11
+		var v_range = bot-top
+		if not array.empty():
+			get_node('Label').hide()
+			minv = _floor(sorted.front())
+			maxv = _ceiling(sorted.back())
+			spread = maxv - minv
+			get_node('../Title/Price').set_text(\"¤\"+str(array.front()))
+			get_tree().get_root().get_node('Game/GUI/Money/Income').set_text(\"¤\"+str(array.front()))
+			set_bottom_nubs(fos,h_separator)
+			set_side_nubs(array,maxv,spread,v_separator,height)
+			for i in get_children():
+				if i.name != \"Side\" and i.name != \"Bottom\" and i.name != \"Line2D\" and i.name != \"Label\":
+					remove_child(i)
+			var index = 0
+			for value in array:
+				graph(value,minv,top,spread,v_range,h_positions[index],height)
+				index += 1
+			var points = []
+			for i in get_children():
+				if i.name != \"Side\" and i.name != \"Bottom\" and i.name != \"Line2D\" and i.name != \"Label\":
+					points.append(i)
+			var lines = []
+			for i in points:
+				var pos_x = i.get_position().x+3
+				var pos_y = i.get_position().y+3
+				var adjusted_pos = Vector2(pos_x,pos_y)
+				lines.append(adjusted_pos)
+			get_node('Line2D').set_points(lines)
+		else:
+			get_node('Label').show()
+
+func graph(value,minv,top,spread,v_range,h_placement,height):
+	var position
+	if spread == 0:
+		position = 0
+	else:
+		position = (value-minv)/spread
+	var v_placement = height-((position*v_range)+top)
+	var placement_point = point.duplicate()
+	placement_point.set_position(Vector2(h_placement,v_placement))
+	placement_point.get_node('Label').set_text(str(value))
+	add_child(placement_point)
+
+var h_positions = []
+func set_bottom_nubs(fos,h_separator):
+	var nub = get_node('Bottom/Nub')
+	var label = nub.get_node('Label')
+	var label2 = nub.get_node('Label2')
+	var position = 10
+	var step = 1
+	for i in get_node('Bottom').get_children():
+		get_node('Bottom').remove_child(i)
+	for frame in fos:
+		var shift = time_shift+(interval*frame)
+		var hours = floor(shift/60)
+		var minutes = shift-(hours*60)
+		var days = floor(hours/24)
+		var h = hour - hours
+		var m = minute - minutes
+		position -= h_separator
+		nub.set_position(Vector2(position,0))
+		step += 1
+		while h < 0:
+			h = 24-abs(h)
+		while m < 0:
+			m = 60-abs(m)
+		if h < 10:
+			h = str(\"0\",h)
+		if m < 10:
+			m = str(\"0\",m)
+		if step == 3:
+			label.set_text(str(h)+\":\"+str(m))
+			step = 0
+		else:
+			label.set_text(\"\")
+		if str(h) == \"00\" and str(m) == \"00\":
+			label2.set_text(_day(day-days))
+		else:
+			label2.set_text(\"\")
+		get_node('Bottom').add_child(nub.duplicate())
+	h_positions.clear()
+	for i in get_node('Bottom').get_children():
+		h_positions.append(i.get_position().x)
+
+func set_side_nubs(array,maxv,spread,v_separator,height):
+	var nub = get_node('Side/Nub')
+	var label = nub.get_node('Label')
+	var value = maxv
+	var distance = _round(spread)/10
+	var position = 0
+	for i in get_node('Side').get_children():
+		get_node('Side').remove_child(i)
+	for ticks in 11:
+		position += v_separator
+		nub.set_position(Vector2(0,position))
+		label.set_text(str(value))
+		value -= distance
+		get_node('Side').add_child(nub.duplicate())
+
+func time_shift():
+	var remainder = 0
+	if interval == 45:
+		if minute < 45:
+			remainder = (minute%15)+60
+		else:
+			remainder = minute%15
+	elif interval <= 60:
+		remainder = minute%interval
+	elif interval == 120:
+		remainder = (minute%60)+((hour%2)*60)
+	elif interval == 360:
+		remainder = (minute%60)+((hour%6)*60)
+	elif interval == 720:
+		remainder = (minute%60)+((hour%12)*60)
+	elif interval == 1440:
+		remainder = (minute%60)+((hour%24)*60)
+	elif interval == 10080 or interval == 40320:
+		remainder = (minute%60)+((hour%24)*60)+((day%7)*24*60)
+	return remainder
+
+#cumulative
+func data_array(path,fos):
+	var selection = fos*interval
+	var buffer = int(path.right(path.length()-2))/8
+	var file = File.new()
+	var sum = 0
+	var set = []
+	var array = []
+	file.open(path,file.READ)
+	if file.get_len()/buffer < selection:
+		selection = file.get_len()/buffer
+	for i in selection:
+		file.seek_end(-(i+1)*buffer)
+		if buffer == 4:
+			set.append(file.get_32())
+		elif buffer == 8:
+			set.append(file.get_64())
+	file.close()
+	while set.size() >= interval:
+		for i in interval:
+			sum += set.front()
+			set.pop_front()
+		array.append(sum)
+		sum = 0
+	return array
+
+func _day(value):
+	while value < 0:
+		value = 7-abs(value)
+	var days = {
+		0:\"S\",
+		1:\"M\",
+		2:\"T\",
+		3:\"W\",
+		4:\"T\",
+		5:\"F\",
+		6:\"S\"}
+	return days.values()[value]
+
+func _round(value):
+	if str(value).length() <= 4:
+		value = round(value*0.1)*10
+	elif str(value).length() <= 5:
+		value = round(value*0.01)*100
+	else:
+		value = round(value*0.001)*1000
+	return value
+
+func _ceiling(value):
+	if str(value).length() <= 4:
+		value = ceil(value*0.1)*10
+	elif str(value).length() <= 5:
+		value = ceil(value*0.01)*100
+	else:
+		value = ceil(value*0.001)*1000
+	return value
+
+func _floor(value):
+	if str(value).length() <= 4:
+		value = floor(value*0.1)*10
+	elif str(value).length() <= 5:
+		value = floor(value*0.01)*100
+	else:
+		value = floor(value*0.001)*1000
+	return value
+"
+
+[sub_resource type="DynamicFont" id=2]
+resource_name = "Rubik-Light"
+size = 20
+font_data = ExtResource( 5 )
+
+[sub_resource type="GDScript" id=3]
+script/source = "extends TextureRect
+
+func _on_Area_mouse_entered():
+	get_node('Label').show()
+
+func _on_Area_mouse_exited():
+	get_node('Label').hide()
+"
+
+[sub_resource type="DynamicFont" id=4]
+resource_name = "Rubik-Light"
+size = 20
+font_data = ExtResource( 5 )
+
+[sub_resource type="DynamicFont" id=5]
+size = 50
+font_data = ExtResource( 5 )
+
+[sub_resource type="DynamicFont" id=6]
+size = 30
+font_data = ExtResource( 5 )
+
+[sub_resource type="GDScript" id=7]
+script/source = "extends MenuButton
+
+onready var menu = get_popup()
+
+func _ready():
+	menu.connect('id_pressed',self,'selection')
+
+func set_interval(value):
+	get_node('../../Chart').interval = value
+
+func selection(ID):
+	var setting = menu.get_item_text(ID)
+	if setting == \"1 minute\":
+		set_text(\"1m\")
+		set_interval(1)
+	elif setting == \"5 minute\":
+		set_text(\"5m\")
+		set_interval(5)
+	elif setting == \"15 minute\":
+		set_text(\"15m\")
+		set_interval(15)
+	elif setting == \"30 minute\":
+		set_text(\"30m\")
+		set_interval(30)
+	elif setting == \"45 minute\":
+		set_text(\"45m\")
+		set_interval(45)
+	elif setting == \"1 hour\":
+		set_text(\"1h\")
+		set_interval(60)
+	elif setting == \"2 hour\":
+		set_text(\"2h\")
+		set_interval(120)
+	elif setting == \"6 hour\":
+		set_text(\"6h\")
+		set_interval(360)
+	elif setting == \"12 hour\":
+		set_text(\"12h\")
+		set_interval(720)
+	elif setting == \"1 day\":
+		set_text(\"1D\")
+		set_interval(1440)
+	elif setting == \"1 week\":
+		set_text(\"1W\")
+		set_interval(10080)
+	elif setting == \"4 week\":
+		set_text(\"4W\")
+		set_interval(40320)
+	get_node('../../Chart').display()
+"
+
+[sub_resource type="GDScript" id=8]
+script/source = "extends Container
+
+onready var point = get_node('Point')
+var time_shift
+var day
+var hour
+var minute
+
+#intervals: 1 5 15 30 45 60 120 360 720 1440 10080 40320
+var interval = 15
+
+func _ready():
+	game.connect('minute',self,'display')
+	display(true)
+
+# zoom works well between values of 0 and 20 with these settings
+var zoom = 0
+func display(force=false):
+	if is_visible_in_tree() or force:
+		day = int(game.day)
+		hour = int(game.hour)
+		minute = int(game.minute)
+		time_shift = time_shift()
+		var width = get_node('Bottom').get_size().x
+		var height = get_node('Side').get_size().y
+		var h_separator = 30-zoom
+		var v_separator = round(height/12)
+		var fos = floor(width/h_separator)
+		var path = 'user://Data/Slot %s/Finance/Expenses.a64'%game.data_slot
+		var array = data_array(path,fos)
+		var sorted = array.duplicate()
+		sorted.sort()
+		var minv
+		var maxv
+		var spread
+		var top = v_separator
+		var bot = v_separator*11
+		var v_range = bot-top
+		if not array.empty():
+			get_node('Label').hide()
+			minv = _floor(sorted.front())
+			maxv = _ceiling(sorted.back())
+			spread = maxv - minv
+			get_node('../Title/Price').set_text(\"¤\"+str(array.front()))
+			get_tree().get_root().get_node('Game/GUI/Money/Expenses').set_text(\"¤\"+str(array.front()))
+			set_bottom_nubs(fos,h_separator)
+			set_side_nubs(array,maxv,spread,v_separator,height)
+			for i in get_children():
+				if i.name != \"Side\" and i.name != \"Bottom\" and i.name != \"Line2D\" and i.name != \"Label\":
+					remove_child(i)
+			var index = 0
+			for value in array:
+				graph(value,minv,top,spread,v_range,h_positions[index],height)
+				index += 1
+			var points = []
+			for i in get_children():
+				if i.name != \"Side\" and i.name != \"Bottom\" and i.name != \"Line2D\" and i.name != \"Label\":
+					points.append(i)
+			var lines = []
+			for i in points:
+				var pos_x = i.get_position().x+3
+				var pos_y = i.get_position().y+3
+				var adjusted_pos = Vector2(pos_x,pos_y)
+				lines.append(adjusted_pos)
+			get_node('Line2D').set_points(lines)
+		else:
+			get_node('Label').show()
+
+func graph(value,minv,top,spread,v_range,h_placement,height):
+	var position
+	if spread == 0:
+		position = 0
+	else:
+		position = (value-minv)/spread
+	var v_placement = height-((position*v_range)+top)
+	var placement_point = point.duplicate()
+	placement_point.set_position(Vector2(h_placement,v_placement))
+	placement_point.get_node('Label').set_text(str(value))
+	add_child(placement_point)
+
+var h_positions = []
+func set_bottom_nubs(fos,h_separator):
+	var nub = get_node('Bottom/Nub')
+	var label = nub.get_node('Label')
+	var label2 = nub.get_node('Label2')
+	var position = 10
+	var step = 1
+	for i in get_node('Bottom').get_children():
+		get_node('Bottom').remove_child(i)
+	for frame in fos:
+		var shift = time_shift+(interval*frame)
+		var hours = floor(shift/60)
+		var minutes = shift-(hours*60)
+		var days = floor(hours/24)
+		var h = hour - hours
+		var m = minute - minutes
+		position -= h_separator
+		nub.set_position(Vector2(position,0))
+		step += 1
+		while h < 0:
+			h = 24-abs(h)
+		while m < 0:
+			m = 60-abs(m)
+		if h < 10:
+			h = str(\"0\",h)
+		if m < 10:
+			m = str(\"0\",m)
+		if step == 3:
+			label.set_text(str(h)+\":\"+str(m))
+			step = 0
+		else:
+			label.set_text(\"\")
+		if str(h) == \"00\" and str(m) == \"00\":
+			label2.set_text(_day(day-days))
+		else:
+			label2.set_text(\"\")
+		get_node('Bottom').add_child(nub.duplicate())
+	h_positions.clear()
+	for i in get_node('Bottom').get_children():
+		h_positions.append(i.get_position().x)
+
+func set_side_nubs(array,maxv,spread,v_separator,height):
+	var nub = get_node('Side/Nub')
+	var label = nub.get_node('Label')
+	var value = maxv
+	var distance = _round(spread)/10
+	var position = 0
+	for i in get_node('Side').get_children():
+		get_node('Side').remove_child(i)
+	for ticks in 11:
+		position += v_separator
+		nub.set_position(Vector2(0,position))
+		label.set_text(str(value))
+		value -= distance
+		get_node('Side').add_child(nub.duplicate())
+
+func time_shift():
+	var remainder = 0
+	if interval == 45:
+		if minute < 45:
+			remainder = (minute%15)+60
+		else:
+			remainder = minute%15
+	elif interval <= 60:
+		remainder = minute%interval
+	elif interval == 120:
+		remainder = (minute%60)+((hour%2)*60)
+	elif interval == 360:
+		remainder = (minute%60)+((hour%6)*60)
+	elif interval == 720:
+		remainder = (minute%60)+((hour%12)*60)
+	elif interval == 1440:
+		remainder = (minute%60)+((hour%24)*60)
+	elif interval == 10080 or interval == 40320:
+		remainder = (minute%60)+((hour%24)*60)+((day%7)*24*60)
+	return remainder
+
+#cumulative
+func data_array(path,fos):
+	var selection = fos*interval
+	var buffer = int(path.right(path.length()-2))/8
+	var file = File.new()
+	var sum = 0
+	var set = []
+	var array = []
+	file.open(path,file.READ)
+	if file.get_len()/buffer < selection:
+		selection = file.get_len()/buffer
+	for i in selection:
+		file.seek_end(-(i+1)*buffer)
+		if buffer == 4:
+			set.append(file.get_32())
+		elif buffer == 8:
+			set.append(file.get_64())
+	file.close()
+	while set.size() >= interval:
+		for i in interval:
+			sum += set.front()
+			set.pop_front()
+		array.append(sum)
+		sum = 0
+	return array
+
+func _day(value):
+	while value < 0:
+		value = 7-abs(value)
+	var days = {
+		0:\"S\",
+		1:\"M\",
+		2:\"T\",
+		3:\"W\",
+		4:\"T\",
+		5:\"F\",
+		6:\"S\"}
+	return days.values()[value]
+
+func _round(value):
+	if str(value).length() <= 4:
+		value = round(value*0.1)*10
+	elif str(value).length() <= 5:
+		value = round(value*0.01)*100
+	else:
+		value = round(value*0.001)*1000
+	return value
+
+func _ceiling(value):
+	if str(value).length() <= 4:
+		value = ceil(value*0.1)*10
+	elif str(value).length() <= 5:
+		value = ceil(value*0.01)*100
+	else:
+		value = ceil(value*0.001)*1000
+	return value
+
+func _floor(value):
+	if str(value).length() <= 4:
+		value = floor(value*0.1)*10
+	elif str(value).length() <= 5:
+		value = floor(value*0.01)*100
+	else:
+		value = floor(value*0.001)*1000
+	return value
+"
+
+[sub_resource type="GDScript" id=9]
+script/source = "extends Container
+
+onready var point = get_node('Point')
+var time_shift
+var day
+var hour
+var minute
+
+#intervals: 1 5 15 30 45 60 120 360 720 1440 10080 40320
+var interval = 15
+
+func _ready():
+	game.connect('minute',self,'display')
+	display(true)
+
+# zoom works well between values of 0 and 20 with these settings
+var zoom = 0
+func display(force=false):
+	if is_visible_in_tree() or force:
+		day = int(game.day)
+		hour = int(game.hour)
+		minute = int(game.minute)
+		time_shift = time_shift()
+		var width = get_node('Bottom').get_size().x
+		var height = get_node('Side').get_size().y
+		var h_separator = 30-zoom
+		var v_separator = round(height/12)
+		var fos = floor(width/h_separator)
+		var path = 'user://Data/Slot %s/Finance/Capital.a64'%game.data_slot
+		var array = data_array(path,fos,time_shift)
+		var sorted = array.duplicate()
+		sorted.sort()
+		var minv
+		var maxv
+		var spread
+		var top = v_separator
+		var bot = v_separator*11
+		var v_range = bot-top
+		if not array.empty():
+			get_node('Label').hide()
+			minv = _floor(sorted.front())
+			maxv = _ceiling(sorted.back())
+			spread = maxv - minv
+			get_node('../Title/Price').set_text(\"¤\"+str(array.front()))
+			set_bottom_nubs(fos,h_separator)
+			set_side_nubs(array,maxv,spread,v_separator,height)
+			for i in get_children():
+				if i.name != \"Side\" and i.name != \"Bottom\" and i.name != \"Line2D\" and i.name != \"Label\":
+					remove_child(i)
+			var index = 0
+			for value in array:
+				graph(value,minv,top,spread,v_range,h_positions[index],height)
+				index += 1
+			var points = []
+			for i in get_children():
+				if i.name != \"Side\" and i.name != \"Bottom\" and i.name != \"Line2D\" and i.name != \"Label\":
+					points.append(i)
+			var lines = []
+			for i in points:
+				var pos_x = i.get_position().x+3
+				var pos_y = i.get_position().y+3
+				var adjusted_pos = Vector2(pos_x,pos_y)
+				lines.append(adjusted_pos)
+			get_node('Line2D').set_points(lines)
+		else:
+			get_node('Label').show()
+
+var points = []
+func graph(value,minv,top,spread,v_range,h_placement,height):
+	var position
+	if spread == 0:
+		position = 0
+	else:
+		position = (value-minv)/spread
+	var v_placement = height-((position*v_range)+top)
+	var placement_point = point.duplicate()
+	placement_point.set_position(Vector2(h_placement,v_placement))
+	placement_point.get_node('Label').set_text(str(value))
+	add_child(placement_point)
+
+var h_positions = []
+func set_bottom_nubs(fos,h_separator):
+	var nub = get_node('Bottom/Nub')
+	var label = nub.get_node('Label')
+	var label2 = nub.get_node('Label2')
+	var position = 10
+	var step = 1
+	for i in get_node('Bottom').get_children():
+		get_node('Bottom').remove_child(i)
+	for frame in fos:
+		var shift = time_shift+(interval*frame)
+		var hours = floor(shift/60)
+		var minutes = shift-(hours*60)
+		var days = floor(hours/24)
+		var h = hour - hours
+		var m = minute - minutes
+		position -= h_separator
+		nub.set_position(Vector2(position,0))
+		step += 1
+		while h < 0:
+			h = 24-abs(h)
+		while m < 0:
+			m = 60-abs(m)
+		if h < 10:
+			h = str(\"0\",h)
+		if m < 10:
+			m = str(\"0\",m)
+		if step == 3:
+			label.set_text(str(h)+\":\"+str(m))
+			step = 0
+		else:
+			label.set_text(\"\")
+		if str(h) == \"00\" and str(m) == \"00\":
+			label2.set_text(_day(day-days))
+		else:
+			label2.set_text(\"\")
+		get_node('Bottom').add_child(nub.duplicate())
+	h_positions.clear()
+	for i in get_node('Bottom').get_children():
+		h_positions.append(i.get_position().x)
+
+func set_side_nubs(array,maxv,spread,v_separator,height):
+	var nub = get_node('Side/Nub')
+	var label = nub.get_node('Label')
+	var value = maxv
+	var distance = _round(spread)/10
+	var position = 0
+	for i in get_node('Side').get_children():
+		get_node('Side').remove_child(i)
+	for ticks in 11:
+		position += v_separator
+		nub.set_position(Vector2(0,position))
+		label.set_text(str(value))
+		value -= distance
+		get_node('Side').add_child(nub.duplicate())
+
+func time_shift():
+	var remainder = 0
+	if interval == 45:
+		if minute < 45:
+			remainder = (minute%15)+60
+		else:
+			remainder = minute%15
+	elif interval <= 60:
+		remainder = minute%interval
+	elif interval == 120:
+		remainder = (minute%60)+((hour%2)*60)
+	elif interval == 360:
+		remainder = (minute%60)+((hour%6)*60)
+	elif interval == 720:
+		remainder = (minute%60)+((hour%12)*60)
+	elif interval == 1440:
+		remainder = (minute%60)+((hour%24)*60)
+	elif interval == 10080 or interval == 40320:
+		remainder = (minute%60)+((hour%24)*60)+((day%7)*24*60)
+	return remainder
+
+#noncumulative
+func data_array(path,fos,time_shift):
+	var selection = fos*interval
+	var buffer = int(path.right(path.length()-2))/8
+	var file = File.new()
+	var set = []
+	var array = []
+	file.open(path,file.READ)
+	if file.get_len()/buffer < selection:
+		selection = file.get_len()/buffer
+	for i in selection:
+		file.seek_end(-(i+1)*buffer)
+		if buffer == 4:
+			set.append(file.get_32())
+		elif buffer == 8:
+			set.append(file.get_64())
+	file.close()
+	for i in fos:
+		if i == 0:
+			if i*interval < set.size():
+				array.append(set[i*interval])
+		else:
+			if i*interval+time_shift < set.size():
+				array.append(set[i*interval+time_shift])
+	return array
+
+func _day(value):
+	while value < 0:
+		value = 7-abs(value)
+	var days = {
+		0:\"S\",
+		1:\"M\",
+		2:\"T\",
+		3:\"W\",
+		4:\"T\",
+		5:\"F\",
+		6:\"S\"}
+	return days.values()[value]
+
+func _round(value):
+	if str(value).length() <= 4:
+		value = round(value*0.1)*10
+	elif str(value).length() <= 5:
+		value = round(value*0.01)*100
+	else:
+		value = round(value*0.001)*1000
+	return value
+
+func _ceiling(value):
+	if str(value).length() <= 4:
+		value = ceil(value*0.1)*10
+	elif str(value).length() <= 5:
+		value = ceil(value*0.01)*100
+	else:
+		value = ceil(value*0.001)*1000
+	return value
+
+func _floor(value):
+	if str(value).length() <= 4:
+		value = floor(value*0.1)*10
+	elif str(value).length() <= 5:
+		value = floor(value*0.01)*100
+	else:
+		value = floor(value*0.001)*1000
+	return value
+"
+
+[sub_resource type="DynamicFont" id=10]
+size = 72
+font_data = ExtResource( 5 )
+
+[sub_resource type="GDScript" id=11]
+script/source = "extends Control
+
+func _input(event):
+	if event.is_action_pressed('ui_back'):
+		if get_node('The Open Market').is_visible_in_tree():
+			get_tree().get_root().get_node('Game/Background').color_filter('82000f00')
+			get_node('../Main').show()
+			hide()
+		elif get_node('Listing').is_visible_in_tree():
+			get_tree().get_root().get_node('Game/Background').color_filter('82000d13')
+			get_node('The Open Market').show()
+			get_node('Listing').hide()"
+
+[sub_resource type="GDScript" id=12]
+script/source = "extends NinePatchRect
+
+onready var index = load('res://Finance/index.gd').index
+onready var listing = get_node('Listing')
+
+func _ready():
+	game.connect('minute',self,'minute')
+	for key in index.keys():
+		market_listing(key)
+	minute()
+
+func market_listing(key):
+	listing.get_node('HBoxContainer/Name').set_text(index[key]['name'])
+	listing.get_node('HBoxContainer/Symbol').set_text(key)
+	get_node('Control/ScrollContainer/Listings').add_child(listing.duplicate())
+
+func minute():
+	for node in get_node('Control/ScrollContainer/Listings').get_children():
+		var symbol = node.get_node('HBoxContainer/Symbol').get_text()
+		node.get_node('HBoxContainer/Price').set_text(get_price('user://Data/Slot %s/Market/'%game.data_slot+symbol+'.a32'))
+
+func get_price(path):
+	var buffer = int(path.right(path.length()-2))
+	var file = File.new()
+	var price
+	file.open(path,file.READ)
+	file.seek_end(-8)
+	if buffer == 32:
+		price = file.get_32()
+	elif buffer == 64:
+		price = file.get_64()
+	file.close()
+	return str(price)
+"
+
+[sub_resource type="GDScript" id=13]
+script/source = "extends Container
+
+func _on_TextureButton_pressed():
+	var title = get_node('HBoxContainer/Name').get_text()
+	var symbol = get_node('HBoxContainer/Symbol').get_text()
+	get_tree().get_root().get_node('Game/Background').color_filter('82000613')
+	get_node('../../../../../Listing/Title/Label').set_text(title)
+	get_node('../../../../../The Open Market').hide()
+	get_node('../../../../../Listing').show()
+	get_node('../../../../../Listing/Chart').display(symbol)
+"
+
+[sub_resource type="DynamicFont" id=14]
+size = 20
+font_data = ExtResource( 5 )
+
+[sub_resource type="GDScript" id=15]
+script/source = "extends Container
+
+onready var g = get_tree().get_root().get_node('Game')
+onready var point = get_node('Point')
+var location = 'user://Data/Slot %s/Market/'%game.data_slot
+var time_shift
+var _symbol
+var day
+var hour
+var minute
+var second
+
+#intervals M: S 1  5   15  30   45   60   120  360   720   1440  10080  40320
+#intervals S: 1 60 300 900 1800 2700 3600 7200 21600 43200 86400 604800 2419200
+var interval = 900
+
+func _ready():
+	get_tree().get_root().get_node('Game/Clock').connect('timeout',self,'tick')
+
+func tick():
+	display(_symbol)
+
+# zoom works well between values of 0 and 20 with these settings
+var zoom = 0
+func display(symbol):
+	if is_visible_in_tree():
+		day = int(game.day)
+		hour = int(game.hour)
+		minute = int(game.minute)
+		second = int(game.second)
+		time_shift = time_shift()
+		_symbol = symbol
+		var width = get_node('Bottom').get_size().x
+		var height = get_node('Side').get_size().y
+		var h_separator = 30-zoom
+		var v_separator = round(height/12)
+		var fos = floor(width/h_separator)
+		var path = location+symbol+\".a32\"
+		var array = data_array(path,fos)
+		var sorted = array.duplicate()
+		sorted.sort()
+		var minv
+		var maxv
+		var spread
+		var top = v_separator
+		var bot = v_separator*11
+		var v_range = bot-top
+		if not array.empty():
+			get_node('Label').hide()
+			minv = _floor(sorted.front())
+			maxv = _ceiling(sorted.back())
+			spread = maxv - minv
+			get_node('../Title/Price').set_text(\"¤\"+str(array.front()))
+			set_bottom_nubs(fos,h_separator)
+			set_side_nubs(array,maxv,spread,v_separator,height)
+			for i in get_children():
+				if i.name != \"Side\" and i.name != \"Bottom\" and i.name != \"Line2D\" and i.name != \"Label\":
+					remove_child(i)
+			var index = 0
+			for value in array:
+				graph(value,minv,top,spread,v_range,h_positions[index],height)
+				index += 1
+			var points = []
+			for i in get_children():
+				if i.name != \"Side\" and i.name != \"Bottom\" and i.name != \"Line2D\" and i.name != \"Label\":
+						points.append(i)
+			var lines = []
+			for i in points:
+				var pos_x = i.get_position().x+3
+				var pos_y = i.get_position().y+3
+				var adjusted_pos = Vector2(pos_x,pos_y)
+				lines.append(adjusted_pos)
+			get_node('Line2D').set_points(lines)
+		else:
+			get_node('Label').show()
+
+var points = []
+func graph(value,minv,top,spread,v_range,h_placement,height):
+	var position
+	if spread == 0:
+		position = 0
+	else:
+		position = (value-minv)/spread
+	var v_placement = height-((position*v_range)+top)
+	var placement_point = point.duplicate()
+	placement_point.set_position(Vector2(h_placement,v_placement))
+	placement_point.get_node('Label').set_text(str(value))
+	add_child(placement_point)
+
+var h_positions = []
+func set_bottom_nubs(fos,h_separator):
+	var nub = get_node('Bottom/Nub')
+	var label = nub.get_node('Label')
+	var label2 = nub.get_node('Label2')
+	var position = 10
+	var step = 1
+	for i in get_node('Bottom').get_children():
+		get_node('Bottom').remove_child(i)
+	for frame in fos:
+		var shift = time_shift+(interval*frame)
+		var d = floor(floor(shift/60)/24)
+		var h = hour - floor(shift/3600)
+		var m = minute - floor(shift/60)
+		var s = second - frame
+		position -= h_separator
+		nub.set_position(Vector2(position,0))
+		step += 1
+		if interval == 1:
+			while s < 0:
+				s = 60-abs(s)
+				m -= 1
+		while m < 0:
+			m = 60-abs(m)
+			if interval == 1:
+				h -= 1
+		while h < 0:
+			h = 24-abs(h)
+		if h < 10:
+			h = str(\"0\",h)
+		if m < 10:
+			m = str(\"0\",m)
+		if step == 4:
+			if interval == 1:
+				label.set_text(str(h)+\":\"+str(m)+\":\"+str(s))
+			else:
+				label.set_text(str(h)+\":\"+str(m))
+			step = 0
+		else:
+			label.set_text(\"\")
+		if str(h) == \"00\" and str(m) == \"00\":
+			label2.set_text(_day(day-d))
+		else:
+			label2.set_text(\"\")
+		get_node('Bottom').add_child(nub.duplicate())
+	h_positions.clear()
+	for i in get_node('Bottom').get_children():
+		h_positions.append(i.get_position().x)
+
+func set_side_nubs(array,maxv,spread,v_separator,height):
+	var nub = get_node('Side/Nub')
+	var label = nub.get_node('Label')
+	var value = maxv
+	var distance = _round(spread)/10
+	var position = 0
+	for i in get_node('Side').get_children():
+		get_node('Side').remove_child(i)
+	for ticks in 11:
+		position += v_separator
+		nub.set_position(Vector2(0,position))
+		label.set_text(str(value))
+		value -= distance
+		get_node('Side').add_child(nub.duplicate())
+
+func time_shift():
+	var remainder = 0
+	if interval == 60:
+		remainder = second%interval
+	elif interval == 300:
+		remainder = (second%interval)+((minute%5)*60)
+	elif interval == 900:
+		remainder = (second%interval)+((minute%15)*60)
+	elif interval == 1800:
+		remainder = (second%interval)+((minute%30)*60)
+	elif interval == 2700:
+		remainder = (second%interval)+((minute%45)*60)
+#		if minute < 45:
+#			remainder += 3600 ???
+	elif interval == 3600:
+		remainder = (second%interval)+((minute%60)*60)
+	elif interval == 7200:
+		remainder = (second%interval)+((minute%60)*60)+((hour%2)*3600)
+	elif interval == 21600:
+		remainder = (second%interval)+((minute%60)*60)+((hour%6)*3600)
+	elif interval == 43200:
+		remainder = (second%interval)+((minute%60)*60)+((hour%12)*3600)
+	elif interval == 86400:
+		remainder = (second%interval)+((minute%60)*60)+((hour%24)*3600)
+	elif interval == 604800 or interval == 2419200:
+		remainder = (second%interval)+((minute%60)*60)+((hour%24)*3600)+((day%7)*86400) #UNTESTED
+	return remainder
+
+#noncumulative
+func data_array(path,fos):
+	var selection = fos*interval
+	var buffer = int(path.right(path.length()-2))/8
+	var file = File.new()
+	var set = []
+	var array = []
+	file.open(path,file.READ)
+	if file.get_len()/buffer < selection:
+		selection = file.get_len()/buffer
+	for i in selection:
+		file.seek_end(-(i+1)*buffer)
+		if buffer == 4:
+			set.append(file.get_32())
+		elif buffer == 8:
+			set.append(file.get_64())
+	file.close()
+	for i in fos:
+		if i == 0:
+			if i*interval < set.size():
+				array.append(set[i*interval])
+		else:
+			if i*interval+time_shift < set.size():
+				array.append(set[i*interval+time_shift])
+	return array
+
+func _day(value):
+	while value < 0:
+		value = 7-abs(value)
+	var days = {
+		0:\"S\",
+		1:\"M\",
+		2:\"T\",
+		3:\"W\",
+		4:\"T\",
+		5:\"F\",
+		6:\"S\"}
+	return days.values()[value]
+
+func _round(value):
+	if str(value).length() <= 4:
+		value = round(value*0.1)*10
+	elif str(value).length() <= 5:
+		value = round(value*0.01)*100
+	else:
+		value = round(value*0.001)*1000
+	return value
+
+func _ceiling(value):
+	if str(value).length() <= 4:
+		value = ceil(value*0.1)*10
+	elif str(value).length() <= 5:
+		value = ceil(value*0.01)*100
+	else:
+		value = ceil(value*0.001)*1000
+	return value
+
+func _floor(value):
+	if str(value).length() <= 4:
+		value = floor(value*0.1)*10
+	elif str(value).length() <= 5:
+		value = floor(value*0.01)*100
+	else:
+		value = floor(value*0.001)*1000
+	return value
+"
+
+[sub_resource type="GDScript" id=16]
+script/source = "extends MenuButton
+
+onready var menu = get_popup()
+
+func _ready():
+	menu.connect('id_pressed',self,'selection')
+
+func set_interval(value):
+	get_node('../../Chart').interval = value
+
+func selection(ID):
+	var setting = menu.get_item_text(ID)
+	if setting == \"1 second\":
+		set_text(\"1s\")
+		set_interval(1)
+	if setting == \"1 minute\":
+		set_text(\"1m\")
+		set_interval(60)
+	elif setting == \"5 minute\":
+		set_text(\"5m\")
+		set_interval(300)
+	elif setting == \"15 minute\":
+		set_text(\"15m\")
+		set_interval(900)
+	elif setting == \"30 minute\":
+		set_text(\"30m\")
+		set_interval(1800)
+	elif setting == \"45 minute\":
+		set_text(\"45m\")
+		set_interval(2700)
+	elif setting == \"1 hour\":
+		set_text(\"1h\")
+		set_interval(3600)
+	elif setting == \"2 hour\":
+		set_text(\"2h\")
+		set_interval(7200)
+	elif setting == \"6 hour\":
+		set_text(\"6h\")
+		set_interval(21600)
+	elif setting == \"12 hour\":
+		set_text(\"12h\")
+		set_interval(43200)
+	elif setting == \"1 day\":
+		set_text(\"1D\")
+		set_interval(86400)
+	elif setting == \"1 week\":
+		set_text(\"1W\")
+		set_interval(604800)
+	elif setting == \"4 week\":
+		set_text(\"4W\")
+		set_interval(2419200)
+	get_node('../../Chart').display(get_node('../../Chart')._symbol)
+"
+
+[sub_resource type="DynamicFont" id=17]
+size = 30
+font_data = ExtResource( 5 )
+
+[sub_resource type="DynamicFont" id=18]
+size = 20
+font_data = ExtResource( 5 )
+
+[sub_resource type="GDScript" id=19]
+script/source = "extends Node
+
+func _ready():
+	pass
+
+func frame():
+	return 
+
+func rent():
+	pass
+
+func personal_business():
+	pass
+
+func power():
+	pass
+
+func water():
+	pass
+
+func public_services():
+	pass
+
+func maintenance():
+	var drones
+	var arc_cleaning
+	pass
+
+func misc():
+	var slave_actions
+	pass"
+
+[sub_resource type="GDScript" id=20]
+script/source = "extends Node
+
+func _ready():
+	pass
+
+func frame():
+	return 
+
+func living_expenses():
+	var personal = 1500
+	var slave_food = 5
+	var contraceptives = 7
+	return personal
+
+func power():
+	pass
+
+func water():
+	pass
+
+func public_services():
+	pass
+
+func maintenance():
+	var drones
+	var arc_cleaning
+	pass
+
+func misc():
+	var slave_actions
+	pass"
+
+[node name="Finance" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Main" type="Control" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -960.0
+margin_top = -460.0
+margin_right = 960.0
+margin_bottom = 390.0
+rect_clip_content = true
+mouse_filter = 2
+
+[node name="Left" type="VBoxContainer" parent="Main"]
+margin_right = 818.0
+margin_bottom = 850.0
+rect_min_size = Vector2( 0, 850 )
+
+[node name="Income" type="NinePatchRect" parent="Main/Left"]
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.0980392 )
+margin_right = 818.0
+margin_bottom = 423.0
+rect_min_size = Vector2( 818, 423 )
+texture = ExtResource( 2 )
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 2
+
+[node name="Chart" type="Container" parent="Main/Left/Income"]
+margin_right = 750.0
+margin_bottom = 372.0
+script = SubResource( 1 )
+
+[node name="Side" type="TextureRect" parent="Main/Left/Income/Chart"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -2.0
+margin_bottom = -2.0
+texture = ExtResource( 3 )
+stretch_mode = 2
+
+[node name="Nub" type="TextureRect" parent="Main/Left/Income/Chart/Side"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_right = 5.0
+margin_bottom = 2.0
+rect_min_size = Vector2( 5, 2 )
+texture = ExtResource( 4 )
+expand = true
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="Main/Left/Income/Chart/Side/Nub"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 4.0
+margin_top = -12.0
+margin_right = 64.0
+margin_bottom = 12.0
+custom_fonts/font = SubResource( 2 )
+align = 1
+
+[node name="Bottom" type="TextureRect" parent="Main/Left/Income/Chart"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -2.0
+texture = ExtResource( 4 )
+stretch_mode = 2
+
+[node name="Nub" type="TextureRect" parent="Main/Left/Income/Chart/Bottom"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -2.0
+margin_bottom = 5.0
+rect_min_size = Vector2( 2, 5 )
+texture = ExtResource( 3 )
+expand = true
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="Main/Left/Income/Chart/Bottom/Nub"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -36.0
+margin_top = 1.0
+margin_right = 36.0
+margin_bottom = 25.0
+custom_fonts/font = SubResource( 2 )
+align = 1
+
+[node name="Label2" type="Label" parent="Main/Left/Income/Chart/Bottom/Nub"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -36.0
+margin_top = 22.0
+margin_right = 36.0
+margin_bottom = 46.0
+custom_fonts/font = SubResource( 2 )
+align = 1
+
+[node name="Point" type="TextureRect" parent="Main/Left/Income/Chart"]
+self_modulate = Color( 1, 1, 1, 0 )
+margin_right = 20.0
+margin_bottom = 20.0
+texture = ExtResource( 6 )
+expand = true
+script = SubResource( 3 )
+
+[node name="Label" type="Label" parent="Main/Left/Income/Chart/Point"]
+visible = false
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 10.0
+margin_top = -19.0
+margin_right = 53.0
+margin_bottom = 5.0
+custom_fonts/font = SubResource( 4 )
+valign = 1
+
+[node name="Area" type="TextureRect" parent="Main/Left/Income/Chart/Point"]
+self_modulate = Color( 1, 1, 1, 0 )
+margin_left = -8.0
+margin_top = -7.0
+margin_right = 12.0
+margin_bottom = 13.0
+rect_pivot_offset = Vector2( -14, -14 )
+texture = ExtResource( 6 )
+expand = true
+
+[node name="Line2D" type="Line2D" parent="Main/Left/Income/Chart"]
+width = 3.0
+default_color = Color( 0.211765, 0.584314, 0.239216, 1 )
+texture_mode = -1
+
+[node name="Label" type="Label" parent="Main/Left/Income/Chart"]
+visible = false
+show_behind_parent = true
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -231.0
+margin_top = -30.0
+margin_right = 231.0
+margin_bottom = 30.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 5 )
+text = "INSUFFICIENT DATA"
+align = 1
+valign = 1
+
+[node name="Title" type="HBoxContainer" parent="Main/Left/Income"]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 205.0
+margin_bottom = 41.0
+
+[node name="Label" type="Label" parent="Main/Left/Income/Title"]
+show_behind_parent = true
+margin_right = 108.0
+margin_bottom = 37.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 6 )
+text = "Income:"
+valign = 1
+
+[node name="Price" type="Label" parent="Main/Left/Income/Title"]
+self_modulate = Color( 0.215686, 0.588235, 0.239216, 1 )
+show_behind_parent = true
+margin_left = 112.0
+margin_right = 112.0
+margin_bottom = 37.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 6 )
+valign = 1
+
+[node name="Settings" type="VBoxContainer" parent="Main/Left/Income"]
+margin_left = 4.0
+margin_top = 46.0
+margin_right = 58.0
+margin_bottom = 76.0
+
+[node name="Expand" type="Button" parent="Main/Left/Income/Settings"]
+visible = false
+margin_right = 54.0
+margin_bottom = 54.0
+rect_min_size = Vector2( 54, 54 )
+custom_fonts/font = ExtResource( 7 )
+
+[node name="TextureRect" type="TextureRect" parent="Main/Left/Income/Settings/Expand"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -22.0
+margin_top = -22.0
+margin_right = 22.0
+margin_bottom = 22.0
+mouse_filter = 2
+texture = ExtResource( 8 )
+
+[node name="Visibility" type="Button" parent="Main/Left/Income/Settings"]
+visible = false
+margin_right = 54.0
+margin_bottom = 54.0
+rect_min_size = Vector2( 54, 54 )
+custom_fonts/font = ExtResource( 7 )
+
+[node name="TextureRect" type="TextureRect" parent="Main/Left/Income/Settings/Visibility"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -22.0
+margin_top = -15.0
+margin_right = 22.0
+margin_bottom = 15.0
+mouse_filter = 2
+texture = ExtResource( 9 )
+expand = true
+
+[node name="Time" type="MenuButton" parent="Main/Left/Income/Settings"]
+margin_right = 54.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 54, 30 )
+custom_fonts/font = ExtResource( 7 )
+text = "15m"
+flat = false
+items = [ "1 minute", null, 0, false, false, -1, 0, null, "", false, "5 minute", null, 0, false, false, -1, 0, null, "", false, "15 minute", null, 0, false, false, -1, 0, null, "", false, "30 minute", null, 0, false, false, -1, 0, null, "", false, "45 minute", null, 0, false, false, -1, 0, null, "", false, "1 hour", null, 0, false, false, -1, 0, null, "", false, "2 hour", null, 0, false, false, -1, 0, null, "", false, "6 hour", null, 0, false, false, -1, 0, null, "", false, "12 hour", null, 0, false, false, -1, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "1 day", null, 0, false, false, -1, 0, null, "", false, "1 week", null, 0, false, false, -1, 0, null, "", false, "4 week", null, 0, false, false, -1, 0, null, "", false ]
+script = SubResource( 7 )
+
+[node name="Expenses" type="NinePatchRect" parent="Main/Left"]
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.0980392 )
+margin_top = 427.0
+margin_right = 818.0
+margin_bottom = 850.0
+rect_min_size = Vector2( 818, 423 )
+texture = ExtResource( 2 )
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 2
+
+[node name="Chart" type="Container" parent="Main/Left/Expenses"]
+margin_right = 750.0
+margin_bottom = 372.0
+script = SubResource( 8 )
+
+[node name="Side" type="TextureRect" parent="Main/Left/Expenses/Chart"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -2.0
+margin_bottom = -2.0
+texture = ExtResource( 3 )
+stretch_mode = 2
+
+[node name="Nub" type="TextureRect" parent="Main/Left/Expenses/Chart/Side"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_right = 5.0
+margin_bottom = 2.0
+rect_min_size = Vector2( 5, 2 )
+texture = ExtResource( 4 )
+expand = true
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="Main/Left/Expenses/Chart/Side/Nub"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 4.0
+margin_top = -12.0
+margin_right = 64.0
+margin_bottom = 12.0
+custom_fonts/font = SubResource( 2 )
+align = 1
+
+[node name="Bottom" type="TextureRect" parent="Main/Left/Expenses/Chart"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -2.0
+texture = ExtResource( 4 )
+stretch_mode = 2
+
+[node name="Nub" type="TextureRect" parent="Main/Left/Expenses/Chart/Bottom"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -2.0
+margin_bottom = 5.0
+rect_min_size = Vector2( 2, 5 )
+texture = ExtResource( 3 )
+expand = true
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="Main/Left/Expenses/Chart/Bottom/Nub"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -36.0
+margin_top = 1.0
+margin_right = 36.0
+margin_bottom = 25.0
+custom_fonts/font = SubResource( 2 )
+align = 1
+
+[node name="Label2" type="Label" parent="Main/Left/Expenses/Chart/Bottom/Nub"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -36.0
+margin_top = 22.0
+margin_right = 36.0
+margin_bottom = 46.0
+custom_fonts/font = SubResource( 2 )
+align = 1
+
+[node name="Point" type="TextureRect" parent="Main/Left/Expenses/Chart"]
+self_modulate = Color( 1, 1, 1, 0 )
+margin_right = 20.0
+margin_bottom = 20.0
+texture = ExtResource( 6 )
+expand = true
+script = SubResource( 3 )
+
+[node name="Label" type="Label" parent="Main/Left/Expenses/Chart/Point"]
+visible = false
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 10.0
+margin_top = -19.0
+margin_right = 53.0
+margin_bottom = 5.0
+custom_fonts/font = SubResource( 4 )
+valign = 1
+
+[node name="Area" type="TextureRect" parent="Main/Left/Expenses/Chart/Point"]
+self_modulate = Color( 1, 1, 1, 0 )
+margin_left = -8.0
+margin_top = -7.0
+margin_right = 12.0
+margin_bottom = 13.0
+rect_pivot_offset = Vector2( -14, -14 )
+texture = ExtResource( 6 )
+expand = true
+
+[node name="Line2D" type="Line2D" parent="Main/Left/Expenses/Chart"]
+width = 3.0
+default_color = Color( 0.831373, 0.164706, 0.164706, 1 )
+texture_mode = 42
+
+[node name="Label" type="Label" parent="Main/Left/Expenses/Chart"]
+visible = false
+show_behind_parent = true
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -231.0
+margin_top = -30.0
+margin_right = 231.0
+margin_bottom = 30.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 5 )
+text = "INSUFFICIENT DATA"
+align = 1
+valign = 1
+
+[node name="Title" type="HBoxContainer" parent="Main/Left/Expenses"]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 235.0
+margin_bottom = 41.0
+
+[node name="Label" type="Label" parent="Main/Left/Expenses/Title"]
+show_behind_parent = true
+margin_right = 138.0
+margin_bottom = 37.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 6 )
+text = "Expenses:"
+valign = 1
+
+[node name="Price" type="Label" parent="Main/Left/Expenses/Title"]
+self_modulate = Color( 0.831373, 0.164706, 0.164706, 1 )
+show_behind_parent = true
+margin_left = 142.0
+margin_right = 142.0
+margin_bottom = 37.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 6 )
+valign = 1
+
+[node name="Settings" type="VBoxContainer" parent="Main/Left/Expenses"]
+margin_left = 4.0
+margin_top = 46.0
+margin_right = 58.0
+margin_bottom = 76.0
+
+[node name="Expand" type="Button" parent="Main/Left/Expenses/Settings"]
+visible = false
+margin_right = 54.0
+margin_bottom = 54.0
+rect_min_size = Vector2( 54, 54 )
+custom_fonts/font = ExtResource( 7 )
+
+[node name="TextureRect" type="TextureRect" parent="Main/Left/Expenses/Settings/Expand"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -22.0
+margin_top = -22.0
+margin_right = 22.0
+margin_bottom = 22.0
+mouse_filter = 2
+texture = ExtResource( 8 )
+
+[node name="Visibility" type="Button" parent="Main/Left/Expenses/Settings"]
+visible = false
+margin_right = 54.0
+margin_bottom = 54.0
+rect_min_size = Vector2( 54, 54 )
+custom_fonts/font = ExtResource( 7 )
+
+[node name="TextureRect" type="TextureRect" parent="Main/Left/Expenses/Settings/Visibility"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -22.0
+margin_top = -15.0
+margin_right = 22.0
+margin_bottom = 15.0
+mouse_filter = 2
+texture = ExtResource( 9 )
+expand = true
+
+[node name="Time" type="MenuButton" parent="Main/Left/Expenses/Settings"]
+margin_right = 54.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 54, 30 )
+custom_fonts/font = ExtResource( 7 )
+text = "15m"
+flat = false
+items = [ "1 minute", null, 0, false, false, -1, 0, null, "", false, "5 minute", null, 0, false, false, -1, 0, null, "", false, "15 minute", null, 0, false, false, -1, 0, null, "", false, "30 minute", null, 0, false, false, -1, 0, null, "", false, "45 minute", null, 0, false, false, -1, 0, null, "", false, "1 hour", null, 0, false, false, -1, 0, null, "", false, "2 hour", null, 0, false, false, -1, 0, null, "", false, "6 hour", null, 0, false, false, -1, 0, null, "", false, "12 hour", null, 0, false, false, -1, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "1 day", null, 0, false, false, -1, 0, null, "", false, "1 week", null, 0, false, false, -1, 0, null, "", false, "4 week", null, 0, false, false, -1, 0, null, "", false ]
+script = SubResource( 7 )
+
+[node name="Capital" type="NinePatchRect" parent="Main"]
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.196078 )
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -1098.0
+margin_bottom = 602.0
+rect_min_size = Vector2( 1098, 602 )
+texture = ExtResource( 2 )
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 2
+
+[node name="Chart" type="Container" parent="Main/Capital"]
+margin_right = 1000.0
+margin_bottom = 550.0
+script = SubResource( 9 )
+
+[node name="Side" type="TextureRect" parent="Main/Capital/Chart"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -2.0
+margin_bottom = -2.0
+texture = ExtResource( 3 )
+stretch_mode = 2
+
+[node name="Nub" type="TextureRect" parent="Main/Capital/Chart/Side"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_right = 5.0
+margin_bottom = 2.0
+rect_min_size = Vector2( 5, 2 )
+texture = ExtResource( 4 )
+expand = true
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="Main/Capital/Chart/Side/Nub"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 4.0
+margin_top = -12.0
+margin_right = 64.0
+margin_bottom = 12.0
+custom_fonts/font = SubResource( 2 )
+align = 1
+
+[node name="Bottom" type="TextureRect" parent="Main/Capital/Chart"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -2.0
+texture = ExtResource( 4 )
+stretch_mode = 2
+
+[node name="Nub" type="TextureRect" parent="Main/Capital/Chart/Bottom"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -2.0
+margin_bottom = 5.0
+rect_min_size = Vector2( 2, 5 )
+texture = ExtResource( 3 )
+expand = true
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="Main/Capital/Chart/Bottom/Nub"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -36.0
+margin_top = 1.0
+margin_right = 36.0
+margin_bottom = 25.0
+custom_fonts/font = SubResource( 2 )
+align = 1
+
+[node name="Label2" type="Label" parent="Main/Capital/Chart/Bottom/Nub"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -36.0
+margin_top = 22.0
+margin_right = 36.0
+margin_bottom = 46.0
+custom_fonts/font = SubResource( 2 )
+align = 1
+
+[node name="Point" type="TextureRect" parent="Main/Capital/Chart"]
+self_modulate = Color( 1, 1, 1, 0 )
+margin_right = 20.0
+margin_bottom = 20.0
+texture = ExtResource( 6 )
+expand = true
+script = SubResource( 3 )
+
+[node name="Label" type="Label" parent="Main/Capital/Chart/Point"]
+visible = false
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 10.0
+margin_top = -19.0
+margin_right = 53.0
+margin_bottom = 5.0
+custom_fonts/font = SubResource( 4 )
+valign = 1
+
+[node name="Area" type="TextureRect" parent="Main/Capital/Chart/Point"]
+self_modulate = Color( 1, 1, 1, 0 )
+margin_left = -8.0
+margin_top = -7.0
+margin_right = 12.0
+margin_bottom = 13.0
+rect_pivot_offset = Vector2( -14, -14 )
+texture = ExtResource( 6 )
+expand = true
+
+[node name="Line2D" type="Line2D" parent="Main/Capital/Chart"]
+width = 3.0
+texture_mode = -1
+
+[node name="Label" type="Label" parent="Main/Capital/Chart"]
+visible = false
+show_behind_parent = true
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -231.0
+margin_top = -30.0
+margin_right = 231.0
+margin_bottom = 30.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 5 )
+text = "INSUFFICIENT DATA"
+align = 1
+valign = 1
+
+[node name="Title" type="HBoxContainer" parent="Main/Capital"]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 198.0
+margin_bottom = 41.0
+
+[node name="Label" type="Label" parent="Main/Capital/Title"]
+show_behind_parent = true
+margin_right = 101.0
+margin_bottom = 37.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 6 )
+text = "Capital:"
+valign = 1
+
+[node name="Price" type="Label" parent="Main/Capital/Title"]
+show_behind_parent = true
+margin_left = 105.0
+margin_right = 105.0
+margin_bottom = 37.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 6 )
+valign = 1
+
+[node name="Settings" type="VBoxContainer" parent="Main/Capital"]
+margin_left = 4.0
+margin_top = 46.0
+margin_right = 58.0
+margin_bottom = 76.0
+
+[node name="Expand" type="Button" parent="Main/Capital/Settings"]
+visible = false
+margin_right = 54.0
+margin_bottom = 54.0
+rect_min_size = Vector2( 54, 54 )
+custom_fonts/font = ExtResource( 7 )
+
+[node name="TextureRect" type="TextureRect" parent="Main/Capital/Settings/Expand"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -22.0
+margin_top = -22.0
+margin_right = 22.0
+margin_bottom = 22.0
+mouse_filter = 2
+texture = ExtResource( 8 )
+
+[node name="Visibility" type="Button" parent="Main/Capital/Settings"]
+visible = false
+margin_right = 54.0
+margin_bottom = 54.0
+rect_min_size = Vector2( 54, 54 )
+custom_fonts/font = ExtResource( 7 )
+
+[node name="TextureRect" type="TextureRect" parent="Main/Capital/Settings/Visibility"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -22.0
+margin_top = -15.0
+margin_right = 22.0
+margin_bottom = 15.0
+mouse_filter = 2
+texture = ExtResource( 9 )
+expand = true
+
+[node name="Time" type="MenuButton" parent="Main/Capital/Settings"]
+margin_right = 54.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 54, 30 )
+custom_fonts/font = ExtResource( 7 )
+text = "15m"
+flat = false
+items = [ "1 minute", null, 0, false, false, -1, 0, null, "", false, "5 minute", null, 0, false, false, -1, 0, null, "", false, "15 minute", null, 0, false, false, -1, 0, null, "", false, "30 minute", null, 0, false, false, -1, 0, null, "", false, "45 minute", null, 0, false, false, -1, 0, null, "", false, "1 hour", null, 0, false, false, -1, 0, null, "", false, "2 hour", null, 0, false, false, -1, 0, null, "", false, "6 hour", null, 0, false, false, -1, 0, null, "", false, "12 hour", null, 0, false, false, -1, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "1 day", null, 0, false, false, -1, 0, null, "", false, "1 week", null, 0, false, false, -1, 0, null, "", false, "4 week", null, 0, false, false, -1, 0, null, "", false ]
+script = SubResource( 7 )
+
+[node name="Buttons" type="VBoxContainer" parent="Main"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -1098.0
+margin_top = -244.0
+
+[node name="The Open Market" type="NinePatchRect" parent="Main/Buttons"]
+self_modulate = Color( 0.0784314, 0.101961, 0.14902, 0.584314 )
+margin_right = 1098.0
+margin_bottom = 120.0
+rect_min_size = Vector2( 894, 120 )
+texture = ExtResource( 2 )
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 2
+
+[node name="Center Container" type="Container" parent="Main/Buttons/The Open Market"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -345.0
+margin_top = -50.0
+margin_right = 345.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 690, 100 )
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="Main/Buttons/The Open Market/Center Container"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -43.0
+margin_right = 551.0
+margin_bottom = 43.0
+custom_fonts/font = SubResource( 10 )
+text = "The Open Market"
+align = 1
+
+[node name="Icon" type="TextureRect" parent="Main/Buttons/The Open Market/Center Container"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -111.0
+margin_top = -50.0
+margin_bottom = 50.0
+mouse_filter = 2
+texture = ExtResource( 10 )
+expand = true
+
+[node name="Button" type="TextureButton" parent="Main/Buttons/The Open Market"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Bottom" type="HBoxContainer" parent="Main/Buttons"]
+margin_top = 124.0
+margin_right = 1098.0
+margin_bottom = 244.0
+
+[node name="Analytics" type="NinePatchRect" parent="Main/Buttons/Bottom"]
+self_modulate = Color( 0.0784314, 0.101961, 0.14902, 0.588235 )
+margin_right = 547.0
+margin_bottom = 120.0
+rect_min_size = Vector2( 547, 120 )
+texture = ExtResource( 2 )
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 2
+
+[node name="Center Container" type="Container" parent="Main/Buttons/Bottom/Analytics"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -210.0
+margin_top = -50.0
+margin_right = 210.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 420, 100 )
+
+[node name="Label" type="Label" parent="Main/Buttons/Bottom/Analytics/Center Container"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -43.0
+margin_right = 298.0
+margin_bottom = 43.0
+custom_fonts/font = SubResource( 10 )
+text = "Analytics"
+align = 1
+
+[node name="Icon" type="TextureRect" parent="Main/Buttons/Bottom/Analytics/Center Container"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -103.0
+margin_top = -50.0
+margin_bottom = 50.0
+texture = ExtResource( 11 )
+expand = true
+
+[node name="Account" type="NinePatchRect" parent="Main/Buttons/Bottom"]
+self_modulate = Color( 0.0784314, 0.101961, 0.14902, 0.588235 )
+margin_left = 551.0
+margin_right = 1098.0
+margin_bottom = 120.0
+rect_min_size = Vector2( 547, 120 )
+texture = ExtResource( 2 )
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 2
+
+[node name="Center Container" type="Container" parent="Main/Buttons/Bottom/Account"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -200.0
+margin_top = -50.0
+margin_right = 200.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 400, 100 )
+
+[node name="Label" type="Label" parent="Main/Buttons/Bottom/Account/Center Container"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -43.0
+margin_right = 275.0
+margin_bottom = 43.0
+custom_fonts/font = SubResource( 10 )
+text = "Account"
+align = 1
+
+[node name="Icon" type="TextureRect" parent="Main/Buttons/Bottom/Account/Center Container"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -99.0
+margin_top = -50.0
+margin_bottom = 50.0
+texture = ExtResource( 12 )
+expand = true
+
+[node name="Market" type="Control" parent="."]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -960.0
+margin_top = -460.0
+margin_right = 960.0
+margin_bottom = 390.0
+script = SubResource( 11 )
+
+[node name="The Open Market" type="NinePatchRect" parent="Market"]
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.0941176 )
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -425.0
+margin_right = 1467.0
+margin_bottom = 425.0
+texture = ExtResource( 2 )
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 2
+script = SubResource( 12 )
+
+[node name="Listing" type="Container" parent="Market/The Open Market"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -732.5
+margin_top = -105.0
+margin_right = 640.5
+margin_bottom = -81.0
+rect_min_size = Vector2( 1373, 24 )
+script = SubResource( 13 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Market/The Open Market/Listing"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -686.5
+margin_right = 686.5
+margin_bottom = 24.0
+custom_constants/separation = 60
+
+[node name="Name" type="Label" parent="Market/The Open Market/Listing/HBoxContainer"]
+margin_right = 293.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 293, 0 )
+custom_fonts/font = SubResource( 14 )
+text = "Name"
+
+[node name="Symbol" type="Label" parent="Market/The Open Market/Listing/HBoxContainer"]
+margin_left = 353.0
+margin_right = 473.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 120, 0 )
+custom_fonts/font = SubResource( 14 )
+text = "Symbol"
+
+[node name="Price" type="Label" parent="Market/The Open Market/Listing/HBoxContainer"]
+margin_left = 533.0
+margin_right = 653.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 120, 0 )
+custom_fonts/font = SubResource( 14 )
+text = "Price"
+
+[node name="Green" type="NinePatchRect" parent="Market/The Open Market/Listing/HBoxContainer/Price"]
+visible = false
+modulate = Color( 0.211765, 0.584314, 0.239216, 1 )
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 2 )
+
+[node name="Red" type="NinePatchRect" parent="Market/The Open Market/Listing/HBoxContainer/Price"]
+visible = false
+modulate = Color( 0.831373, 0.164706, 0.164706, 1 )
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 2 )
+
+[node name="High" type="Label" parent="Market/The Open Market/Listing/HBoxContainer"]
+margin_left = 713.0
+margin_right = 833.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 120, 0 )
+custom_fonts/font = SubResource( 14 )
+text = "High(24H)"
+
+[node name="Low" type="Label" parent="Market/The Open Market/Listing/HBoxContainer"]
+margin_left = 893.0
+margin_right = 1013.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 120, 0 )
+custom_fonts/font = SubResource( 14 )
+text = "Low(24H)"
+
+[node name="Change 24H" type="Label" parent="Market/The Open Market/Listing/HBoxContainer"]
+margin_left = 1073.0
+margin_right = 1193.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 120, 0 )
+custom_fonts/font = SubResource( 14 )
+text = "Change(24H)"
+
+[node name="Change 7D" type="Label" parent="Market/The Open Market/Listing/HBoxContainer"]
+margin_left = 1253.0
+margin_right = 1373.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 120, 0 )
+custom_fonts/font = SubResource( 14 )
+text = "Change(7D)"
+
+[node name="TextureButton" type="TextureButton" parent="Market/The Open Market/Listing"]
+self_modulate = Color( 0.156863, 0.45098, 0.784314, 0.470588 )
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture_hover = ExtResource( 2 )
+expand = true
+stretch_mode = 1
+
+[node name="Title" type="Label" parent="Market/The Open Market"]
+show_behind_parent = true
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -114.5
+margin_top = 4.0
+margin_right = 114.5
+margin_bottom = 41.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 6 )
+text = "The Open Market"
+align = 1
+valign = 1
+
+[node name="Control" type="Control" parent="Market/The Open Market"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -686.5
+margin_top = 45.0
+margin_right = 685.5
+margin_bottom = 805.0
+
+[node name="Key" type="HBoxContainer" parent="Market/The Open Market/Control"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -687.0
+margin_right = 686.0
+margin_bottom = 24.0
+custom_constants/separation = 60
+
+[node name="Name" type="Label" parent="Market/The Open Market/Control/Key"]
+margin_right = 293.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 293, 0 )
+custom_fonts/font = SubResource( 14 )
+text = "Name"
+
+[node name="Symbol" type="Label" parent="Market/The Open Market/Control/Key"]
+margin_left = 353.0
+margin_right = 473.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 120, 0 )
+custom_fonts/font = SubResource( 14 )
+text = "Symbol"
+
+[node name="Price" type="Label" parent="Market/The Open Market/Control/Key"]
+margin_left = 533.0
+margin_right = 653.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 120, 0 )
+custom_fonts/font = SubResource( 14 )
+text = "Price"
+
+[node name="High" type="Label" parent="Market/The Open Market/Control/Key"]
+margin_left = 713.0
+margin_right = 833.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 120, 0 )
+custom_fonts/font = SubResource( 14 )
+text = "High(24H)"
+
+[node name="Low" type="Label" parent="Market/The Open Market/Control/Key"]
+margin_left = 893.0
+margin_right = 1013.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 120, 0 )
+custom_fonts/font = SubResource( 14 )
+text = "Low(24H)"
+
+[node name="Change 24H" type="Label" parent="Market/The Open Market/Control/Key"]
+margin_left = 1073.0
+margin_right = 1193.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 120, 0 )
+custom_fonts/font = SubResource( 14 )
+text = "Change(24H)"
+
+[node name="Change 7D" type="Label" parent="Market/The Open Market/Control/Key"]
+margin_left = 1253.0
+margin_right = 1373.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 120, 0 )
+custom_fonts/font = SubResource( 14 )
+text = "Change(7D)"
+
+[node name="Line" type="TextureRect" parent="Market/The Open Market/Control"]
+self_modulate = Color( 1, 1, 1, 0.470588 )
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -686.0
+margin_top = 30.0
+margin_right = 673.0
+margin_bottom = 32.0
+texture = ExtResource( 13 )
+expand = true
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Market/The Open Market/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 45.0
+scroll_horizontal_enabled = false
+
+[node name="Listings" type="VBoxContainer" parent="Market/The Open Market/Control/ScrollContainer"]
+custom_constants/separation = 8
+
+[node name="Listing" type="NinePatchRect" parent="Market"]
+visible = false
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.192157 )
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -425.0
+margin_right = 1467.0
+margin_bottom = 425.0
+texture = ExtResource( 2 )
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 2
+
+[node name="Chart" type="Container" parent="Market/Listing"]
+margin_right = 1350.0
+margin_bottom = 800.0
+script = SubResource( 15 )
+
+[node name="Side" type="TextureRect" parent="Market/Listing/Chart"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -2.0
+margin_bottom = -2.0
+texture = ExtResource( 3 )
+stretch_mode = 2
+
+[node name="Nub" type="TextureRect" parent="Market/Listing/Chart/Side"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_right = 5.0
+margin_bottom = 2.0
+rect_min_size = Vector2( 5, 2 )
+texture = ExtResource( 4 )
+expand = true
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="Market/Listing/Chart/Side/Nub"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 4.0
+margin_top = -12.0
+margin_right = 64.0
+margin_bottom = 12.0
+custom_fonts/font = SubResource( 2 )
+align = 1
+
+[node name="Bottom" type="TextureRect" parent="Market/Listing/Chart"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -2.0
+texture = ExtResource( 4 )
+stretch_mode = 2
+
+[node name="Nub" type="TextureRect" parent="Market/Listing/Chart/Bottom"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -2.0
+margin_bottom = 5.0
+rect_min_size = Vector2( 2, 5 )
+texture = ExtResource( 3 )
+expand = true
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="Market/Listing/Chart/Bottom/Nub"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -36.0
+margin_top = 1.0
+margin_right = 36.0
+margin_bottom = 25.0
+custom_fonts/font = SubResource( 2 )
+align = 1
+
+[node name="Label2" type="Label" parent="Market/Listing/Chart/Bottom/Nub"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -36.0
+margin_top = 22.0
+margin_right = 36.0
+margin_bottom = 46.0
+custom_fonts/font = SubResource( 2 )
+align = 1
+
+[node name="Point" type="TextureRect" parent="Market/Listing/Chart"]
+self_modulate = Color( 1, 1, 1, 0 )
+margin_right = 20.0
+margin_bottom = 20.0
+texture = ExtResource( 6 )
+expand = true
+script = SubResource( 3 )
+
+[node name="Label" type="Label" parent="Market/Listing/Chart/Point"]
+visible = false
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 10.0
+margin_top = -19.0
+margin_right = 53.0
+margin_bottom = 5.0
+custom_fonts/font = SubResource( 4 )
+valign = 1
+
+[node name="Area" type="TextureRect" parent="Market/Listing/Chart/Point"]
+self_modulate = Color( 1, 1, 1, 0 )
+margin_left = -8.0
+margin_top = -7.0
+margin_right = 12.0
+margin_bottom = 13.0
+rect_pivot_offset = Vector2( -14, -14 )
+texture = ExtResource( 6 )
+expand = true
+
+[node name="Line2D" type="Line2D" parent="Market/Listing/Chart"]
+width = 3.0
+texture_mode = -1
+
+[node name="Label" type="Label" parent="Market/Listing/Chart"]
+visible = false
+show_behind_parent = true
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -231.0
+margin_top = -30.0
+margin_right = 231.0
+margin_bottom = 30.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 5 )
+text = "INSUFFICIENT DATA"
+align = 1
+valign = 1
+
+[node name="Title" type="HBoxContainer" parent="Market/Listing"]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 198.0
+margin_bottom = 41.0
+
+[node name="Label" type="Label" parent="Market/Listing/Title"]
+show_behind_parent = true
+margin_right = 98.0
+margin_bottom = 37.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 6 )
+text = "Listing:"
+valign = 1
+
+[node name="Price" type="Label" parent="Market/Listing/Title"]
+show_behind_parent = true
+margin_left = 102.0
+margin_right = 102.0
+margin_bottom = 37.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 6 )
+valign = 1
+
+[node name="Settings" type="VBoxContainer" parent="Market/Listing"]
+margin_left = 4.0
+margin_top = 46.0
+margin_right = 58.0
+margin_bottom = 76.0
+
+[node name="Expand" type="Button" parent="Market/Listing/Settings"]
+visible = false
+margin_right = 54.0
+margin_bottom = 54.0
+rect_min_size = Vector2( 54, 54 )
+custom_fonts/font = ExtResource( 7 )
+
+[node name="TextureRect" type="TextureRect" parent="Market/Listing/Settings/Expand"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -22.0
+margin_top = -22.0
+margin_right = 22.0
+margin_bottom = 22.0
+mouse_filter = 2
+texture = ExtResource( 8 )
+
+[node name="Visibility" type="Button" parent="Market/Listing/Settings"]
+visible = false
+margin_right = 54.0
+margin_bottom = 54.0
+rect_min_size = Vector2( 54, 54 )
+custom_fonts/font = ExtResource( 7 )
+
+[node name="TextureRect" type="TextureRect" parent="Market/Listing/Settings/Visibility"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -22.0
+margin_top = -15.0
+margin_right = 22.0
+margin_bottom = 15.0
+mouse_filter = 2
+texture = ExtResource( 9 )
+expand = true
+
+[node name="Time" type="MenuButton" parent="Market/Listing/Settings"]
+margin_right = 54.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 54, 30 )
+custom_fonts/font = ExtResource( 7 )
+text = "15m"
+flat = false
+items = [ "1 second", null, 0, false, false, -1, 0, null, "", false, "1 minute", null, 0, false, false, -1, 0, null, "", false, "5 minute", null, 0, false, false, -1, 0, null, "", false, "15 minute", null, 0, false, false, -1, 0, null, "", false, "30 minute", null, 0, false, false, -1, 0, null, "", false, "45 minute", null, 0, false, false, -1, 0, null, "", false, "1 hour", null, 0, false, false, -1, 0, null, "", false, "2 hour", null, 0, false, false, -1, 0, null, "", false, "6 hour", null, 0, false, false, -1, 0, null, "", false, "12 hour", null, 0, false, false, -1, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "1 day", null, 0, false, false, -1, 0, null, "", false, "1 week", null, 0, false, false, -1, 0, null, "", false, "4 week", null, 0, false, false, -1, 0, null, "", false ]
+script = SubResource( 16 )
+
+[node name="Dashboard" type="Control" parent="Market"]
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.392157 )
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -450.0
+margin_top = -425.0
+margin_bottom = 425.0
+rect_min_size = Vector2( 400, 850 )
+
+[node name="Escrow" type="NinePatchRect" parent="Market/Dashboard"]
+self_modulate = Color( 0.0784314, 0.101961, 0.14902, 0.584314 )
+anchor_right = 1.0
+rect_min_size = Vector2( 400, 40 )
+texture = ExtResource( 2 )
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 2
+
+[node name="Escrow3" type="Label" parent="Market/Dashboard/Escrow"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 5.0
+margin_top = -19.0
+margin_right = 245.0
+margin_bottom = 18.0
+custom_fonts/font = SubResource( 17 )
+text = "Escrow: ¤XXXXXX"
+
+[node name="Account" type="Button" parent="Market/Dashboard/Escrow"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -105.0
+margin_top = -15.0
+margin_right = -5.0
+margin_bottom = 15.0
+custom_fonts/font = SubResource( 18 )
+text = "Account"
+
+[node name="Portfolio" type="NinePatchRect" parent="Market/Dashboard"]
+self_modulate = Color( 0.0784314, 0.101961, 0.14902, 0.584314 )
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -807.0
+rect_min_size = Vector2( 400, 40 )
+texture = ExtResource( 2 )
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 2
+
+[node name="Title" type="Label" parent="Market/Dashboard/Portfolio"]
+margin_left = 5.0
+margin_right = 261.0
+margin_bottom = 37.0
+custom_fonts/font = SubResource( 17 )
+text = "Portfolio: ¤XXXXXX"
+
+[node name="Holdings" type="Button" parent="Market/Dashboard/Portfolio"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -105.0
+margin_top = 4.0
+margin_right = -5.0
+margin_bottom = 34.0
+custom_fonts/font = SubResource( 18 )
+text = "Holdings"
+
+[node name="Key" type="HBoxContainer" parent="Market/Dashboard/Portfolio"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -218.0
+margin_top = 39.0
+margin_right = 220.0
+margin_bottom = 63.0
+custom_constants/separation = 32
+
+[node name="Symbol" type="Label" parent="Market/Dashboard/Portfolio/Key"]
+margin_right = 69.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 14 )
+text = "Symbol"
+
+[node name="Price" type="Label" parent="Market/Dashboard/Portfolio/Key"]
+margin_left = 101.0
+margin_right = 147.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 14 )
+text = "Price"
+
+[node name="Change 24H" type="Label" parent="Market/Dashboard/Portfolio/Key"]
+margin_left = 179.0
+margin_right = 299.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 14 )
+text = "Change(24H)"
+
+[node name="Change 7D" type="Label" parent="Market/Dashboard/Portfolio/Key"]
+margin_left = 331.0
+margin_right = 438.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 14 )
+text = "Change(7D)"
+
+[node name="Line" type="TextureRect" parent="Market/Dashboard/Portfolio"]
+self_modulate = Color( 1, 1, 1, 0.470588 )
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -219.0
+margin_top = 69.0
+margin_right = 218.0
+margin_bottom = 71.0
+texture = ExtResource( 13 )
+expand = true
+
+[node name="Market Forces" type="Node" parent="."]
+
+[node name="Elliott" type="Node" parent="Market Forces"]
+script = ExtResource( 14 )
+
+[node name="Sine 6m" type="Node" parent="Market Forces"]
+script = ExtResource( 15 )
+
+[node name="Sine 2m" type="Node" parent="Market Forces"]
+script = ExtResource( 16 )
+
+[node name="Sine 1m" type="Node" parent="Market Forces"]
+script = ExtResource( 17 )
+
+[node name="Income" type="Node" parent="."]
+script = SubResource( 19 )
+
+[node name="Expenses" type="Node" parent="."]
+script = SubResource( 20 )
+
+[connection signal="mouse_entered" from="Main/Left/Income/Chart/Point/Area" to="Main/Left/Income/Chart/Point" method="_on_Area_mouse_entered"]
+[connection signal="mouse_exited" from="Main/Left/Income/Chart/Point/Area" to="Main/Left/Income/Chart/Point" method="_on_Area_mouse_exited"]
+[connection signal="mouse_entered" from="Main/Left/Expenses/Chart/Point/Area" to="Main/Left/Expenses/Chart/Point" method="_on_Area_mouse_entered"]
+[connection signal="mouse_exited" from="Main/Left/Expenses/Chart/Point/Area" to="Main/Left/Expenses/Chart/Point" method="_on_Area_mouse_exited"]
+[connection signal="mouse_entered" from="Main/Capital/Chart/Point/Area" to="Main/Capital/Chart/Point" method="_on_Area_mouse_entered"]
+[connection signal="mouse_exited" from="Main/Capital/Chart/Point/Area" to="Main/Capital/Chart/Point" method="_on_Area_mouse_exited"]
+[connection signal="mouse_entered" from="Main/Buttons/The Open Market/Button" to="." method="_on_The_Open_Market_mouse_entered"]
+[connection signal="mouse_exited" from="Main/Buttons/The Open Market/Button" to="." method="_on_The_Open_Market_mouse_exited"]
+[connection signal="pressed" from="Main/Buttons/The Open Market/Button" to="." method="_on_The_Open_Market_pressed"]
+[connection signal="pressed" from="Market/The Open Market/Listing/TextureButton" to="Market/The Open Market/Listing" method="_on_TextureButton_pressed"]
+[connection signal="mouse_entered" from="Market/Listing/Chart/Point/Area" to="Market/Listing/Chart/Point" method="_on_Area_mouse_entered"]
+[connection signal="mouse_exited" from="Market/Listing/Chart/Point/Area" to="Market/Listing/Chart/Point" method="_on_Area_mouse_exited"]

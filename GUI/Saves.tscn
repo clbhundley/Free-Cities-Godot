@@ -27,35 +27,48 @@ onready var scene = get_tree().get_current_scene().get_name()
 func _ready():
 	var save_data = data.load_game(name) # loading entire savegame to get ArcName and datetime
 	if not save_data:
-		get_node('Save').show()
-		get_node('Load').hide()
-		get_node('Delete').hide()
-		get_node('Info').set_text(\"Empty\")
-		get_node('Info').set_anchors_and_margins_preset(PRESET_CENTER)
+		$Save.show()
+		$Load.hide()
+		$Delete.hide()
+		$Info.set_text(\"Empty\")
+		$Info.set_anchors_and_margins_preset(PRESET_CENTER)
 	if scene == \"Main Menu\":
-		get_node('Save').hide()
+		$Save.hide()
 	if save_data:
-		get_node('Save').hide()
-		get_node('Load').show()
-		get_node('Delete').show()
-		get_node('Info').set_text(save_data['arcology']['name']+\"  |  \"+save_data['index']['os_date']+\", \"+save_data['index']['os_time'])
-		get_node('Info').set_anchors_and_margins_preset(PRESET_CENTER)
+		$Save.hide()
+		$Load.show()
+		$Delete.show()
+		$Info.set_text(save_data['arcology']['name']+\"  |  \"+save_data['index']['os_date']+\", \"+save_data['index']['os_time'])
+		$Info.set_anchors_and_margins_preset(PRESET_CENTER)
+	if str(data.save_slot) == name:
+		for label in [$Label,$Info]:
+			label.set_self_modulate('ff7200')
+		$Save.hide()
+		$Load.hide()
+		$Delete.hide()
+	else:
+		for label in [$Label,$Info]:
+			label.set_self_modulate('ffffff')
 
 func _on_Save_pressed():
+	var current_slot = 'user://Data/Slot %s'%data.save_slot
+	var new_slot = 'user://Data/Slot %s'%name
+	data.save_game(data.save_slot)
+	data.delete(new_slot)
+	data.copy_directory(current_slot,new_slot)
 	data.save_slot = name
-	data.save_game(name)
-	_ready()
+	get_node(\"../../../\").refresh()
 
 func _on_Load_pressed():
 	data.save_slot = name
 	data.load_game(name,true)
 
 func _on_Delete_pressed():
-	data.delete_game(name)
+	data.delete('user://Data/Slot %s'%name)
 	if scene == \"Main Menu\":
 		for slot in get_node('../../../../NewGame/Saves/Data/Slots').get_children():
 			slot._ready()
-	_ready()
+	get_node(\"../../../\").refresh()
 "
 
 [node name="Saves" type="Control"]
@@ -129,6 +142,9 @@ margin_bottom = 12.0
 custom_fonts/font = ExtResource( 2 )
 text = "1"
 align = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Info" type="Label" parent="Panel/Slots/1"]
 anchor_left = 0.5

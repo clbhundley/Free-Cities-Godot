@@ -2,7 +2,7 @@ extends Control
 
 onready var root = get_tree().get_root()
 onready var slaves = root.get_node("Game/Slaves")
-onready var gui = game.get_gui()
+onready var gui = game.gui
 
 var _slave
 var previous_dock_mode
@@ -36,7 +36,11 @@ func _input(event):
 func activate(selected_slave):
 	active = true
 	_slave = selected_slave
-	root.get_node('Game/Clock').connect('timeout',self,'uptate_display')
+	if _slave.for_sale:
+		$Button.hide()
+	else:
+		$Button.show()
+	game.clock.connect('timeout',self,'uptate_display')
 	previous_dock_mode = gui.get_node("Dock").mode
 	if previous_dock_mode == "ManageSlaves" or previous_dock_mode == "PurchaseSlaves":
 		gui.get_node("Dock").set_mode("ManageSlave")
@@ -57,7 +61,7 @@ func deactivate(reset_dock_mode=true):
 		if node.has_method("resize"):
 			node.resize(true)
 	if _slave:
-		root.get_node('Game/Clock').disconnect('timeout',self,'uptate_display')
+		game.clock.disconnect('timeout',self,'uptate_display')
 		_slave.get_node("Model").set_rotation(Vector3(0,0,0))
 	model_rotation = 0.0
 	gui.get_node("Header").show()
@@ -84,7 +88,7 @@ func uptate_display():
 	set_proximity_affinity()
 
 func set_level():
-	get_node('Top/Level').set_text(str(_slave.stats._level()))
+	get_node('Top/Level').set_text(str(_slave.level))
 
 func set_stats_temp():
 	$TabContainer/Stats.set_text(JSON.print(_slave._data(),"   "))

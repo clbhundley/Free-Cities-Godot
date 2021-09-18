@@ -1,4 +1,4 @@
-[gd_scene load_steps=88 format=2]
+[gd_scene load_steps=91 format=2]
 
 [ext_resource path="res://GUI/gui.gd" type="Script" id=1]
 [ext_resource path="res://GUI/Textures/chatline.png" type="Texture" id=2]
@@ -11,7 +11,7 @@
 [ext_resource path="res://GUI/Textures/Tabs/min_left.png" type="Texture" id=9]
 [ext_resource path="res://GUI/Textures/AI/ODESSA.png" type="Texture" id=10]
 [ext_resource path="res://GUI/Textures/play.png" type="Texture" id=11]
-[ext_resource path="res://GUI/Textures/pause.png" type="Texture" id=12]
+[ext_resource path="res://Finance/Chart.tscn" type="PackedScene" id=12]
 [ext_resource path="res://GUI/Textures/turtle.png" type="Texture" id=13]
 [ext_resource path="res://GUI/Textures/rabbit.png" type="Texture" id=14]
 [ext_resource path="res://GUI/Textures/time_bg.png" type="Texture" id=15]
@@ -40,6 +40,7 @@
 [ext_resource path="res://Textures/circle.png" type="Texture" id=38]
 [ext_resource path="res://Fonts/Rubik-Light-28.tres" type="DynamicFont" id=39]
 [ext_resource path="res://GUI/Textures/edit button.svg" type="Texture" id=40]
+[ext_resource path="res://GUI/Textures/pause.png" type="Texture" id=42]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends VBoxContainer
@@ -335,7 +336,7 @@ func load_settings(selected_slave):
 	_slave = selected_slave
 	var rules = _slave.rules
 	var concent = extension_panel.get_node(\"VBox\")
-	
+
 	var giving_concent_selection
 	if rules.has(\"GivingConsent\"):
 		match rules[\"GivingConsent\"]:
@@ -348,7 +349,7 @@ func load_settings(selected_slave):
 	var giving_concent = concent.get_node(\"GivingConsent/Selection\")
 	giving_concent.select(giving_concent_selection)#both needed?
 	_on_GivingConsent_item_selected(giving_concent_selection)
-	
+
 	var receiving_concent_selection
 	if rules.has(\"ReceivingConsent\"):
 		match rules[\"ReceivingConsent\"]:
@@ -361,7 +362,7 @@ func load_settings(selected_slave):
 	var receiving_concent = concent.get_node(\"ReceivingConsent/Selection\")
 	receiving_concent.select(receiving_concent_selection)#both needed?
 	_on_ReceivingConsent_item_selected(receiving_concent_selection)
-	
+
 	var resisting_advances_selection
 	if rules.has(\"ResistingAdvances\"):
 		match rules[\"ResistingAdvances\"]:
@@ -688,7 +689,7 @@ onready var selection = $Selection
 onready var popup_menu_a = $Selection/PopupMenuA
 onready var popup_menu_b = $Selection/PopupMenuB
 onready var popup_menu_orig = selection.get_popup()
-onready var wardrobe = game.get_gui().get_node(\"SidePanel/Wardrobe\")
+onready var wardrobe = game.gui.get_node(\"SidePanel/Wardrobe\")
 
 func _ready():
 	popup_menu_a.connect(\"hide\",popup_menu_b,\"hide\")
@@ -775,7 +776,7 @@ script/source = "extends HBoxContainer
 
 onready var selection = $Selection
 onready var popup = selection.get_popup()
-onready var wardrobe = game.get_gui().get_node(\"SidePanel/Wardrobe\")
+onready var wardrobe = game.gui.get_node(\"SidePanel/Wardrobe\")
 
 func _ready():
 	popup.connect(\"popup_hide\",self,\"_on_popup_hidden\")
@@ -816,7 +817,7 @@ script/source = "extends HBoxContainer
 
 onready var selection = $Selection
 onready var popup = selection.get_popup()
-onready var wardrobe = game.get_gui().get_node(\"SidePanel/Wardrobe\")
+onready var wardrobe = game.gui.get_node(\"SidePanel/Wardrobe\")
 
 func _ready():
 	popup.connect(\"popup_hide\",self,\"_on_popup_hidden\")
@@ -840,7 +841,7 @@ func _on_Selection_item_selected(index):
 #	for popup in [wardrobe.outfit.popup_menu_a,wardrobe.outfit.popup_menu_b]:
 #		popup.popup()
 #		popup.hide()
-	
+
 
 func _on_popup_hidden():
 	popup.add_radio_check_item(\"Set By Outfit\",0)
@@ -857,7 +858,7 @@ script/source = "extends HBoxContainer
 
 onready var selection = $Selection
 onready var popup = selection.get_popup()
-onready var wardrobe = game.get_gui().get_node(\"SidePanel/Wardrobe\")
+onready var wardrobe = game.gui.get_node(\"SidePanel/Wardrobe\")
 
 func _ready():
 	popup.connect(\"popup_hide\",self,\"_on_popup_hidden\")
@@ -905,7 +906,7 @@ script/source = "extends VBoxContainer
 
 onready var dock = owner.get_node(\"Dock\")
 
-func update():
+func refresh():
 	SlaveUtils.sort_slaves(\"Owned\",sort_mode,sort_order)
 
 func _on_PurchaseSlaves_pressed():
@@ -942,55 +943,66 @@ func _on_SortOrder_item_selected(index):
 [sub_resource type="GDScript" id=16]
 script/source = "extends VBoxContainer
 
-func update():
-	SlaveUtils.sort_slaves(\"Kidnappers Market\",sort_mode,sort_order)
+func refresh():
+	update_slaves_price()
 
-var sort_mode = \"Level\"
-func _on_SortMode_item_selected(index):
-	if index == 0:
-		sort_mode = \"Devotion\"
-	elif index == 1:
-		sort_mode = \"Level\"
-	elif index == 2:
-		sort_mode = \"Assignment\"
-	elif index == 3:
-		sort_mode = \"Gender\"
-	elif index == 4:
-		sort_mode = \"Name\"
-	elif index == 5:
-		sort_mode = \"Age\"
-	SlaveUtils.sort_slaves(\"Kidnappers Market\",sort_mode,sort_order)
+func update_slaves_price():
+	var slaves_price = SlaveUtils.decorated_slaves_price()
+	$SlavesPrice/Label.set_bbcode(\"Slaves Price: \"+slaves_price)
 
-var sort_order = \"Descending\"
-func _on_SortOrder_item_selected(index):
-	if index == 0:
-		sort_order = \"Descending\"
-	elif index == 1:
-		sort_order = \"Ascending\"
-	SlaveUtils.sort_slaves(\"Kidnappers Market\",sort_mode,sort_order)
-
-func _on_Hide_pressed():
-	var side_panel = get_parent()
-	side_panel.is_hidden = true
-	side_panel.close()
-	side_panel.dock.get_node(\"ActionButton\").icon = side_panel.arrow_left_icon
-	side_panel.get_node(\"ShowPanel\").show()
+func _on_SlavesPrice_pressed():
+	get_node(\"../../Dock\").set_mode(\"SlavesPrice\")
 "
 
-[sub_resource type="GDScript" id=17]
-script/source = "extends Button
-
-func _on_Hide_pressed():
-	var side_panel = get_node(\"../../\")
-	side_panel.close()
-	side_panel.dock.get_node(\"ActionButton\").icon = side_panel.arrow_left_icon
-"
+[sub_resource type="DynamicFont" id=17]
+size = 24
+font_data = ExtResource( 3 )
 
 [sub_resource type="GDScript" id=18]
 script/source = "extends VBoxContainer
 
-func update():
-	SlaveUtils.sort_slaves(\"Neighboring Arcologies\",sort_mode,sort_order)
+func refresh():
+	SlaveUtils.sort_slaves(\"Kidnappers Market\",sort_mode,sort_order)
+	uptate_next_delivery()
+	uptate_last_delivery()
+	update_slaves_price()
+	activate()
+
+func activate():
+	if not time.is_connected(\"second\",self,'uptate_next_delivery'):
+		time.connect(\"second\",self,'uptate_next_delivery')
+
+func deactivate():
+	if time.is_connected(\"second\",self,'uptate_next_delivery'):
+		time.disconnect(\"second\",self,'uptate_next_delivery')
+
+func update_slaves_price():
+	var slaves_price = SlaveUtils.decorated_slaves_price()
+	$SlavesPrice.set_bbcode(\"Slaves Price: \"+slaves_price)
+
+func uptate_next_delivery():
+	var market = game.slaves.get_node(\"Collections/Kidnappers Market\")
+	var current_time = time.get_timestamp()
+	var time_remaining = time.get_total_time(current_time,market.next_delivery)
+	var weeks = time_remaining['weeks']
+	var days = time_remaining['days']
+	var hours = time_remaining['hours']
+	var minutes = time_remaining['minutes']
+	var seconds = time_remaining['seconds']
+	var label = $NextDelivery/TimeRemaining
+	var text = \"W:%s, D:%s, H:%s, M:%s, S:%s\"
+	label.set_text(text%[weeks,days,hours,minutes,seconds])
+
+func uptate_last_delivery():
+	var market = game.slaves.get_node(\"Collections/Kidnappers Market\")
+	var last_delivery = market.last_delivery
+	var day = last_delivery['day'] + 1
+	var week = last_delivery['week'] + 1
+	var quarter = last_delivery['quarter'] + 1
+	var year = last_delivery['year']
+	var label = $LastDelivery/Date
+	var text = \"D:%s, W:%s, Q:%s, Y:%s\"
+	label.set_text(text%[day,week,quarter,year])
 
 var sort_mode = \"Level\"
 func _on_SortMode_item_selected(index):
@@ -1006,7 +1018,7 @@ func _on_SortMode_item_selected(index):
 		sort_mode = \"Name\"
 	elif index == 5:
 		sort_mode = \"Age\"
-	SlaveUtils.sort_slaves(\"Neighboring Arcologies\",sort_mode,sort_order)
+	SlaveUtils.sort_slaves(\"Kidnappers Market\",sort_mode,sort_order)
 
 var sort_order = \"Descending\"
 func _on_SortOrder_item_selected(index):
@@ -1014,7 +1026,7 @@ func _on_SortOrder_item_selected(index):
 		sort_order = \"Descending\"
 	elif index == 1:
 		sort_order = \"Ascending\"
-	SlaveUtils.sort_slaves(\"Neighboring Arcologies\",sort_mode,sort_order)
+	SlaveUtils.sort_slaves(\"Kidnappers Market\",sort_mode,sort_order)
 
 func _on_Hide_pressed():
 	var side_panel = get_parent()
@@ -1025,33 +1037,120 @@ func _on_Hide_pressed():
 "
 
 [sub_resource type="GDScript" id=19]
-script/source = "extends VBoxContainer
+script/source = "extends Button
 
-func _ready():
-	update()
-
-func update():
-	var structure = ArcUtils.get_structure()
-	var percent = ArcUtils.get_arcology_ownership_percent(structure)
-	get_node(\"Ownership/HBox/Owner\").set_text(str(percent)+\"% Owner\")
+func _on_Hide_pressed():
+	var side_panel = get_node(\"../../\")
+	side_panel.close()
+	side_panel.dock.get_node(\"ActionButton\").icon = side_panel.arrow_left_icon
 "
 
 [sub_resource type="GDScript" id=20]
 script/source = "extends VBoxContainer
 
-func _ready():
-	pass # Replace with function body.
+func refresh():
+	SlaveUtils.sort_slaves(\"Neighboring Arcologies\",sort_mode,sort_order)
+	uptate_next_delivery()
+	uptate_last_delivery()
+	update_slaves_price()
+	activate()
 
-func update():
-	var selected_terra = ArcUtils.get_arcology().selected_terra
-	get_node(\"Title\").set_text(selected_terra+\":\")
+func activate():
+	if not time.is_connected(\"second\",self,'uptate_next_delivery'):
+		time.connect(\"second\",self,'uptate_next_delivery')
+
+func deactivate():
+	if time.is_connected(\"second\",self,'uptate_next_delivery'):
+		time.disconnect(\"second\",self,'uptate_next_delivery')
+
+func update_slaves_price():
+	var slaves_price = SlaveUtils.decorated_slaves_price()
+	$SlavesPrice.set_bbcode(\"Slaves Price: \"+slaves_price)
+
+func uptate_next_delivery():
+	var market = game.slaves.get_node(\"Collections/Neighboring Arcologies\")
+	var current_time = time.get_timestamp()
+	var time_remaining = time.get_total_time(current_time,market.next_delivery)
+	var weeks = time_remaining['weeks']
+	var days = time_remaining['days']
+	var hours = time_remaining['hours']
+	var minutes = time_remaining['minutes']
+	var seconds = time_remaining['seconds']
+	var label = $NextDelivery/TimeRemaining
+	var text = \"W:%s, D:%s, H:%s, M:%s, S:%s\"
+	label.set_text(text%[weeks,days,hours,minutes,seconds])
+
+func uptate_last_delivery():
+	var market = game.slaves.get_node(\"Collections/Neighboring Arcologies\")
+	var last_delivery = market.last_delivery
+	var day = last_delivery['day'] + 1
+	var week = last_delivery['week'] + 1
+	var quarter = last_delivery['quarter'] + 1
+	var year = last_delivery['year']
+	var label = $LastDelivery/Date
+	var text = \"D:%s, W:%s, Q:%s, Y:%s\"
+	label.set_text(text%[day,week,quarter,year])
+
+var sort_mode = \"Level\"
+func _on_SortMode_item_selected(index):
+	if index == 0:
+		sort_mode = \"Devotion\"
+	elif index == 1:
+		sort_mode = \"Level\"
+	elif index == 2:
+		sort_mode = \"Assignment\"
+	elif index == 3:
+		sort_mode = \"Gender\"
+	elif index == 4:
+		sort_mode = \"Name\"
+	elif index == 5:
+		sort_mode = \"Age\"
+	SlaveUtils.sort_slaves(\"Neighboring Arcologies\",sort_mode,sort_order)
+
+var sort_order = \"Descending\"
+func _on_SortOrder_item_selected(index):
+	if index == 0:
+		sort_order = \"Descending\"
+	elif index == 1:
+		sort_order = \"Ascending\"
+	SlaveUtils.sort_slaves(\"Neighboring Arcologies\",sort_mode,sort_order)
+
+func _on_Hide_pressed():
+	var side_panel = get_parent()
+	side_panel.is_hidden = true
+	side_panel.close()
+	side_panel.dock.get_node(\"ActionButton\").icon = side_panel.arrow_left_icon
+	side_panel.get_node(\"ShowPanel\").show()
 "
 
 [sub_resource type="GDScript" id=21]
 script/source = "extends VBoxContainer
 
-func update():
-	var selected_building = ArcUtils.get_arcology().selected_building
+func _ready():
+	refresh()
+
+func refresh():
+	var structure = ArcUtils.get_structure()
+	var percent = ArcUtils.arcology_ownership_percent(structure)
+	get_node(\"Ownership/HBox/Owner\").set_text(str(percent)+\"% Owner\")
+"
+
+[sub_resource type="GDScript" id=22]
+script/source = "extends VBoxContainer
+
+func _ready():
+	pass # Replace with function body.
+
+func refresh():
+	var selected_terra = game.arcology.selected_terra
+	get_node(\"Title\").set_text(selected_terra+\":\")
+"
+
+[sub_resource type="GDScript" id=23]
+script/source = "extends VBoxContainer
+
+func refresh():
+	var selected_building = game.arcology.selected_building
 	var selected_building_name = ArcUtils.sector_name(selected_building.name)
 	if selected_building_name[-2] == \"_\":
 		selected_building_name = selected_building_name.rstrip(\" a\")
@@ -1068,7 +1167,7 @@ func update():
 		get_node(\"Construction\").hide()
 "
 
-[sub_resource type="GDScript" id=22]
+[sub_resource type="GDScript" id=24]
 script/source = "extends TextureRect
 
 func _on_button_pressed():
@@ -1089,11 +1188,11 @@ func _on_mouse_exited():
 	set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="DynamicFont" id=23]
+[sub_resource type="DynamicFont" id=25]
 size = 20
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=24]
+[sub_resource type="GDScript" id=26]
 script/source = "extends Control
 
 onready var side_panel = get_node(\"../SidePanel\")
@@ -1108,6 +1207,10 @@ func _ready():
 	set_mode(mode)
 
 func set_mode(new_mode,animation=true,reset_cam_pos=true):
+	get_node(\"../SlavesPriceChart\").hide()
+	for node in side_panel.get_children():
+		if node.has_method('deactivate'):
+			node.deactivate()
 	match new_mode:
 		\"ManageSlave\":
 			action_button_text = \"Manage Slave\"
@@ -1130,10 +1233,22 @@ func set_mode(new_mode,animation=true,reset_cam_pos=true):
 			side_panel.get_node(\"ShowPanel\").hide()
 			$SplitButton.hide()
 			$ActionButton.show()
-			$ActionButton.get_node(\"Tag\").show()
+			var tag = $ActionButton.get_node(\"Tag\")
+			var _slave = game.slaves.get_node(\"ExamineSlave\")._slave
+			tag.show()
+			tag.set_text(\"¤\"+str(_slave.market_price()))
 			$ActionButton.set_text(action_button_text)
 			var money_symbol = load(\"res://GUI/Textures/Tabs/finance.png\")
 			$ActionButton.icon = money_symbol
+		\"SlavesPrice\":
+			game.set_bg_color(game.BG_COLOR_ABYSS)
+			action_button_text = \"Back\"
+			if side_panel.is_open:
+				side_panel.close()
+			get_node(\"../SlavesPriceChart\").show()
+			$ActionButton.icon = side_panel.arrow_left_icon
+			$ActionButton.set_text(action_button_text)
+			slaves.set_active_collection(null)
 		\"PurchaseSlaves\":
 			action_button_text = \"Back\"
 			$ActionButton.set_text(action_button_text)
@@ -1169,8 +1284,6 @@ func set_mode(new_mode,animation=true,reset_cam_pos=true):
 				$ActionButton.set_text(\"Close\")
 			else:
 				$ActionButton.set_text(action_button_text)
-	if get_content(new_mode).has_method(\"update\"):
-		get_content(new_mode).update()
 	side_panel.change_content(get_content(mode),get_content(new_mode),animation)
 	mode = new_mode
 
@@ -1183,6 +1296,9 @@ func _on_ActionButton_pressed():
 		animation = false
 	if side_panel.rect_size.x > margin_right+30:
 		side_panel.rect_size.x = margin_right+30
+	for node in side_panel.get_children():
+		if node.has_method('deactivate'):
+			node.deactivate()
 	match mode:
 		\"Regimen\",\"Rules\",\"Wardrobe\":
 			set_mode(\"ManageSlave\")
@@ -1190,10 +1306,21 @@ func _on_ActionButton_pressed():
 			var _slave = get_viewport().get_camera().get_parent()
 			var new_mode = slaves.get_node(\"ExamineSlave\").previous_dock_mode
 			get_viewport().get_camera().deactivate(false)
-			_slave.get_node(\"UI\")._on_Buy_pressed()
+			_slave.ui._on_Purchase_pressed()
 			$ActionButton.get_node(\"Tag\").hide()
 			set_mode(new_mode,false,false)
 			side_panel.open()
+		\"SlavesPrice\":
+			mode = \"PurchaseSlaves\"
+			game.set_bg_color(game.BG_COLOR_DEFAULT)
+			slaves.set_active_collection(\"Owned\",false)
+			get_node(\"../SlavesPriceChart\").hide()
+			side_panel.change_content(
+				get_content(\"SlavesPrice\"),
+				get_content(mode),
+				false)
+			side_panel.open()
+			$ActionButton.set_text(\"Back\")
 		\"PurchaseSlaves\":
 			mode = \"ManageSlaves\"
 			game.set_bg_color(game.BG_COLOR_DEFAULT)
@@ -1247,7 +1374,12 @@ func _on_Exit_pressed():
 		active_camera.deactivate(false)
 	$ActionButton.show()
 	$SplitButton.hide()
-	if side_panel.is_open:
+	if side_panel.is_hidden:
+		side_panel.close(false)
+		set_self_modulate('3c333a4b')
+		side_panel.get_node(\"ShowPanel\").set_self_modulate('3c333a4b')
+		side_panel.get_node(\"ShowPanel\").hide()
+	elif side_panel.is_open:
 		side_panel.close()
 	slaves.set_active_collection(\"Owned\")
 	set_mode(\"ManageSlaves\",false)
@@ -1299,11 +1431,11 @@ func resize():
 			node.resize()
 "
 
-[sub_resource type="DynamicFont" id=25]
+[sub_resource type="DynamicFont" id=27]
 size = 24
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=26]
+[sub_resource type="GDScript" id=28]
 script/source = "extends Control
 
 func _on_toggled(button_pressed):
@@ -1328,7 +1460,7 @@ func _on_mouse_exited():
 		get_node('tab_left').set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="GDScript" id=27]
+[sub_resource type="GDScript" id=29]
 script/source = "extends Panel
 
 func _on_Communication_pressed():
@@ -1349,7 +1481,7 @@ func _on_NaviActionButton_toggled(button_pressed):
 		navi_action_button.set_text(\"<<Query Navi>>\")
 "
 
-[sub_resource type="GDScript" id=28]
+[sub_resource type="GDScript" id=30]
 script/source = "extends Control
 
 func _ready():
@@ -1366,7 +1498,7 @@ func resize():
 	$Time/LabelTop.get('custom_fonts/font').size = clamp(scale_text,10,16)
 "
 
-[sub_resource type="GDScript" id=29]
+[sub_resource type="GDScript" id=31]
 script/source = "extends TextureRect
 
 func _ready():
@@ -1395,7 +1527,7 @@ func _on_mouse_exited():
 		set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="GDScript" id=30]
+[sub_resource type="GDScript" id=32]
 script/source = "extends TextureRect
 
 func _ready():
@@ -1416,9 +1548,10 @@ func _on_pressed():
 		animation = false
 		side_panel.open()
 		side_panel.get_node(\"ShowPanel\").hide()
-	var arrow_right = load(\"res://GUI/Textures/arrow_right.svg\")
+	if not side_panel.is_open:
+		var arrow_right = load(\"res://GUI/Textures/arrow_right.svg\")
+		dock.get_node(\"ActionButton\").icon = arrow_right
 	dock.get_node(\"ActionButton\").show()
-	dock.get_node(\"ActionButton\").icon = arrow_right
 	dock.get_node(\"SplitButton\").hide()
 	if arcology.selected_building:
 		dock.set_mode(\"ManageBuilding\",animation)
@@ -1449,7 +1582,7 @@ func _on_mouse_exited():
 		set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="GDScript" id=31]
+[sub_resource type="GDScript" id=33]
 script/source = "extends TextureRect
 
 func _ready():
@@ -1470,9 +1603,10 @@ func _on_pressed():
 		animation = false
 		side_panel.open()
 		side_panel.get_node(\"ShowPanel\").hide()
-	var arrow_right = load(\"res://GUI/Textures/arrow_right.svg\")
+	if not side_panel.is_open:
+		var arrow_right = load(\"res://GUI/Textures/arrow_right.svg\")
+		dock.get_node(\"ActionButton\").icon = arrow_right
 	dock.get_node(\"ActionButton\").show()
-	dock.get_node(\"ActionButton\").icon = arrow_right
 	dock.get_node(\"SplitButton\").hide()
 	get_node(\"../../Dock\").set_mode(\"ManageSlaves\",animation)
 	get_node(\"../../Header/Slaves\").show()
@@ -1498,28 +1632,26 @@ func _on_mouse_exited():
 		set_self_modulate('3c333a4b')
 "
 
-[sub_resource type="DynamicFont" id=32]
+[sub_resource type="DynamicFont" id=34]
 size = 30
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=33]
+[sub_resource type="DynamicFont" id=35]
 size = 30
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=34]
+[sub_resource type="GDScript" id=36]
 script/source = "extends VBoxContainer
-
-onready var game_clock = get_tree().get_root().get_node('Game/Clock')
 
 func _on_Play_pressed():
 	$Play.set_self_modulate('ff7200')
 	$Pause.set_self_modulate('ffffff')
-	game_clock.set_paused(false)
+	game.clock.set_paused(false)
 
 func _on_Pause_pressed():
 	$Pause.set_self_modulate('ff7200')
 	$Play.set_self_modulate('ffffff')
-	game_clock.set_paused(true)
+	game.clock.set_paused(true)
 
 func _on_Button_mouse_entered(button):
 	get_node(button).set_scale(Vector2(0.95,0.95))
@@ -1528,46 +1660,60 @@ func _on_Button_mouse_exited(button):
 	get_node(button).set_scale(Vector2(1,1))
 "
 
-[sub_resource type="DynamicFont" id=35]
+[sub_resource type="DynamicFont" id=37]
 size = 30
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=36]
+[sub_resource type="GDScript" id=38]
 script/source = "extends Control
-
-onready var timer = get_tree().get_root().get_node('Game/Clock')
 
 func _ready():
 	_on_ClockSpeed_value_changed($Sliders/ClockSpeed.value)
 	_on_TimeScale_value_changed($Sliders/TimeScale.value)
 
+func set_slave_ui_refresh_mode(mode:String):
+	for _slave in SlaveUtils.get_owned_slaves().get_children():
+		_slave.ui.set_refresh_mode(mode)
+
 func _on_ClockSpeed_value_changed(value):
-	timer.stop()
-	var speed = value/100
-	timer.wait_time = 1-speed
-	timer.start()
-	var display_value = str(stepify(1/timer.wait_time,0.01))
+	game.clock.stop()
+	if $Sliders/TimeScale.value >= 10:
+		set_slave_ui_refresh_mode('hour')
+	elif value >= 90:
+		set_slave_ui_refresh_mode('minute')
+	else:
+		set_slave_ui_refresh_mode('timeout')
+	var speed = value / 100
+	game.clock.wait_time = 1 - speed
+	game.clock.start()
+	var display_value = str(stepify(1/game.clock.wait_time,0.01))
 	$Sliders/ClockSpeed/Label.set_text(\"Clock Speed: x\"+display_value)
 
 func _on_TimeScale_value_changed(value):
-	timer.stop()
+	game.clock.stop()
+	if value >= 10:
+		set_slave_ui_refresh_mode('hour')
+	elif $Sliders/ClockSpeed.value >= 90:
+		set_slave_ui_refresh_mode('minute')
+	else:
+		set_slave_ui_refresh_mode('timeout')
 	time.scale = value
-	timer.start()
+	game.clock.start()
 	var display_value = str(stepify(value,0.01))
 	$Sliders/TimeScale/Label.set_text(\"Time Scale: x\"+display_value)
 "
 
-[sub_resource type="DynamicFont" id=37]
+[sub_resource type="DynamicFont" id=39]
 size = 20
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=38]
+[sub_resource type="DynamicFont" id=40]
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=39]
+[sub_resource type="DynamicFont" id=41]
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=40]
+[sub_resource type="GDScript" id=42]
 script/source = "extends Control
 
 func _on_mouse_entered():
@@ -1577,11 +1723,11 @@ func _on_mouse_exited():
 		get_node('circle').set_self_modulate('64333a4b')
 "
 
-[sub_resource type="DynamicFont" id=41]
+[sub_resource type="DynamicFont" id=43]
 size = 20
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=42]
+[sub_resource type="GDScript" id=44]
 script/source = "extends Panel
 
 func _pause():
@@ -1604,6 +1750,7 @@ func _on_Options_pressed():
 func _on_Main_Menu_pressed():
 	_pause()
 	data.save_game(data.save_slot)
+	data.save_slot = null
 	get_tree().change_scene('res://Main Menu/Main Menu.tscn')
 
 func _input(event):
@@ -1619,23 +1766,23 @@ func _on_Menu_Button_pressed():
 	_pause()
 "
 
-[sub_resource type="DynamicFont" id=43]
+[sub_resource type="DynamicFont" id=45]
 size = 50
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=44]
-size = 30
-font_data = ExtResource( 3 )
-
-[sub_resource type="DynamicFont" id=45]
-size = 30
-font_data = ExtResource( 3 )
-
 [sub_resource type="DynamicFont" id=46]
+size = 30
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=47]
+size = 30
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=48]
 size = 24
 font_data = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=47]
+[sub_resource type="GDScript" id=49]
 script/source = "extends WindowDialog
 
 func _on_Button_pressed():
@@ -1658,6 +1805,14 @@ script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="SlavesPriceChart" parent="." instance=ExtResource( 12 )]
+visible = false
+anchor_top = 0.0481481
+anchor_right = 0.986
+anchor_bottom = 0.835
+margin_right = -113.12
+margin_bottom = -39.8
 
 [node name="SidePanel" type="Panel" parent="." groups=[
 "Intercept Mouse",
@@ -3278,6 +3433,18 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="SlavesPrice" type="VBoxContainer" parent="SidePanel"]
+visible = false
+anchor_left = 0.0434783
+anchor_top = 0.12037
+anchor_right = 0.956522
+anchor_bottom = 0.452778
+margin_bottom = 204.999
+custom_constants/separation = 18
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="PurchaseSlaves" type="VBoxContainer" parent="SidePanel"]
 visible = false
 anchor_left = 0.0434783
@@ -3285,6 +3452,7 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.267593
 custom_constants/separation = 18
+script = SubResource( 16 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -3298,10 +3466,39 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="KidnappersMarket" type="Button" parent="SidePanel/PurchaseSlaves"]
+[node name="SlavesPrice" type="Button" parent="SidePanel/PurchaseSlaves"]
+show_behind_parent = true
 margin_top = 66.0
 margin_right = 420.0
 margin_bottom = 101.0
+rect_min_size = Vector2( 0, 35 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="RichTextLabel" parent="SidePanel/PurchaseSlaves/SlavesPrice"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -203.0
+margin_top = -15.0
+margin_right = 217.0
+margin_bottom = 15.0
+mouse_filter = 2
+custom_fonts/normal_font = SubResource( 17 )
+bbcode_enabled = true
+bbcode_text = "Slaves Price: Very High"
+text = "Slaves Price: Very High"
+fit_content_height = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="KidnappersMarket" type="Button" parent="SidePanel/PurchaseSlaves"]
+margin_top = 119.0
+margin_right = 420.0
+margin_bottom = 154.0
 custom_fonts/font = ExtResource( 25 )
 text = "Kidnappers Market"
 align = 0
@@ -3311,9 +3508,9 @@ __meta__ = {
 }
 
 [node name="NeighboringArcologies" type="Button" parent="SidePanel/PurchaseSlaves"]
-margin_top = 119.0
+margin_top = 172.0
 margin_right = 420.0
-margin_bottom = 154.0
+margin_bottom = 207.0
 custom_fonts/font = ExtResource( 25 )
 text = "Neighboring Arcologies"
 align = 0
@@ -3323,9 +3520,9 @@ __meta__ = {
 }
 
 [node name="Desc" type="Label" parent="SidePanel/PurchaseSlaves"]
-margin_top = 172.0
+margin_top = 225.0
 margin_right = 420.0
-margin_bottom = 265.0
+margin_bottom = 318.0
 custom_fonts/font = ExtResource( 25 )
 text = "Many organizations are selective about their clientele, and will only sell to you if you are reputable."
 autowrap = true
@@ -3341,7 +3538,7 @@ anchor_right = 0.956522
 anchor_bottom = 0.408333
 margin_bottom = -151.999
 custom_constants/separation = 18
-script = SubResource( 16 )
+script = SubResource( 18 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -3354,6 +3551,16 @@ text = "Kidnappers Market:"
 __meta__ = {
 "_edit_use_anchors_": true
 }
+
+[node name="SlavesPrice" type="RichTextLabel" parent="SidePanel/KidnappersMarket"]
+margin_top = 66.0
+margin_right = 420.0
+margin_bottom = 101.0
+custom_fonts/normal_font = ExtResource( 39 )
+bbcode_enabled = true
+bbcode_text = "Slave Price: Very High"
+text = "Slave Price: Very High"
+fit_content_height = true
 
 [node name="Sort" type="VBoxContainer" parent="SidePanel/KidnappersMarket"]
 margin_top = 66.0
@@ -3405,7 +3612,7 @@ custom_fonts/font = ExtResource( 25 )
 text = "Hide"
 align = 0
 expand_icon = true
-script = SubResource( 17 )
+script = SubResource( 19 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -3421,6 +3628,50 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
+[node name="NextDelivery" type="VBoxContainer" parent="SidePanel/KidnappersMarket"]
+margin_top = 324.0
+margin_right = 420.0
+margin_bottom = 390.0
+custom_constants/separation = 0
+
+[node name="Title" type="Label" parent="SidePanel/KidnappersMarket/NextDelivery"]
+margin_right = 420.0
+margin_bottom = 37.0
+custom_fonts/font = ExtResource( 29 )
+text = "Next Delivery In:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="TimeRemaining" type="Label" parent="SidePanel/KidnappersMarket/NextDelivery"]
+margin_top = 37.0
+margin_right = 420.0
+margin_bottom = 66.0
+custom_fonts/font = ExtResource( 25 )
+text = "W:XX, D:X, H:X, M:XX, S:XX"
+
+[node name="LastDelivery" type="VBoxContainer" parent="SidePanel/KidnappersMarket"]
+margin_top = 408.0
+margin_right = 420.0
+margin_bottom = 474.0
+custom_constants/separation = 0
+
+[node name="Title" type="Label" parent="SidePanel/KidnappersMarket/LastDelivery"]
+margin_right = 420.0
+margin_bottom = 37.0
+custom_fonts/font = ExtResource( 29 )
+text = "Last Delivery:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Date" type="Label" parent="SidePanel/KidnappersMarket/LastDelivery"]
+margin_top = 37.0
+margin_right = 420.0
+margin_bottom = 66.0
+custom_fonts/font = ExtResource( 25 )
+text = "D:X, W:XX, Q:X, Y:XXXX"
+
 [node name="NeighboringArcologies" type="VBoxContainer" parent="SidePanel"]
 visible = false
 anchor_left = 0.0434783
@@ -3428,7 +3679,7 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.399074
 custom_constants/separation = 18
-script = SubResource( 18 )
+script = SubResource( 20 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -3441,6 +3692,16 @@ text = "Neighboring Arcologies:"
 __meta__ = {
 "_edit_use_anchors_": true
 }
+
+[node name="SlavesPrice" type="RichTextLabel" parent="SidePanel/NeighboringArcologies"]
+margin_top = 66.0
+margin_right = 420.0
+margin_bottom = 101.0
+custom_fonts/normal_font = ExtResource( 39 )
+bbcode_enabled = true
+bbcode_text = "Slave Price: Very High"
+text = "Slave Price: Very High"
+fit_content_height = true
 
 [node name="Sort" type="VBoxContainer" parent="SidePanel/NeighboringArcologies"]
 margin_top = 61.0
@@ -3507,6 +3768,50 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
+[node name="NextDelivery" type="VBoxContainer" parent="SidePanel/NeighboringArcologies"]
+margin_top = 324.0
+margin_right = 420.0
+margin_bottom = 390.0
+custom_constants/separation = 0
+
+[node name="Title" type="Label" parent="SidePanel/NeighboringArcologies/NextDelivery"]
+margin_right = 420.0
+margin_bottom = 37.0
+custom_fonts/font = ExtResource( 29 )
+text = "Next Delivery In:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="TimeRemaining" type="Label" parent="SidePanel/NeighboringArcologies/NextDelivery"]
+margin_top = 37.0
+margin_right = 420.0
+margin_bottom = 66.0
+custom_fonts/font = ExtResource( 25 )
+text = "W:XX, D:X, H:X, M:XX, S:XX"
+
+[node name="LastDelivery" type="VBoxContainer" parent="SidePanel/NeighboringArcologies"]
+margin_top = 408.0
+margin_right = 420.0
+margin_bottom = 474.0
+custom_constants/separation = 0
+
+[node name="Title" type="Label" parent="SidePanel/NeighboringArcologies/LastDelivery"]
+margin_right = 420.0
+margin_bottom = 37.0
+custom_fonts/font = ExtResource( 29 )
+text = "Last Delivery:"
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Date" type="Label" parent="SidePanel/NeighboringArcologies/LastDelivery"]
+margin_top = 37.0
+margin_right = 420.0
+margin_bottom = 66.0
+custom_fonts/font = ExtResource( 25 )
+text = "D:X, W:XX, Q:X, Y:XXXX"
+
 [node name="ManageArcology" type="VBoxContainer" parent="SidePanel"]
 visible = false
 anchor_left = 0.0434783
@@ -3514,7 +3819,7 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.494444
 custom_constants/separation = 18
-script = SubResource( 19 )
+script = SubResource( 21 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -3692,7 +3997,7 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.494444
 custom_constants/separation = 18
-script = SubResource( 20 )
+script = SubResource( 22 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -3791,7 +4096,7 @@ anchor_top = 0.12037
 anchor_right = 0.956522
 anchor_bottom = 0.443519
 custom_constants/separation = 18
-script = SubResource( 21 )
+script = SubResource( 23 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -3921,7 +4226,7 @@ anchor_top = 0.446296
 anchor_right = 1.13044
 anchor_bottom = 0.553704
 texture = ExtResource( 38 )
-script = SubResource( 22 )
+script = SubResource( 24 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -3995,7 +4300,7 @@ visible = false
 margin_left = 202.0
 margin_right = 313.0
 margin_bottom = 38.0
-custom_fonts/font = SubResource( 23 )
+custom_fonts/font = SubResource( 25 )
 text = "Full View"
 items = [ "Full View", null, false, 0, null, "List View", null, false, 1, null ]
 selected = 0
@@ -4024,7 +4329,7 @@ visible = false
 margin_left = 294.0
 margin_right = 405.0
 margin_bottom = 43.0
-custom_fonts/font = SubResource( 23 )
+custom_fonts/font = SubResource( 25 )
 text = "Full View"
 items = [ "Full View", null, false, 0, null, "List View", null, false, 1, null ]
 selected = 0
@@ -4036,7 +4341,7 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 margin_top = -110.0
 margin_right = 430.0
-script = SubResource( 24 )
+script = SubResource( 26 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -4131,7 +4436,7 @@ anchor_top = 0.0930229
 anchor_right = 0.979381
 anchor_bottom = 0.906976
 margin_top = 2.38419e-07
-custom_fonts/font = SubResource( 25 )
+custom_fonts/font = SubResource( 27 )
 text = "Close"
 align = 0
 expand_icon = true
@@ -4170,7 +4475,7 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 margin_top = -110.0
 margin_right = 110.0
-script = SubResource( 26 )
+script = SubResource( 28 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -4229,7 +4534,7 @@ anchor_bottom = 1.0
 margin_left = -0.100037
 margin_top = -199.0
 margin_right = 193.9
-script = SubResource( 27 )
+script = SubResource( 29 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -4239,7 +4544,7 @@ anchor_left = 0.0206186
 anchor_top = 0.0201005
 anchor_right = 0.979381
 anchor_bottom = 0.19598
-custom_fonts/font = SubResource( 25 )
+custom_fonts/font = SubResource( 27 )
 text = "Communication"
 align = 0
 expand_icon = true
@@ -4252,7 +4557,7 @@ anchor_left = 0.0206186
 anchor_top = 0.21608
 anchor_right = 0.979381
 anchor_bottom = 0.39196
-custom_fonts/font = SubResource( 25 )
+custom_fonts/font = SubResource( 27 )
 disabled = true
 text = "Set Notification"
 align = 0
@@ -4267,7 +4572,7 @@ anchor_top = 0.41206
 anchor_right = 0.979381
 anchor_bottom = 0.58794
 margin_bottom = -7.62939e-06
-custom_fonts/font = SubResource( 25 )
+custom_fonts/font = SubResource( 27 )
 disabled = true
 text = "Manage Navi"
 align = 0
@@ -4281,7 +4586,7 @@ anchor_left = 0.0206186
 anchor_top = 0.60804
 anchor_right = 0.979381
 anchor_bottom = 0.78392
-custom_fonts/font = SubResource( 25 )
+custom_fonts/font = SubResource( 27 )
 disabled = true
 text = "Directives"
 align = 0
@@ -4295,7 +4600,7 @@ anchor_left = 0.0206186
 anchor_top = 0.80402
 anchor_right = 0.979381
 anchor_bottom = 0.979899
-custom_fonts/font = SubResource( 25 )
+custom_fonts/font = SubResource( 27 )
 disabled = true
 text = "Help"
 align = 0
@@ -4387,7 +4692,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -350.0
 margin_top = -110.0
-script = SubResource( 28 )
+script = SubResource( 30 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -4401,7 +4706,7 @@ anchor_bottom = 1.0
 margin_bottom = -7.62939e-06
 texture = ExtResource( 19 )
 expand = true
-script = SubResource( 29 )
+script = SubResource( 31 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -4429,7 +4734,7 @@ anchor_bottom = 1.0
 margin_bottom = -7.62939e-06
 texture = ExtResource( 19 )
 expand = true
-script = SubResource( 30 )
+script = SubResource( 32 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -4461,7 +4766,7 @@ anchor_bottom = 1.0
 margin_bottom = -7.62939e-06
 texture = ExtResource( 19 )
 expand = true
-script = SubResource( 31 )
+script = SubResource( 33 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -4549,7 +4854,7 @@ margin_left = -148.0
 margin_top = 100.0
 margin_right = 150.0
 margin_bottom = 143.0
-custom_fonts/font = SubResource( 32 )
+custom_fonts/font = SubResource( 34 )
 text = "Week XX"
 script = ExtResource( 34 )
 __meta__ = {
@@ -4576,7 +4881,7 @@ __meta__ = {
 margin_right = 138.0
 margin_bottom = 43.0
 mouse_filter = 2
-custom_fonts/font = SubResource( 33 )
+custom_fonts/font = SubResource( 35 )
 text = "END DAY"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -4587,7 +4892,7 @@ margin_left = 142.0
 margin_right = 298.0
 margin_bottom = 43.0
 mouse_filter = 2
-custom_fonts/font = SubResource( 33 )
+custom_fonts/font = SubResource( 35 )
 text = "END WEEK"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -4606,7 +4911,7 @@ anchor_right = 0.141084
 anchor_bottom = 0.568849
 margin_bottom = 3.05176e-05
 custom_constants/separation = 30
-script = SubResource( 34 )
+script = SubResource( 36 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -4629,9 +4934,9 @@ __meta__ = {
 [node name="Pause" type="TextureRect" parent="Navigation/Time/TimePanel/PlayPause"]
 margin_top = 85.0
 margin_right = 48.0
-margin_bottom = 145.0
+margin_bottom = 140.0
 rect_pivot_offset = Vector2( 21.5, 30 )
-texture = ExtResource( 12 )
+texture = ExtResource( 42 )
 
 [node name="Button" type="TextureButton" parent="Navigation/Time/TimePanel/PlayPause/Pause"]
 anchor_right = 1.04651
@@ -4656,7 +4961,7 @@ margin_left = 23.0
 margin_top = -36.0
 margin_right = 86.0
 margin_bottom = 1.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "Date"
 valign = 1
 
@@ -4665,7 +4970,7 @@ margin_left = 509.0
 margin_top = -36.0
 margin_right = 575.0
 margin_bottom = 1.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "Time"
 align = 2
 valign = 1
@@ -4690,7 +4995,7 @@ __meta__ = {
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -4702,7 +5007,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "M"
 align = 1
 valign = 1
@@ -4714,7 +5019,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -4726,7 +5031,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "W"
 align = 1
 valign = 1
@@ -4738,7 +5043,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -4750,7 +5055,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "F"
 align = 1
 valign = 1
@@ -4762,7 +5067,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -4773,7 +5078,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "1"
 align = 1
 valign = 1
@@ -4789,7 +5094,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -4801,7 +5106,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "M"
 align = 1
 valign = 1
@@ -4813,7 +5118,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -4825,7 +5130,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "W"
 align = 1
 valign = 1
@@ -4837,7 +5142,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -4849,7 +5154,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "F"
 align = 1
 valign = 1
@@ -4861,7 +5166,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -4872,7 +5177,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "2"
 align = 1
 valign = 1
@@ -4888,7 +5193,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -4900,7 +5205,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "M"
 align = 1
 valign = 1
@@ -4912,7 +5217,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -4924,7 +5229,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "W"
 align = 1
 valign = 1
@@ -4936,7 +5241,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -4948,7 +5253,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "F"
 align = 1
 valign = 1
@@ -4960,7 +5265,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -4971,7 +5276,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "3"
 align = 1
 valign = 1
@@ -4987,7 +5292,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -4999,7 +5304,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "M"
 align = 1
 valign = 1
@@ -5011,7 +5316,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5023,7 +5328,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "W"
 align = 1
 valign = 1
@@ -5035,7 +5340,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5047,7 +5352,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "F"
 align = 1
 valign = 1
@@ -5059,7 +5364,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5070,7 +5375,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "4"
 align = 1
 valign = 1
@@ -5086,7 +5391,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5098,7 +5403,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "M"
 align = 1
 valign = 1
@@ -5110,7 +5415,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5122,7 +5427,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "W"
 align = 1
 valign = 1
@@ -5134,7 +5439,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5146,7 +5451,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "F"
 align = 1
 valign = 1
@@ -5158,7 +5463,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5169,7 +5474,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "5"
 align = 1
 valign = 1
@@ -5185,7 +5490,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5197,7 +5502,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "M"
 align = 1
 valign = 1
@@ -5209,7 +5514,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5221,7 +5526,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "W"
 align = 1
 valign = 1
@@ -5233,7 +5538,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5245,7 +5550,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "F"
 align = 1
 valign = 1
@@ -5257,7 +5562,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5268,7 +5573,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "6"
 align = 1
 valign = 1
@@ -5284,7 +5589,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5296,7 +5601,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "M"
 align = 1
 valign = 1
@@ -5308,7 +5613,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5320,7 +5625,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "W"
 align = 1
 valign = 1
@@ -5332,7 +5637,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5344,7 +5649,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "F"
 align = 1
 valign = 1
@@ -5356,7 +5661,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5367,7 +5672,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "7"
 align = 1
 valign = 1
@@ -5383,7 +5688,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5395,7 +5700,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "M"
 align = 1
 valign = 1
@@ -5407,7 +5712,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5419,7 +5724,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "W"
 align = 1
 valign = 1
@@ -5431,7 +5736,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5443,7 +5748,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "F"
 align = 1
 valign = 1
@@ -5455,7 +5760,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5466,7 +5771,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "8"
 align = 1
 valign = 1
@@ -5482,7 +5787,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5494,7 +5799,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "M"
 align = 1
 valign = 1
@@ -5506,7 +5811,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5518,7 +5823,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "W"
 align = 1
 valign = 1
@@ -5530,7 +5835,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5542,7 +5847,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "F"
 align = 1
 valign = 1
@@ -5554,7 +5859,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5565,7 +5870,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "9"
 align = 1
 valign = 1
@@ -5581,7 +5886,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 30.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5593,7 +5898,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 30.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "M"
 align = 1
 valign = 1
@@ -5605,7 +5910,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 30.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5617,7 +5922,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 30.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "W"
 align = 1
 valign = 1
@@ -5629,7 +5934,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 30.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5641,7 +5946,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 30.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "F"
 align = 1
 valign = 1
@@ -5653,7 +5958,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 30.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5664,7 +5969,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 30.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "10"
 align = 1
 valign = 1
@@ -5680,7 +5985,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 24.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5692,7 +5997,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 24.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "M"
 align = 1
 valign = 1
@@ -5704,7 +6009,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 24.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5716,7 +6021,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 24.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "W"
 align = 1
 valign = 1
@@ -5728,7 +6033,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 24.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5740,7 +6045,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 24.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "F"
 align = 1
 valign = 1
@@ -5752,7 +6057,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 24.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5763,7 +6068,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 24.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "11"
 align = 1
 valign = 1
@@ -5779,7 +6084,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 29.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5791,7 +6096,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 29.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "M"
 align = 1
 valign = 1
@@ -5803,7 +6108,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 29.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5815,7 +6120,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 29.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "W"
 align = 1
 valign = 1
@@ -5827,7 +6132,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 29.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5839,7 +6144,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 29.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "F"
 align = 1
 valign = 1
@@ -5851,7 +6156,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 29.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5862,7 +6167,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 29.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "12"
 align = 1
 valign = 1
@@ -5878,7 +6183,7 @@ margin_bottom = 373.0
 modulate = Color( 1, 1, 1, 0.156863 )
 margin_right = 29.0
 margin_bottom = 37.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5890,7 +6195,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 48.0
 margin_right = 29.0
 margin_bottom = 85.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "M"
 align = 1
 valign = 1
@@ -5902,7 +6207,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 96.0
 margin_right = 29.0
 margin_bottom = 133.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5914,7 +6219,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 144.0
 margin_right = 29.0
 margin_bottom = 181.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "W"
 align = 1
 valign = 1
@@ -5926,7 +6231,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 192.0
 margin_right = 29.0
 margin_bottom = 229.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "T"
 align = 1
 valign = 1
@@ -5938,7 +6243,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 240.0
 margin_right = 29.0
 margin_bottom = 277.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "F"
 align = 1
 valign = 1
@@ -5950,7 +6255,7 @@ modulate = Color( 1, 1, 1, 0.156863 )
 margin_top = 288.0
 margin_right = 29.0
 margin_bottom = 325.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "S"
 align = 1
 valign = 1
@@ -5961,7 +6266,7 @@ valign = 1
 margin_top = 336.0
 margin_right = 29.0
 margin_bottom = 373.0
-custom_fonts/font = SubResource( 35 )
+custom_fonts/font = SubResource( 37 )
 text = "13"
 align = 1
 valign = 1
@@ -5971,7 +6276,7 @@ anchor_left = 0.231377
 anchor_top = 0.704289
 anchor_right = 0.702032
 anchor_bottom = 0.79684
-script = SubResource( 36 )
+script = SubResource( 38 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -5999,7 +6304,7 @@ __meta__ = {
 anchor_top = -1.4375
 anchor_right = 1.0
 anchor_bottom = 0.0625
-custom_fonts/font = SubResource( 37 )
+custom_fonts/font = SubResource( 39 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "Clock Speed:"
@@ -6023,7 +6328,7 @@ __meta__ = {
 anchor_top = -1.4375
 anchor_right = 1.0
 anchor_bottom = 0.0625
-custom_fonts/font = SubResource( 37 )
+custom_fonts/font = SubResource( 39 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "Time Scale:"
@@ -6115,7 +6420,7 @@ anchor_bottom = 0.490909
 margin_left = 2.38419e-07
 margin_top = -1.90735e-05
 margin_bottom = -1.90735e-05
-custom_fonts/font = SubResource( 38 )
+custom_fonts/font = SubResource( 40 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "24:00
@@ -6133,7 +6438,7 @@ anchor_bottom = 0.827273
 margin_left = 2.38419e-07
 margin_top = 3.8147e-06
 margin_bottom = 7.62939e-06
-custom_fonts/font = SubResource( 39 )
+custom_fonts/font = SubResource( 41 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_constants/line_spacing = -2
 text = "Week 1
@@ -6158,27 +6463,41 @@ __meta__ = {
 [node name="play" type="Sprite" parent="Navigation/Time"]
 modulate = Color( 1, 1, 1, 0 )
 show_behind_parent = true
-position = Vector2( 199, -48 )
+position = Vector2( 154, -14 )
 texture = ExtResource( 11 )
 
 [node name="pause" type="Sprite" parent="Navigation/Time"]
 modulate = Color( 1, 1, 1, 0 )
-show_behind_parent = true
-position = Vector2( 199, 18 )
-texture = ExtResource( 12 )
-
-[node name="turtle" type="Sprite" parent="Navigation/Time"]
-modulate = Color( 1, 1, 1, 0 )
-show_behind_parent = true
-position = Vector2( 206.302, 141.719 )
-scale = Vector2( 0.75, 0.75 )
-texture = ExtResource( 13 )
+position = Vector2( 154, 56 )
+texture = ExtResource( 42 )
 
 [node name="rabbit" type="Sprite" parent="Navigation/Time"]
 modulate = Color( 1, 1, 1, 0 )
 show_behind_parent = true
-position = Vector2( 206.026, 86.4861 )
+position = Vector2( 234, -14 )
 texture = ExtResource( 14 )
+
+[node name="turtle" type="Sprite" parent="Navigation/Time"]
+modulate = Color( 1, 1, 1, 0 )
+show_behind_parent = true
+position = Vector2( 232, 56 )
+scale = Vector2( 0.75, 0.75 )
+texture = ExtResource( 13 )
+
+[node name="rabbit_orange" type="Sprite" parent="Navigation/Time"]
+modulate = Color( 1, 1, 1, 0 )
+self_modulate = Color( 1, 0.447059, 0, 1 )
+show_behind_parent = true
+position = Vector2( 322, -14 )
+texture = ExtResource( 14 )
+
+[node name="turtle_orange" type="Sprite" parent="Navigation/Time"]
+modulate = Color( 1, 1, 1, 0 )
+self_modulate = Color( 1, 0.447059, 0, 1 )
+show_behind_parent = true
+position = Vector2( 322, 56 )
+scale = Vector2( 0.75, 0.75 )
+texture = ExtResource( 13 )
 
 [node name="Tween" type="Tween" parent="Navigation/Time"]
 
@@ -6202,7 +6521,7 @@ margin_left = 13.0
 margin_top = 10.0
 margin_right = 43.0
 margin_bottom = 40.0
-script = SubResource( 40 )
+script = SubResource( 42 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -6248,29 +6567,30 @@ __meta__ = {
 }
 
 [node name="Capital" type="Label" parent="Money"]
-show_behind_parent = true
 margin_bottom = 24.0
 size_flags_horizontal = 2
 size_flags_vertical = 0
-custom_fonts/font = SubResource( 41 )
+custom_fonts/font = SubResource( 43 )
 
 [node name="Income" type="Label" parent="Money"]
+visible = false
 self_modulate = Color( 0.218887, 0.589844, 0.242072, 1 )
-margin_left = 55.0
-margin_right = 55.0
-margin_bottom = 24.0
-size_flags_horizontal = 2
-size_flags_vertical = 0
-custom_fonts/font = SubResource( 41 )
-
-[node name="Expenses" type="Label" parent="Money"]
-self_modulate = Color( 0.832031, 0.165756, 0.165756, 1 )
 margin_left = 111.0
 margin_right = 111.0
 margin_bottom = 24.0
 size_flags_horizontal = 2
 size_flags_vertical = 0
-custom_fonts/font = SubResource( 41 )
+custom_fonts/font = SubResource( 43 )
+
+[node name="Expenses" type="Label" parent="Money"]
+visible = false
+self_modulate = Color( 0.832031, 0.165756, 0.165756, 1 )
+margin_left = 125.0
+margin_right = 125.0
+margin_bottom = 24.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 43 )
 
 [node name="Pause Menu" type="Panel" parent="."]
 pause_mode = 2
@@ -6278,7 +6598,7 @@ visible = false
 self_modulate = Color( 1, 1, 1, 0.862745 )
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = SubResource( 42 )
+script = SubResource( 44 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -6298,7 +6618,7 @@ custom_constants/separation = 10
 margin_right = 425.0
 margin_bottom = 80.0
 rect_min_size = Vector2( 0, 80 )
-custom_fonts/font = SubResource( 43 )
+custom_fonts/font = SubResource( 45 )
 text = "PAUSED"
 align = 1
 
@@ -6307,7 +6627,7 @@ margin_top = 90.0
 margin_right = 425.0
 margin_bottom = 150.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 44 )
+custom_fonts/font = SubResource( 46 )
 text = "Resume"
 
 [node name="Save-Load" type="Button" parent="Pause Menu/Menu"]
@@ -6315,7 +6635,7 @@ margin_top = 160.0
 margin_right = 425.0
 margin_bottom = 220.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 44 )
+custom_fonts/font = SubResource( 46 )
 text = "Save/Load"
 
 [node name="Options" type="Button" parent="Pause Menu/Menu"]
@@ -6323,7 +6643,7 @@ margin_top = 230.0
 margin_right = 425.0
 margin_bottom = 290.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 44 )
+custom_fonts/font = SubResource( 46 )
 text = "Options"
 
 [node name="Main Menu" type="Button" parent="Pause Menu/Menu"]
@@ -6331,7 +6651,7 @@ margin_top = 300.0
 margin_right = 425.0
 margin_bottom = 360.0
 rect_min_size = Vector2( 160, 60 )
-custom_fonts/font = SubResource( 45 )
+custom_fonts/font = SubResource( 47 )
 text = "Main Menu"
 
 [node name="Saves" parent="Pause Menu" instance=ExtResource( 23 )]
@@ -6340,16 +6660,17 @@ visible = false
 [node name="Options" parent="Pause Menu" instance=ExtResource( 24 )]
 visible = false
 
-[node name="Label" type="Label" parent="Pause Menu"]
+[node name="Controls" type="Label" parent="Pause Menu"]
 margin_left = 18.0
 margin_top = 11.0
-margin_right = 328.0
-margin_bottom = 136.0
-custom_fonts/font = SubResource( 46 )
+margin_right = 401.0
+margin_bottom = 168.0
+custom_fonts/font = SubResource( 48 )
 text = "Controls:
-BACK: right click
-TOGGLE PAUSE: space
-TOGGLE SPEED: shift"
+BACK: Right Click
+TOGGLE PAUSE: Space
+TOGGLE SPEED: Shift
+TOGGLE TIME SCALE: Control+Shift"
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -6366,7 +6687,7 @@ margin_top = -175.0
 margin_right = 250.0
 margin_bottom = 175.0
 window_title = "Communication"
-script = SubResource( 47 )
+script = SubResource( 49 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -6434,6 +6755,7 @@ autostart = true
 [connection signal="item_selected" from="SidePanel/ManageSlaves/Sort/HBox/SortMode" to="SidePanel/ManageSlaves" method="_on_SortMode_item_selected"]
 [connection signal="item_selected" from="SidePanel/ManageSlaves/Sort/HBox/SortOrder" to="SidePanel/ManageSlaves" method="_on_SortOrder_item_selected"]
 [connection signal="pressed" from="SidePanel/ManageSlaves/PurchaseSlaves" to="SidePanel/ManageSlaves" method="_on_PurchaseSlaves_pressed"]
+[connection signal="pressed" from="SidePanel/PurchaseSlaves/SlavesPrice" to="SidePanel/PurchaseSlaves" method="_on_SlavesPrice_pressed"]
 [connection signal="pressed" from="SidePanel/PurchaseSlaves/KidnappersMarket" to="Dock" method="set_mode" binds= [ "KidnappersMarket" ]]
 [connection signal="pressed" from="SidePanel/PurchaseSlaves/NeighboringArcologies" to="Dock" method="set_mode" binds= [ "NeighboringArcologies" ]]
 [connection signal="item_selected" from="SidePanel/KidnappersMarket/Sort/HBox/SortMode" to="SidePanel/KidnappersMarket" method="_on_SortMode_item_selected"]

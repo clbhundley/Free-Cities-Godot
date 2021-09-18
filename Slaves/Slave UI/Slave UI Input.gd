@@ -1,6 +1,5 @@
 extends Control
 
-onready var slaves = SlaveUtils.get_slave_scene()
 onready var panel = get_node("Panel")
 onready var _slave = get_parent()
 
@@ -30,19 +29,18 @@ func _on_Assignment_item_selected(ID):
 	_slave.assignment = assignments[ID]
 	_slave.get_node("Assignments/"+_slave.assignment).begin()
 
-func _on_Buy_pressed():
-	var path
-	var dir = Directory.new()
+func _on_Purchase_pressed():
+	game.update_money(-_slave.market_price())
 	var parent_container = get_node('../../')
-	#change folder names to match nodes and input _location directly here
-	if parent_container.name == "Owned":
-		path = 'user://Data/Slot %s/Slaves/Owned/'%data.save_slot
-	elif parent_container.name == "Kidnappers Market":
-		path = "user://Data/Slot %s/Slaves/Available/Kidnappers' Market/"%data.save_slot
-	elif parent_container.name == "Neighboring Arcologies":
-		path = 'user://Data/Slot %s/Slaves/Available/Neighboring Arcologies/'%data.save_slot
-	path += _slave.name+'.json'
-	dir.remove(path)
+	var path:String = "user://Data/Slot %s/Slaves"%data.save_slot
+	match parent_container.name:
+		'Owned':
+			path += "/Owned/"
+		'Kidnappers Market':
+			path += "/Markets/Kidnappers Market/%s.json"%_slave.name
+		'Neighboring Arcologies':
+			path += "/Markets/Neighboring Arcologies/%s.json"%_slave.name
+	Directory.new().remove(path)
 	$Panel.hide()
 	$Panel/Buttons.show()
 	$Panel/SellingButtons.hide()
@@ -51,14 +49,15 @@ func _on_Buy_pressed():
 	_slave.for_sale = false
 	SlaveUtils.get_owned_slaves().add_child(_slave,true)
 	_slave.activate()
-	slaves.update_collection(slaves.active_collection)
-	game.get_gui().get_node("SidePanel/ManageSlaves").update()
-	slaves.update_header()
-	slaves.max_camera_pos = SlaveUtils.slave_count(slaves.active_collection.name)*5+0.7
-	if SlaveUtils.slave_count(slaves.active_collection.name) == 1:
-		slaves.max_camera_pos *= 1.3
-	slaves.clamp_camera_position()
-	slaves.slide_camera()
+	game.slaves.update_collection(game.slaves.active_collection)
+	game.gui.get_node("SidePanel/ManageSlaves").refresh()
+	game.slaves.update_header()
+	var pos = SlaveUtils.slave_count(game.slaves.active_collection.name)*5+0.7
+	game.slaves.max_camera_pos = pos
+	if SlaveUtils.slave_count(game.slaves.active_collection.name) == 1:
+		game.slaves.max_camera_pos *= 1.3
+	game.slaves.clamp_camera_position()
+	game.slaves.slide_camera()
 	hide()
 
 func _on_Sell_pressed():
@@ -66,17 +65,21 @@ func _on_Sell_pressed():
 		return
 	_slave.deactivate()
 	var dir = Directory.new()
-	dir.remove('user://Data/Slot %s/Slaves/Owned/%s.json'%[data.save_slot,_slave.name])
-	game.update_money(200 * _slave.stats._level())
+	var slave_path = "user://Data/Slot %s/Slaves/Owned/%s.json"
+	dir.remove(slave_path%[data.save_slot,_slave.name])
+	var buyer_price = clamp(math.gaussian_float(10,1),8,12) #change to selection
+	var price = buyer_price * _slave.level * game.slaves.price
+	game.update_money(price)
 	get_node("../../").remove_child(_slave)
 	_slave.queue_free()
-	slaves.update_collection(slaves.active_collection)
-	slaves.update_header()
-	slaves.max_camera_pos = SlaveUtils.slave_count(slaves.active_collection.name)*5+0.7
-	if SlaveUtils.slave_count(slaves.active_collection.name) == 1:
-		slaves.max_camera_pos *= 1.3
-	slaves.clamp_camera_position()
-	slaves.slide_camera()
+	game.slaves.update_collection(game.slaves.active_collection)
+	game.slaves.update_header()
+	var pos = SlaveUtils.slave_count(game.slaves.active_collection.name)*5+0.7
+	game.slaves.max_camera_pos = pos
+	if SlaveUtils.slave_count(game.slaves.active_collection.name) == 1:
+		game.slaves.max_camera_pos *= 1.3
+	game.slaves.clamp_camera_position()
+	game.slaves.slide_camera()
 
 func _on_Examine_pressed():
 	for node in get_tree().get_nodes_in_group("Slave UI"):

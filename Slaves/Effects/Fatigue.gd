@@ -7,12 +7,12 @@ func _ready():
 		activate()
 
 func activate():
-	if not time.is_connected("tick",self,"tick"):
-		time.connect("tick",self,"tick")
+	if not time.is_connected("second",self,"tick"):
+		time.connect("second",self,"tick")
 
 func deactivate():
-	if time.is_connected("tick",self,"tick"):
-		time.disconnect("tick",self,"tick")
+	if time.is_connected("second",self,"tick"):
+		time.disconnect("second",self,"tick")
 
 func tick():
 	if _slave.is_awake:

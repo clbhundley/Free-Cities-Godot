@@ -2,32 +2,6 @@ extends Node
 
 onready var _slave = get_parent()
 
-func _level():
-	var level = 0
-	level += _slave.health
-	level += _slave.intelligence
-	level += _slave.devotion
-	level += _slave.trust
-	level += _slave.face*10
-	level -= _slave.age
-#	if _slave.figure < -50 or _slave.figure > 50:
-#		level -= 10
-#	elif _slave.figure < -95 or _slave.figure > 95:
-#		level -= 20
-	level += _slave.libido
-	level += _slave.male_attraction
-	level += _slave.female_attraction
-	#level += _slave.sexual_skill
-	level += _slave.skills.oral
-	level += _slave.skills.anal
-	level += _slave.skills.vaginal
-	level += _slave.skills.penetration
-	level += _slave.skills.anal
-	level += _slave.skills.prostitution
-	level += _slave.skills.entertainment
-	level += _slave.skills.combat
-	return(floor(level))
-
 #func _health():
 #	var text
 #	if _slave.health <= 0:

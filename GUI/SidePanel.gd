@@ -26,37 +26,40 @@ func open():
 		Tween.EASE_OUT)
 	$Tween.start()
 
-func close():
+func close(animation=true):
 	is_open = false
 	action_button.icon = arrow_right_icon
 	action_button.set_text(dock.action_button_text)
-	$Tween.interpolate_property(
-		self,
-		'rect_position',
-		Vector2(0,0),
-		Vector2(-460,0),
-		0.8,
-		Tween.TRANS_EXPO,
-		Tween.EASE_OUT)
-	$Tween.start()
-	if is_hidden:
+	if not animation:
+		rect_position = Vector2(-460,0)
+	else:
 		$Tween.interpolate_property(
 			self,
-			'rect_size:x',
-			rect_size.x,
-			460,
+			'rect_position',
+			Vector2(0,0),
+			Vector2(-460,0),
 			0.8,
 			Tween.TRANS_EXPO,
 			Tween.EASE_OUT)
 		$Tween.start()
+	if is_hidden:
+		if not animation:
+			rect_size.x = 460
+		else:
+			$Tween.interpolate_property(
+				self,
+				'rect_size:x',
+				rect_size.x,
+				460,
+				0.8,
+				Tween.TRANS_EXPO,
+				Tween.EASE_OUT)
+			$Tween.start()
 
-func change_content(current,new,animation=true):
-	for content in get_children():
-		if content.has_method("refresh"):
-			content.refresh()
+func change_content(current_content,new_content,animation=true):
 	var direction = [0,-460]
 	var duration = 0.3
-	var content = [current,new]
+	var content = [current_content,new_content]
 	if not animation:
 		duration = 0
 	for index in content.size():
@@ -70,7 +73,15 @@ func change_content(current,new,animation=true):
 				Tween.TRANS_EXPO,
 				Tween.EASE_IN_OUT)
 	$Tween.start()
-	new.show()
+	if new_content.has_method("refresh"):
+		new_content.refresh()
+	new_content.show()
+
+func refresh_all():
+	for panel in get_children():
+		if panel is Control and panel.is_visible_in_tree():
+			if panel.has_method("refresh"):
+				panel.refresh()
 
 func animate_extension_panel(extension_panel,mode):
 	var tween = extension_panel.get_node('Tween')

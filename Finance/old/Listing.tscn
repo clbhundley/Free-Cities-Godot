@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Finance/Chart.tscn" type="PackedScene" id=1]
+
+[node name="Listing" type="Control"]
+self_modulate = Color( 0.2, 0.227451, 0.294118, 0.192157 )
+anchor_right = 0.764063
+anchor_bottom = 0.787037
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Chart" parent="." instance=ExtResource( 1 )]

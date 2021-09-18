@@ -1,0 +1,338 @@
+[gd_scene load_steps=15 format=2]
+
+[ext_resource path="res://Fonts/rubik/Rubik-Light.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://Fonts/Rubik-Light.tres" type="DynamicFont" id=2]
+[ext_resource path="res://Finance/Textures/line v.png" type="Texture" id=3]
+[ext_resource path="res://Finance/Textures/line h.png" type="Texture" id=4]
+[ext_resource path="res://Textures/circle.png" type="Texture" id=5]
+[ext_resource path="res://Finance/Textures/expand.png" type="Texture" id=6]
+[ext_resource path="res://Finance/Textures/visibility.png" type="Texture" id=7]
+[ext_resource path="res://Finance/Chart.gd" type="Script" id=8]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Control
+
+func _on_Area_mouse_entered():
+	$Area.set_self_modulate('64ffffff')
+	set_line_length()
+	$Label.show()
+	$Line.show()
+
+func _on_Area_mouse_exited():
+	$Area.set_self_modulate('00ffffff')
+	$Label.hide()
+	$Line.hide()
+
+func set_line_length():
+	var bot_pos = get_node(\"../Bottom\").get_global_rect().position.y
+	var top_pos = $Line.get_global_rect().position.y
+	var length = bot_pos - top_pos
+	$Line.rect_size.y = length
+"
+
+[sub_resource type="DynamicFont" id=2]
+resource_name = "Rubik-Light"
+size = 20
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=3]
+size = 30
+font_data = ExtResource( 1 )
+
+[sub_resource type="GDScript" id=4]
+script/source = "extends MenuButton
+
+func _ready():
+	get_popup().connect('id_pressed',self,'selection')
+
+func selection(ID):
+	var chart = owner
+	var Intervals = chart.Intervals
+	match ID:
+		Intervals.DAY:
+			set_text(\"D\")
+		Intervals.WEEK:
+			set_text(\"W\")
+		Intervals.WEEK_4:
+			set_text(\"4W\")
+		Intervals.QUARTER:
+			set_text(\"Q\")
+		Intervals.YEAR:
+			set_text(\"Y\")
+	chart.interval = ID
+	chart.draw_chart()
+"
+
+[sub_resource type="DynamicFont" id=5]
+size = 20
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=6]
+size = 50
+font_data = ExtResource( 1 )
+
+[node name="Chart" type="Control"]
+anchor_right = 0.920313
+anchor_bottom = 0.941667
+script = ExtResource( 8 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Line2D" type="Line2D" parent="."]
+width = 3.0
+texture_mode = -1
+
+[node name="Point" type="Control" parent="."]
+self_modulate = Color( 1, 1, 1, 0 )
+margin_right = 20.0
+margin_bottom = 20.0
+script = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Point"]
+visible = false
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 12.0
+margin_top = -19.0
+margin_right = 60.0
+margin_bottom = 5.0
+custom_fonts/font = SubResource( 2 )
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Area" type="TextureRect" parent="Point"]
+self_modulate = Color( 1, 1, 1, 0 )
+margin_left = -6.0
+margin_top = -6.0
+margin_right = 11.0
+margin_bottom = 11.0
+texture = ExtResource( 5 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Line" type="TextureRect" parent="Point"]
+visible = false
+self_modulate = Color( 1, 1, 1, 0.392157 )
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -8.0
+margin_top = -10.0
+margin_right = -7.0
+texture = ExtResource( 3 )
+expand = true
+stretch_mode = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="HBoxContainer" parent="."]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 334.0
+margin_bottom = 41.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Name" type="Label" parent="Title"]
+show_behind_parent = true
+margin_right = 169.0
+margin_bottom = 37.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 3 )
+text = "Chart Name:"
+valign = 1
+
+[node name="Price" type="Label" parent="Title"]
+show_behind_parent = true
+margin_left = 173.0
+margin_right = 281.0
+margin_bottom = 37.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 3 )
+text = "XXXXXX"
+valign = 1
+
+[node name="Settings" type="VBoxContainer" parent="."]
+margin_left = 5.0
+margin_top = 46.0
+margin_right = 59.0
+margin_bottom = 76.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Expand" type="Button" parent="Settings"]
+visible = false
+margin_right = 54.0
+margin_bottom = 54.0
+rect_min_size = Vector2( 54, 54 )
+custom_fonts/font = ExtResource( 2 )
+
+[node name="TextureRect" type="TextureRect" parent="Settings/Expand"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -22.0
+margin_top = -22.0
+margin_right = 22.0
+margin_bottom = 22.0
+mouse_filter = 2
+texture = ExtResource( 6 )
+
+[node name="Visibility" type="Button" parent="Settings"]
+visible = false
+margin_right = 54.0
+margin_bottom = 54.0
+rect_min_size = Vector2( 54, 54 )
+custom_fonts/font = ExtResource( 2 )
+
+[node name="TextureRect" type="TextureRect" parent="Settings/Visibility"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -22.0
+margin_top = -15.0
+margin_right = 22.0
+margin_bottom = 15.0
+mouse_filter = 2
+texture = ExtResource( 7 )
+expand = true
+
+[node name="Time" type="MenuButton" parent="Settings"]
+margin_right = 54.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 54, 30 )
+focus_mode = 2
+custom_fonts/font = ExtResource( 2 )
+text = "D"
+flat = false
+items = [ "Day", null, 0, false, false, 1, 0, null, "", false, "Week", null, 0, false, false, 7, 0, null, "", false, "4 Week", null, 0, false, false, 28, 0, null, "", false, "Quarter", null, 0, false, false, 91, 0, null, "", false, "Year", null, 0, false, false, 364, 0, null, "", false ]
+script = SubResource( 4 )
+
+[node name="Side" type="TextureRect" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -2.0
+margin_bottom = -2.0
+texture = ExtResource( 3 )
+stretch_mode = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Nub" type="TextureRect" parent="Side"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_right = 5.0
+margin_bottom = 2.0
+rect_min_size = Vector2( 5, 2 )
+texture = ExtResource( 4 )
+expand = true
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="Side/Nub"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 4.0
+margin_top = -12.0
+margin_right = 64.0
+margin_bottom = 12.0
+custom_fonts/font = SubResource( 5 )
+align = 1
+
+[node name="Bottom" type="TextureRect" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -2.0
+texture = ExtResource( 4 )
+stretch_mode = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Nub" type="TextureRect" parent="Bottom"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -2.0
+margin_bottom = 5.0
+rect_min_size = Vector2( 2, 5 )
+texture = ExtResource( 3 )
+expand = true
+stretch_mode = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LabelTop" type="Label" parent="Bottom/Nub"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -36.0
+margin_top = 1.0
+margin_right = 36.0
+margin_bottom = 25.0
+grow_horizontal = 2
+custom_fonts/font = SubResource( 5 )
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LabelBot" type="Label" parent="Bottom/Nub"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -36.0
+margin_top = 22.0
+margin_right = 36.0
+margin_bottom = 46.0
+grow_horizontal = 2
+custom_fonts/font = SubResource( 5 )
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="InsufficientData" type="Label" parent="."]
+visible = false
+show_behind_parent = true
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -231.0
+margin_top = -30.0
+margin_right = 231.0
+margin_bottom = 30.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 6 )
+text = "INSUFFICIENT DATA"
+align = 1
+valign = 1
+
+[connection signal="mouse_entered" from="Point/Area" to="Point" method="_on_Area_mouse_entered"]
+[connection signal="mouse_exited" from="Point/Area" to="Point" method="_on_Area_mouse_exited"]

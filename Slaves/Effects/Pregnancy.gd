@@ -95,7 +95,7 @@ func delivery():
 		"\n"+" @ "+str(time.get_timestamp()))
 	_slave.model.pregnant = 0
 	_slave.pregnancy = null
-	_slave.get_node("UI/StatsDisplay").refresh()
+	_slave.get_node("UI/StatsDisplay").refresh_all()
 	disconnect_all()
 
 func get_days_pregnant():
